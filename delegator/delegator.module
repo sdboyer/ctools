@@ -1,5 +1,5 @@
 <?php
-// $Id $
+// $Id$
 /**
  * @file
  *
@@ -25,6 +25,9 @@ function delegator_perm() {
   return array('administer delegator');
 }
 
+/**
+ * Implementation of hook_theme().
+ */
 function delegator_theme() {
   return array(
     'delegator_admin_list_form' => array(
@@ -252,6 +255,8 @@ function delegator_get_task_handler_plugins($task) {
 /**
  * Get the title for a given handler.
  *
+ * If the plugin has no 'admin title' function, the generic title of the
+ * plugin is used instead.
  */
 function delegator_get_handler_title($plugin, $handler, $task, $subtask_id) {
   $function = ctools_plugin_get_function($plugin, 'admin title');

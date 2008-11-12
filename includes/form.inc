@@ -6,6 +6,12 @@
  * ctools' replacements for Drupal's form functions.
  *
  */
+
+/**
+ * Build a form, similar to drupal_get_form(). However, arguments
+ * to the form builder are not sent through. Instead, the $form_state
+ * can be given all the necessary data to fully utilize the form.
+ */
 function ctools_build_form($form_id, &$form_state) {
   // Ensure that we have some defaults.
 

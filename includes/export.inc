@@ -1,5 +1,5 @@
 <?php
-// $Id $
+// $Id$
 
 /**
  * @file
@@ -286,9 +286,12 @@ function ctools_export_get_schema($table) {
 }
 
 /**
- * Set the status of a default $object.
+ * Set the status of a default $object as a variable.
  *
- * This function does not check to make sure $object actually exists.
+ * The status, in this case, is whether or not it is 'enabled' or 'disabled'
+ * and is only valid for in-code objects that do not have a database
+ * equivalent. This function does not check to make sure $object actually
+ * exists.
  */
 function ctools_export_set_status($table, $name, $new_status = TRUE) {
   $schema = ctools_export_get_schema($table);

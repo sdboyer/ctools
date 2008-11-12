@@ -297,7 +297,7 @@ function theme_delegator_admin_list_form($form) {
       $row = array();
 
       $title = drupal_render($element['title']);
-      // Add a visible 'chagned' flag to the title.
+      // Add a visible 'changed' flag to the title.
       if ($element['changed']['#value']) {
         $title .= '<span class="warning tabledrag-changed">*</span>';
       }
