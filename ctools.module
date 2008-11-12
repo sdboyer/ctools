@@ -1,0 +1,35 @@
+<?php
+// $Id $
+
+/**
+ * Include ctools .inc files as necessary.
+ */
+function ctools_include($file) {
+  static $used = array();
+  if (!isset($used[$file])) {
+    require_once './' . drupal_get_path('module', 'ctools') . "/includes/$file.inc";
+  }
+
+  $used[$file] = TRUE;
+}
+
+/**
+ * Fetch a group of plugins by name.
+ *
+ * @param $module
+ *   The name of the module that utilizes this plugin system. It will be
+ *   used to call hook_ctools_plugin_$plugin() to get more data about the plugin.
+ * @param $type
+ *   The type identifier of the plugin.
+ * @param $id
+ *   If specified, return only information about plugin with this identifier.
+ *   The system will do its utmost to load only plugins with this id.
+ *
+ * @return
+ *   An array of information arrays about the plugins received. The contents
+ *   of the array are specific to the plugin.
+ */
+function ctools_get_plugins($module, $type, $id = NULL) {
+  ctools_include('plugins');
+  return _ctools_get_plugins($module, $type, $id);
+}

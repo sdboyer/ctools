@@ -1,0 +1,13 @@
+/* $Id$ */
+
+.delegator-operations {
+  text-align: right;
+}
+
+.delegator-breadcrumb {
+  font-size: 120%;
+}
+
+.delegator-current {
+  font-weight: bold;
+}

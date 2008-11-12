@@ -1,0 +1,72 @@
+<?php
+// $Id$
+/**
+ * @file
+ * Contains install and update functions for ctools.
+ */
+
+/**
+ * Implementation of hook_install()
+ */
+function ctools_install() {
+  drupal_install_schema('ctools');
+}
+
+/**
+ * Implementation of hook_uninstall()
+ */
+function ctools_uninstall() {
+  drupal_uninstall_schema('ctools');
+}
+
+/**
+ * Implementation of hook_schemea
+ */
+function ctools_schema() {
+  // Currently, schema 1 is the only schema we have. As we make updates,
+  // we might either create a new schema 2 or make adjustments here.
+  return ctools_schema_1();
+}
+
+/**
+ * ctools' initial schema; separated for the purposes of updates.
+ */
+function ctools_schema_1() {
+  $schema['ctools_object_cache'] = array(
+    'description' => t('A special cache used to store objects that are being edited; it serves to save state in an ordinarily stateless environment.'),
+    'fields' => array(
+      'sid' => array(
+        'type' => 'varchar',
+        'length' => '64',
+        'description' => t('The session ID this cache object belongs to.'),
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => '32',
+        'description' => t('The name of the object this cache is attached to.'),
+      ),
+      'obj' => array(
+        'type' => 'varchar',
+        'length' => '32',
+        'description' => t('The type of the object this cache is attached to; this essentially represents the owner so that several sub-systems can use this cache.'),
+      ),
+      'updated' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The time this cache was created or updated.'),
+      ),
+      'data' => array(
+        'type' => 'blob',
+        'description' => t('Serialized data being stored.'),
+        'serialize' => TRUE,
+      ),
+    ),
+    'indexes' => array(
+      'sid_obj_name' => array('sid', 'obj', 'name'),
+      'updated' => array('updated'),
+    ),
+  );
+  return $schema;
+}

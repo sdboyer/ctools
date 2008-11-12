@@ -1,0 +1,87 @@
+<?php
+// $Id$
+/**
+ * @file
+ * Installation routines for delegator module.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function delegator_schema() {
+  // This should always point to our 'current' schema. This makes it relatively easy
+  // to keep a record of schema as we make changes to it.
+  return delegator_schema_1();
+}
+
+/**
+ * Schema version 1 for Panels in D6.
+ */
+function delegator_schema_1() {
+  $schema = array();
+
+  $schema['delegator_handlers'] = array(
+    'fields' => array(
+      'did' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => t('Primary ID field for the table. Not used for anything except internal lookups.'),
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => t('Unique ID for this task handler. Used to identify it programmatically.'),
+      ),
+      'task' => array(
+        'type' => 'varchar',
+        'length' => '64',
+        'description' => t('ID of the task this handler is for.'),
+      ),
+      'subtask' => array(
+        'type' => 'varchar',
+        'length' => '64',
+        'description' => t('ID of the subtask this handler is for.'),
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'handler' => array(
+        'type' => 'varchar',
+        'length' => '64',
+        'description' => t('ID of the task handler being used.'),
+      ),
+      'weight' => array(
+        'type' => 'int',
+        'description' => t('The order in which this handler appears. Lower numbers go first.'),
+      ),
+      'conf' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => t('Serialized configuration of the handler, if needed.'),
+        'not null' => TRUE,
+        'default' => '',
+        'serialize' => TRUE,
+      ),
+    ),
+    'primary key' => array('did'),
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function delegator_install() {
+  drupal_install_schema('delegator');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function delegator_uninstall() {
+  drupal_uninstall_schema('delegator');
+}
+

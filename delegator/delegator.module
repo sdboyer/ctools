@@ -1,0 +1,275 @@
+<?php
+// $Id $
+/**
+ * @file
+ *
+ * The delegator handles two plugins and provides a UI to link them together.
+ * The 'task' plugin defines a particular task, and it provides menu access
+ * to those tasks so that they can respond to page requests.
+ *
+ * 'task_handlers' are then chosen to handle these tasks, arranged in
+ * order of priority in the UI. Task handlers can choose whether or
+ * not to handle a task. The first one that does handles it.
+ *
+ * This system was initially designed to provide a nice way to override
+ * existing menu items and provide alternate paths based on the data,
+ * particularly for node views, but tasks are not limited to this
+ * kind of task. The UI is modular and can be embedded within another
+ * module's UI to allow specific tasks to have chosen handlers.
+ */
+
+/**
+ * Implementation of hook_perm().
+ */
+function delegator_perm() {
+  return array('administer delegator');
+}
+
+function delegator_theme() {
+  return array(
+    'delegator_admin_list_form' => array(
+      'arguments' => array('form' => NULL),
+      'file' => 'delegator.admin.inc',
+    ),
+    'delegator_breadcrumb' => array(
+      'arguments' => array('breadcrumb' => array()),
+      'file' => 'delegator.admin.inc',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_menu.
+ *
+ * Get a list of all tasks and delegate to them.
+ */
+function delegator_menu() {
+  $items = array();
+
+  // Set up our own menu items here.
+  $items['admin/build/delegator'] = array(
+    'title' => 'Delegator',
+    'description' => 'Assign handlers to tasks such as node overrides',
+    'position' => 'right',
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('administer delegator'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+
+  $tasks = delegator_get_tasks();
+
+  foreach ($tasks as $id => $task) {
+    $function = ctools_plugin_get_function($task, 'hook menu');
+    if ($function && is_array($result = $function())) {
+      // We can use += since menu indices are not numeric. += is faster.
+      $items += $result;
+    }
+
+    $access_callback = isset($task['admin access callback']) ? $task['admin access callback'] : 'user_access';
+    $access_arguments = isset($task['admin access arguments']) ? $task['admin access arguments'] : array('administer delegator');
+
+    if (isset($task['admin title'])) {
+      $items['admin/build/delegator/' . $id] = array(
+        'title' => $task['admin title'],
+        'description' => $task['admin description'],
+        'page callback' => 'delegator_administer_task',
+        'page arguments' => array($id),
+        'access callback' => $access_callback,
+        'access arguments' => $access_arguments,
+        'file' => 'delegator.admin.inc',
+      );
+    }
+
+    // Form to add new items to this task.
+    $items['admin/build/delegator/' . $id . '/add/%/%'] = array(
+      'page callback' => 'delegator_administer_task_handler_add',
+      'page arguments' => array($id, 5, 6),
+      'access callback' => $access_callback,
+      'access arguments' => $access_arguments,
+      'file' => 'delegator.admin.inc',
+    );
+
+    $handlers = delegator_get_task_handler_plugins($task);
+    foreach ($handlers as $handler_id => $handler) {
+      if (isset($handler['edit forms'])) {
+        $default_task = FALSE;
+        $weight = 0;
+        foreach ($handler['edit forms'] as $form_id => $form_title) {
+          if (!$default_task) {
+            $default_task = TRUE;
+            $items["admin/build/delegator/$id/$handler_id/%"] = array(
+              'title' => t('Edit'),
+              'page callback' => 'delegator_administer_task_handler_edit',
+              'page arguments' => array($id, $handler_id, 5, $form_id),
+              'access callback' => $access_callback,
+              'access arguments' => $access_arguments,
+              'file' => 'delegator.admin.inc',
+              'type' => MENU_CALLBACK,
+            );
+            $items["admin/build/delegator/$id/$handler_id/%/$form_id"] = array(
+              'title' => $form_title,
+              'page callback' => 'delegator_administer_task_handler_edit',
+              'page arguments' => array($id, $handler_id, 5, $form_id),
+              'access callback' => $access_callback,
+              'access arguments' => $access_arguments,
+              'file' => 'delegator.admin.inc',
+              'type' => MENU_DEFAULT_LOCAL_TASK,
+              'weight' => $weight++,
+            );
+          }
+          else {
+            // Handler to edit delegator task handlers. May exist in its own UI.
+            $items["admin/build/delegator/$id/$handler_id/%/$form_id"] = array(
+              'title' => $form_title,
+              'page callback' => 'delegator_administer_task_handler_edit',
+              'page arguments' => array($id, $handler_id, 5, $form_id),
+              'access callback' => $access_callback,
+              'access arguments' => $access_arguments,
+              'file' => 'delegator.admin.inc',
+              'type' => MENU_LOCAL_TASK,
+              'weight' => $weight++,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_menu_alter.
+ *
+ * Get a list of all tasks and delegate to them.
+ */
+function delegator_menu_alter(&$items) {
+  $tasks = delegator_get_tasks();
+
+  foreach ($tasks as $task) {
+    if ($function = ctools_plugin_get_function($task, 'hook menu alter')) {
+      $function($items);
+    }
+  }
+
+  return $items;
+}
+
+// --------------------------------------------------------------------------
+// Database routines
+
+/**
+ * Load a single task handler by name.
+ */
+function delegator_load_task_handler($name) {
+  ctools_include('export');
+  $result = ctools_export_load_object('delegator_handlers', 'names', array($name));
+  if (isset($result[$name])) {
+    return $result[$name];
+  }
+}
+
+/**
+ * Load all task handlers for a given task/subtask.
+ */
+function delegator_load_task_handlers($task, $subtask_id) {
+  ctools_include('export');
+  $conditions = array(
+    'task' => $task['name'],
+    'subtask' => $subtask_id,
+  );
+
+  return ctools_export_load_object('delegator_handlers', 'conditions', $conditions);
+}
+
+/**
+ * Write a task handler to the database.
+ */
+function delegator_save_task_handler($handler) {
+  $update = (isset($handler->did)) ? array('did') : array();
+  drupal_write_record('delegator_handlers', $handler, $update);
+  return $handler;
+}
+
+/**
+ * Remove a task handler.
+ */
+function delegator_delete_task_handler($handler) {
+  db_query("DELETE FROM {delegator_handlers} WHERE name = '%s'", $handler->name);
+}
+
+
+/**
+ * Shortcut function to get task plugins.
+ */
+function delegator_get_tasks() {
+  return ctools_get_plugins('delegator', 'tasks');
+}
+
+/**
+ * Shortcut function to get a task plugin.
+ */
+function delegator_get_task($id) {
+  return ctools_get_plugins('delegator', 'tasks', $id);
+}
+
+/**
+ * Shortcut function to get task handler plugins.
+ */
+function delegator_get_task_handlers() {
+  return ctools_get_plugins('delegator', 'task_handlers');
+}
+
+/**
+ * Shortcut function to get a task handler plugin.
+ */
+function delegator_get_task_handler($id) {
+  return ctools_get_plugins('delegator', 'task_handlers', $id);
+}
+
+/**
+ * Retrieve a list of all applicable task handlers for a given task.
+ *
+ * This looks at the $task['type'] and compares that to $task_handler['task type'].
+ * If the task has no type, the id of the task is used instead.
+ */
+function delegator_get_task_handler_plugins($task) {
+  $type = isset($task['type']) ? $task['type'] : $task['name'];
+
+  $handlers = array();
+  $task_handlers = delegator_get_task_handlers();
+  foreach ($task_handlers as $id => $handler) {
+    $task_type = is_array($handler['task type']) ? $handler['task type'] : array($handler['task type']);
+    if (in_array($type, $task_type)) {
+      $handlers[$id] = $handler;
+    }
+  }
+
+  return $handlers;
+}
+
+/**
+ * Get the title for a given handler.
+ *
+ */
+function delegator_get_handler_title($plugin, $handler, $task, $subtask_id) {
+  $function = ctools_plugin_get_function($plugin, 'admin title');
+  if ($function) {
+    return $function($handler, $task, $subtask_id);
+  }
+  else {
+    return $plugin['title'];
+  }
+}
+
+/**
+ * Implementation of hook_ctools_plugin_directory() to let the system know
+ * we implement task and task_handler plugins.
+ */
+function delegator_ctools_plugin_directory($plugin) {
+  if ($plugin == 'tasks' || $plugin == 'task_handlers') {
+    return 'plugins/' . $plugin;
+  }
+}
+

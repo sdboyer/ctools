@@ -1,0 +1,28 @@
+<!-- $Id$ -->
+Documentation about the Chaos Tools plugin system:
+
+Currently some scribbled notes to provide a framework for fleshing this out.
+
+  ctools_load_include('plugins');
+
+  hook_ctools_plugin_plugintype
+    
+    'defaults'
+    'cache'
+
+  ctools_get_plugins($module, $type, [$id])
+     best practice: provide a wrapper to make it easier. ex: panels_get_content_type() and panels_get_content_types()
+
+Plugins are primarily just an array of data that describes the plugin. This can be used
+to provide printable data as well as function callbacks. Never make assumptions about
+hook names.
+
+Document your plugins!
+  You really need to document what the data returned in the hook in the .inc file
+  will be or nobody will figure it out. Use advanced help and document it there.
+
+Automatically filled in data:
+  name
+  module
+  path
+  file
