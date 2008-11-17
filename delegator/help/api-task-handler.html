@@ -11,15 +11,24 @@ task handler definition:
 
   forms => array(
     'id' => array(
-       'title'
-       'callback'
+       'form' => form callback (receives $form, $form_state)
+       'submit' => submit callback
+       'validate' => validate callback
+       'include' => an optional file to include to get functionality for this form. Must include full path.
+       'no return' => hide the 'return' button, meaning that the form requires extra steps if submitted
+       'alternate next' => an alternate next form. Used for hidden edit forms that don't have tabs.
      )
    )
   ),
 
- 'add forms' => array('form1', 'form2', 'form3', ...),
+ 'add forms' => array(
+  'form1', => t('form title'),
+  'form2', => t('form title'),
+  // ...etc.../
+),
  'edit forms' => array(
-   'id' => t('link name'),
+   'id' => t('tab name'),
+   'id2' => t('tab name'),
  ),
 
 

@@ -583,7 +583,7 @@ function delegator_admin_list_form_config($form, &$form_state) {
 }
 
 /**
- * Entry point ot edit a task handler.
+ * Entry point to edit a task handler.
  */
 function delegator_administer_task_handler_edit($task_id, $handler_id, $name, $form_id) {
   $handler = delegator_admin_get_task_handler_cache($name);
@@ -637,7 +637,10 @@ function delegator_administer_task_handler_edit($task_id, $handler_id, $name, $f
     'type' => 'edit',
   );
 
-  if ($next_info) {
+  if (!empty($plugin['forms'][$form_id]['alternate next'])) {
+    $form_state['next'] = "admin/build/delegator/$task_id/$handler_id/$name/" . $plugin['forms'][$form_id]['alternate next'];
+  }
+  elseif ($next_info) {
     $form_state['next'] = "admin/build/delegator/$task_id/$handler_id/$name/$next_info[key]";
   }
 
@@ -702,7 +705,6 @@ function delegator_administer_task_handler_add($task_id, $name, $form_id) {
         $form_state['next'] = "admin/build/delegator/$task_id/add/$name/$id";
       }
     }
-
     $crumbs[] = '<span class="' . $class . '">' . $title . '</span>';
   }
 
@@ -743,9 +745,15 @@ function delegator_admin_edit_task_handler(&$form_state) {
 
   $info = $plugin['forms'][$form_id];
 
-  // Call through to the form.
-  if (!empty($info['form']) && function_exists($info['form'])) {
-    $form['conf'] = $info['form']($form_state);
+  if (!empty($info['include'])) {
+    if (is_array($info['include'])) {
+      foreach ($info['include'] as $file) {
+        require_once './' . $file;
+      }
+    }
+    else {
+      require_once './' . $info['include'];
+    }
   }
 
   $form['conf']['#tree'] = TRUE;
@@ -763,8 +771,15 @@ function delegator_admin_edit_task_handler(&$form_state) {
   }
   $submit[] = 'delegator_admin_edit_task_handler_submit';
 
+  // Ensure buttons stay on the bottom.
+  $form['buttons'] = array(
+    '#prefix' => '<div class="clear-block">',
+    '#suffix' => '</div>',
+    '#weight' => 1000
+  );
+
   if (isset($form_state['next'])) {
-    $form['next'] = array(
+    $form['buttons']['next'] = array(
       '#type' => 'submit',
       '#value' => t('Continue'),
       '#next' => $form_state['next'],
@@ -773,8 +788,8 @@ function delegator_admin_edit_task_handler(&$form_state) {
     );
   }
 
-  if ($form_state['type'] == 'edit') {
-    $form['return'] = array(
+  if ($form_state['type'] == 'edit' && empty($info['no return'])) {
+    $form['buttons']['return'] = array(
       '#type' => 'submit',
       '#value' => t('Update and return'),
       '#next' => "admin/build/delegator/$task[name]",
@@ -782,8 +797,8 @@ function delegator_admin_edit_task_handler(&$form_state) {
       '#submit' => $submit,
     );
   }
-  else if (empty($form['next'])) {
-    $form['next'] = array(
+  else if (empty($form_state['next'])) {
+    $form['buttons']['next'] = array(
       '#type' => 'submit',
       '#value' => t('Add handler'),
       '#next' => "admin/build/delegator/$task[name]",
@@ -792,12 +807,17 @@ function delegator_admin_edit_task_handler(&$form_state) {
     );
   }
 
-  $form['cancel'] = array(
+  $form['buttons']['cancel'] = array(
     '#type' => 'submit',
     '#value' => t('Cancel'),
     '#next' => "admin/build/delegator/$task[name]",
     '#submit' => array('delegator_admin_edit_task_handler_cancel'),
   );
+
+  // Allow the plugin to add its form items now.
+  if (!empty($info['form']) && function_exists($info['form'])) {
+    $info['form']($form, $form_state);
+  }
 
   return $form;
 }
@@ -814,10 +834,19 @@ function delegator_admin_edit_task_handler_submit($form, &$form_state) {
   // officially changed.
   $cache = delegator_admin_get_task_cache($form_state['task'], $form_state['subtask_id'], array());
 
-  // @todo -- update last touched as well --
+  // Only bother updating the cache if we're going to change something, so if
+  // our handler is not marked changed or is not the last touched handler, do so.
+  if (!($cache[$handler->name]['changed'] & DGA_CHANGED_CACHED) || empty($cache[$handler->name]['last touched'])) {
+    // Clear the last touched flag from all handlers
+    foreach ($cache as $id => $info) {
+      if (isset($info['last touched'])) {
+        unset($cache[$id]['last touched']);
+      }
+    }
 
-  if (!($cache[$handler->name]['changed'] | DGA_CHANGED_CACHED)) {
+    // Set status of our handler
     $cache[$handler->name]['changed'] |= DGA_CHANGED_CACHED;
+    $cache[$handler->name]['last touched'] = TRUE;
     delegator_admin_set_task_cache($form_state['task'], $form_state['subtask_id'], $cache);
   }
 

@@ -38,7 +38,7 @@ function ctools_plugin_load_includes($info, $file = NULL) {
       // For example, 'foo.inc' in the module 'mogul' using the plugin
       // whose hook is named 'borg_type' should have a function named (deep breath)
       // mogul_foo_borg_type()
-      $result = ctools_plugin_process($info, $module, $module . '_' . $file->name, dirname($file->filename), $file->filename);
+      $result = ctools_plugin_process($info, $module, $module . '_' . $file->name, dirname($file->filename), basename($file->filename));
       if (is_array($result)) {
         $plugins = array_merge($plugins, $result);
       }
@@ -258,7 +258,7 @@ function ctools_plugin_get_function($plugin, $function_name) {
   // If cached the .inc file may not have been loaded. require_once is quite safe
   // and fast so it's okay to keep calling it.
   if ($plugin['file']) {
-    require_once './' . $plugin['file'];
+    require_once './' . $plugin['path'] . '/' . $plugin['file'];
   }
   if (isset($plugin[$function_name]) && function_exists($plugin[$function_name])) {
     return $plugin[$function_name];
@@ -284,6 +284,5 @@ function ctools_plugin_get_function($plugin, $function_name) {
  */
 function ctools_plugin_load_function($module, $type, $id, $function_name) {
   $plugin = _ctools_get_plugins($module, $type, $id);
-
   return ctools_plugin_get_function($plugin, $function_name);
 }

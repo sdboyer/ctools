@@ -64,7 +64,7 @@ function delegator_menu() {
 
   foreach ($tasks as $id => $task) {
     $function = ctools_plugin_get_function($task, 'hook menu');
-    if ($function && is_array($result = $function())) {
+    if ($function && is_array($result = $function($task))) {
       // We can use += since menu indices are not numeric. += is faster.
       $items += $result;
     }
@@ -130,7 +130,10 @@ function delegator_menu() {
               'access callback' => $access_callback,
               'access arguments' => $access_arguments,
               'file' => 'delegator.admin.inc',
-              'type' => MENU_LOCAL_TASK,
+              // This allows an empty form title to provide a hidden form
+              // which is useful for doing more branch-like multi-step
+              // functionality.
+              'type' => $form_title ? MENU_LOCAL_TASK : MENU_CALLBACK,
               'weight' => $weight++,
             );
           }
@@ -152,7 +155,7 @@ function delegator_menu_alter(&$items) {
 
   foreach ($tasks as $task) {
     if ($function = ctools_plugin_get_function($task, 'hook menu alter')) {
-      $function($items);
+      $function($items, $task);
     }
   }
 
@@ -176,14 +179,48 @@ function delegator_load_task_handler($name) {
 /**
  * Load all task handlers for a given task/subtask.
  */
-function delegator_load_task_handlers($task, $subtask_id) {
+function delegator_load_task_handlers($task, $subtask_id = NULL) {
   ctools_include('export');
   $conditions = array(
     'task' => $task['name'],
-    'subtask' => $subtask_id,
   );
 
+  if (isset($subtask_id)) {
+    $conditions['subtask'] = $subtask_id;
+  }
+
   return ctools_export_load_object('delegator_handlers', 'conditions', $conditions);
+}
+
+/**
+ * Load all task handlers for a given task and subtask and sort them.
+ */
+function delegator_load_sorted_handlers($task, $subtask_id = NULL) {
+  $handlers = delegator_load_task_handlers($task, $subtask_id);
+  uasort($handlers, '_delegator_sort_task_handlers');
+  return $handlers;
+}
+
+/**
+ * Callback for uasort to sort task handlers.
+ *
+ * Task handlers are sorted by weight then by name.
+ */
+function _delegator_sort_task_handlers($a, $b) {
+  if ($a->weight < $b->weight) {
+    return -1;
+  }
+  elseif ($a->weight > $b->weight) {
+    return 1;
+  }
+  elseif ($a->name < $b->name) {
+    return -1;
+  }
+  elseif ($a->name > $b->name) {
+    return 1;
+  }
+
+  return 0;
 }
 
 /**
