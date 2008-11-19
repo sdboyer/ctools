@@ -2,7 +2,7 @@
 // $Id$
 
 /**
- * Specialized implementation of hook_delegator_tasks(). See api-tasks.html for
+ * Specialized implementation of hook_delegator_tasks(). See api-task.html for
  * more information.
  */
 function delegator_node_view_delegator_tasks() {
