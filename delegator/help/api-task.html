@@ -9,3 +9,5 @@ task definition:
   type -- The type of the task, used to determine which handlers can service it.
   subtasks -- can be TRUE in which case it supports subtasks with the default
     configuration or a string (array?) with callbacks to fetch subtask data.
+
+task names must not contain a - as that is used to separate the task name from the subtask ID.

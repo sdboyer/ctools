@@ -50,6 +50,12 @@ function delegator_node_view($node) {
     if ($function = ctools_plugin_load_function('delegator', 'task_handlers', $handler->handler, 'render')) {
       $output = $function($handler, $node);
       if ($output) {
+        // TRUE is a special return used to let us know that it handled the
+        // task but does not wish us to render anything, as it already did.
+        // This is needed for the 'no blocks' functionality.
+        if ($output === TRUE) {
+          return;
+        }
         return $output;
       }
     }

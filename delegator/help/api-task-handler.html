@@ -8,6 +8,7 @@ task handler definition:
     params: $handler, $task, $subtask_id
   default conf -- either an array() of default conf data or a callback that returns an array.
     params: $handler, $task, $subtask_id
+  save -- callback to call just prior to the task handler being saved so it can adjust its data.
 
   forms => array(
     'id' => array(
@@ -17,6 +18,7 @@ task handler definition:
        'include' => an optional file to include to get functionality for this form. Must include full path.
        'no return' => hide the 'return' button, meaning that the form requires extra steps if submitted
        'alternate next' => an alternate next form. Used for hidden edit forms that don't have tabs.
+       'no blocks' => if TRUE, use Drupal's mechanism to not render blocks for this form.
      )
    )
   ),

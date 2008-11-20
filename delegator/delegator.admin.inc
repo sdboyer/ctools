@@ -23,13 +23,17 @@ define('DGA_CHANGED_DELETED', 0x04);
 
 /**
  * Page callback to administer a particular task.
- *
- * Since not all tasks actually have subtask ids, the subtask id is
- * optional. However, the menu system should ensure that both of these
- * arguments are filled so that additional url sections do not end up
- * appearing as subtask ids.
  */
-function delegator_administer_task($task_id, $subtask_id = '') {
+function delegator_administer_task($task_name) {
+  // Determine if the task id came in the form of TASK-SUBTASK or just TASK
+  if (strpos($task_name, '-') !== FALSE) {
+    list($task_id, $subtask_id) = explode('-', $task_name, 2);
+  }
+  else {
+    $task_id = $task_name;
+    $subtask_id = NULL;
+  }
+
   $task = delegator_get_task($task_id);
   if (!$task) {
     return drupal_not_found();
@@ -585,7 +589,16 @@ function delegator_admin_list_form_config($form, &$form_state) {
 /**
  * Entry point to edit a task handler.
  */
-function delegator_administer_task_handler_edit($task_id, $handler_id, $name, $form_id) {
+function delegator_administer_task_handler_edit($task_name, $handler_id, $name, $form_id) {
+  // Determine if the task id came in the form of TASK-SUBTASK or just TASK
+  if (strpos($task_name, '-') !== FALSE) {
+    list($task_id, $subtask_id) = explode('-', $task_name, 2);
+  }
+  else {
+    $task_id = $task_name;
+    $subtask_id = NULL;
+  }
+
   $handler = delegator_admin_get_task_handler_cache($name);
   if (!$handler) {
     $handler = delegator_load_task_handler($name);
@@ -607,9 +620,6 @@ function delegator_administer_task_handler_edit($task_id, $handler_id, $name, $f
       !isset($plugin['edit forms'][$form_id])) {
     return drupal_not_found();
   }
-
-  // @todo FIXME
-  $subtask_id = '';
 
   $title = delegator_get_handler_title($plugin, $handler, $task, $subtask_id);
   drupal_set_title(t('Edit task handler "@title"', array('@title' => $title)));
@@ -638,20 +648,35 @@ function delegator_administer_task_handler_edit($task_id, $handler_id, $name, $f
   );
 
   if (!empty($plugin['forms'][$form_id]['alternate next'])) {
-    $form_state['next'] = "admin/build/delegator/$task_id/$handler_id/$name/" . $plugin['forms'][$form_id]['alternate next'];
+    $form_state['next'] = "admin/build/delegator/$task_name/$handler_id/$name/" . $plugin['forms'][$form_id]['alternate next'];
   }
   elseif ($next_info) {
-    $form_state['next'] = "admin/build/delegator/$task_id/$handler_id/$name/$next_info[key]";
+    $form_state['next'] = "admin/build/delegator/$task_name/$handler_id/$name/$next_info[key]";
   }
 
   ctools_include('form');
-  return ctools_build_form('delegator_admin_edit_task_handler', $form_state);
+  $output = ctools_build_form('delegator_admin_edit_task_handler', $form_state);
+  if ($output && !empty($plugin['forms'][$form_id]['no blocks'])) {
+    print theme('page', $output, FALSE);
+  }
+  else {
+    return $output;
+  }
 }
 
 /**
  * Entry point to add a task handler.
  */
 function delegator_administer_task_handler_add($task_id, $name, $form_id) {
+  // Determine if the task id came in the form of TASK-SUBTASK or just TASK
+  if (strpos($task_name, '-') !== FALSE) {
+    list($task_id, $subtask_id) = explode('-', $task_name, 2);
+  }
+  else {
+    $task_id = $task_name;
+    $subtask_id = NULL;
+  }
+
   $handler = delegator_admin_get_task_handler_cache($name);
 
   if (!$handler) {
@@ -669,9 +694,6 @@ function delegator_administer_task_handler_add($task_id, $name, $form_id) {
       !isset($plugin['add forms'][$form_id])) {
     return drupal_not_found();
   }
-
-  // @todo FIXME
-  $subtask_id = '';
 
   $title = delegator_get_handler_title($plugin, $handler, $task, $subtask_id);
   drupal_set_title(t('Add task handler "@title"', array('@title' => $title)));
@@ -702,7 +724,7 @@ function delegator_administer_task_handler_add($task_id, $name, $form_id) {
     else {
       $class = 'delegator-next';
       if (!isset($form_state['next'])) {
-        $form_state['next'] = "admin/build/delegator/$task_id/add/$name/$id";
+        $form_state['next'] = "admin/build/delegator/$task_name/add/$name/$id";
       }
     }
     $crumbs[] = '<span class="' . $class . '">' . $title . '</span>';

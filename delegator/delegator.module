@@ -72,6 +72,8 @@ function delegator_menu() {
     $access_callback = isset($task['admin access callback']) ? $task['admin access callback'] : 'user_access';
     $access_arguments = isset($task['admin access arguments']) ? $task['admin access arguments'] : array('administer delegator');
 
+    // @todo -- support subtasks
+
     if (isset($task['admin title'])) {
       $items['admin/build/delegator/' . $id] = array(
         'title' => $task['admin title'],
@@ -226,8 +228,13 @@ function _delegator_sort_task_handlers($a, $b) {
 /**
  * Write a task handler to the database.
  */
-function delegator_save_task_handler($handler) {
+function delegator_save_task_handler(&$handler) {
   $update = (isset($handler->did)) ? array('did') : array();
+  // Let the task handler respond to saves:
+  if ($function = ctools_plugin_load_function('delegator', 'task_handlers', $handler->handler, 'save')) {
+    $function($handler, $update);
+  }
+
   drupal_write_record('delegator_handlers', $handler, $update);
   return $handler;
 }
@@ -306,7 +313,7 @@ function delegator_get_handler_title($plugin, $handler, $task, $subtask_id) {
 }
 
 /**
- * Implementation of hook_ctools_plugin_directory() to let the system know
+ * Implementation of hook_ctools_plugin_dierctory() to let the system know
  * we implement task and task_handler plugins.
  */
 function delegator_ctools_plugin_directory($plugin) {

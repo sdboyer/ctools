@@ -3,8 +3,15 @@
 
 /**
  * @file
- * ctools' replacements for Drupal's form functions.
+ * CTools' replacements for Drupal's form functions.
  *
+ * Primarily, ctools_build_form is meant to be a replacement for drupal_get_form().
+ *
+ * Instead of sending arguments through to the form builder, a form state array
+ * is passed through. This form_state can contain any arguments needed, and it can
+ * also be used to return data to the calling function.
+ *
+ * This can allow cleaner separation of the form from the storage mechanism.
  */
 
 /**
