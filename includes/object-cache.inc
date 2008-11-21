@@ -72,6 +72,21 @@ function ctools_object_cache_clear($obj, $name) {
 }
 
 /**
+ * Remove an object from the non-volatile ctools cache for all session IDs.
+ *
+ * This is useful for clearing a lock.
+ *
+ * @param $obj
+ *   A 32 character or less string to define what kind of object is being
+ *   stored; primarily this is used to prevent collisions.
+ * @param $name
+ *   The name of the object being removed.
+ */
+function ctools_object_cache_clear_all($obj, $name) {
+  db_query("DELETE FROM {ctools_object_cache} WHERE obj = '%s' AND name = '%s'", $obj, $name);
+}
+
+/**
  * Remove all objects in the object cache that are older than the
  * specified age.
  *
@@ -84,4 +99,24 @@ function ctools_object_cache_clean($age = NULL) {
     $age = 86400 * 7; // 7 days
   }
   db_query("DELETE FROM {ctools_object_cache} WHERE updated < %d", time() - $age);
+}
+
+
+/**
+ * Determine if another user has a given object cached.
+ *
+ * This is very useful for 'locking' objects so that only one user can
+ * modify them.
+ *
+ * @param $obj
+ *   A 32 character or less string to define what kind of object is being
+ *   stored; primarily this is used to prevent collisions.
+ * @param $name
+ *   The name of the object being removed.
+ *
+ * @return
+ *   An object containing the UID and updated date if found; NULL if not.
+ */
+function ctools_object_cache_test($obj, $name) {
+  return db_fetch_object(db_query("SELECT s.uid, c.updated FROM {ctools_object_cache} c INNER JOIN {sessions}  s ON c.sid = s.sid WHERE s.sid != '%s' AND c.obj = '%s' AND c.name = '%s' ORDER BY c.updated ASC", session_id(), $obj, $name));
 }

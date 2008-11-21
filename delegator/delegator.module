@@ -95,12 +95,24 @@ function delegator_menu() {
       'file' => 'delegator.admin.inc',
     );
 
+    // Form to break a lock on this task.
+    $items['admin/build/delegator/' . $id . '/break-lock'] = array(
+      'title' => 'Break lock',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('delegator_administer_break_lock', $id),
+      'access callback' => $access_callback,
+      'access arguments' => $access_arguments,
+      'file' => 'delegator.admin.inc',
+    );
+
     $handlers = delegator_get_task_handler_plugins($task);
     foreach ($handlers as $handler_id => $handler) {
       if (isset($handler['edit forms'])) {
         $default_task = FALSE;
         $weight = 0;
         foreach ($handler['edit forms'] as $form_id => $form_title) {
+          // The first edit form is the default for tabs, so it gets a bit
+          // of special treatment here.
           if (!$default_task) {
             $default_task = TRUE;
             $items["admin/build/delegator/$id/$handler_id/%"] = array(

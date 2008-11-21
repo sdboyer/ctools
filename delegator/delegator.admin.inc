@@ -48,6 +48,7 @@ function delegator_administer_task($task_name) {
     'subtask_id' => $subtask_id,
     'task_handlers' => $task_handlers,
     'cache' => delegator_admin_get_task_cache($task, $subtask_id, $task_handlers),
+    'task_name' => $task_name,
   );
   ctools_include('form');
   return ctools_build_form('delegator_admin_list_form', $form_state);
@@ -62,25 +63,31 @@ function delegator_administer_task($task_name) {
  * has been changed so that we can update the display when
  * it is drawn.
  */
-function delegator_admin_get_task_cache($task, $subtask_id, $task_handlers) {
+function delegator_admin_get_task_cache($task, $subtask_id, $task_handlers = NULL) {
   $key = $task['name'] . ':' . $subtask_id;
   ctools_include('object-cache');
-  $cache = ctools_object_cache_get('handlers', $key);
+  $cache = ctools_object_cache_get('delegator_handlers', $key);
 
   if (!$cache) {
     // If no cache found, create one. We don't write this, though,
     // because we only want to create this object when something
     // actually changes.
-    $cache = array();
-    foreach ($task_handlers as $id => $handler) {
-      $cache[$id]['name'] = $id;
-      $cache[$id]['weight'] = $handler->weight;
-      $cache[$id]['changed'] = FALSE;
+    if (!isset($task_handlers)) {
+      $task_handlers = delegator_load_task_handlers($task, $subtask_id);
     }
+
+    $cache = new stdClass;
+    $cache->handlers = array();
+    foreach ($task_handlers as $id => $handler) {
+      $cache->handlers[$id]['name'] = $id;
+      $cache->handlers[$id]['weight'] = $handler->weight;
+      $cache->handlers[$id]['changed'] = FALSE;
+    }
+    $cache->locked = ctools_object_cache_test('delegator_handlers', $key);
   }
 
   // Sort the new cache.
-  uasort($cache, '_delegator_admin_task_cache_sort');
+  uasort($cache->handlers, '_delegator_admin_task_cache_sort');
 
   return $cache;
 }
@@ -92,13 +99,18 @@ function delegator_admin_get_task_cache($task, $subtask_id, $task_handlers) {
  * delegator_admin_get_task_cache().
  */
 function delegator_admin_set_task_cache($task, $subtask_id, $cache) {
+  if ($cache->locked) {
+    drupal_set_message(t('Unable to update task due to lock.'), 'error');
+    return;
+  }
+
   // First, sort the cache object.
-  uasort($cache, '_delegator_admin_task_cache_sort');
+  uasort($cache->handlers, '_delegator_admin_task_cache_sort');
 
   // Then write it.
   $key = $task['name'] . ':' . $subtask_id;
   ctools_include('object-cache');
-  $cache = ctools_object_cache_set('handlers', $key, $cache);
+  $cache = ctools_object_cache_set('delegator_handlers', $key, $cache);
 }
 
 /**
@@ -107,7 +119,7 @@ function delegator_admin_set_task_cache($task, $subtask_id, $cache) {
 function delegator_admin_clear_task_cache($task, $subtask_id) {
   ctools_include('object-cache');
   $key = $task['name'] . ':' . $subtask_id;
-  $cache = ctools_object_cache_clear('handlers', $key);
+  ctools_object_cache_clear('delegator_handlers', $key);
 }
 
 /**
@@ -115,7 +127,7 @@ function delegator_admin_clear_task_cache($task, $subtask_id) {
  */
 function delegator_admin_get_task_handler_cache($name) {
   ctools_include('object-cache');
-  return ctools_object_cache_get('task_handler', $name);
+  return ctools_object_cache_get('delegator_task_handler', $name);
 }
 
 /**
@@ -123,7 +135,7 @@ function delegator_admin_get_task_handler_cache($name) {
  */
 function delegator_admin_set_task_handler_cache($handler) {
   ctools_include('object-cache');
-  $cache = ctools_object_cache_set('task_handler', $handler->name, $handler);
+  $cache = ctools_object_cache_set('delegator_task_handler', $handler->name, $handler);
 }
 
 /**
@@ -131,7 +143,7 @@ function delegator_admin_set_task_handler_cache($handler) {
  */
 function delegator_admin_clear_task_handler_cache($name) {
   ctools_include('object-cache');
-  $cache = ctools_object_cache_clear('task_handler', $name);
+  ctools_object_cache_clear('delegator_task_handler', $name);
 }
 
 /**
@@ -184,7 +196,7 @@ function delegator_admin_list_form(&$form_state) {
   $form['#changed'] = FALSE;
 
   // Create data for a table for all of the task handlers.
-  foreach ($cache as $id => $info) {
+  foreach ($cache->handlers as $id => $info) {
     // Skip deleted items.
     if ($info['changed'] & DGA_CHANGED_DELETED) {
       $form['#changed'] = TRUE;
@@ -282,6 +294,9 @@ function delegator_admin_list_form(&$form_state) {
     '#submit' => array('delegator_admin_list_form_cancel'),
   );
 
+  $form['#delegator-lock'] = $cache->locked;
+  $form['#task-name'] = $form_state['task_name'];
+
   return $form;
 }
 
@@ -290,6 +305,16 @@ function delegator_admin_list_form(&$form_state) {
  */
 function theme_delegator_admin_list_form($form) {
   $output = '';
+  if (!empty($form['#delegator-lock'])) {
+    $account = user_load($form['#delegator-lock']->uid);
+    $name = theme('username', $account);
+    $lock_age = format_interval(time() - $form['#delegator-lock']->updated);
+    $break = url('admin/build/delegator/' . $form['#task-name'] . '/break-lock');
+
+    $output .= '<div class="delegator-locked">';
+    $output .= t('This view is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $name, '!age' => $lock_age, '!break' => $break));
+    $output .= '</div>';
+  }
 
   $output .= drupal_render($form['description']);
 
@@ -376,11 +401,12 @@ function delegator_admin_list_form_validate_add($form, &$form_state) {
  */
 function delegator_admin_update_weights(&$form_state) {
   // Go through our cache and check weights.
-  foreach ($form_state['cache'] as $id => $info) {
+  $handlers = &$form_state['cache']->handlers;
+  foreach ($handlers as $id => $info) {
     // update weights from form.
     if (isset($form_state['values']['handlers'][$id]['weight']) && $form_state['values']['handlers'][$id]['weight'] != $info['weight']) {
-      $form_state['cache'][$id]['weight'] = $info['weight'] = $form_state['values']['handlers'][$id]['weight'];
-      $form_state['cache'][$id]['changed'] |= DGA_CHANGED_MOVED;
+      $handlers[$id]['weight'] = $info['weight'] = $form_state['values']['handlers'][$id]['weight'];
+      $handlers[$id]['changed'] |= DGA_CHANGED_MOVED;
     }
 
     // Record the highest weight we've seen so we know what to set our addition.
@@ -390,8 +416,8 @@ function delegator_admin_update_weights(&$form_state) {
 
     // Unset any 'last touched' flag and let whatever handler is updating the
     // weights do that if it wants to.
-    if (isset($form_state['cache'][$id]['last touched'])) {
-      unset($form_state['cache'][$id]['last touched']);
+    if (isset($handlers[$id]['last touched'])) {
+      unset($handlers[$id]['last touched']);
     }
   }
 
@@ -430,7 +456,7 @@ function delegator_admin_list_form_add($form, &$form_state) {
   $name = $base;
   $count = 1;
   // If taken
-  while (isset($form_state['cache'][$name])) {
+  while (isset($form_state['cache']->handlers[$name])) {
     $name = $base . '_' . ++$count;
   }
 
@@ -452,9 +478,11 @@ function delegator_admin_list_form_add($form, &$form_state) {
   }
 
   // Store the new handler.
-  delegator_admin_set_task_handler_cache($handler);
+  if ($form_state['cache']->locked) {
+    delegator_admin_set_task_handler_cache($handler);
+  }
 
-  $form_state['cache'][$handler->name] = array(
+  $form_state['cache']->handlers[$handler->name] = array(
     'name' => $handler->name,
     'weight' => $handler->weight,
     'changed' => DGA_CHANGED_CACHED,
@@ -478,12 +506,19 @@ function delegator_admin_list_form_add($form, &$form_state) {
  */
 function delegator_admin_list_form_submit($form, &$form_state) {
   // Update the weights from the form.
+  $form_state['redirect'] = $_GET['q'];
+
   delegator_admin_update_weights($form_state);
 
   $cache = &$form_state['cache'];
+  if ($cache->locked) {
+    drupal_set_message(t('Unable to update task due to lock.'), 'error');
+    return;
+  }
+
   // Go through each of the task handlers, check to see if it needs updating,
   // and update it if so.
-  foreach ($cache as $id => $info) {
+  foreach ($cache->handlers as $id => $info) {
     // If it has been marked for deletion, delete it.
     if ($info['changed'] & DGA_CHANGED_DELETED) {
       if (isset($form_state['task_handlers'][$id])) {
@@ -514,7 +549,6 @@ function delegator_admin_list_form_submit($form, &$form_state) {
 
   // Clear the cache and set a redirect.
   delegator_admin_clear_task_cache($form_state['task'], $form_state['subtask_id']);
-  $form_state['redirect'] = $_GET['q'];
 }
 
 /**
@@ -522,7 +556,7 @@ function delegator_admin_list_form_submit($form, &$form_state) {
  */
 function delegator_admin_list_form_cancel($form, &$form_state) {
   drupal_set_message(t('All changes have been discarded.'));
-  foreach ($form_state['cache'] as $id => $info) {
+  foreach ($form_state['cache']->handlers as $id => $info) {
     if ($info['changed'] & DGA_CHANGED_CACHED) {
       // clear cached version.
       delegator_admin_clear_task_handler_cache($id);
@@ -545,11 +579,11 @@ function delegator_admin_list_form_delete($form, &$form_state) {
 
   $id = $form_state['clicked_button']['#handler'];
   // This overwrites 'moved' and 'cached' states.
-  if ($form_state['cache'][$id]['changed'] & DGA_CHANGED_CACHED) {
+  if ($form_state['cache']->handlers[$id]['changed'] & DGA_CHANGED_CACHED && !$form_state['cache']->locked) {
     // clear cached version.
     delegator_admin_clear_task_handler_cache($id);
   }
-  $form_state['cache'][$id]['changed'] = DGA_CHANGED_DELETED;
+  $form_state['cache']->handlers[$id]['changed'] = DGA_CHANGED_DELETED;
 
   // Store the changed task handler list.
   delegator_admin_set_task_cache($form_state['task'], $form_state['subtask_id'], $form_state['cache']);
@@ -573,7 +607,7 @@ function delegator_admin_list_form_config($form, &$form_state) {
   $id = $form_state['clicked_button']['#handler'];
 
   // Use the one from the database or an updated one in cache?
-  if ($form_state['cache'][$id]['changed'] & DGA_CHANGED_CACHED) {
+  if ($form_state['cache']->handlers[$id]['changed'] & DGA_CHANGED_CACHED) {
     $handler = delegator_admin_get_task_handler_cache($id);
   }
   else {
@@ -645,6 +679,7 @@ function delegator_administer_task_handler_edit($task_name, $handler_id, $name, 
     'plugin_form_id' => $form_id, // so it doesn't get confused with the form's form ID
     'forms' => $plugin['edit forms'],
     'type' => 'edit',
+    'task_name' => $task_name,
   );
 
   if (!empty($plugin['forms'][$form_id]['alternate next'])) {
@@ -706,6 +741,7 @@ function delegator_administer_task_handler_add($task_id, $name, $form_id) {
     'plugin_form_id' => $form_id, // so it doesn't get confused with the form's form ID
     'forms' => $plugin['add forms'],
     'type' => 'add',
+    'task_name' => $task_name,
   );
 
   $output = '';
@@ -854,21 +890,27 @@ function delegator_admin_edit_task_handler_submit($form, &$form_state) {
 
   // Update the task handler cache to let the system know this one has now
   // officially changed.
-  $cache = delegator_admin_get_task_cache($form_state['task'], $form_state['subtask_id'], array());
+  $cache = delegator_admin_get_task_cache($form_state['task'], $form_state['subtask_id']);
+
+  $form_state['redirect'] = $form_state['clicked_button']['#next'];
+  if ($cache->locked) {
+    drupal_set_message(t('Unable to update task due to lock.'), 'error');
+    return;
+  }
 
   // Only bother updating the cache if we're going to change something, so if
   // our handler is not marked changed or is not the last touched handler, do so.
-  if (!($cache[$handler->name]['changed'] & DGA_CHANGED_CACHED) || empty($cache[$handler->name]['last touched'])) {
+  if (!($cache->handlers[$handler->name]['changed'] & DGA_CHANGED_CACHED) || empty($cache->handlers[$handler->name]['last touched'])) {
     // Clear the last touched flag from all handlers
-    foreach ($cache as $id => $info) {
+    foreach ($cache->handlers as $id => $info) {
       if (isset($info['last touched'])) {
-        unset($cache[$id]['last touched']);
+        unset($cache->handlers[$id]['last touched']);
       }
     }
 
     // Set status of our handler
-    $cache[$handler->name]['changed'] |= DGA_CHANGED_CACHED;
-    $cache[$handler->name]['last touched'] = TRUE;
+    $cache->handlers[$handler->name]['changed'] |= DGA_CHANGED_CACHED;
+    $cache->handlers[$handler->name]['last touched'] = TRUE;
     delegator_admin_set_task_cache($form_state['task'], $form_state['subtask_id'], $cache);
   }
 
@@ -879,7 +921,6 @@ function delegator_admin_edit_task_handler_submit($form, &$form_state) {
 
   // Write to cache.
   delegator_admin_set_task_handler_cache($handler);
-  $form_state['redirect'] = $form_state['clicked_button']['#next'];
 }
 
 /**
@@ -895,12 +936,64 @@ function delegator_admin_edit_task_handler_cancel($form, &$form_state) {
 
     // Send an array() through as the list of $task_handlers -- because
     // if we're at this point there MUST be something in the cache.
-    $cache = delegator_admin_get_task_cache($form_state['task'], $form_state['subtask_id'], array());
-    if (isset($cache[$form_state['handler']->name])) {
-      unset($cache[$form_state['handler']->name]);
+    $cache = delegator_admin_get_task_cache($form_state['task'], $form_state['subtask_id']);
+    if (isset($cache->handlers[$form_state['handler']->name])) {
+      unset($cache->handlers[$form_state['handler']->name]);
     }
 
     delegator_admin_set_task_cache($form_state['task'], $form_state['subtask_id'], $cache);
   }
   $form_state['redirect'] = $form_state['clicked_button']['#next'];
+}
+
+/**
+ * Form to break a lock on a delegator task.
+ */
+/**
+ * Page to delete a view.
+ */
+function delegator_administer_break_lock(&$form_state, $task_name) {
+  // Determine if the task id came in the form of TASK-SUBTASK or just TASK
+  if (strpos($task_name, '-') !== FALSE) {
+    list($task_id, $subtask_id) = explode('-', $task_name, 2);
+  }
+  else {
+    $task_id = $task_name;
+    $subtask_id = NULL;
+  }
+
+  $form_state['task_name'] = $task_name;
+  $form_state['key'] = $task_id . ':' . $subtask_id;
+
+  ctools_include('object-cache');
+  $lock = ctools_object_cache_test('delegator_handlers', $form_state['key']);
+
+  $form = array();
+
+  // @todo put task title here, but also needs subtask support.
+  if (empty($lock)) {
+    return array('message' => array('#value' => t('There is no lock on this task to break.')));
+  }
+
+  $cancel = 'admin/build/delegator/' . $task_name;
+  if (!empty($_REQUEST['cancel'])) {
+    $cancel = $_REQUEST['cancel'];
+  }
+
+  $account = user_load($lock->uid);
+  return confirm_form($form,
+                  t('Are you sure you want to break this lock?'),
+                  $cancel,
+                  t('By breaking this lock, any unsaved changes made by !user will be lost!', array('!user' => theme('username', $account))),
+                  t('Break lock'),
+                  t('Cancel'));
+}
+
+/**
+ * Submit handler to break_lock a view.
+ */
+function delegator_administer_break_lock_submit(&$form, &$form_state) {
+  ctools_object_cache_clear_all('delegator_handlers', $form_state['key']);
+  drupal_set_message(t('The lock has been broken and you may now edit this task.'));
+  $form_state['redirect'] = 'admin/build/delegator/' . $form_state['task_name'];
 }
