@@ -32,6 +32,16 @@
   */
 
 /**
+ * A bit flag used to let us know if an object is in the database.
+ */
+define('EXPORT_IN_DATABASE', 0x01);
+
+/**
+ * A bit flag used to let us know if an object is a 'default' in code.
+ */
+define('EXPORT_IN_CODE', 0x02);
+
+/**
  * Load some number of exportable objects.
  *
  * This function will cache the objects, load subsidiary objects if necessary,
@@ -113,6 +123,8 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
     while ($data = db_fetch_object($result)) {
       $object = ctools_export_unpack_object($schema, $data, $export['object']);
       $object->type = t('Normal');
+      $object->export_type = EXPORT_IN_DATABASE;
+
       $cache[$table][$object->{$export['key']}] = $object;
       if ($type == 'conditions') {
         $return[$object->{$export['key']}] = $object;
@@ -152,12 +164,15 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
 
       if (!empty($cache[$table][$object->name])) {
         $cache[$table][$object->name]->type = t('Overridden');
+        $cache[$table][$object->name]->export_status |= EXPORT_IN_CODE;
         if ($type == 'conditions') {
           $return[$object->name] = $cache[$table][$object->name]->type;
         }
       }
       else {
         $object->type = t('Default');
+        $object->export_status = EXPORT_IN_CODE;
+        $object->in_code_only = TRUE;
         // move the 'display' to the new 'primary' location.
         $object->primary = $object->display;
         unset($object->display);

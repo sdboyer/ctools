@@ -478,7 +478,7 @@ function delegator_admin_list_form_add($form, &$form_state) {
   }
 
   // Store the new handler.
-  if ($form_state['cache']->locked) {
+  if (!$form_state['cache']->locked) {
     delegator_admin_set_task_handler_cache($handler);
   }
 
@@ -538,10 +538,9 @@ function delegator_admin_list_form_submit($form, &$form_state) {
     }
     // Otherwise, check to see if it has moved and, if so, update the weight.
     elseif ($info['weight'] != $form_state['task_handlers'][$id]->weight) {
-      // update the weight. Since it could be in the databsae, we'll just
-      // write the task handler we have.
-      $form_state['task_handlers'][$id]->weight = $info['weight'];
-      delegator_save_task_handler($form_state['task_handlers'][$id]);
+      // Theoretically we could only do this for in code objects, but since our
+      // load mechanism checks for all, this is less database work.
+      delegator_update_task_handler_weight($form_state['task_handlers'][$id], $info['weight']);
     }
   }
 
@@ -702,7 +701,7 @@ function delegator_administer_task_handler_edit($task_name, $handler_id, $name, 
 /**
  * Entry point to add a task handler.
  */
-function delegator_administer_task_handler_add($task_id, $name, $form_id) {
+function delegator_administer_task_handler_add($task_name, $name, $form_id) {
   // Determine if the task id came in the form of TASK-SUBTASK or just TASK
   if (strpos($task_name, '-') !== FALSE) {
     list($task_id, $subtask_id) = explode('-', $task_name, 2);

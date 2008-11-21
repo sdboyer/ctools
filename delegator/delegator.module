@@ -203,7 +203,24 @@ function delegator_load_task_handlers($task, $subtask_id = NULL) {
     $conditions['subtask'] = $subtask_id;
   }
 
-  return ctools_export_load_object('delegator_handlers', 'conditions', $conditions);
+  $handlers = ctools_export_load_object('delegator_handlers', 'conditions', $conditions);
+
+  // Override weights from the weight table.
+  if ($handlers) {
+    $names = array();
+    $placeholders = array();
+    foreach ($handlers as $handler) {
+      $names[] = $handler->name;
+      $placeholders[] = "'%s'";
+    }
+
+    $result = db_query("SELECT name, weight FROM {delegator_weights} WHERE name IN (" . implode(', ', $placeholders) . ")", $names);
+    while ($weight = db_fetch_object($result)) {
+      $handlers[$weight->name]->weight = $weight->weight;
+    }
+  }
+
+  return $handlers;
 }
 
 /**
@@ -248,6 +265,7 @@ function delegator_save_task_handler(&$handler) {
   }
 
   drupal_write_record('delegator_handlers', $handler, $update);
+  db_query("DELETE FROM {delegator_weights} WHERE name = '%s'", $handler->name);
   return $handler;
 }
 
@@ -256,8 +274,19 @@ function delegator_save_task_handler(&$handler) {
  */
 function delegator_delete_task_handler($handler) {
   db_query("DELETE FROM {delegator_handlers} WHERE name = '%s'", $handler->name);
+  db_query("DELETE FROM {delegator_weights} WHERE name = '%s'", $handler->name);
 }
 
+/**
+ * Set an overidden weight for a task handler.
+ *
+ * We do this so that in-code task handlers don't need to get written
+ * to the database just because they have their weight changed.
+ */
+function delegator_update_task_handler_weight($handler, $weight) {
+  db_query("DELETE FROM {delegator_weights} WHERE name = '%s'", $handler->name);
+  db_query("INSERT INTO {delegator_weights} (name, weight) VALUES ('%s', %d)", $handler->name, $weight);
+}
 
 /**
  * Shortcut function to get task plugins.

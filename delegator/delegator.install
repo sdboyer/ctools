@@ -68,6 +68,24 @@ function delegator_schema_1() {
     ),
   );
 
+  $schema['delegator_weights'] = array(
+    'description' => t('Contains override weights for delegator handlers that are in code.'),
+    'fields' => array(
+      'name' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => t('Unique ID for this task handler. Used to identify it programmatically.'),
+      ),
+      'weight' => array(
+        'type' => 'int',
+        'description' => t('The order in which this handler appears. Lower numbers go first.'),
+      ),
+    ),
+    'primary key' => array('name'),
+    'indexes' => array(
+      'weights'        => array('name', 'weight'),
+    ),
+  );
   return $schema;
 }
 
