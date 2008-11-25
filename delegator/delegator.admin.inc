@@ -430,11 +430,18 @@ function theme_delegator_admin_list_form($form) {
     if (isset($element['title'])) {
       $row = array();
 
-      $title = drupal_render($element['title']);
-      // Add a visible 'changed' flag to the title.
+      $changed_text = '';
+      // Add a visible 'changed' flag if necessary.
       if ($element['changed']['#value']) {
-        $title .= '<span class="warning tabledrag-changed">*</span>';
+        $changed_text = '<span class="warning tabledrag-changed">*</span>';
       }
+
+      $row[] = array(
+        'data' => $changed_text,
+        'class' => 'delegator-changed-col',
+      );
+
+      $title = theme('ctools_collapsible', drupal_render($element['title']), 'Imagine content here, please', TRUE);
 
       $row[] = array(
         'data' => $title,
@@ -468,6 +475,7 @@ function theme_delegator_admin_list_form($form) {
   }
 
   $header = array(
+    array('data' => '', 'class' => 'delegator-changed-col'),
     array('data' => t('Task handler'), 'class' => 'delegator-handler'),
     array('data' => t('Type'), 'class' => 'delegator-type'),
     t('Weight'),

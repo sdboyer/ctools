@@ -14,6 +14,18 @@ function ctools_include($file) {
 }
 
 /**
+ * Implementation of hook_theme().
+ */
+function ctools_theme() {
+  return array(
+    'ctools_collapsible' => array(
+      'arguments' => array('handle' => NULL, 'content' => NULL, 'collapsed' => FALSE),
+      'file' => 'includes/collapsible-div.inc',
+    ),
+  );
+}
+
+/**
  * Fetch a group of plugins by name.
  *
  * @param $module

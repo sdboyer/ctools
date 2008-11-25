@@ -30,3 +30,19 @@
   width: 10em;
 }
 
+.delegator-changed-col {
+  width: .1em;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.delegator-changed-col .tabledrag-changed {
+  position: relative;
+  top: .2em;
+  font-size: 150%;
+}
+
+#delegator-task-list-arrange a.tabledrag-handle {
+  padding-right: .75em;
+}
+
