@@ -22,6 +22,11 @@ define('DGA_CHANGED_CACHED', 0x02);
 define('DGA_CHANGED_DELETED', 0x04);
 
 /**
+ * Bit flag on the 'changed' value to tell us if an item has had its disabled status changed.
+ */
+define('DGA_CHANGED_STATUS', 0x01);
+
+/**
  * Page callback to administer a particular task.
  */
 function delegator_administer_task($task_name) {
@@ -82,6 +87,7 @@ function delegator_admin_get_task_cache($task, $subtask_id, $task_handlers = NUL
       $cache->handlers[$id]['name'] = $id;
       $cache->handlers[$id]['weight'] = $handler->weight;
       $cache->handlers[$id]['changed'] = FALSE;
+      $cache->handlers[$id]['disabled'] = !empty($handler->disabled);
     }
     $cache->locked = ctools_object_cache_test('delegator_handlers', $key);
   }
@@ -101,6 +107,20 @@ function delegator_admin_get_task_cache($task, $subtask_id, $task_handlers = NUL
 function delegator_admin_set_task_cache($task, $subtask_id, $cache) {
   if ($cache->locked) {
     drupal_set_message(t('Unable to update task due to lock.'), 'error');
+    return;
+  }
+
+  // We only bother if something has been marked changed. This keeps us from
+  // locking when we should not.
+  $changed = FALSE;
+  foreach ($cache->handlers as $handler) {
+    if (!empty($handler['changed'])) {
+      $changed = TRUE;
+      break;
+    }
+  }
+
+  if (!$changed) {
     return;
   }
 
@@ -171,6 +191,35 @@ function _delegator_admin_task_cache_sort($a, $b) {
 }
 
 /**
+ * Find the right handler to use for an id during the edit process.
+ *
+ * When editing, a handler may be stored in cache. It may also be
+ * reverted and unsaved, which can cause issues all their own. This
+ * function can be used to find the right handler to use in these cases.
+ */
+function delegator_admin_find_handler($id, $cache, $task_handlers = array()) {
+  // Use the one from the database or an updated one in cache?
+  if ($cache->handlers[$id]['changed'] & DGA_CHANGED_CACHED) {
+    $handler = delegator_admin_get_task_handler_cache($id);
+  }
+  else {
+    // Special case: Reverted handlers get their defaults back.
+    if ($cache->handlers[$id]['changed'] & DGA_CHANGED_DELETED) {
+      ctools_include('export');
+      $handler = ctools_get_default_object('delegator_handlers', $id);
+    }
+    else if (!empty($task_handlers)) {
+      $handler = $task_handlers[$id];
+    }
+    else {
+      $handler = delegator_load_task_handler($id);
+    }
+  }
+
+  return $handler;
+}
+
+/**
  * Form to administer task handlers assigned to a task.
  */
 function delegator_admin_list_form(&$form_state) {
@@ -198,21 +247,15 @@ function delegator_admin_list_form(&$form_state) {
   // Create data for a table for all of the task handlers.
   foreach ($cache->handlers as $id => $info) {
     // Skip deleted items.
-    if ($info['changed'] & DGA_CHANGED_DELETED) {
+    $handler = delegator_admin_find_handler($id, $form_state['cache'], $task_handlers);
+
+    if ($info['changed'] & DGA_CHANGED_DELETED && !($handler->export_type & EXPORT_IN_CODE)) {
       $form['#changed'] = TRUE;
       continue;
     }
 
     if ($info['changed']) {
       $form['#changed'] = TRUE;
-    }
-
-    // Use the one from the database or an updated one in cache?
-    if ($info['changed'] & DGA_CHANGED_CACHED) {
-      $handler = delegator_admin_get_task_handler_cache($id);
-    }
-    else {
-      $handler = $task_handlers[$id];
     }
 
     $plugin = $task_handler_plugins[$handler->handler];
@@ -228,45 +271,92 @@ function delegator_admin_list_form(&$form_state) {
       '#default_value' => $info['weight'],
     );
 
-    if (isset($plugin['edit forms'])) {
-      $form['handlers'][$id]['config'] = array(
-        '#value' => 'config button',
-      );
-    }
-
     $form['handlers'][$id]['changed'] = array(
       '#type' => 'value',
       '#value' => $info['changed'],
     );
 
-    if (!empty($plugin['edit forms'])) {
-      $form['handlers'][$id]['config'] = array(
-        // '#value' must NOT be set on an image_button or it will always
-        // appear clicked.
-        '#type' => 'image_button',
-        '#src' => drupal_get_path('module', 'delegator') . '/images/configure.png',
-        '#handler' => $id, // so the submit handler can tell which one this is
-        '#submit' => array('delegator_admin_list_form_config'),
-      );
-    }
-
-    $form['handlers'][$id]['delete'] = array(
-      // '#value' must NOT be set on an image_button or it will always
-      // appear clicked.
-      '#type' => 'image_button',
-      '#src' => drupal_get_path('module', 'delegator') . '/images/delete.png',
-      '#handler' => $id, // so the submit handler can tell which one this is
-      '#submit' => array('delegator_admin_list_form_delete'),
+    // Make a list of possible actions.
+    $actions = array(
+      '' => t('Actions...'),
     );
 
+    if ($info['disabled']) {
+      $actions['enable'] = t('Enable');
+    }
+    // For enabled handlers.
+    else {
+      // Make all of the edit items under the Edit optgroup.
+      if (!empty($plugin['edit forms'])) {
+        foreach ($plugin['edit forms'] as $edit_id => $title) {
+          if ($title) {
+            $actions[t('Edit')]['edit-' . $edit_id] = $title;
+          }
+        }
+      }
+
+      $actions['clone'] = t('Clone');
+      $actions['export'] = t('Export');
+
+      if ($handler->export_type == (EXPORT_IN_CODE | EXPORT_IN_DATABASE)) {
+        $actions['delete'] = t('Revert');
+      }
+      else if ($handler->export_type == EXPORT_IN_CODE) {
+        $actions['disable'] = t('Disable');
+      }
+      else {
+        $actions['delete'] = t('Delete');
+      }
+    }
+
+    $form['handlers'][$id]['action'] = array(
+      '#type' => 'select',
+      '#options' => $actions,
+    );
+
+    $form['handlers'][$id]['config'] = array(
+      // image buttons must not have a #value or they will not be properly detected.
+      '#type' => 'image_button',
+      '#src' => drupal_get_path('module', 'delegator') . '/images/configure.png',
+      '#handler' => $id, // so the submit handler can tell which one this is
+      '#submit' => array('delegator_admin_list_form_action'),
+    );
+
+    $type = $handler->type;
+
+    // Adjust type for this scenario: They have reverted a handler to the in code
+    // version and have not modified it again.
+    if ($type == t('Overridden') && $info['changed'] &= DGA_CHANGED_DELETED && !($info['changed'] &= DGA_CHANGED_CACHED)) {
+      $type = t('Default');
+    }
+
+    $class = 'draggable';
+    if ($type == t('Overridden')) {
+      $class .= ' delegator-overridden';
+    }
+    else if ($type == t('Default')) {
+      $class .= ' delegator-default';
+      if ($info['disabled']) {
+        $class .= ' delegator-disabled';
+      }
+    }
+
     $form['handlers'][$id]['class'] = array(
-      '#value' => 'draggable',
+      '#value' => $class,
+    );
+
+    if ($info['disabled']) {
+      $type .= ', ' . t('Disabled');
+    }
+
+    $form['handlers'][$id]['type'] = array(
+      '#value' => $type,
     );
 
     // This sets the tabledrag last dragged class so that the most recently
     // touched row will show up yellow. This is a nice reminder after adding
     // or editing a row which one was touched.
-    if (isset($info['last touched'])) {
+    if (isset($cache->last_touched) && $cache->last_touched == $handler->name) {
       $form['handlers'][$id]['class']['#value'] .= ' delegator-changed';
     }
   }
@@ -297,6 +387,21 @@ function delegator_admin_list_form(&$form_state) {
   $form['#delegator-lock'] = $cache->locked;
   $form['#task-name'] = $form_state['task_name'];
 
+  // Set up a list of callbacks for our actions. This method allows
+  // clever form_alter uses to add more actions easily.
+
+  // Bear in mind that any action will be split on a '-' so don't use it
+  // in your name. This is how 'edit' can edit multiple forms, i.e,
+  // edit-settings, edit-context, edit-foobarbaz.
+  $form['#actions'] = array(
+    'edit' => 'delegator_admin_list_form_action_edit',
+    'delete' => 'delegator_admin_list_form_action_delete',
+    'enable' => 'delegator_admin_list_form_action_enable',
+    'disable' => 'delegator_admin_list_form_action_disable',
+    'clone' => 'delegator_admin_list_form_action_clone',
+    'export' => 'delegator_admin_list_form_action_export',
+  );
+
   return $form;
 }
 
@@ -312,7 +417,7 @@ function theme_delegator_admin_list_form($form) {
     $break = url('admin/build/delegator/' . $form['#task-name'] . '/break-lock');
 
     $output .= '<div class="delegator-locked">';
-    $output .= t('This view is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $name, '!age' => $lock_age, '!break' => $break));
+    $output .= t('This task is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $name, '!age' => $lock_age, '!break' => $break));
     $output .= '</div>';
   }
 
@@ -336,14 +441,17 @@ function theme_delegator_admin_list_form($form) {
         'class' => 'delegator-handler',
       );
 
+      $row[] = array(
+        'data' => drupal_render($element['type']),
+        'class' => 'delegator-type',
+      );
+
       $element['weight']['#attributes']['class'] = 'weight';
       $row[] = drupal_render($element['weight']);
 
       $operations = '';
-      if (isset($element['config'])) {
-        $operations .= drupal_render($element['config']);
-      }
-      $operations .= drupal_render($element['delete']);
+      $operations .= drupal_render($element['action']);
+      $operations .= drupal_render($element['config']);
       $row[] = array(
         'data' => $operations,
         'class' => 'delegator-operations',
@@ -361,6 +469,7 @@ function theme_delegator_admin_list_form($form) {
 
   $header = array(
     array('data' => t('Task handler'), 'class' => 'delegator-handler'),
+    array('data' => t('Type'), 'class' => 'delegator-type'),
     t('Weight'),
     array('data' => t('Operations'), 'class' => 'delegator-operations')
   );
@@ -416,9 +525,7 @@ function delegator_admin_update_weights(&$form_state) {
 
     // Unset any 'last touched' flag and let whatever handler is updating the
     // weights do that if it wants to.
-    if (isset($handlers[$id]['last touched'])) {
-      unset($handlers[$id]['last touched']);
-    }
+    unset($form_state['cache']->last_touched);
   }
 
   // if weight stubbornly continues to not be set (meaning the cache was empty)
@@ -468,6 +575,13 @@ function delegator_admin_list_form_add($form, &$form_state) {
   $handler->handler = $plugin['name'];
   $handler->weight = $weight;
   $handler->conf = array();
+
+  // These are provided by the core export API provided by ctools and we
+  // set defaults here so that we don't cause notices. Perhaps ctools should
+  // provide a way to do this for us so we don't have to muck with it.
+  $handler->export_type = EXPORT_IN_DATABASE;
+  $handler->type = t('Local');
+
   if (isset($plugin['default conf'])) {
     if (is_array($plugin['default conf'])) {
       $handler->conf = $plugin['default conf'];
@@ -486,8 +600,9 @@ function delegator_admin_list_form_add($form, &$form_state) {
     'name' => $handler->name,
     'weight' => $handler->weight,
     'changed' => DGA_CHANGED_CACHED,
-    'last touched' => TRUE,
+    'disabled' => FALSE,
   );
+  $form_state['cache']->last_touched = $handler->name;
 
   // Store the changed task handler list.
   delegator_admin_set_task_cache($form_state['task'], $form_state['subtask_id'], $form_state['cache']);
@@ -526,7 +641,7 @@ function delegator_admin_list_form_submit($form, &$form_state) {
       }
     }
     // If it has been somehow edited (or added), write the cached version
-    elseif ($info['changed'] & DGA_CHANGED_CACHED) {
+    if ($info['changed'] & DGA_CHANGED_CACHED) {
       // load and write the cached version.
       $handler = delegator_admin_get_task_handler_cache($id);
       // Make sure we get updated weight from the form for this.
@@ -535,12 +650,20 @@ function delegator_admin_list_form_submit($form, &$form_state) {
 
       // Now that we've written it, remove it from cache.
       delegator_admin_clear_task_handler_cache($id);
+
+      // @todo -- do we need to clear the handler weight here?
     }
     // Otherwise, check to see if it has moved and, if so, update the weight.
     elseif ($info['weight'] != $form_state['task_handlers'][$id]->weight) {
       // Theoretically we could only do this for in code objects, but since our
       // load mechanism checks for all, this is less database work.
       delegator_update_task_handler_weight($form_state['task_handlers'][$id], $info['weight']);
+    }
+
+    // Set enable/disabled status.
+    if ($info['changed'] & DGA_CHANGED_STATUS) {
+      ctools_include('export');
+      ctools_export_set_status('delegator_handlers', $id, $info['disabled']);
     }
   }
 
@@ -566,63 +689,141 @@ function delegator_admin_list_form_cancel($form, &$form_state) {
 }
 
 /**
- * Submit handler for item deletion.
+ * Submit handler for item action.
  *
  * This is attached to every delete button; it uses $form_state['clicked_value']
  * to know which delete button was pressed. In the form, we set #handler => $id
  * to that this information could be easily retrieved.
+ *
+ * The actual action to call will be in the 'action' setting for the handler.
  */
-function delegator_admin_list_form_delete($form, &$form_state) {
+function delegator_admin_list_form_action($form, &$form_state) {
   // Update the weights from the form.
   delegator_admin_update_weights($form_state);
 
   $id = $form_state['clicked_button']['#handler'];
+  $action = $form_state['values']['handlers'][$id]['action'];
+
+  // Set this now, that way handlers can override it to go elsewhere if they
+  // want.
+  $form_state['redirect'] = $_GET['q'];
+
+  // Break up our
+  if (strpos($action, '-') !== FALSE) {
+    list($action, $argument) = explode('-', $action, 2);
+  }
+  else {
+    $action = $action;
+    $argument = NULL;
+  }
+
+  if (!empty($form['#actions'][$action]) && function_exists($form['#actions'][$action])) {
+    $form['#actions'][$action]($form, $form_state, $id, $action, $argument);
+  }
+
+  delegator_admin_set_task_cache($form_state['task'], $form_state['subtask_id'], $form_state['cache']);
+  return;
+}
+
+
+/**
+ * Delegated submit handler to delete an item.
+ */
+function delegator_admin_list_form_action_delete($form, &$form_state, $id, $action, $argument) {
   // This overwrites 'moved' and 'cached' states.
   if ($form_state['cache']->handlers[$id]['changed'] & DGA_CHANGED_CACHED && !$form_state['cache']->locked) {
     // clear cached version.
     delegator_admin_clear_task_handler_cache($id);
   }
   $form_state['cache']->handlers[$id]['changed'] = DGA_CHANGED_DELETED;
-
-  // Store the changed task handler list.
-  delegator_admin_set_task_cache($form_state['task'], $form_state['subtask_id'], $form_state['cache']);
-  $form_state['redirect'] = $_GET['q'];
 }
 
 /**
- * Submit handler to configure an item.
+ * Delegated submit handler to edit an item.
  *
- * This is attached to every configure button; it uses $form_state['clicked_value']
- * to know which delete button was pressed. In the form, we set #handler => $id
- * to that this information could be easily retrieved.
+ * Which form to go to will be specified by $argument.
  */
-function delegator_admin_list_form_config($form, &$form_state) {
-  // Update the weights from the form.
-  delegator_admin_update_weights($form_state);
-
-  // Store the changed task handler list.
-  delegator_admin_set_task_cache($form_state['task'], $form_state['subtask_id'], $form_state['cache']);
-
-  $id = $form_state['clicked_button']['#handler'];
-
+function delegator_admin_list_form_action_edit($form, &$form_state, $id, $action, $argument) {
   // Use the one from the database or an updated one in cache?
-  if ($form_state['cache']->handlers[$id]['changed'] & DGA_CHANGED_CACHED) {
-    $handler = delegator_admin_get_task_handler_cache($id);
-  }
-  else {
-    $handler = $form_state['task_handlers'][$id];
-  }
+  $handler = delegator_admin_find_handler($id, $form_state['cache'], $form_state['task_handlers']);
 
   $name = $form_state['task']['name'];
   // @todo: Allow an owner UI to control this URL.
   // @todo: subtask ID
-  $form_state['redirect'] = "admin/build/delegator/$name/$handler->handler/$id";
+  $form_state['redirect'] = "admin/build/delegator/$name/$handler->handler/$id/$argument";
 }
 
 /**
- * Entry point to edit a task handler.
+ * Clone an existing task handler into a new handler.
  */
-function delegator_administer_task_handler_edit($task_name, $handler_id, $name, $form_id) {
+function delegator_admin_list_form_action_clone($form, &$form_state, $id, $action, $argument) {
+  // Use the one from the database or an updated one in cache?
+  $handler = delegator_admin_find_handler($id, $form_state['cache'], $form_state['task_handlers']);
+
+  // Get the next weight from the form
+  $handler->weight = delegator_admin_update_weights($form_state);
+
+  // Generate a unique name. Unlike most named objects, we don't let people choose
+  // names for task handlers because they mostly don't make sense.
+  $base = $form_state['task']['name'];
+  if ($form_state['subtask_id']) {
+    $base .= '_' . $form_state['subtask_id'];
+  }
+  $base .= '_' . $handler->handler;
+
+  // Once we have a base, check to see if it is used. If it is, start counting up.
+  $name = $base;
+  $count = 1;
+  // If taken
+  while (isset($form_state['cache']->handlers[$name])) {
+    $name = $base . '_' . ++$count;
+  }
+
+  $handler->name = $name;
+
+  // Store the new handler.
+  if (!$form_state['cache']->locked) {
+    delegator_admin_set_task_handler_cache($handler);
+  }
+
+  $form_state['cache']->handlers[$handler->name] = array(
+    'name' => $handler->name,
+    'weight' => $handler->weight,
+    'changed' => DGA_CHANGED_CACHED,
+    'disabled' => FALSE,
+  );
+  $form_state['cache']->last_touched = $handler->name;
+}
+
+/**
+ * Export a task handler.
+ */
+function delegator_admin_list_form_action_export($form, &$form_state, $id, $action, $argument) {
+  // Redirect to the export page.
+  $name = $form_state['task']['name'];
+  $form_state['redirect'] = "admin/build/delegator/$name/export/$id";
+}
+
+/**
+ * Enable a task handler.
+ */
+function delegator_admin_list_form_action_enable($form, &$form_state, $id, $action, $argument) {
+  $form_state['cache']->handlers[$id]['changed'] |= DGA_CHANGED_STATUS;
+  $form_state['cache']->handlers[$id]['disabled'] = FALSE;
+}
+
+/**
+ * Enable a task handler.
+ */
+function delegator_admin_list_form_action_disable($form, &$form_state, $id, $action, $argument) {
+  $form_state['cache']->handlers[$id]['changed'] |= DGA_CHANGED_STATUS;
+  $form_state['cache']->handlers[$id]['disabled'] = TRUE;
+}
+
+/**
+ * Entry point to export a task handler.
+ */
+function delegator_administer_task_handler_export($task_name, $name) {
   // Determine if the task id came in the form of TASK-SUBTASK or just TASK
   if (strpos($task_name, '-') !== FALSE) {
     list($task_id, $subtask_id) = explode('-', $task_name, 2);
@@ -642,7 +843,37 @@ function delegator_administer_task_handler_edit($task_name, $handler_id, $name, 
   }
 
   $task = delegator_get_task($task_id);
+  $plugin = delegator_get_task_handler($handler->handler);
+
+  $title = delegator_get_handler_title($plugin, $handler, $task, $subtask_id);
+  drupal_set_title(t('Export task handler "@title"', array('@title' => $title)));
+
+  return drupal_get_form('ctools_export_form', delegator_export_task_handler($handler), $title);
+}
+
+/**
+ * Entry point to edit a task handler.
+ */
+function delegator_administer_task_handler_edit($task_name, $handler_id, $name, $form_id) {
+  // Determine if the task id came in the form of TASK-SUBTASK or just TASK
+  if (strpos($task_name, '-') !== FALSE) {
+    list($task_id, $subtask_id) = explode('-', $task_name, 2);
+  }
+  else {
+    $task_id = $task_name;
+    $subtask_id = NULL;
+  }
+
+  $task = delegator_get_task($task_id);
   $plugin = delegator_get_task_handler($handler_id);
+
+  $cache = delegator_admin_get_task_cache($task, $subtask_id);
+
+  $handler = delegator_admin_find_handler($name, $cache);
+
+  if (!$handler) {
+    return drupal_not_found();
+  }
 
   // Prevent silliness of using some other handler type's tabs for this
   // particular handler, or of somehow having invalid tasks or task handlers.
@@ -679,6 +910,7 @@ function delegator_administer_task_handler_edit($task_name, $handler_id, $name, 
     'forms' => $plugin['edit forms'],
     'type' => 'edit',
     'task_name' => $task_name,
+    'cache' => $cache,
   );
 
   if (!empty($plugin['forms'][$form_id]['alternate next'])) {
@@ -729,6 +961,8 @@ function delegator_administer_task_handler_add($task_name, $name, $form_id) {
     return drupal_not_found();
   }
 
+  $cache = delegator_admin_get_task_cache($task, $subtask_id);
+
   $title = delegator_get_handler_title($plugin, $handler, $task, $subtask_id);
   drupal_set_title(t('Add task handler "@title"', array('@title' => $title)));
 
@@ -741,6 +975,7 @@ function delegator_administer_task_handler_add($task_name, $name, $form_id) {
     'forms' => $plugin['add forms'],
     'type' => 'add',
     'task_name' => $task_name,
+    'cache' => $cache,
   );
 
   $output = '';
@@ -889,7 +1124,7 @@ function delegator_admin_edit_task_handler_submit($form, &$form_state) {
 
   // Update the task handler cache to let the system know this one has now
   // officially changed.
-  $cache = delegator_admin_get_task_cache($form_state['task'], $form_state['subtask_id']);
+  $cache = &$form_state['cache'];
 
   $form_state['redirect'] = $form_state['clicked_button']['#next'];
   if ($cache->locked) {
@@ -899,17 +1134,11 @@ function delegator_admin_edit_task_handler_submit($form, &$form_state) {
 
   // Only bother updating the cache if we're going to change something, so if
   // our handler is not marked changed or is not the last touched handler, do so.
-  if (!($cache->handlers[$handler->name]['changed'] & DGA_CHANGED_CACHED) || empty($cache->handlers[$handler->name]['last touched'])) {
-    // Clear the last touched flag from all handlers
-    foreach ($cache->handlers as $id => $info) {
-      if (isset($info['last touched'])) {
-        unset($cache->handlers[$id]['last touched']);
-      }
-    }
+  if (!($cache->handlers[$handler->name]['changed'] & DGA_CHANGED_CACHED) || !isset($cache->last_touched) || $cache->last_touched != $handler->name) {
 
     // Set status of our handler
     $cache->handlers[$handler->name]['changed'] |= DGA_CHANGED_CACHED;
-    $cache->handlers[$handler->name]['last touched'] = TRUE;
+    $cache->last_touched = $handler->name;
     delegator_admin_set_task_cache($form_state['task'], $form_state['subtask_id'], $cache);
   }
 
@@ -935,7 +1164,7 @@ function delegator_admin_edit_task_handler_cancel($form, &$form_state) {
 
     // Send an array() through as the list of $task_handlers -- because
     // if we're at this point there MUST be something in the cache.
-    $cache = delegator_admin_get_task_cache($form_state['task'], $form_state['subtask_id']);
+    $cache = &$form_state['cache'];
     if (isset($cache->handlers[$form_state['handler']->name])) {
       unset($cache->handlers[$form_state['handler']->name]);
     }
@@ -995,4 +1224,91 @@ function delegator_administer_break_lock_submit(&$form, &$form_state) {
   ctools_object_cache_clear_all('delegator_handlers', $form_state['key']);
   drupal_set_message(t('The lock has been broken and you may now edit this task.'));
   $form_state['redirect'] = 'admin/build/delegator/' . $form_state['task_name'];
+}
+
+/**
+ * Import a task handler from cut & paste
+ */
+function delegator_admin_import_task_handler(&$form_state) {
+  drupal_set_title(t('Import task handler'));
+  $form['object'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Paste task handler code here'),
+    '#rows' => 15,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Import'),
+  );
+  return $form;
+}
+
+/**
+ * Ensure we got a valid task handler.
+ */
+function delegator_admin_import_task_handler_validate($form, &$form_state) {
+  ob_start();
+  eval($form_state['values']['object']);
+  ob_end_clean();
+
+  if (!isset($handler) || !is_object($handler)) {
+    form_error($form['object'], t('Unable to interpret task handler code.'));
+  }
+
+  // @todo support subtasks here
+  $task = delegator_get_task($handler->task);
+  if (!$task) {
+    form_error($form['object'], t('The task for that handler does not seem to exist.'));
+  }
+
+  // See if the task is already locked.
+  $cache = delegator_admin_get_task_cache($task, $handler->subtask);
+  if ($cache->locked) {
+    $account = user_load($cache->locked->uid);
+    $name = theme('username', $account);
+    $lock_age = format_interval(time() - $cache->locked->updated);
+    $break = url('admin/build/delegator/' . $handler->task . '/break-lock', array('query' => array('destination' => $_GET['q'], 'cancel' => $_GET['q'])));
+
+    form_error($form['object'], t('Unable to import task handler because the task is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $name, '!age' => $lock_age, '!break' => $break)));
+  }
+
+  $handler->type = t('Normal');
+
+  ctools_include('export');
+  $handler->export_type = EXPORT_IN_DATABASE;
+
+  if (isset($cache->handlers[$handler->name])) {
+    drupal_set_message(t('Warning: The handler you are important already exists and is overwriting an existing handler. If this is not what you intend, you may Cancel this. You should then modify the <code>$handler-&gt;name</code> field of your import to have a unique name.'), 'warning');
+
+    $old_handler = delegator_admin_find_handler($handler->name, $cache);
+    $handler->export_type = $old_handler->export_type | EXPORT_IN_DATABASE;
+  }
+
+  $form_state['task'] = $task;
+  $form_state['cache'] = $cache;
+  $form_state['handler'] = $handler;
+}
+
+/**
+ * Clone an existing task handler into a new handler.
+ */
+function delegator_admin_import_task_handler_submit($form, &$form_state) {
+  // Use the one from the database or an updated one in cache?
+  $handler = &$form_state['handler'];
+  $cache = &$form_state['cache'];
+
+  delegator_admin_set_task_handler_cache($handler);
+
+  $cache->handlers[$handler->name] = array(
+    'name' => $handler->name,
+    'weight' => $handler->weight,
+    'changed' => DGA_CHANGED_CACHED,
+    'disabled' => FALSE,
+  );
+  $cache->last_touched = $handler->name;
+
+  delegator_admin_set_task_cache($form_state['task'], $handler->subtask, $cache);
+  // @todo: Support subtasks and tasks that have alternate administrative UIs.
+  $form_state['redirect'] = 'admin/build/delegator/' . $handler->task;
 }

@@ -18,4 +18,24 @@ Drupal.behaviors.zzGoLastDelegatorTaskList = function(context) {
       Drupal.tableDrag[id].oldRowElement = $row;
     }
   }
+
+  $('.delegator-operations select:not(.delegator-processed)', context).each(function() {
+    var $next = $(this).parent().next('input');
+    $next.hide();
+    $(this).change(function() {
+      var val = $(this).val();
+      // ignore empty
+      if (!val) {
+        return;
+      }
+
+      // force confirm on delete
+      if ($(this).val() == 'delete' && !confirm(Drupal.t('Remove this task?'))) {
+        $(this).val('');
+        return;
+      }
+
+      $next.trigger('click');
+    });
+  });
 }

@@ -26,6 +26,7 @@ function delegator_schema_1() {
         'type' => 'serial',
         'not null' => TRUE,
         'description' => t('Primary ID field for the table. Not used for anything except internal lookups.'),
+        'no export' => TRUE,
       ),
       'name' => array(
         'type' => 'varchar',

@@ -152,30 +152,28 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
         }
       }
       else if ($type == 'names') {
-        if (!in_array($names, $object->{$export['key']})) {
+        if (!in_array($object->{$export['key']}, $args)) {
           continue;
         }
       }
 
-      // Determine if default panel is enabled or disabled.
+      // Determine if default object is enabled or disabled.
       if (isset($status[$object->name])) {
         $object->disabled = $status[$object->name];
       }
 
       if (!empty($cache[$table][$object->name])) {
         $cache[$table][$object->name]->type = t('Overridden');
-        $cache[$table][$object->name]->export_status |= EXPORT_IN_CODE;
+        $cache[$table][$object->name]->export_type |= EXPORT_IN_CODE;
         if ($type == 'conditions') {
-          $return[$object->name] = $cache[$table][$object->name]->type;
+          $return[$object->name] = $cache[$table][$object->name];
         }
       }
       else {
         $object->type = t('Default');
-        $object->export_status = EXPORT_IN_CODE;
+        $object->export_type = EXPORT_IN_CODE;
         $object->in_code_only = TRUE;
-        // move the 'display' to the new 'primary' location.
-        $object->primary = $object->display;
-        unset($object->display);
+
         $cache[$table][$object->name] = $object;
         if ($type == 'conditions') {
           $return[$object->name] = $object;
@@ -210,6 +208,45 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
 
   // For conditions,
   return $return;
+}
+
+/**
+ * Get the default version of an object, if it exists.
+ *
+ * This function doesn't care if an object is in the database or not and
+ * does not check. This means that export_type could appear to be incorrect,
+ * because a version could exist in the database. However, it's not
+ * incorrect for this function as it is *only* used for the default
+ * in code version.
+ */
+function ctools_get_default_object($table, $name) {
+  $schema = ctools_export_get_schema($table);
+  $export = $schema['export'];
+
+  if (!$export['default hook']) {
+    return;
+  }
+
+  // @todo add a method to load .inc files for this.
+  $defaults = module_invoke_all($export['default hook']);
+  $status = variable_get($export['status'], array());
+
+  if (!isset($defaults[$name])) {
+    return;
+  }
+
+  $object = $defaults[$name];
+
+  // Determine if default object is enabled or disabled.
+  if (isset($status[$object->name])) {
+    $object->disabled = $status[$object->name];
+  }
+
+  $object->type = t('Default');
+  $object->export_type = EXPORT_IN_CODE;
+  $object->in_code_only = TRUE;
+
+  return $object;
 }
 
 /**
@@ -277,6 +314,51 @@ function ctools_var_export($var, $prefix = '') {
 }
 
 /**
+ * Export an object into code.
+ */
+function ctools_export_object($table, $object, $identifier, $indent = '', $additions = array(), $additions2 = array()) {
+  $schema = drupal_get_schema($table);
+
+  $output = $indent . '$' . $identifier . ' = new ' . get_class($object) . ";\n";
+
+  $output .= $indent . '$' . $identifier . '->disabled' . ' = FALSE; /* Edit this to true to make a default ' . $identifier . ' disabled initially */' . "\n";
+
+  // Put top additions here:
+  foreach ($additions as $field => $value) {
+    $output .= $indent . '$' . $identifier . '->' . $field . ' = ' . ctools_var_export($value, $indent) . ";\n";
+  }
+
+  // Go through our schema and build correlations.
+  foreach ($schema['fields'] as $field => $info) {
+    if (!empty($info['no export'])) {
+      continue;
+    }
+    if (!isset($object->$field)) {
+      if (isset($info['default'])) {
+        $object->$field = $info['default'];
+      }
+      else {
+        $object->$field = '';
+      }
+    }
+
+    $value = $object->$field;
+    if ($info['type'] == 'int') {
+      $value = (isset($info['size']) && $info['size'] == 'tiny') ? (bool) $value : (int) $value;
+    }
+
+    $output .= $indent . '$' . $identifier . '->' . $field . ' = ' . ctools_var_export($value, $indent) . ";\n";
+  }
+
+  // And bottom additions here
+  foreach ($additions2 as $field => $value) {
+    $output .= $indent . '$' . $identifier . '->' . $field . ' = ' . ctools_var_export($value, $indent) . ";\n";
+  }
+
+  return $output;
+}
+
+/**
  * Get the schema for a given table.
  *
  * This looks for data the export subsystem needs and applies defaults so
@@ -303,7 +385,7 @@ function ctools_export_get_schema($table) {
 /**
  * Set the status of a default $object as a variable.
  *
- * The status, in this case, is whether or not it is 'enabled' or 'disabled'
+ * The status, in this case, is whether or not it is 'disabled'
  * and is only valid for in-code objects that do not have a database
  * equivalent. This function does not check to make sure $object actually
  * exists.
@@ -311,6 +393,7 @@ function ctools_export_get_schema($table) {
 function ctools_export_set_status($table, $name, $new_status = TRUE) {
   $schema = ctools_export_get_schema($table);
   $status = variable_get($schema['export']['status'], array());
+
   $status[$name] = $new_status;
   variable_set($schema['export']['status'], $status);
 }

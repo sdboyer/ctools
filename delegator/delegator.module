@@ -60,6 +60,22 @@ function delegator_menu() {
     'file path' => drupal_get_path('module', 'system'),
   );
 
+  $items['admin/build/delegator/list'] = array(
+    'title' => 'Tasks',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+
+  // Set up our own menu items here.
+  $items['admin/build/delegator/import'] = array(
+    'title' => 'Import',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('delegator_admin_import_task_handler'),
+    'access arguments' => array('administer delegator'),
+    'file' => 'delegator.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+
   $tasks = delegator_get_tasks();
 
   foreach ($tasks as $id => $task) {
@@ -90,6 +106,15 @@ function delegator_menu() {
     $items['admin/build/delegator/' . $id . '/add/%/%'] = array(
       'page callback' => 'delegator_administer_task_handler_add',
       'page arguments' => array($id, 5, 6),
+      'access callback' => $access_callback,
+      'access arguments' => $access_arguments,
+      'file' => 'delegator.admin.inc',
+    );
+
+    // Form to add export a handler
+    $items['admin/build/delegator/' . $id . '/export/%'] = array(
+      'page callback' => 'delegator_administer_task_handler_export',
+      'page arguments' => array($id, 5),
       'access callback' => $access_callback,
       'access arguments' => $access_arguments,
       'file' => 'delegator.admin.inc',
@@ -275,6 +300,22 @@ function delegator_save_task_handler(&$handler) {
 function delegator_delete_task_handler($handler) {
   db_query("DELETE FROM {delegator_handlers} WHERE name = '%s'", $handler->name);
   db_query("DELETE FROM {delegator_weights} WHERE name = '%s'", $handler->name);
+}
+
+function delegator_export_task_handler($handler, $indent = '') {
+  ctools_include('export');
+  ctools_include('plugins');
+  $handler = drupal_clone($handler);
+
+  $append = '';
+  if ($function = ctools_plugin_load_function('delegator', 'task_handlers', $handler->handler, 'export')) {
+    $append = $function($handler, $indent);
+  }
+
+  $output = ctools_export_object('delegator_handlers', $handler, 'handler', $indent);
+  $output .= $append;
+
+  return $output;
 }
 
 /**
