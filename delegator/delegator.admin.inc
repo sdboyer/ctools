@@ -258,16 +258,23 @@ function delegator_admin_list_form(&$form_state) {
       $form['#changed'] = TRUE;
     }
 
-    $plugin = $task_handler_plugins[$handler->handler];
+    if (isset($task_handler_plugins[$handler->handler])) {
+      $plugin = $task_handler_plugins[$handler->handler];
 
-    $title = delegator_get_handler_title($plugin, $handler, $task, $form_state['subtask_id']);
+      $title = delegator_get_handler_title($plugin, $handler, $task, $form_state['subtask_id']);
+      $summary = delegator_get_handler_summary($plugin, $handler, $task, $form_state['subtask_id']);
+    }
+    else {
+      $title = t('Broken/missing handler plugin "@plugin"', array('@plugin' => $handler->handler));
+      $summary = '';
+    }
 
     $form['handlers'][$id]['title'] = array(
       '#value' => $title,
     );
 
     $form['handlers'][$id]['summary'] = array(
-      '#value' => delegator_get_handler_summary($plugin, $handler, $task, $form_state['subtask_id']),
+      '#value' => $summary,
     );
 
     $form['handlers'][$id]['weight'] = array(
@@ -299,8 +306,10 @@ function delegator_admin_list_form(&$form_state) {
         }
       }
 
-      $actions['clone'] = t('Clone');
-      $actions['export'] = t('Export');
+      if (isset($plugin)) {
+        $actions['clone'] = t('Clone');
+        $actions['export'] = t('Export');
+      }
 
       if ($handler->export_type == (EXPORT_IN_CODE | EXPORT_IN_DATABASE)) {
         $actions['delete'] = t('Revert');
