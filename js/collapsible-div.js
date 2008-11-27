@@ -21,6 +21,10 @@ if (!Drupal.CTools) {
  * a class, which will cause the container to draw collapsed.
  */
 
+// Set up an array for callbacks.
+Drupal.CTools.CollapsibleCallbacks = [];
+Drupal.CTools.CollapsibleCallbacksAfterToggle = [];
+
 /**
  * Bind collapsible behavior to a given container.
  */
@@ -40,15 +44,27 @@ Drupal.CTools.bindCollapsible = function() {
       content.hide();
     }
 
+    var afterToggle = function() {
+      if (Drupal.CTools.CollapsibleCallbacksAfterToggle) {
+        for (i in Drupal.CTools.CollapsibleCallbacksAfterToggle) {
+          Drupal.CTools.CollapsibleCallbacksAfterToggle[i]($container, handle, content, toggle);
+        }
+      }
+    }
+    
+    var clickMe = function() {
+      if (Drupal.CTools.CollapsibleCallbacks) {
+        for (i in Drupal.CTools.CollapsibleCallbacks) {
+          Drupal.CTools.CollapsibleCallbacks[i]($container, handle, content, toggle);
+        }
+      }
+      content.slideToggle(100, afterToggle);
+      toggle.toggleClass('ctools-toggle-collapsed');
+    }
+
     // Let both the toggle and the handle be clickable.
-    toggle.click(function() {
-      content.slideToggle(20);
-      toggle.toggleClass('ctools-toggle-collapsed');
-    });
-    handle.click(function() {
-      content.slideToggle(20);
-      toggle.toggleClass('ctools-toggle-collapsed');
-    });
+    toggle.click(clickMe);
+    handle.click(clickMe);
   }
 };
 

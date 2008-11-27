@@ -26,3 +26,14 @@ Automatically filled in data:
   module
   path
   file
+
+
+General feature for callbacks:
+  either 'function_name' or
+  array(
+    'file' => 'filename',
+    'path' => 'filepath', // optional
+    'function' => 'function_name'
+  ),
+
+  Using ctools_plugin_get_function() of ctools_plugin_load_function() will take advantage.

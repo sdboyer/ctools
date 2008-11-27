@@ -39,3 +39,40 @@ Drupal.behaviors.zzGoLastDelegatorTaskList = function(context) {
     });
   });
 }
+
+Drupal.Delegator = {};
+
+Drupal.Delegator.CollapsibleCallback = function($container, handle, content, toggle) {
+  var $parent = $container.parents('tr.draggable');
+  var id = $parent.attr('id') + '-collapse';
+  if (toggle.hasClass('ctools-toggle-collapsed')) {
+    // Force any other item to close, like an accordion:
+    $('#delegator-task-list-arrange .ctools-toggle:not(.ctools-toggle-collapsed)').trigger('click');
+    // Closed, about to be opened.
+    var tr = '<tr class="delegator-collapsible" id="' + id + '"><td colspan=4></td></tr>';
+    $parent.after(tr);
+    $('#' + id + ' td').append(content);
+    $('#' + id).addClass($parent.attr('class'));
+  }
+};
+
+Drupal.Delegator.CollapsibleCallbackAfterToggle = function($container, handle, content, toggle) {
+  var $parent = $container.parents('tr.draggable');
+  var id = $parent.attr('id') + '-collapse';
+  if (toggle.hasClass('ctools-toggle-collapsed')) {
+    // Was just closed.
+    content.hide();
+    handle.after(content);
+    $('#' + id).remove();
+  }
+};
+
+$(document).ready(function() {
+  Drupal.CTools.CollapsibleCallbacks.push(Drupal.Delegator.CollapsibleCallback);
+  Drupal.CTools.CollapsibleCallbacksAfterToggle.push(Drupal.Delegator.CollapsibleCallbackAfterToggle);
+
+  // Force all our accordions to close when tabledragging to prevent ugliness:
+  $('#delegator-task-list-arrange .tabledrag-handle').mousedown(function() {
+    $('#delegator-task-list-arrange .ctools-toggle:not(.ctools-toggle-collapsed)').trigger('click');
+  });
+});

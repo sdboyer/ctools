@@ -257,11 +257,30 @@ function _ctools_get_plugins($module, $type, $id = NULL) {
 function ctools_plugin_get_function($plugin, $function_name) {
   // If cached the .inc file may not have been loaded. require_once is quite safe
   // and fast so it's okay to keep calling it.
-  if ($plugin['file']) {
+  if (isset($plugin['file'])) {
     require_once './' . $plugin['path'] . '/' . $plugin['file'];
   }
-  if (isset($plugin[$function_name]) && function_exists($plugin[$function_name])) {
-    return $plugin[$function_name];
+
+  if (!isset($plugin[$function_name])) {
+    return;
+  }
+
+  if (is_array($plugin[$function_name]) && isset($plugin[$function_name]['function'])) {
+    $function = $plugin[$function_name]['function'];
+    if (isset($plugin[$function_name]['file'])) {
+      $file = $plugin[$function_name]['file'];
+      if (isset($plugin[$function_name]['path'])) {
+        $file = $plugin[$function_name]['path'] . '/' . $file;
+      }
+      require_once './' . $file;
+    }
+  }
+  else {
+    $function = $plugin[$function_name];
+  }
+
+  if (function_exists($function)) {
+    return $function;
   }
 }
 

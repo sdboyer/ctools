@@ -10,6 +10,10 @@
   background-image: url(../images/collapsible-expanded.png);
 }
 
+.ctools-collapsible-container .ctools-collapsible-handle {
+  cursor: pointer;
+}
+
 .ctools-collapsible-container .ctools-toggle-collapsed {
   background-image: url(../images/collapsible-collapsed.png);
 }

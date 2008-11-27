@@ -4,7 +4,9 @@ task handler definition:
   description -- description of the task handler.
   task type -- The type of the task this handler can service.
   render -- callback of the function to render the handler. The arguments to this callback are specific to the task type.
-  title callback -- callback to render the admin title as this handler is listed.
+  admin title -- callback to render the admin title as this handler is listed.
+    params: $handler, $task, $subtask_id
+  admin summary -- callback to render what's in the collapsible info as the handler is listed. Optional.
     params: $handler, $task, $subtask_id
   default conf -- either an array() of default conf data or a callback that returns an array.
     params: $handler, $task, $subtask_id
@@ -35,6 +37,8 @@ task handler definition:
    'id' => t('tab name'),
    'id2' => t('tab name'),
  ),
+
+ If a form name is blank it is a 'hidden' form -- it has no tab but can still be reached.
 
 
 Notes: Because #required validation cannot be skipped when clicking cancel, please don't use it.

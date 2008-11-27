@@ -266,6 +266,10 @@ function delegator_admin_list_form(&$form_state) {
       '#value' => $title,
     );
 
+    $form['handlers'][$id]['summary'] = array(
+      '#value' => delegator_get_handler_summary($plugin, $handler, $task, $form_state['subtask_id']),
+    );
+
     $form['handlers'][$id]['weight'] = array(
       '#type' => 'weight',
       '#default_value' => $info['weight'],
@@ -441,7 +445,12 @@ function theme_delegator_admin_list_form($form) {
         'class' => 'delegator-changed-col',
       );
 
-      $title = theme('ctools_collapsible', drupal_render($element['title']), 'Imagine content here, please', TRUE);
+      if ($summary = drupal_render($element['summary'])) {
+        $title = theme('ctools_collapsible', drupal_render($element['title']), $summary, TRUE);
+      }
+      else {
+        $title = drupal_render($element['title']);
+      }
 
       $row[] = array(
         'data' => $title,

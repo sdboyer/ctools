@@ -395,6 +395,15 @@ function delegator_get_handler_title($plugin, $handler, $task, $subtask_id) {
 }
 
 /**
+ * Get the admin summary (additional info) for a given handler.
+ */
+function delegator_get_handler_summary($plugin, $handler, $task, $subtask_id) {
+  if ($function = ctools_plugin_get_function($plugin, 'admin summary')) {
+    return $function($handler, $task, $subtask_id);
+  }
+}
+
+/**
  * Implementation of hook_ctools_plugin_dierctory() to let the system know
  * we implement task and task_handler plugins.
  */

@@ -46,3 +46,20 @@
   padding-right: .75em;
 }
 
+#delegator-task-list-arrange td {
+  vertical-align: top;
+}
+
+#delegator-task-list-arrange tr.delegator-collapsible td {
+  padding-left: 4em;
+}
+
+#delegator-task-list-arrange tr.draggable .ctools-collapsible-content {
+  display: none;
+}
+
+/*
+#delegator-task-list-arrange tr.delegator-collapsible div.ctools-collapsible-content {
+  display: block;
+}
+*/
