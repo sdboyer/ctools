@@ -27,6 +27,14 @@ Automatically filled in data:
   path
   file
 
+Use of hook_ctools_plugin_TYPE to define info about your plugin.
+  $info += array(
+    'module' => $module,
+    'type' => $type,
+    'cache' => FALSE,
+    'defaults' => array(),
+    'hook' => $module . '_' . $type,
+  );
 
 General feature for callbacks:
   either 'function_name' or
@@ -36,4 +44,4 @@ General feature for callbacks:
     'function' => 'function_name'
   ),
 
-  Using ctools_plugin_get_function() of ctools_plugin_load_function() will take advantage.
+  Using ctools_plugin_get_function() or ctools_plugin_load_function() will take advantage.

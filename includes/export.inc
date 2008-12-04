@@ -397,3 +397,23 @@ function ctools_export_set_status($table, $name, $new_status = TRUE) {
   $status[$name] = $new_status;
   variable_set($schema['export']['status'], $status);
 }
+
+/**
+ * Provide a form for displaying an export.
+ *
+ * This is a simple form that should be invoked like this:
+ * @code
+ *   $output = drupal_get_form('ctools_export_form', $code, $object_title);
+ * @endcode
+ */
+function ctools_export_form(&$form_state, $code, $title = '') {
+  $lines = substr_count($code, "\n");
+  $form['code'] = array(
+    '#type' => 'textarea',
+    '#title' => $title,
+    '#default_value' => $code,
+    '#rows' => $lines,
+  );
+
+  return $form;
+}

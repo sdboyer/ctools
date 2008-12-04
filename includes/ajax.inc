@@ -1,0 +1,178 @@
+<?php
+// $Id$
+/**
+ * @file
+ * Utilize the CTools AJAX responder.
+ *
+ * The AJAX responder is a javascript tool to make it very easy to do complicated
+ * operations as a response to AJAX requests. When links are attached to the ajax
+ * responder, the server sends back a packet of JSON data; this packet is an
+ * array of commands to carry out.
+ *
+ * The command names correlate to functions in the responder space, making it
+ * relatively easy for applications to provide their own commands to do whatever
+ * spiffy functionality is necessary.
+ *
+ * Each command is an object. $object->command is the type of command and
+ * will be used to find the function (it will correllate directly to
+ * a function in the Drupal.CTools.AJAX.Command space). The object can
+ * contain any other data that the command needs to process.
+ *
+ * Built in commands:
+ * - replace
+ *   - selector: The CSS selector. This can be any selector jquery uses in $().
+ *   - data: The data to use with the jquery replace() function.
+ *
+ * - append
+ *   - selector: The CSS selector. This can be any selector jquery uses in $().
+ *   - data: The data to use with the jquery append() function.
+ *
+ * - addClass
+ *   - selector: The CSS selector. This can be any selector jquery uses in $().
+ *   - data: The class to add.
+ *
+ * - alert
+ *   - title: The title of the alert.
+ *   - data: The data in the alert.
+ */
+
+/**
+ * Render an image as a button link. This will automatically apply an AJAX class
+ * to the link and add the appropriate javascript to make this happen.
+ *
+ * @param $image
+ *   The path to an image to use that will be sent to theme('image') for rendering.
+ * @param $dest
+ *   The destination of the link.
+ * @param $alt
+ *   The alt text of the link.
+ * @param $class
+ *   Any class to apply to the link. @todo this should be a options array.
+ */
+function ctools_ajax_image_button($image, $dest, $alt, $class = '') {
+  return ctools_ajax_text_button(theme('image', $image), $dest, $alt, $class);
+}
+
+/**
+ * Render text as a link. This will automatically apply an AJAX class
+ * to the link and add the appropriate javascript to make this happen.
+ *
+ * Note: 'html' => true so be sure any text is vetted! Chances are these kinds of buttons will
+ * not use user input so this is a very minor concern.
+ *
+ * @param $image
+ *   The path to an image to use that will be sent to theme('image') for rendering.
+ * @param $dest
+ *   The destination of the link.
+ * @param $alt
+ *   The alt text of the link.
+ * @param $class
+ *   Any class to apply to the link. @todo this should be a options array.
+ * @param $type
+ *   A type to use, in case a different behavior should be attached. Defaults
+ *   to ctools-use-ajax.
+ */
+function ctools_ajax_text_button($text, $dest, $alt, $class = '', $type = 'ctools-use-ajax') {
+  return l($text, $dest, array('html' => TRUE, 'attributes' => array('class' => "$type $class", 'title' => $alt, 'alt' => $alt)));
+}
+
+/**
+ * Create a command array for the error case.
+ */
+function ctools_ajax_command_error($error = '') {
+  return array(
+    'command' => 'alert',
+    'title' => t('Error'),
+    'text' => $error ? $error : t('Server reports invalid input error.'),
+  );
+}
+
+/**
+ * Create a replace command for the AJAX responder.
+ *
+ * The replace command will replace a portion of the current document
+ * with the specified HTML.
+ *
+ * @param $selector
+ *   The CSS selector. This can be any selector jquery uses in $().
+ * @param $html
+ *   The data to use with the jquery replace() function.
+ */
+function ctools_ajax_command_replace($selector, $html) {
+  return array(
+    'command' => 'replace',
+    'selector' => $selector,
+    'data' => $html,
+  );
+}
+
+/**
+ * Create an append command for the AJAX responder.
+ *
+ * This will append the HTML to the specified selector.
+ *
+ * @param $selector
+ *   The CSS selector. This can be any selector jquery uses in $().
+ * @param $html
+ *   The data to use with the jquery append() function.
+ */
+function ctools_ajax_command_append($selector, $html) {
+  return array(
+    'command' => 'append',
+    'selector' => $selector,
+    'data' => $html,
+  );
+}
+
+/**
+ * Create a changed command for the AJAX responder.
+ *
+ * This will mark an item as 'changed'.
+ *
+ * @param $selector
+ *   The CSS selector. This can be any selector jquery uses in $().
+ * @param $star
+ *   An optional CSS selector which must be inside $selector. If specified,
+ *   a star will be appended.
+ */
+function ctools_ajax_command_changed($selector, $star = '') {
+  return array(
+    'command' => 'changed',
+    'selector' => $selector,
+    'star' => $star,
+  );
+}
+
+/**
+ * Force a table to be restriped.
+ *
+ * This is usually used after a table has been modifed by a replace or append
+ * command.
+ *
+ * @param $selector
+ *   The CSS selector. This can be any selector jquery uses in $().
+ */
+function ctools_ajax_command_restripe($selector) {
+  return array(
+    'command' => 'restripe',
+    'selector' => $selector,
+  );
+}
+
+/**
+ * Render a commands array into JSON and immediately hand this back
+ * to the AJAX requester.
+ */
+function ctools_ajax_render($commands = array()) {
+  drupal_json($commands);
+  exit;
+}
+
+/**
+ * Send an error response back via AJAX and immediately exit.
+ */
+function ctools_ajax_render_error($error = '') {
+  $commands = array();
+  $commands[] = ctools_ajax_command_error($error);
+  ctools_ajax_render($commands);
+}

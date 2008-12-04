@@ -333,6 +333,7 @@ function delegator_update_task_handler_weight($handler, $weight) {
  * Shortcut function to get task plugins.
  */
 function delegator_get_tasks() {
+  ctools_include('plugins');
   return ctools_get_plugins('delegator', 'tasks');
 }
 
@@ -340,6 +341,7 @@ function delegator_get_tasks() {
  * Shortcut function to get a task plugin.
  */
 function delegator_get_task($id) {
+  ctools_include('plugins');
   return ctools_get_plugins('delegator', 'tasks', $id);
 }
 
@@ -347,6 +349,7 @@ function delegator_get_task($id) {
  * Shortcut function to get task handler plugins.
  */
 function delegator_get_task_handlers() {
+  ctools_include('plugins');
   return ctools_get_plugins('delegator', 'task_handlers');
 }
 
@@ -354,6 +357,7 @@ function delegator_get_task_handlers() {
  * Shortcut function to get a task handler plugin.
  */
 function delegator_get_task_handler($id) {
+  ctools_include('plugins');
   return ctools_get_plugins('delegator', 'task_handlers', $id);
 }
 
@@ -407,8 +411,8 @@ function delegator_get_handler_summary($plugin, $handler, $task, $subtask_id) {
  * Implementation of hook_ctools_plugin_dierctory() to let the system know
  * we implement task and task_handler plugins.
  */
-function delegator_ctools_plugin_directory($plugin) {
-  if ($plugin == 'tasks' || $plugin == 'task_handlers') {
+function delegator_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'delegator') {
     return 'plugins/' . $plugin;
   }
 }

@@ -1,0 +1,11 @@
+/* $Id$ */
+.panels-context-holder .panels-context-title {
+  float: left;
+  width: 49%;
+  font-style: italic;
+}
+
+.panels-context-holder .panels-context-content {
+  float: right;
+  width: 49%;
+}

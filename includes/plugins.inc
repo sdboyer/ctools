@@ -10,6 +10,89 @@
  */
 
 /**
+ * Fetch a group of plugins by name.
+ *
+ * @param $module
+ *   The name of the module that utilizes this plugin system. It will be
+ *   used to call hook_ctools_plugin_$plugin() to get more data about the plugin.
+ * @param $type
+ *   The type identifier of the plugin.
+ * @param $id
+ *   If specified, return only information about plugin with this identifier.
+ *   The system will do its utmost to load only plugins with this id.
+ *
+ * @return
+ *   An array of information arrays about the plugins received. The contents
+ *   of the array are specific to the plugin.
+ */
+function ctools_get_plugins($module, $type, $id = NULL) {
+  static $plugins = array();
+  static $all_hooks = array();
+  static $all_files = array();
+  static $info = array();
+
+  if (!isset($info[$type])) {
+    $info[$type] = ctools_plugin_get_info($module, $type);
+  }
+
+  // If the plugin info says this can be cached, check cache first.
+  if ($info[$type]['cache'] && !isset($plugins['cache'])) {
+    // @todo Maybe this should use our own table but free wiping
+    // with content updates is convenient.
+    $cache = cache_get("plugins:$module:$type");
+
+    // if cache load successful, set $all_hooks and $all_files to true.
+    if (!empty($cache->data)) {
+      $plugins[$type] = $cache->data;
+      $all_hooks[$type] = TRUE;
+      $all_files[$type] = TRUE;
+    }
+    else {
+      $write_cache = TRUE;
+    }
+  }
+
+  // Always load all hooks if we need them.
+  if (!isset($all_hooks[$type])) {
+    $all_hooks[$type] = TRUE;
+    $plugins[$type] = ctools_plugin_load_hooks($info[$type]);
+  }
+
+  // First, see if it's in our hooks before we even bother.
+  if ($id && array_key_exists($id, $plugins[$type])) {
+    return $plugins[$type][$id];
+  }
+
+  // Then see if we should load all files. We only do this if we
+  // want a list of all plugins.
+  if ((!$id || $info[$type]['cache']) && empty($all_files[$type])) {
+    $all_files[$type] = TRUE;
+    $plugins[$type] = array_merge($plugins[$type], ctools_plugin_load_includes($info[$type]));
+  }
+
+  // If we were told earlier that this is cacheable and the cache was
+  // empty, give something back.
+  if (!empty($write_cache)) {
+    cache_set("plugins:$module:$type", $plugins[$type]);
+  }
+
+  // If no id was requested, we are finished here:
+  if (!$id) {
+    return $plugins[$type];
+  }
+
+  // Check to see if we need to look for the file
+  if (!array_key_exists($id, $plugins[$type])) {
+    $result = ctools_plugin_load_includes($info[$type], $id);
+    // Set to either what was returned or NULL.
+    $plugins[$type][$id] = isset($result[$id]) ? $result[$id] : NULL;
+  }
+
+  // At this point we should either have the plugin, or a NULL.
+  return $plugins[$type][$id];
+}
+
+/**
  * Load plugins from a directory.
  *
  * @param $info
@@ -65,7 +148,7 @@ function ctools_plugin_get_directories($info) {
 
   foreach (module_implements('ctools_plugin_directory') as $module) {
     $function = $module . '_ctools_plugin_directory';
-    $result = $function($info['type']);
+    $result = $function($info['module'], $info['type']);
     if ($result && is_string($result)) {
       $directories[$module] = drupal_get_path('module', $module) . '/' . $result;
     }
@@ -159,89 +242,6 @@ function ctools_plugin_get_info($module, $type) {
 }
 
 /**
- * Fetch a group of plugins by name.
- *
- * @param $module
- *   The name of the module that utilizes this plugin system. It will be
- *   used to call hook_ctools_plugin_$plugin() to get more data about the plugin.
- * @param $type
- *   The type identifier of the plugin.
- * @param $id
- *   If specified, return only information about plugin with this identifier.
- *   The system will do its utmost to load only plugins with this id.
- *
- * @return
- *   An array of information arrays about the plugins received. The contents
- *   of the array are specific to the plugin.
- */
-function _ctools_get_plugins($module, $type, $id = NULL) {
-  static $plugins = array();
-  static $all_hooks = array();
-  static $all_files = array();
-  static $info = array();
-
-  if (!isset($info[$type])) {
-    $info[$type] = ctools_plugin_get_info($module, $type);
-  }
-
-  // If the plugin info says this can be cached, check cache first.
-  if ($info[$type]['cache'] && !isset($plugins['cache'])) {
-    // @todo Maybe this should use our own table but free wiping
-    // with content updates is convenient.
-    $cache = cache_get("plugins:$module:$type");
-
-    // if cache load successful, set $all_hooks and $all_files to true.
-    if (!empty($cache->data)) {
-      $plugins[$type] = $cache->data;
-      $all_hooks[$type] = TRUE;
-      $all_files[$type] = TRUE;
-    }
-    else {
-      $write_cache = TRUE;
-    }
-  }
-
-  // Always load all hooks if we need them.
-  if (!isset($all_hooks[$type])) {
-    $all_hooks[$type] = TRUE;
-    $plugins[$type] = ctools_plugin_load_hooks($info[$type]);
-  }
-
-  // First, see if it's in our hooks before we even bother.
-  if ($id && array_key_exists($id, $plugins[$type])) {
-    return $plugins[$type][$id];
-  }
-
-  // Then see if we should load all files. We only do this if we
-  // want a list of all plugins.
-  if ((!$id || $info[$type]['cache']) && empty($all_files[$type])) {
-    $all_files[$type] = TRUE;
-    $plugins[$type] = array_merge($plugins[$type], ctools_plugin_load_includes($info[$type]));
-  }
-
-  // If we were told earlier that this is cacheable and the cache was
-  // empty, give something back.
-  if (!empty($write_cache)) {
-    cache_set("plugins:$module:$type", $plugins[$type]);
-  }
-
-  // If no id was requested, we are finished here:
-  if (!$id) {
-    return $plugins[$type];
-  }
-
-  // Check to see if we need to look for the file
-  if (!array_key_exists($id, $plugins[$type])) {
-    $result = ctools_plugin_load_includes($info[$type], $id);
-    // Set to either what was returned or NULL.
-    $plugins[$type][$id] = isset($result[$id]) ? $result[$id] : NULL;
-  }
-
-  // At this point we should either have the plugin, or a NULL.
-  return $plugins[$type][$id];
-}
-
-/**
  * Get a function from a plugin, if it exists. If the plugin is not already
  * loaded, try ctools_plugin_load_function() instead.
  *
@@ -258,6 +258,7 @@ function ctools_plugin_get_function($plugin, $function_name) {
   // If cached the .inc file may not have been loaded. require_once is quite safe
   // and fast so it's okay to keep calling it.
   if (isset($plugin['file'])) {
+    if (!is_array($plugin)) { vpr_trace(); }
     require_once './' . $plugin['path'] . '/' . $plugin['file'];
   }
 
@@ -302,6 +303,6 @@ function ctools_plugin_get_function($plugin, $function_name) {
  *   does not exist.
  */
 function ctools_plugin_load_function($module, $type, $id, $function_name) {
-  $plugin = _ctools_get_plugins($module, $type, $id);
+  $plugin = ctools_get_plugins($module, $type, $id);
   return ctools_plugin_get_function($plugin, $function_name);
 }

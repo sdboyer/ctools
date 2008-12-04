@@ -874,6 +874,7 @@ function delegator_administer_task_handler_export($task_name, $name) {
   $title = delegator_get_handler_title($plugin, $handler, $task, $subtask_id);
   drupal_set_title(t('Export task handler "@title"', array('@title' => $title)));
 
+  ctools_include('export');
   return drupal_get_form('ctools_export_form', delegator_export_task_handler($handler), $title);
 }
 
