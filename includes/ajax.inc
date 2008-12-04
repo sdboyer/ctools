@@ -18,7 +18,7 @@
  * a function in the Drupal.CTools.AJAX.Command space). The object can
  * contain any other data that the command needs to process.
  *
- * Built in commands:
+ * Built in commands include:
  * - replace
  *   - selector: The CSS selector. This can be any selector jquery uses in $().
  *   - data: The data to use with the jquery replace() function.
@@ -27,13 +27,23 @@
  *   - selector: The CSS selector. This can be any selector jquery uses in $().
  *   - data: The data to use with the jquery append() function.
  *
- * - addClass
- *   - selector: The CSS selector. This can be any selector jquery uses in $().
- *   - data: The class to add.
+ * - changed
+ *   - selector: The CSS selector. This selector will have 'changed' added as a clas.
+ *   - star: If set, will add a star to this selector. It must be within the 'selector' above.
  *
  * - alert
  *   - title: The title of the alert.
  *   - data: The data in the alert.
+ *
+ * Commands are usually created with a couple of helper functions, so they
+ * look like this:
+ *
+ * @code{
+ *   $commands = array();
+ *   $commands[] = ctools_ajax_command_replace('#ctools-object-1', 'some html here');
+ *   $commands[] = ctools_ajax_command_add
+ *   ctools_ajax_render($commands); // this function exits.
+ * }
  */
 
 /**
