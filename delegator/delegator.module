@@ -42,6 +42,16 @@ function delegator_theme() {
 }
 
 /**
+ * Implementation of hook_ctools_plugin_dierctory() to let the system know
+ * we implement task and task_handler plugins.
+ */
+function delegator_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'delegator') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
  * Implementation of hook_menu.
  *
  * Get a list of all tasks and delegate to them.
@@ -78,106 +88,14 @@ function delegator_menu() {
 
   $tasks = delegator_get_tasks();
 
-  foreach ($tasks as $id => $task) {
-    $function = ctools_plugin_get_function($task, 'hook menu');
-    if ($function && is_array($result = $function($task))) {
-      // We can use += since menu indices are not numeric. += is faster.
-      $items += $result;
-    }
-
-    $access_callback = isset($task['admin access callback']) ? $task['admin access callback'] : 'user_access';
-    $access_arguments = isset($task['admin access arguments']) ? $task['admin access arguments'] : array('administer delegator');
-
-    // @todo -- support subtasks
-
-    if (isset($task['admin title'])) {
-      $items['admin/build/delegator/' . $id] = array(
-        'title' => $task['admin title'],
-        'description' => $task['admin description'],
-        'page callback' => 'delegator_administer_task',
-        'page arguments' => array($id),
-        'access callback' => $access_callback,
-        'access arguments' => $access_arguments,
-        'file' => 'delegator.admin.inc',
-      );
-    }
-
-    // Form to add new items to this task.
-    $items['admin/build/delegator/' . $id . '/add/%/%'] = array(
-      'page callback' => 'delegator_administer_task_handler_add',
-      'page arguments' => array($id, 5, 6),
-      'access callback' => $access_callback,
-      'access arguments' => $access_arguments,
-      'file' => 'delegator.admin.inc',
-    );
-
-    // Form to add export a handler
-    $items['admin/build/delegator/' . $id . '/export/%'] = array(
-      'page callback' => 'delegator_administer_task_handler_export',
-      'page arguments' => array($id, 5),
-      'access callback' => $access_callback,
-      'access arguments' => $access_arguments,
-      'file' => 'delegator.admin.inc',
-    );
-
-    // Form to break a lock on this task.
-    $items['admin/build/delegator/' . $id . '/break-lock'] = array(
-      'title' => 'Break lock',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('delegator_administer_break_lock', $id),
-      'access callback' => $access_callback,
-      'access arguments' => $access_arguments,
-      'file' => 'delegator.admin.inc',
-    );
-
+  // Provide menu items for each task.
+  foreach ($tasks as $task_id => $task) {
     $handlers = delegator_get_task_handler_plugins($task);
-    foreach ($handlers as $handler_id => $handler) {
-      if (isset($handler['edit forms'])) {
-        $default_task = FALSE;
-        $weight = 0;
-        foreach ($handler['edit forms'] as $form_id => $form_title) {
-          // The first edit form is the default for tabs, so it gets a bit
-          // of special treatment here.
-          if (!$default_task) {
-            $default_task = TRUE;
-            $items["admin/build/delegator/$id/$handler_id/%"] = array(
-              'title' => t('Edit'),
-              'page callback' => 'delegator_administer_task_handler_edit',
-              'page arguments' => array($id, $handler_id, 5, $form_id),
-              'access callback' => $access_callback,
-              'access arguments' => $access_arguments,
-              'file' => 'delegator.admin.inc',
-              'type' => MENU_CALLBACK,
-            );
-            $items["admin/build/delegator/$id/$handler_id/%/$form_id"] = array(
-              'title' => $form_title,
-              'page callback' => 'delegator_administer_task_handler_edit',
-              'page arguments' => array($id, $handler_id, 5, $form_id),
-              'access callback' => $access_callback,
-              'access arguments' => $access_arguments,
-              'file' => 'delegator.admin.inc',
-              'type' => MENU_DEFAULT_LOCAL_TASK,
-              'weight' => $weight++,
-            );
-          }
-          else {
-            // Handler to edit delegator task handlers. May exist in its own UI.
-            $items["admin/build/delegator/$id/$handler_id/%/$form_id"] = array(
-              'title' => $form_title,
-              'page callback' => 'delegator_administer_task_handler_edit',
-              'page arguments' => array($id, $handler_id, 5, $form_id),
-              'access callback' => $access_callback,
-              'access arguments' => $access_arguments,
-              'file' => 'delegator.admin.inc',
-              // This allows an empty form title to provide a hidden form
-              // which is useful for doing more branch-like multi-step
-              // functionality.
-              'type' => $form_title ? MENU_LOCAL_TASK : MENU_CALLBACK,
-              'weight' => $weight++,
-            );
-          }
-        }
-      }
+    delegator_menu_task_items($items, $task_id, $task, $handlers);
+
+    // And for those that provide subtasks, provide menu items for them, as well.
+    foreach (delegator_get_task_subtasks($task) as $subtask_id => $subtask) {
+      delegator_menu_task_items($items, $task_id, $subtask, $handlers, $subtask_id);
     }
   }
 
@@ -196,9 +114,107 @@ function delegator_menu_alter(&$items) {
     if ($function = ctools_plugin_get_function($task, 'hook menu alter')) {
       $function($items, $task);
     }
+    // let the subtasks alter the menu items too.
+    foreach (delegator_get_task_subtasks($task) as $subtask_id => $subtask) {
+      if ($function = ctools_plugin_get_function($subtask, 'hook menu alter')) {
+        $function($items, $subtask);
+      }
+    }
   }
 
   return $items;
+}
+
+/**
+ * Generate a menu item for a given task and subtask combination.
+ */
+function delegator_menu_task_items(&$items, $task_id, $task, $handlers, $subtask_id = NULL) {
+  // If using a subtask, attach the subtask id to the name we use.
+  $task_name = $task_id . ($subtask_id ? '-' . $subtask_id : '');
+
+  // Allow the task to add its own menu items.
+  if ($function = ctools_plugin_get_function($task, 'hook menu')) {
+    $function($items, $task);
+  }
+
+  // Set up access permissions.
+  $access_callback = isset($task['admin access callback']) ? $task['admin access callback'] : 'user_access';
+  $access_arguments = isset($task['admin access arguments']) ? $task['admin access arguments'] : array('administer delegator');
+
+  $base = array(
+    'access callback' => $access_callback,
+    'access arguments' => $access_arguments,
+    'file' => 'delegator.admin.inc',
+  );
+
+  if (isset($task['admin title'])) {
+    $items['admin/build/delegator/' . $task_name] = array(
+      'title' => $task['admin title'],
+      'description' => $task['admin description'],
+      'page callback' => 'delegator_administer_task',
+      'page arguments' => array($task_name),
+    ) + $base;
+  }
+
+  // Form to add new items to this task.
+  $items['admin/build/delegator/' . $task_name . '/add/%/%'] = array(
+    'page callback' => 'delegator_administer_task_handler_add',
+    'page arguments' => array($task_name, 5, 6),
+  ) + $base;
+
+  // Form to add export a handler
+  $items['admin/build/delegator/' . $task_name . '/export/%'] = array(
+    'page callback' => 'delegator_administer_task_handler_export',
+    'page arguments' => array($task_name, 5),
+  ) + $base;
+
+  // Form to break a lock on this task.
+  $items['admin/build/delegator/' . $task_name . '/break-lock'] = array(
+    'title' => 'Break lock',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('delegator_administer_break_lock', $task_name),
+    'type' => MENU_CALLBACK,
+  ) + $base;
+
+  foreach ($handlers as $handler_id => $handler) {
+    if (isset($handler['edit forms'])) {
+      $default_task = FALSE;
+      $weight = 0;
+      foreach ($handler['edit forms'] as $form_id => $form_title) {
+        // The first edit form is the default for tabs, so it gets a bit
+        // of special treatment here.
+        if (!$default_task) {
+          $default_task = TRUE;
+          $items["admin/build/delegator/$task_name/$handler_id/%"] = array(
+            'title' => t('Edit'),
+//            'page callback' => 'delegator_administer_task_handler_edit',
+//            'page arguments' => array($task_name, $handler_id, 5, $form_id),
+//            'type' => MENU_CALLBACK,
+          ) + $base;
+          $items["admin/build/delegator/$task_name/$handler_id/%/$form_id"] = array(
+            'title' => $form_title,
+            'page callback' => 'delegator_administer_task_handler_edit',
+            'page arguments' => array($task_name, $handler_id, 5, $form_id),
+            'type' => MENU_DEFAULT_LOCAL_TASK,
+            'weight' => $weight++,
+          ) + $base;
+        }
+        else {
+          // Handler to edit delegator task handlers. May exist in its own UI.
+          $items["admin/build/delegator/$task_name/$handler_id/%/$form_id"] = array(
+            'title' => $form_title,
+            'page callback' => 'delegator_administer_task_handler_edit',
+            'page arguments' => array($task_name, $handler_id, 5, $form_id),
+            // This allows an empty form title to provide a hidden form
+            // which is useful for doing more branch-like multi-step
+            // functionality.
+            'type' => $form_title ? MENU_LOCAL_TASK : MENU_CALLBACK,
+            'weight' => $weight++,
+          ) + $base;
+        }
+      }
+    }
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -346,6 +362,40 @@ function delegator_get_task($id) {
 }
 
 /**
+ * Fetch all subtasks for a delegator task.
+ *
+ * @param $task
+ *   A loaded $task plugin object.
+ */
+function delegator_get_task_subtasks($task) {
+  if (empty($task['subtasks'])) {
+    return array();
+  }
+
+  if ($function = ctools_plugin_get_function($task, 'subtasks callback')) {
+    return $function($task);
+  }
+}
+
+/**
+ * Fetch all subtasks for a delegator task.
+ *
+ * @param $task
+ *   A loaded $task plugin object.
+ * @param $subtask_id
+ *   The subtask ID to load.
+ */
+function delegator_get_task_subtask($task, $subtask_id) {
+  if (empty($task['subtasks'])) {
+    return;
+  }
+
+  if ($function = ctools_plugin_get_function($task, 'subtask callback')) {
+    return $function($task, $subtask_id);
+  }
+}
+
+/**
  * Shortcut function to get task handler plugins.
  */
 function delegator_get_task_handlers() {
@@ -408,12 +458,26 @@ function delegator_get_handler_summary($plugin, $handler, $task, $subtask_id) {
 }
 
 /**
- * Implementation of hook_ctools_plugin_dierctory() to let the system know
- * we implement task and task_handler plugins.
+ * Split a task name into a task id and subtask id, if applicable.
  */
-function delegator_ctools_plugin_directory($module, $plugin) {
-  if ($module == 'delegator') {
-    return 'plugins/' . $plugin;
+function delegator_get_task_id($task_name) {
+  if (strpos($task_name, '-') !== FALSE) {
+    return explode('-', $task_name, 2);
+  }
+  else {
+    return array($task_name, NULL);
+  }
+}
+
+/**
+ * Turn a task id + subtask_id into a task name.
+ */
+function delegator_make_task_name($task_id, $subtask_id) {
+  if ($subtask_id) {
+    return $task_id . '-' . $subtask_id;
+  }
+  else {
+    return $task_id;
   }
 }
 

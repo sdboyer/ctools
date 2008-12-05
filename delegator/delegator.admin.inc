@@ -30,30 +30,25 @@ define('DGA_CHANGED_STATUS', 0x01);
  * Page callback to administer a particular task.
  */
 function delegator_administer_task($task_name) {
-  // Determine if the task id came in the form of TASK-SUBTASK or just TASK
-  if (strpos($task_name, '-') !== FALSE) {
-    list($task_id, $subtask_id) = explode('-', $task_name, 2);
-  }
-  else {
-    $task_id = $task_name;
-    $subtask_id = NULL;
-  }
+  list($task_id, $subtask_id) = delegator_get_task_id($task_name);
 
   $task = delegator_get_task($task_id);
   if (!$task) {
     return drupal_not_found();
   }
 
-  // @todo: check for lock.
+  $subtask = delegator_get_task_subtask($task, $subtask_id);
 
   $task_handlers = delegator_load_task_handlers($task, $subtask_id);
 
   $form_state = array(
+    'task_name' => $task_name,
+    'task_id' => $task_id,
     'task' => $task,
+    'subtask' => $subtask,
     'subtask_id' => $subtask_id,
     'task_handlers' => $task_handlers,
     'cache' => delegator_admin_get_task_cache($task, $subtask_id, $task_handlers),
-    'task_name' => $task_name,
   );
   ctools_include('form');
   return ctools_build_form('delegator_admin_list_form', $form_state);
@@ -69,7 +64,7 @@ function delegator_administer_task($task_name) {
  * it is drawn.
  */
 function delegator_admin_get_task_cache($task, $subtask_id, $task_handlers = NULL) {
-  $key = $task['name'] . ':' . $subtask_id;
+  $key = delegator_make_task_name($task['name'], $subtask_id);
   ctools_include('object-cache');
   $cache = ctools_object_cache_get('delegator_handlers', $key);
 
@@ -128,7 +123,7 @@ function delegator_admin_set_task_cache($task, $subtask_id, $cache) {
   uasort($cache->handlers, '_delegator_admin_task_cache_sort');
 
   // Then write it.
-  $key = $task['name'] . ':' . $subtask_id;
+  $key = delegator_make_task_name($task['name'], $subtask_id);
   ctools_include('object-cache');
   $cache = ctools_object_cache_set('delegator_handlers', $key, $cache);
 }
@@ -138,7 +133,7 @@ function delegator_admin_set_task_cache($task, $subtask_id, $cache) {
  */
 function delegator_admin_clear_task_cache($task, $subtask_id) {
   ctools_include('object-cache');
-  $key = $task['name'] . ':' . $subtask_id;
+  $key = delegator_make_task_name($task['name'], $subtask_id);
   ctools_object_cache_clear('delegator_handlers', $key);
 }
 
@@ -224,17 +219,28 @@ function delegator_admin_find_handler($id, $cache, $task_handlers = array()) {
  */
 function delegator_admin_list_form(&$form_state) {
   $task = &$form_state['task'];
+  $subtask = &$form_state['subtask'];
   $task_handlers = &$form_state['task_handlers'];
   $cache = &$form_state['cache'];
 
   // Get a list of possible task handlers for this task.
   $task_handler_plugins = delegator_get_task_handler_plugins($task);
 
-  $form['description'] = array(
-    '#prefix' => '<div class="description">',
-    '#value' => $task['description'],
-    '#suffix' => '</div>',
-  );
+  if (isset($task['description'])) {
+    $form['description'] = array(
+      '#prefix' => '<div class="description">',
+      '#value' => $task['description'],
+      '#suffix' => '</div>',
+    );
+  }
+
+  if ($subtask && isset($subtask['description'])) {
+    $form['subtask_description'] = array(
+      '#prefix' => '<div class="description">',
+      '#value' => $subtask['description'],
+      '#suffix' => '</div>',
+    );
+  }
 
   $options = array('' => t('Choose'));
   foreach ($task_handler_plugins as $id => $plugin) {
@@ -434,7 +440,12 @@ function theme_delegator_admin_list_form($form) {
     $output .= '</div>';
   }
 
-  $output .= drupal_render($form['description']);
+  if (isset($form['description'])) {
+    $output .= drupal_render($form['description']);
+  }
+  if (isset($form['subatsk_description'])) {
+    $output .= drupal_render($form['subtask_description']);
+  }
 
   // Assemble the data for a table from everything in $form['handlers']
   foreach (element_children($form['handlers']) as $id) {
@@ -489,7 +500,7 @@ function theme_delegator_admin_list_form($form) {
   }
 
   if (empty($rows)) {
-    $rows[] = array(array('data' => t('No task handlers are defined for this task.'), 'colspan' => '3'));
+    $rows[] = array(array('data' => t('No task handlers are defined for this task.'), 'colspan' => '5'));
   }
 
   $header = array(
@@ -638,7 +649,7 @@ function delegator_admin_list_form_add($form, &$form_state) {
     // Get the beginning of the array.
     reset($plugin['add forms']);
     list($id, $title) = each($plugin['add forms']);
-    $form_state['redirect'] = "admin/build/delegator/" . $form_state['task']['name'] . "/add/$handler->name/$id";
+    $form_state['redirect'] = "admin/build/delegator/" . $form_state['task_name'] . "/add/$handler->name/$id";
   }
 }
 
@@ -773,7 +784,7 @@ function delegator_admin_list_form_action_edit($form, &$form_state, $id, $action
   // Use the one from the database or an updated one in cache?
   $handler = delegator_admin_find_handler($id, $form_state['cache'], $form_state['task_handlers']);
 
-  $name = $form_state['task']['name'];
+  $name = $form_state['task_name'];
   // @todo: Allow an owner UI to control this URL.
   // @todo: subtask ID
   $form_state['redirect'] = "admin/build/delegator/$name/$handler->handler/$id/$argument";
@@ -826,7 +837,7 @@ function delegator_admin_list_form_action_clone($form, &$form_state, $id, $actio
  */
 function delegator_admin_list_form_action_export($form, &$form_state, $id, $action, $argument) {
   // Redirect to the export page.
-  $name = $form_state['task']['name'];
+  $name = $form_state['task_name'];
   $form_state['redirect'] = "admin/build/delegator/$name/export/$id";
 }
 
@@ -850,14 +861,7 @@ function delegator_admin_list_form_action_disable($form, &$form_state, $id, $act
  * Entry point to export a task handler.
  */
 function delegator_administer_task_handler_export($task_name, $name) {
-  // Determine if the task id came in the form of TASK-SUBTASK or just TASK
-  if (strpos($task_name, '-') !== FALSE) {
-    list($task_id, $subtask_id) = explode('-', $task_name, 2);
-  }
-  else {
-    $task_id = $task_name;
-    $subtask_id = NULL;
-  }
+  list($task_id, $subtask_id) = delegator_get_task_id($task_name);
 
   $handler = delegator_admin_get_task_handler_cache($name);
   if (!$handler) {
@@ -882,16 +886,10 @@ function delegator_administer_task_handler_export($task_name, $name) {
  * Entry point to edit a task handler.
  */
 function delegator_administer_task_handler_edit($task_name, $handler_id, $name, $form_id) {
-  // Determine if the task id came in the form of TASK-SUBTASK or just TASK
-  if (strpos($task_name, '-') !== FALSE) {
-    list($task_id, $subtask_id) = explode('-', $task_name, 2);
-  }
-  else {
-    $task_id = $task_name;
-    $subtask_id = NULL;
-  }
+  list($task_id, $subtask_id) = delegator_get_task_id($task_name);
 
   $task = delegator_get_task($task_id);
+  $subtask = delegator_get_task_subtask($task, $subtask_id);
   $plugin = delegator_get_task_handler($handler_id);
 
   $cache = delegator_admin_get_task_cache($task, $subtask_id);
@@ -929,14 +927,16 @@ function delegator_administer_task_handler_edit($task_name, $handler_id, $name, 
   $next_info = each($plugin['edit forms']);
 
   $form_state = array(
+    'task_name' => $task_name,
+    'task_id' => $task_id,
     'task' => $task,
     'subtask_id' => $subtask_id,
+    'subtask' => $subtask,
     'plugin' => $plugin,
     'handler' => $handler,
     'plugin_form_id' => $form_id, // so it doesn't get confused with the form's form ID
     'forms' => $plugin['edit forms'],
     'type' => 'edit',
-    'task_name' => $task_name,
     'cache' => $cache,
   );
 
@@ -961,14 +961,7 @@ function delegator_administer_task_handler_edit($task_name, $handler_id, $name, 
  * Entry point to add a task handler.
  */
 function delegator_administer_task_handler_add($task_name, $name, $form_id) {
-  // Determine if the task id came in the form of TASK-SUBTASK or just TASK
-  if (strpos($task_name, '-') !== FALSE) {
-    list($task_id, $subtask_id) = explode('-', $task_name, 2);
-  }
-  else {
-    $task_id = $task_name;
-    $subtask_id = NULL;
-  }
+  list($task_id, $subtask_id) = delegator_get_task_id($task_name);
 
   $handler = delegator_admin_get_task_handler_cache($name);
 
@@ -977,6 +970,7 @@ function delegator_administer_task_handler_add($task_name, $name, $form_id) {
   }
 
   $task = delegator_get_task($task_id);
+  $subtask = delegator_get_subtask($task, $subtask_id);
   $plugin = delegator_get_task_handler($handler->handler);
 
   // Prevent silliness of using some other handler type's tabs for this
@@ -994,14 +988,16 @@ function delegator_administer_task_handler_add($task_name, $name, $form_id) {
   drupal_set_title(t('Add task handler "@title"', array('@title' => $title)));
 
   $form_state = array(
+    'task_name' => $task_name,
+    'task_id' => $task_id,
     'task' => $task,
     'subtask_id' => $subtask_id,
+    'subtask' => $subtask,
     'plugin' => $plugin,
     'handler' => $handler,
     'plugin_form_id' => $form_id, // so it doesn't get confused with the form's form ID
     'forms' => $plugin['add forms'],
     'type' => 'add',
-    'task_name' => $task_name,
     'cache' => $cache,
   );
 
@@ -1056,6 +1052,7 @@ function theme_delegator_breadcrumb($breadcrumb) {
  * just providing a framework for the system to work within.
  */
 function delegator_admin_edit_task_handler(&$form_state) {
+  $task_name = $form_state['task_name'];
   $plugin = $form_state['plugin'];
   $form_id = $form_state['plugin_form_id'];
   $task = $form_state['task'];
@@ -1111,7 +1108,7 @@ function delegator_admin_edit_task_handler(&$form_state) {
     $form['buttons']['return'] = array(
       '#type' => 'submit',
       '#value' => t('Update and return'),
-      '#next' => "admin/build/delegator/$task[name]",
+      '#next' => "admin/build/delegator/$task_name",
       '#validate' => $validate,
       '#submit' => $submit,
     );
@@ -1120,7 +1117,7 @@ function delegator_admin_edit_task_handler(&$form_state) {
     $form['buttons']['next'] = array(
       '#type' => 'submit',
       '#value' => t('Add handler'),
-      '#next' => "admin/build/delegator/$task[name]",
+      '#next' => "admin/build/delegator/$task_name",
       '#validate' => $validate,
       '#submit' => $submit,
     );
@@ -1129,7 +1126,7 @@ function delegator_admin_edit_task_handler(&$form_state) {
   $form['buttons']['cancel'] = array(
     '#type' => 'submit',
     '#value' => t('Cancel'),
-    '#next' => "admin/build/delegator/$task[name]",
+    '#next' => "admin/build/delegator/$task_name",
     '#submit' => array('delegator_admin_edit_task_handler_cancel'),
   );
 
@@ -1208,14 +1205,7 @@ function delegator_admin_edit_task_handler_cancel($form, &$form_state) {
  * Page to delete a view.
  */
 function delegator_administer_break_lock(&$form_state, $task_name) {
-  // Determine if the task id came in the form of TASK-SUBTASK or just TASK
-  if (strpos($task_name, '-') !== FALSE) {
-    list($task_id, $subtask_id) = explode('-', $task_name, 2);
-  }
-  else {
-    $task_id = $task_name;
-    $subtask_id = NULL;
-  }
+  list($task_id, $subtask_id) = delegator_get_task_id($task_name);
 
   $form_state['task_name'] = $task_name;
   $form_state['key'] = $task_id . ':' . $subtask_id;
@@ -1336,6 +1326,5 @@ function delegator_admin_import_task_handler_submit($form, &$form_state) {
   $cache->last_touched = $handler->name;
 
   delegator_admin_set_task_cache($form_state['task'], $handler->subtask, $cache);
-  // @todo: Support subtasks and tasks that have alternate administrative UIs.
-  $form_state['redirect'] = 'admin/build/delegator/' . $handler->task;
+  $form_state['redirect'] = 'admin/build/delegator/' . $form_state['task_name'];
 }

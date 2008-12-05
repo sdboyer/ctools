@@ -147,7 +147,7 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
         // if this does not match all of our conditions, skip it.
         foreach ($args as $key => $value) {
           if (!isset($object->$key) || $object->$key != $value) {
-            continue;
+            continue 2;
           }
         }
       }

@@ -186,6 +186,7 @@ function ctools_context_add_relationship_form($module, &$form, &$form_state, &$f
  * Include all context administrative include files, css, javascript.
  */
 function ctools_context_admin_includes() {
+  ctools_include('context');
   ctools_include('modal');
   ctools_include('ajax');
   ctools_include('object-cache');
