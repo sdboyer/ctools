@@ -11,8 +11,8 @@
  */
 
 function theme_ctools_collapsible($handle, $content, $collapsed = FALSE) {
-  drupal_add_js(drupal_get_path('module', 'ctools') . '/js/collapsible-div.js');
-  drupal_add_css(drupal_get_path('module', 'ctools') . '/css/collapsible-div.css');
+  ctools_add_js('collapsible-div');
+  ctools_add_css('collapsible-div');
 
   $class = $collapsed ? ' ctools-collapsed' : '';
   $output = '<div class="ctools-collapsible-container' . $class . '">';

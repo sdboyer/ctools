@@ -41,7 +41,7 @@
  * @code{
  *   $commands = array();
  *   $commands[] = ctools_ajax_command_replace('#ctools-object-1', 'some html here');
- *   $commands[] = ctools_ajax_command_add
+ *   $commands[] = ctools_ajax_command_changed('#ctools-object-1');
  *   ctools_ajax_render($commands); // this function exits.
  * }
  */
