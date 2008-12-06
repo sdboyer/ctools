@@ -1,0 +1,28 @@
+<!-- $Id$ -->
+form_info => array(
+    'id' => An id for this multistep. Will be used for things like trail theming.
+
+    'path' => /path/to/form/%step,
+    'return path' => Where to go when exiting the wizard. Required [maybe]
+    
+    'show trail' => (default false),
+    'show back' => (default false) -- show a back button
+    'show return' => (default false) show a return button
+
+    // callbacks
+    'finish callback',
+    'cancel callback',
+    'return callback',
+    'next callback'
+    
+    // form info
+    'order' => array(
+      'id' => t('title'),
+    ),
+    'forms' => array(
+      'form_id' => array(
+        'include' => ..,
+        'form id' => ..,
+      ),
+    ),
+

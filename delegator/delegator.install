@@ -87,6 +87,70 @@ function delegator_schema_1() {
       'weights'        => array('name', 'weight'),
     ),
   );
+
+  $schema['delegator_pages'] = array(
+    'description' => t('Contains page subtasks for implementing pages with arbitrary tasks.'),
+    'fields' => array(
+      'pid' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => t('Primary ID field for the table. Not used for anything except internal lookups.'),
+        'no export' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => t('Unique ID for this subtask. Used to identify it programmatically.'),
+      ),
+      'admin_title' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => t('Human readable title for this page subtask.'),
+      ),
+      'path' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => t('The menu path that will invoke this task.'),
+      ),
+      'access' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => t('Access configuration for this path.'),
+        'not null' => TRUE,
+        'default' => '',
+        'serialize' => TRUE,
+      ),
+      'menu' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => t('Serialized configuration of Drupal menu visibility settings for this item.'),
+        'not null' => TRUE,
+        'default' => '',
+        'serialize' => TRUE,
+      ),
+      'parent_menu' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => t('Serialized configuration of Drupal parent menu visibility settings for this item.'),
+        'not null' => TRUE,
+        'default' => '',
+        'serialize' => TRUE,
+      ),
+      'arguments' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => t('Configuration of arguments for this menu item.'),
+        'not null' => TRUE,
+        'default' => '',
+        'serialize' => TRUE,
+      ),
+    ),
+    'primary key' => array('pid'),
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
+  );
+
   return $schema;
 }
 

@@ -53,14 +53,31 @@ function ctools_build_form($form_id, &$form_state) {
     // to build it from scratch.
     if (!isset($form)) {
       $form_state['post'] = $form_state['input'];
-      // Use a copy of the function's arguments for manipulation
-      $args_temp = $args;
-      $args_temp[0] = &$form_state;
-      array_unshift($args_temp, $form_id);
+      // This allows us to do some interesting form embedding stuff without
+      // messing up the form IDs too badly.
+      if (isset($form_state['wrapper callback']) && function_exists($form_state['wrapper callback'])) {
+        // If there is a wrapper callback, we do not use drupal_retrieve_form.
+        // Instead, we call $form_id builder function directly. This means the args
+        // are *different* for forms used this way, which may not be ideal but
+        // is necessary right now.
+        $form = array();
+        $form_state['wrapper callback']($form, $form_state);
+        if (function_exists($form_id)) {
+          $form_id($form, $form_state);
+        }
+      }
+      else {
+        // Use a copy of the function's arguments for manipulation
+        $args_temp = $args;
+        $args_temp[0] = &$form_state;
+        array_unshift($args_temp, $form_id);
 
-      $form = call_user_func_array('drupal_retrieve_form', $args_temp);
+        $form = call_user_func_array('drupal_retrieve_form', $args_temp);
+      }
+
       $form_build_id = 'form-' . md5(mt_rand());
       $form['#build_id'] = $form_build_id;
+
 
       if ($form_state['method'] == 'get' && !isset($form['#method'])) {
         $form['#method'] = 'get';

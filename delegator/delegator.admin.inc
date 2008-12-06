@@ -1091,7 +1091,7 @@ function delegator_admin_edit_task_handler(&$form_state) {
   $form['buttons'] = array(
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',
-    '#weight' => 1000
+    '#weight' => 1000,
   );
 
   if (isset($form_state['next'])) {
@@ -1101,6 +1101,7 @@ function delegator_admin_edit_task_handler(&$form_state) {
       '#next' => $form_state['next'],
       '#validate' => $validate,
       '#submit' => $submit,
+      '#weight' => -1000,
     );
   }
 
@@ -1296,7 +1297,7 @@ function delegator_admin_import_task_handler_validate($form, &$form_state) {
   $handler->export_type = EXPORT_IN_DATABASE;
 
   if (isset($cache->handlers[$handler->name])) {
-    drupal_set_message(t('Warning: The handler you are important already exists and is overwriting an existing handler. If this is not what you intend, you may Cancel this. You should then modify the <code>$handler-&gt;name</code> field of your import to have a unique name.'), 'warning');
+    drupal_set_message(t('Warning: The handler you are importing already exists and this operation will overwrite an existing handler. If this is not what you intend, you may Cancel this. You should then modify the <code>$handler-&gt;name</code> field of your import to have a unique name.'), 'warning');
 
     $old_handler = delegator_admin_find_handler($handler->name, $cache);
     $handler->export_type = $old_handler->export_type | EXPORT_IN_DATABASE;

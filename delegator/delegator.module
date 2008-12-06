@@ -318,6 +318,10 @@ function delegator_delete_task_handler($handler) {
   db_query("DELETE FROM {delegator_weights} WHERE name = '%s'", $handler->name);
 }
 
+/**
+ * Export a task handler into code suitable for import or use as a default
+ * task handler.
+ */
 function delegator_export_task_handler($handler, $indent = '') {
   ctools_include('export');
   ctools_include('plugins');

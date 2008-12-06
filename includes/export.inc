@@ -417,3 +417,34 @@ function ctools_export_form(&$form_state, $code, $title = '') {
 
   return $form;
 }
+
+/**
+ * Create a new object based upon schema values.
+ *
+ * Because 'default' has ambiguous meaning on some fields, we will actually
+ * use 'object default' to fill in default values if default is not set
+ * That's a little safer to use as it won't cause weird database default situations.
+ */
+function ctools_export_new_object($table) {
+  $schema = ctools_export_get_schema($table);
+  $export = $schema['export'];
+
+  $object = new stdClass;
+  foreach ($schema['fields'] as $field => $info) {
+    if (isset($info['object default'])) {
+      $object->$field = $info['object default'];
+    }
+    else if (isset($info['default'])) {
+      $object->$field = $info['default'];
+    }
+    else {
+      $object->$field = NULL;
+    }
+  }
+
+  // Set some defaults so this data always exists.
+
+  $object->export_type = EXPORT_IN_DATABASE;
+  $object->type = t('Local');
+  return $object;
+}
