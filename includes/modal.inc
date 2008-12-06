@@ -142,20 +142,22 @@ function ctools_modal_form_wrapper($form_id, &$form_state) {
 
   $output = ctools_build_form($form_id, $form_state);
   if (!empty($form_state['ajax']) && empty($form_state['executed'])) {
-    $title = empty($form_state['title']) ? '' : $form_state['title'];
-
-    // If there are messages for the form, render them.
-    if ($messages = theme('status_messages')) {
-      $output = '<div class="views-messages">' . $messages . '</div>' . $output;
-    }
-
-    $output = array(ctools_modal_command_display($title, $output));
-  }
-
-  // These forms have the title built in, so set the title here:
-  if (empty($form_state['ajax']) && !empty($form_state['title'])) {
-    drupal_set_title($form_state['title']);
+    return ctools_modal_form_render($form_state, $output);
   }
 
   return $output;
+}
+
+/**
+ * Render a form into an AJAX display.
+ */
+function ctools_modal_form_render($form_state, $output) {
+  $title = empty($form_state['title']) ? '' : $form_state['title'];
+
+  // If there are messages for the form, render them.
+  if ($messages = theme('status_messages')) {
+    $output = '<div class="messages">' . $messages . '</div>' . $output;
+  }
+
+  return array(ctools_modal_command_display($title, $output));
 }

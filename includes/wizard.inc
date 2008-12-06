@@ -13,9 +13,16 @@
  * The wizard can also be friendly to ajax forms, such as when used
  * with the modal tool.
  *
- * TODO: should the wizard also perform object caching? We'll see
- *       as we develop this if it should happen within the wizard
- *       or outside the wizard.
+ * The wizard provides callbacks throughout the process, allowing the
+ * owner to control the flow. The general flow of what happens is:
+ *
+ * Generate a form
+ * submit a form
+ * based upon button clicked, 'finished', 'next form', 'cancel' or 'return'.
+ *
+ * Each action has its own callback, so cached objects can be modifed and or
+ * turned into real objects. Each callback can make decisions about where to
+ * go next if it wishes to override the default flow.
  */
 
 /**
@@ -72,7 +79,12 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
   ctools_include('form');
   $output = ctools_build_form($info['form id'], $form_state);
 
-  if (!$output) {
+  if (!empty($form_state['ajax render']) && empty($form_state['executed'])) {
+    // Any include files should already be included by this point:
+    return $form_state['ajax render']($form_state, $output);
+  }
+
+  if (!empty($form_state['executed'])) {
     // We use the plugins get_function format because it's powerful and
     // not limited to just functions.
     ctools_include('plugins');
@@ -85,8 +97,16 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
       }
     }
 
-    // redirect, if one is set.
-    drupal_redirect_form(array(), $form_state['redirect']);
+    if (empty($form_state['ajax'])) {
+      // redirect, if one is set.
+      return drupal_redirect_form(array(), $form_state['redirect']);
+    }
+    else if (isset($form_state['commands'])) {
+      // If the callbacks wanted to do something besides go to the next form,
+      // it needs to have set $form_state['commands'] with something that can
+      // be rendered.
+      return ctools_ajax_render($form_state['commands']);
+    }
   }
 
   return $output;
@@ -131,7 +151,6 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
   // Display the trail if instructed to do so.
   if (!empty($form_info['show trail'])) {
     ctools_add_css('wizard');
-//    drupal_add_css(drupal_get_path('module', 'delegator') . '/css/task-handlers.css');
     $form['ctools_trail'] = array(
       '#value' => theme(array('ctools_wizard_trail__' . $form_info['id'], 'ctools_wizard_trail'), $trail),
       '#weight' => -1000,
@@ -220,11 +239,20 @@ function ctools_wizard_submit(&$form, &$form_state) {
   if (isset($form_state['clicked_button']['#wizard type'])) {
     $type = $form_state['clicked_button']['#wizard type'];
     if ($type == 'return' || $type == 'finish') {
-      $form_state['redirect'] = $form_state['form_info']['return path'];
-      // Do we need to do something here or just let it go?
+      if (empty($form_state['ajax']) && isset($form_state['form_info']['return path'])) {
+        // Do we need to do something here or just let it go?
+        $form_state['redirect'] = $form_state['form_info']['return path'];
+      }
+      // Calling functions using AJAX need to to provide commands
+      // for the 'finished' and 'cancel' operations.
     }
     else {
-      $form_state['redirect'] = ctools_wizard_get_path($form_state['form_info'], $form_state['clicked_button']['#next']);
+      if (!empty($form_state['ajax'])) {
+        $form_state['ajax next'] = $form_state['clicked_button']['#next'];
+      }
+      else {
+        $form_state['redirect'] = ctools_wizard_get_path($form_state['form_info'], $form_state['clicked_button']['#next']);
+      }
     }
   }
 }
