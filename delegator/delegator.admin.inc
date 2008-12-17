@@ -255,7 +255,7 @@ function delegator_admin_list_form(&$form_state) {
     // Skip deleted items.
     $handler = delegator_admin_find_handler($id, $form_state['cache'], $task_handlers);
 
-    if ($info['changed'] & DGA_CHANGED_DELETED && !($handler->export_type & EXPORT_IN_CODE)) {
+    if (!$handler || ($info['changed'] & DGA_CHANGED_DELETED && !($handler->export_type & EXPORT_IN_CODE))) {
       $form['#changed'] = TRUE;
       continue;
     }
@@ -970,7 +970,7 @@ function delegator_administer_task_handler_add($task_name, $name, $form_id) {
   }
 
   $task = delegator_get_task($task_id);
-  $subtask = delegator_get_subtask($task, $subtask_id);
+  $subtask = delegator_get_task_subtask($task, $subtask_id);
   $plugin = delegator_get_task_handler($handler->handler);
 
   // Prevent silliness of using some other handler type's tabs for this

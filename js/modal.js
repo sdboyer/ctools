@@ -127,11 +127,19 @@ Drupal.behaviors.CToolsModal = function(context) {
     .click(Drupal.CTools.Modal.clickAjaxButton);
 
   if ($(context).attr('id') == 'modal-content') {
-    console.log($('form', context));
     // Bind submit links in the modal form.
-    $('form', context)
+    $('form:not(.ctools-use-modal-processed)', context)
       .addClass('ctools-use-modal-processed')
-      .submit(Drupal.CTools.Modal.submitAjaxForm);
+      .submit(Drupal.CTools.Modal.submitAjaxForm)
+      .append('<input type="hidden" name="op" value=""');
+    // add click handlers so that we can tell which button was clicked,
+    // because the AJAX submit does not set the values properly.
+    $('input[type="submit"]:not(.ctools-use-modal-processed)', context)
+      .addClass('ctools-use-modal-processed')
+      .click(function() {
+        var name = $(this).attr('name');
+        $('input[name="' + name + '"]', context).val($(this).val());
+      });
   }
 };
 

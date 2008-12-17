@@ -15,7 +15,7 @@ function ctools_vid_ctools_arguments() {
     'title' => t("Vocabulary ID"),
     // keyword to use for %substitution
     'keyword' => 'vocabulary',
-    'description' => t('Loads a vocabulary object from the argument.'),
+    'description' => t('Creates a vocabulary context from a vocabulary ID argument.'),
     'context' => 'ctools_vid_context',
   );
   return $args;

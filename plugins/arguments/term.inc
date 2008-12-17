@@ -15,10 +15,10 @@ function ctools_term_ctools_arguments() {
     'title' => t("Taxonomy term"),
     // keyword to use for %substitution
     'keyword' => 'term',
-    'description' => t('Restricts the argument to a taxonomy term.'),
+    'description' => t('Creates a single taxonomy term from a taxonomy ID or taxonomy term name.'),
     'context' => 'ctools_term_context',
+    'default' => array('input_form' => 'tid'),
     'settings form' => 'ctools_term_settings_form',
-    'settings form submit' => 'ctools_term_settings_form_submit',
   );
   return $args;
 }
@@ -74,19 +74,9 @@ function ctools_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
 /**
  * Settings form for the argument
  */
-function ctools_term_settings_form($conf) {
-  if (empty($conf)) {
-    $conf = array(
-      'input_form' => 'tid',
-    );
-  }
-
-  $options = array();
-  foreach (taxonomy_get_vocabularies() as $vid => $vocabulary) {
-    $options[$vid] = $vocabulary->name;
-  }
-
-  $form['input_form'] = array(
+function ctools_term_settings_form(&$form, &$form_state, $conf) {
+  // @todo allow synonym use like Views does.
+  $form['settings']['input_form'] = array(
     '#title' => t('Argument type'),
     '#type' => 'radios',
     '#options' => array('tid' => t('Term ID'), 'term' => t('Term name')),
@@ -94,33 +84,4 @@ function ctools_term_settings_form($conf) {
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',
   );
-
-
-  $form['vids'] = array(
-    '#title' => t('Vocabularies'),
-    '#type' => 'checkboxes',
-    '#options' => $options,
-    '#description' => t('You can restrict this argument to use the checked vocabularies. Arguments from non-conforming vocabularies will be ignored, and ctools will behave as if no argument were given. Leave all unchecked to impose no restriction.'),
-    '#default_value' => $conf['vids'],
-    '#prefix' => '<div class="clear-block">',
-    '#suffix' => '</div>',
-  );
-
-  return $form;
-}
-
-/**
- * There appears to be a bit of a bug with the way we're handling forms; it causes
- * 'checkboxes' to get invalid values added to them when empty. This takes care
- * of that.
- */
-function ctools_term_settings_form_submit(&$values) {
-  $vocs = taxonomy_get_vocabularies();
-  if (!empty($values['vids'])) {
-    foreach ($values['vids'] as $vid => $value) {
-      if (empty($vocs[$vid])) {
-        unset($values['vids'][$vid]);
-      }
-    }
-  }
 }

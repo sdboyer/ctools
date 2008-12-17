@@ -79,21 +79,39 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
   ctools_include('form');
   $output = ctools_build_form($info['form id'], $form_state);
 
-  if (!empty($form_state['ajax render']) && empty($form_state['executed'])) {
-    // Any include files should already be included by this point:
-    return $form_state['ajax render']($form_state, $output);
-  }
+  if (empty($form_state['executed'])) {
+    if (!empty($form_state['ajax render'])) {
+      // Any include files should already be included by this point:
+      return $form_state['ajax render']($form_state, $output);
+    }
 
-  if (!empty($form_state['executed'])) {
+    // Automatically use the modal tool if set to true.
+    if (!empty($form_state['modal'])) {
+      ctools_include('modal');
+      $title = isset($form_state['title']) ? $form_state['title'] : $info['title'];
+      $form_state['commands'][] = ctools_modal_command_display($title, $output);
+    }
+  }
+  else  {
     // We use the plugins get_function format because it's powerful and
     // not limited to just functions.
     ctools_include('plugins');
 
     if (isset($form_state['clicked_button']['#wizard type'])) {
       $type = $form_state['clicked_button']['#wizard type'];
-      // If the finish button was clicked, call the finish callback.
+      // If we have a callback depending upon the type of button that was
+      // clicked, call it.
       if ($function = ctools_plugin_get_function($form_info, "$type callback")) {
         $function($form_state);
+      }
+
+      // If the modal is in use, some special code for it:
+      if (!empty($form_state['modal'])) {
+        if ($type != 'next') {
+          // Automatically dismiss the modal if we're not going to another form.
+          ctools_include('modal');
+          $form_state['commands'][] = ctools_modal_command_dismiss();
+        }
       }
     }
 
@@ -101,14 +119,26 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
       // redirect, if one is set.
       return drupal_redirect_form(array(), $form_state['redirect']);
     }
-    else if (isset($form_state['commands'])) {
-      // If the callbacks wanted to do something besides go to the next form,
-      // it needs to have set $form_state['commands'] with something that can
-      // be rendered.
-      return ctools_ajax_render($form_state['commands']);
+    else if (isset($form_state['ajax next'])) {
+      // Clear a few items off the form state so we don't double post:
+      $next = $form_state['ajax next'];
+      unset($form_state['ajax next']);
+      unset($form_state['executed']);
+      unset($form_state['post']);
+      unset($form_state['next']);
+      return ctools_wizard_multistep_form($form_info, $next, $form_state);
     }
+    // If the callbacks wanted to do something besides go to the next form,
+    // it needs to have set $form_state['commands'] with something that can
+    // be rendered.
   }
 
+  // Render ajax commands if we have any.
+  if (isset($form_state['ajax']) && isset($form_state['commands'])) {
+    return ctools_ajax_render($form_state['commands']);
+  }
+
+  // Otherwise, return the output.
   return $output;
 }
 
@@ -167,7 +197,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
   if (!empty($form_info['show back']) && isset($form_state['previous'])) {
     $form['buttons']['previous'] = array(
       '#type' => 'submit',
-      '#value' => t('Back'),
+      '#value' => isset($form_info['back text']) ? $form_info['back text'] : t('Back'),
       '#next' => $form_state['previous'],
       '#wizard type' => 'next',
       '#weight' => -2000,
@@ -180,7 +210,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
   if (isset($form_state['next'])) {
     $form['buttons']['next'] = array(
       '#type' => 'submit',
-      '#value' => t('Continue'),
+      '#value' => isset($form_info['next text']) ? $form_info['next text'] : t('Continue'),
       '#next' => $form_state['next'],
       '#wizard type' => 'next',
       '#weight' => -1000,
@@ -198,23 +228,23 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
   if (!empty($form_info['show return']) && !empty($form_state['next'])) {
     $form['buttons']['return'] = array(
       '#type' => 'submit',
-      '#value' => t('Update and return'),
+      '#value' => isset($form_info['return text']) ? $form_info['return text'] : t('Update and return'),
       '#wizard type' => 'return',
     );
   }
   else if (empty($form_state['next'])) {
     $form['buttons']['return'] = array(
       '#type' => 'submit',
-      '#value' => t('Finish'),
+      '#value' => isset($form_info['finish text']) ? $form_info['finish text'] : t('Finish'),
       '#wizard type' => 'finish',
     );
   }
 
   // If we are allowed to cancel, place a cancel button.
-  if (isset($form_info['cancel path'])) {
+  if (isset($form_info['cancel path']) || !empty($form_info['show cancel'])) {
     $form['buttons']['cancel'] = array(
       '#type' => 'submit',
-      '#value' => t('Cancel'),
+      '#value' => isset($form_info['cancel text']) ? $form_info['cancel text'] : t('Cancel'),
       '#submit' => array('ctools_wizard_cancel'),
       '#wizard type' => 'cancel',
     );
@@ -230,6 +260,10 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     $form['#submit'][] = $info['form id'] . '_submit';
   }
   $form['#submit'][] = 'ctools_wizard_submit';
+
+  if (!empty($form_state['modal'])) {
+    $form['#action'] = url(ctools_wizard_get_path($form_state['form_info'], $form_state['step']));
+  }
 }
 
 /**
@@ -238,17 +272,18 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
 function ctools_wizard_submit(&$form, &$form_state) {
   if (isset($form_state['clicked_button']['#wizard type'])) {
     $type = $form_state['clicked_button']['#wizard type'];
-    if ($type == 'return' || $type == 'finish') {
-      if (empty($form_state['ajax']) && isset($form_state['form_info']['return path'])) {
-        // Do we need to do something here or just let it go?
-        $form_state['redirect'] = $form_state['form_info']['return path'];
+
+    // if AJAX enabled, we proceed slightly differently here.
+    if (!empty($form_state['ajax'])) {
+      if ($type == 'next') {
+        $form_state['ajax next'] = $form_state['clicked_button']['#next'];
       }
-      // Calling functions using AJAX need to to provide commands
-      // for the 'finished' and 'cancel' operations.
     }
     else {
-      if (!empty($form_state['ajax'])) {
-        $form_state['ajax next'] = $form_state['clicked_button']['#next'];
+      if ($type == 'return' || $type == 'finish') {
+        if (isset($form_state['form_info']['return path'])) {
+          $form_state['redirect'] = $form_state['form_info']['return path'];
+        }
       }
       else {
         $form_state['redirect'] = ctools_wizard_get_path($form_state['form_info'], $form_state['clicked_button']['#next']);

@@ -29,7 +29,7 @@ function delegator_perm() {
  * Implementation of hook_theme().
  */
 function delegator_theme() {
-  return array(
+  $items = array(
     'delegator_admin_list_form' => array(
       'arguments' => array('form' => NULL),
       'file' => 'delegator.admin.inc',
@@ -39,6 +39,18 @@ function delegator_theme() {
       'file' => 'delegator.admin.inc',
     ),
   );
+
+  // Allow task plugins to have theme registrations by passing through:
+  $tasks = delegator_get_tasks();
+
+  // Provide menu items for each task.
+  foreach ($tasks as $task_id => $task) {
+    if ($function = ctools_plugin_get_function($task, 'hook theme')) {
+      $function($items, $task);
+    }
+  }
+
+  return $items;
 }
 
 /**

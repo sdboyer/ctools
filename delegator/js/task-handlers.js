@@ -68,11 +68,13 @@ Drupal.Delegator.CollapsibleCallbackAfterToggle = function($container, handle, c
 };
 
 $(document).ready(function() {
-  Drupal.CTools.CollapsibleCallbacks.push(Drupal.Delegator.CollapsibleCallback);
-  Drupal.CTools.CollapsibleCallbacksAfterToggle.push(Drupal.Delegator.CollapsibleCallbackAfterToggle);
+  if (Drupal.CTools && Drupal.CTools.CollapsibleCallbacks) {
+    Drupal.CTools.CollapsibleCallbacks.push(Drupal.Delegator.CollapsibleCallback);
+    Drupal.CTools.CollapsibleCallbacksAfterToggle.push(Drupal.Delegator.CollapsibleCallbackAfterToggle);
 
-  // Force all our accordions to close when tabledragging to prevent ugliness:
-  $('#delegator-task-list-arrange .tabledrag-handle').mousedown(function() {
-    $('#delegator-task-list-arrange .ctools-toggle:not(.ctools-toggle-collapsed)').trigger('click');
-  });
+    // Force all our accordions to close when tabledragging to prevent ugliness:
+    $('#delegator-task-list-arrange .tabledrag-handle').mousedown(function() {
+      $('#delegator-task-list-arrange .ctools-toggle:not(.ctools-toggle-collapsed)').trigger('click');
+    });
+  }
 });

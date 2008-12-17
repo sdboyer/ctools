@@ -446,11 +446,11 @@ function ctools_get_arguments() {
 function ctools_context_get_context_from_argument($argument, $arg, $empty = FALSE) {
   ctools_include('plugins');
   if ($function = ctools_plugin_load_function('ctools', 'arguments', $argument['name'], 'context')) {
-    if (!isset($argument['argument_settings'])) {
-      $argument['argument_settings'] = array();
+    if (!isset($argument['settings'])) {
+      $argument['settings'] = array();
     }
 
-    $context = $function($arg, $argument['argument_settings'], $empty);
+    $context = $function($arg, $argument['settings'], $empty);
 
     if (is_object($context)) {
       $context->identifier = $argument['identifier'];
@@ -826,3 +826,30 @@ function ctools_context_get_form($contexts) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Functions related to loading access control plugins
+
+/**
+ * Fetch metadata on a specific access control plugin.
+ *
+ * @param $name
+ *   Name of a plugin.
+ *
+ * @return
+ *   An array with information about the requested access control plugin.
+ */
+function ctools_get_access_plugin($name) {
+  ctools_include('plugins');
+  return ctools_get_plugins('ctools', 'access', $name);
+}
+
+/**
+ * Fetch metadata for all access control plugins.
+ *
+ * @return
+ *   An array of arrays with information about all available access control plugins.
+ */
+function ctools_get_access_plugins() {
+  ctools_include('plugins');
+  return ctools_get_plugins('ctools', 'access');
+}

@@ -128,14 +128,6 @@ function delegator_schema_1() {
         'default' => '',
         'serialize' => TRUE,
       ),
-      'parent_menu' => array(
-        'type' => 'text',
-        'size' => 'big',
-        'description' => t('Serialized configuration of Drupal parent menu visibility settings for this item.'),
-        'not null' => TRUE,
-        'default' => '',
-        'serialize' => TRUE,
-      ),
       'arguments' => array(
         'type' => 'text',
         'size' => 'big',

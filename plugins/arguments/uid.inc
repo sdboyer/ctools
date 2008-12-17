@@ -15,7 +15,7 @@ function ctools_uid_ctools_arguments() {
     'title' => t("User ID"),
     // keyword to use for %substitution
     'keyword' => 'user',
-    'description' => t('Creates a user object from the argument.'),
+    'description' => t('Creates a user context from a user ID argument.'),
     'context' => 'ctools_uid_context',
   );
   return $args;

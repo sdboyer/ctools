@@ -3,11 +3,24 @@ form_info => array(
     'id' => An id for this multistep. Will be used for things like trail theming.
 
     'path' => /path/to/form/%step,
-    'return path' => Where to go when exiting the wizard. Required [maybe]
+    'return path' => Where to go when exiting the wizard. Required if 'return' is shown.
     
     'show trail' => (default false),
     'show back' => (default false) -- show a back button
     'show return' => (default false) show a return button
+    'show cancel' => (default false) show a cancel button (only valid if AJAX on, otherwise use cancel path)
+
+    // text overrides
+    'back text' => defaults to t('Back'),
+    'next text' => defaults to t('Continue'),
+    'return text' => defaults to t('Update and return'),
+    'finish text' => defaults to t('Finish'),
+    'cancel text' => defaults to t('Cancel'),
+
+    // ajax tools
+    'ajax' => TRUE, // turn on ajax capabilities
+    'modal' => TRUE, // put the wizard in the modal tool. The modal must already be open and called from an ajax button for this to work.
+    'ajax render' => A callback to display the rendered form via ajax. Params: &$form_state, $output
 
     // callbacks
     'finish callback',
@@ -23,6 +36,7 @@ form_info => array(
       'form_id' => array(
         'include' => ..,
         'form id' => ..,
+        'title' => .. optional page title to set on form. Required on modals unless $form_state['title'] will be set.
       ),
     ),
 

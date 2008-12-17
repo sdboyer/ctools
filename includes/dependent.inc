@@ -13,8 +13,10 @@
  * any of the listed values are selected, the item will be visible. Otherwise,
  * the item will be visible.
  *
- * If dependent upon multiple items, all of the items must contain one of the
- * acceptable values.
+ * If dependent upon multiple items, use #dependency_count = X to set the
+ * number of items that must be set in order to make this item visible. This
+ * defaults to 1. If set to 2, then at least 2 form items in the list must
+ * have their items set for the item to become visible.
  *
  * Checkboxes don't have their own id, so you need to add one in a div
  * around the checkboxes via #prefix and #suffix. You actually need to add TWO
