@@ -14,7 +14,14 @@
  */
 function delegator_page_get_page_cache($name) {
   ctools_include('object-cache');
-  return ctools_object_cache_get('delegator_page', $name);
+  $cache = ctools_object_cache_get('delegator_page', $name);
+  if (!$cache) {
+    // This ensures the task .inc file is loaded
+    $task = delegator_get_task('page');
+    $cache = delegator_page_load($name);
+  }
+
+  return $cache;
 }
 
 /**
@@ -62,44 +69,13 @@ function delegator_page_get_arguments($path) {
  * Page callback to add a subtask.
  */
 function delegator_page_add_subtask($step = NULL) {
-  $form_info = array(
-    'id' => 'delegator_page',
-    'path' => 'admin/build/delegator/page/add/%step',
-    'return path' => 'admin/build/delegator/page',
-    'show trail' => TRUE,
-    'show back' => TRUE,
-    'show return' => FALSE,
-    'next callback' => 'delegator_page_add_subtask_next',
-    'finish callback' => 'delegator_page_add_subtask_finish',
-    'cancel callback' => 'delegator_page_add_subtask_cancel',
-    'order' => array(
-      'basic' => t('Basic settings'),
-      'argument' => t('Argument settings'),
-      'access' => t('Access type'),
-      'access-settings' => t('Access settings'),
-      'menu' => t('Menu settings'),
-    ),
-    'forms' => array(
-      'basic' => array(
-        'form id' => 'delegator_page_form_basic'
-      ),
-      'access' => array(
-        'form id' => 'delegator_page_form_access'
-      ),
-      'access-settings' => array(
-        'form id' => 'delegator_page_form_access_settings'
-      ),
-      'menu' => array(
-        'form id' => 'delegator_page_form_menu'
-      ),
-      'argument' => array(
-        'form id' => 'delegator_page_form_argument'
-      ),
-    ),
-  );
-
   // We load the task to make sure our .inc file is loaded.
   $task = delegator_get_task('page');
+
+  $form_info = delegator_page_edit_form_info();
+  $form_info += array(
+    'path' => 'admin/build/pages/add/%step',
+  );
 
   // If step is unset, we're creating a new one. Wipe out our values and start
   // over.
@@ -114,6 +90,46 @@ function delegator_page_add_subtask($step = NULL) {
   $form_state = array(
     'cache name' => '::new',
     'page' => $page,
+    'type' => 'add',
+  );
+  $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
+
+  if (!$output) {
+    // redirect.
+    drupal_redirect_form(array(), $form_state['redirect']);
+  }
+
+  return $output;
+}
+
+/**
+ * Page callback to add a subtask.
+ */
+function delegator_page_edit_subtask($page_name, $step = NULL) {
+  if (!$page = delegator_page_get_page_cache($page_name)) {
+    return drupal_not_found();
+  }
+
+  // We load the task to make sure our .inc file is loaded.
+  $task = delegator_get_task('page');
+
+  $form_info = array(
+    'path' => "admin/build/pages/edit/$page_name/%step",
+    'show trail' => FALSE,
+    'show return' => TRUE,
+    'return path' => 'admin/build/pages',
+  ) + delegator_page_edit_form_info();
+
+  // If step is unset, go with the basic step.
+  if (!isset($step)) {
+    $step = 'basic';
+  }
+
+  ctools_include('wizard');
+  $form_state = array(
+    'cache name' => $page_name,
+    'page' => $page,
+    'type' => 'edit',
   );
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
 
@@ -138,7 +154,12 @@ function delegator_page_add_subtask_finish(&$form_state) {
       $args[$keyword] = $page->arguments[$keyword];
     }
     else {
-      $args[$keyword] = array('argument' => '', 'settings' => array());
+      $args[$keyword] = array(
+        'id' => '',
+        'identifier' => '',
+        'argument' => '',
+        'settings' => array()
+      );
     }
   }
   $page->arguments = $args;
@@ -151,8 +172,13 @@ function delegator_page_add_subtask_finish(&$form_state) {
   // Force a menu rebuild to recognize our new subtask
   menu_rebuild();
 
-  // Redirect to the new page's task handler editor.
-  $form_state['redirect'] = 'admin/build/delegator/page-' . $page->name;
+  if ($form_state['type'] == 'add') {
+    // Redirect to the new page's task handler editor.
+    $form_state['redirect'] = 'admin/build/delegator/page-' . $page->name;
+  }
+  else {
+    $form_state['redirect'] = 'admin/build/pages';
+  }
 }
 
 /**
@@ -403,7 +429,14 @@ function delegator_page_form_access(&$form, &$form_state) {
   $contexts = array();
   // Load contexts based on argument data:
   if ($page->arguments) {
-    $contexts = ctools_context_get_placeholders_from_argument($page->arguments);
+    $arguments = array();
+    foreach ($page->arguments as $keyword => $argument) {
+      if (isset($argument['name'])) {
+        $argument['keyword'] = $keyword;
+        $arguments[$argument['id']] = $argument;
+      }
+    }
+    $contexts = ctools_context_get_placeholders_from_argument($arguments);
   }
 
   $plugins = ctools_get_access_plugins();
@@ -452,7 +485,7 @@ function delegator_page_form_access_submit(&$form, &$form_state) {
   $access['type'] = $type;
 
   // If there's no settings form, skip the settings form.
-  if (!ctools_plugin_get_function($plugin, 'settings form')) {
+  if (!$plugin) {
     $form_state['clicked_button']['#next'] = 'menu';
   }
 }
@@ -536,7 +569,8 @@ function delegator_page_form_argument(&$form, &$form_state) {
 
     $context = t('No context assigned');
 
-    if ($conf) {
+    $plugin = array();
+    if ($conf && isset($conf['name'])) {
       ctools_include('context');
       $plugin = ctools_get_argument($conf['name']);
 
@@ -565,7 +599,7 @@ function delegator_page_form_argument(&$form, &$form_state) {
     $form['table']['argument'][$keyword]['settings'] = array();
 
     // Only show the button if this has a settings form available:
-    if (isset($plugin) && ctools_plugin_get_function($plugin, 'settings form')) {
+    if (!empty($plugin)) {
       // The URL for this ajax button
       $form['table']['argument'][$keyword]['settings-url'] = array(
         '#attributes' => array('class' => "delegator-context-$keyword-settings-url"),
@@ -796,6 +830,17 @@ function delegator_page_argument_form_change_submit(&$form, &$form_state) {
   }
 
   ctools_include('context');
+
+  // If switching to the no context, just wipe out the old data.
+  if (empty($argument)) {
+    $form_state['clicked_button']['#wizard type'] = 'finish';
+    $page->temporary_arguments[$keyword] = array(
+      'settings' => array(),
+      'identifier' => t('No context'),
+    );
+    return;
+  }
+
   $plugin = ctools_get_argument($argument);
 
   // Acquire defaults.
@@ -810,17 +855,16 @@ function delegator_page_argument_form_change_submit(&$form, &$form_state) {
     }
   }
 
+  $id = ctools_context_next_id($page->arguments, $argument);
+  $title = isset($plugin['title']) ? $plugin['title'] : t('No context');
+
   // Set the new argument in a temporary location.
   $page->temporary_arguments[$keyword] = array(
+    'id' => $id,
+    'identifier' => $title . ($id > 1 ? ' ' . $id : ''),
     'name' => $argument,
     'settings' => $settings,
   );
-
-  // Does the new type actually have settings? If not, we are actually
-  // finished here.
-  if (!ctools_plugin_get_function($plugin, 'settings form')) {
-    $form_state['clicked_button']['#wizard type'] = 'finish';
-  }
 }
 
 /**
@@ -850,14 +894,12 @@ function delegator_page_argument_form_settings(&$form, &$form_state) {
     '#tree' => TRUE,
   );
 
-/*
   $form['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Context identifier'),
-    '#description' => t('This is the title of the context used to identify it later in the administrative process.'),
+    '#description' => t('This is the title of the context used to identify it later in the administrative process. This will never be shown to a user.'),
     '#default_value' => $conf['identifier'],
   );
-*/
 
   if (!$plugin) {
     // This should be impossible and thus never seen.
@@ -895,5 +937,11 @@ function delegator_page_argument_form_settings_submit(&$form, &$form_state) {
   // Copy the form to our temporary location which will get moved again when
   // finished. Yes, finished is always next but finish can happen from other
   // locations so we funnel through that path rather than duplicate.
-  $page->temporary_arguments[$keyword]['settings'] = $form_state['values']['settings'];
+  $page->temporary_arguments[$keyword]['identifier'] = $form_state['values']['identifier'];
+  if (isset($form_state['values']['settings'])) {
+    $page->temporary_arguments[$keyword]['settings'] = $form_state['values']['settings'];
+  }
+  else {
+    $page->temporary_arguments[$keyword]['settings'] = array();
+  }
 }

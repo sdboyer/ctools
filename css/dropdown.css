@@ -1,0 +1,66 @@
+/* $Id$ */
+html.js div.ctools-dropdown div.ctools-dropdown-container {
+  position: absolute;
+  z-index: 99;
+  display: none;
+  text-align: left;
+}
+
+html.js div.ctools-dropdown div.ctools-dropdown-container ul li a {
+  display: block;
+}
+
+html.js div.ctools-dropdown div.ctools-dropdown-container ul {
+  display: inline;
+  list-style-type: none;
+}
+
+html.js div.ctools-dropdown div.ctools-dropdown-container ul li {
+  display: block;
+}
+
+.ctools-dropdown-no-js .ctools-dropdown-link,
+.ctools-dropdown-no-js span.text {
+  display: none;
+}
+
+/* Everything from here down is purely visual style and can be overridden. */
+
+html.js div.ctools-dropdown a.ctools-dropdown-link {
+  background: url(../images/collapsible-expanded.png) 3px 5px no-repeat;
+  padding-left: 12px;
+}
+
+html.js div.ctools-dropdown div.ctools-dropdown-container {
+  width: 175px;
+  background: #fff;
+  border: 1px solid black;
+  margin-top: 4px;
+  color: #494949;
+}
+
+html.js div.ctools-dropdown div.ctools-dropdown-container ul li li a {
+  padding-left: 25px;
+  width: 150px; 
+  color: #027AC6;
+}
+
+html.js div.ctools-dropdown div.ctools-dropdown-container ul li a {
+  text-decoration: none;
+  padding-left: 5px;
+  width: 170px;
+  color: #027AC6;
+}
+
+html.js div.ctools-dropdown div.ctools-dropdown-container ul li span {
+  display: block;
+}
+
+html.js div.ctools-dropdown div.ctools-dropdown-container ul li span.text {
+  font-style: italic;
+  padding-left: 5px;
+}
+
+html.js .ctools-dropdown-hover {
+  background-color: #ECECEC;
+}

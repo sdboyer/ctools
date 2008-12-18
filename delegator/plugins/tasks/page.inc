@@ -16,12 +16,25 @@
 function delegator_page_delegator_tasks() {
   return array(
     'page' => array(
-      'title' => t('Page'),
-      'type' => 'node_view',
+      'title' => t('User pages'),
+      'description' => t('Administrator created pages that have a URL path, access control and entries in the Drupal menu system.'),
       'subtasks' => TRUE,
       'subtasks callback' => 'delegator_page_subtasks',
       'hook menu' => 'delegator_page_menu',
       'hook theme' => 'delegator_page_theme',
+
+      // page only items
+      'task type' => 'page',
+      'operations' => array(
+        array(
+          'title' => t('Import'),
+          'href' => 'admin/build/pages/import',
+        ),
+        array(
+          'title' => t('Add page'),
+          'href' => 'admin/build/pages/add',
+        ),
+      ),
     ),
   );
 }
@@ -33,10 +46,62 @@ function delegator_page_subtasks($task) {
   $subtasks = delegator_page_load_all();
   $return = array();
   foreach ($subtasks as $name => $subtask) {
+    $form_info = delegator_page_edit_form_info();
+    $edit_links = array();
+    foreach ($form_info['order'] as $form_id => $form_title) {
+      $edit_links[] = array(
+        'title' => $form_title,
+        'href' => "admin/build/pages/edit/$name/$form_id",
+      );
+    }
+
+    $operations = array();
+
+    if (empty($subtask->disabled)) {
+      $operations[] =  array(
+        'title' => '<span class="text">' . t('Edit page') . '</span>' . theme('links', $edit_links),
+        'html' => TRUE,
+      );
+      $operations[] = array(
+        'title' => t('Clone'),
+        'href' => "admin/build/pages/clone/$name",
+      );
+      $operations[] = array(
+        'title' => t('Export'),
+        'href' => "admin/build/pages/export/$name",
+      );
+      if ($subtask->export_type == (EXPORT_IN_CODE | EXPORT_IN_DATABASE)) {
+        $operations[] = array(
+          'title' => t('Revert'),
+          'href' => "admin/build/pages/delete/$name",
+        );
+      }
+      else if ($subtask->export_type == EXPORT_IN_CODE) {
+        $operations[] = array(
+          'title' => t('Disable'),
+          'href' => "admin/build/pages/disable/$name",
+        );
+      }
+      else {
+        $operations[] = array(
+          'title' => t('Delete'),
+          'href' => "admin/build/pages/delete/$name",
+        );
+      }
+    }
+    else {
+      $operations[] = array(
+        'title' => t('Enable'),
+        'href' => "admin/build/pages/enable/$name",
+      );
+    }
     $return[$name] = array(
+      'name' => $name,
       'admin title' => $subtask->admin_title,
       'admin description' => t('TODO'),
+      'admin path' => $subtask->path,
       'subtask' => $subtask,
+      'operations' => $operations,
     );
   }
 
@@ -57,14 +122,49 @@ function delegator_page_menu(&$items, $task) {
     'file' => 'plugins/tasks/page.admin.inc',
   );
 
-  $items['admin/build/delegator/page/add'] = array(
+  $items['admin/build/pages/add'] = array(
     'title' => 'Add page',
     'description' => 'Add a delegator page subtask.',
     'page callback' => 'delegator_page_add_subtask',
+    'type' => MENU_LOCAL_TASK,
   ) + $base;
 
+  $form_info = delegator_page_edit_form_info();
+  $default_task = FALSE;
+  $weight = 0;
+  foreach ($form_info['order'] as $form_id => $form_title) {
+    // The first edit form is the default for tabs, so it gets a bit
+    // of special treatment here.
+    if (!$default_task) {
+      $default_task = TRUE;
+      // Add the callback for the default tab.
+      $items["admin/build/pages/edit/%"] = array(
+        'title' => t('Edit'),
+        'page callback' => 'delegator_page_edit_subtask',
+        'page arguments' => array(4, $form_id),
+      ) + $base;
 
-  // AJAX callbacks for argument love.
+      // And make sure it's the default local task.
+      $type = MENU_DEFAULT_LOCAL_TASK;
+    }
+    else {
+      // This allows an empty form title to provide a hidden form
+      // which is useful for doing more branch-like multi-step
+      // functionality.
+      $type = $form_title ? MENU_LOCAL_TASK : MENU_CALLBACK;
+    }
+
+    // Handler to edit delegator task handlers. May exist in its own UI.
+    $items["admin/build/pages/edit/%/$form_id"] = array(
+      'title' => $form_title,
+      'page callback' => 'delegator_page_edit_subtask',
+      'page arguments' => array(4, 5),
+      'type' => $type,
+      'weight' => $weight++,
+    ) + $base;
+  }
+
+  // AJAX callbacks for argument modal.
   $items['admin/build/delegator/argument'] = array(
     'page callback' => 'delegator_page_subtask_argument_ajax',
   ) + $base;
@@ -78,6 +178,46 @@ function delegator_page_theme(&$items, $task) {
     'arguments' => array('form' => NULL),
     'file' => 'page.admin.inc',
     'path' => drupal_get_path('module', 'delegator') . '/plugins/tasks',
+  );
+}
+
+/**
+ * Supply information for the multi-step wizard for both edit and add subtask
+ */
+function delegator_page_edit_form_info() {
+  return array(
+    'id' => 'delegator_page',
+    'show trail' => TRUE,
+    'show back' => TRUE,
+    'show return' => FALSE,
+    'next callback' => 'delegator_page_add_subtask_next',
+    'finish callback' => 'delegator_page_add_subtask_finish',
+    'return callback' => 'delegator_page_add_subtask_finish',
+    'cancel callback' => 'delegator_page_add_subtask_cancel',
+    'order' => array(
+      'basic' => t('Basic settings'),
+      'argument' => t('Argument settings'),
+      'access' => t('Access type'),
+      'access-settings' => t('Access settings'),
+      'menu' => t('Menu settings'),
+    ),
+    'forms' => array(
+      'basic' => array(
+        'form id' => 'delegator_page_form_basic'
+      ),
+      'access' => array(
+        'form id' => 'delegator_page_form_access'
+      ),
+      'access-settings' => array(
+        'form id' => 'delegator_page_form_access_settings'
+      ),
+      'menu' => array(
+        'form id' => 'delegator_page_form_menu'
+      ),
+      'argument' => array(
+        'form id' => 'delegator_page_form_argument'
+      ),
+    ),
   );
 }
 
@@ -115,7 +255,7 @@ function delegator_page_load_all() {
  * Write a page subtask to the database.
  */
 function delegator_page_save(&$subtask) {
-  $update = (isset($subtask->did)) ? array('pid') : array();
+  $update = (isset($subtask->pid)) ? array('pid') : array();
   drupal_write_record('delegator_pages', $subtask, $update);
   return $subtask;
 }

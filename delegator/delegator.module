@@ -98,6 +98,16 @@ function delegator_menu() {
     'type' => MENU_LOCAL_TASK,
   );
 
+  // Task types get menu entries so they can set up their own administrative
+  // areas.
+  $task_types = delegator_get_task_types();
+
+  foreach ($task_types as $id => $task_type) {
+    if ($function = ctools_plugin_get_function($task_type, 'hook menu')) {
+      $function($items, $task_type);
+    }
+  }
+
   $tasks = delegator_get_tasks();
 
   // Provide menu items for each task.
@@ -362,6 +372,22 @@ function delegator_update_task_handler_weight($handler, $weight) {
 }
 
 /**
+ * Shortcut function to get task type plugins.
+ */
+function delegator_get_task_types() {
+  ctools_include('plugins');
+  return ctools_get_plugins('delegator', 'task_types');
+}
+
+/**
+ * Shortcut function to get a task type plugin.
+ */
+function delegator_get_task_type($id) {
+  ctools_include('plugins');
+  return ctools_get_plugins('delegator', 'task_types', $id);
+}
+
+/**
  * Shortcut function to get task plugins.
  */
 function delegator_get_tasks() {
@@ -375,6 +401,22 @@ function delegator_get_tasks() {
 function delegator_get_task($id) {
   ctools_include('plugins');
   return ctools_get_plugins('delegator', 'tasks', $id);
+}
+
+/**
+ * Get all tasks for a given type.
+ */
+function delegator_get_tasks_by_type($type) {
+  ctools_include('plugins');
+  $all_tasks = ctools_get_plugins('delegator', 'tasks');
+  $tasks = array();
+  foreach ($all_tasks as $id => $task) {
+    if (isset($task['task type']) && $task['task type'] == $type) {
+      $tasks[$id] = $task;
+    }
+  }
+
+  return $tasks;
 }
 
 /**

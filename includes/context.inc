@@ -394,6 +394,30 @@ function ctools_context_id($context, $type = 'context') {
   return $type . '_' . $context['name'] . '_' . $context['id'];
 }
 
+/**
+ * Get the next id available given a list of already existing objects.
+ *
+ * This finds the next id available for the named object.
+ *
+ * @param $objects
+ *   A list of context descriptor objects, i.e, arguments, relationships, contexts, etc.
+ * @param $name
+ *   The name being used.
+ */
+function ctools_context_next_id($objects, $name) {
+  // Figure out which instance of this argument we're creating
+  $id = 0;
+  foreach ($objects as $object) {
+    if (isset($object['name']) && $object['name'] == $name) {
+      if ($object['id'] > $id) {
+        $id = $object['id'];
+      }
+    }
+  }
+  return $id;
+}
+
+
 // ---------------------------------------------------------------------------
 // Functions related to contexts from arguments.
 

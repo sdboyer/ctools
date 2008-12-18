@@ -12,8 +12,10 @@ function delegator_user_view_delegator_tasks() {
        'description' => t('The user view task allows you to control which modules serve requests made to user/%. By default, the core user module will show the user account page. The first task that matches the user will be used to display the user. If no task handlers exist, or if none of the existing task handlers are configured to handle the currently requested user, then the request falls back to the default Drupal user view mechanism.'),
        'admin title' => 'User view', // translated by menu system
        'admin description' => 'Overrides for the built in user handler, allowing customized user output.',
+       'admin path' => 'user/%user',
        'hook menu' => 'delegator_user_view_menu',
        'hook menu alter' => 'delegator_user_view_menu_alter',
+       'task type' => 'page',
     ),
   );
 }

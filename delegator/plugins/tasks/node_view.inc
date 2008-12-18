@@ -9,11 +9,14 @@ function delegator_node_view_delegator_tasks() {
   return array(
     'node_view' => array(
        'title' => t('Node view'),
-       'description' => t('The node view task allows you to control which functions will handle the actual job of rendering a node view. The first task that matches the node will be used to display the node. If there are no task handlers listed, or no task handlers are configured to handle a given node, the default Drupal node view mechanism will be used.'),
+       'description' => t('The node view task allows you to control what handler will handle the job of rendering a node view at the path <em>node/%node</em>. If no handler is set or matches the criteria, the default Drupal node renderer will be used.'),
+       'type' => 'node_view', // handler type -- misnamed
        'admin title' => 'Node view', // translated by menu system
-       'admin description' => 'Overrides for the built in node view handler which allows customized node output.',
+       'admin description' => 'Overrides for the built in node view handler at <em>node/%node</em>.',
+       'admin path' => 'node/%node',
        'hook menu' => 'delegator_node_view_menu',
        'hook menu alter' => 'delegator_node_view_menu_alter',
+       'task type' => 'page',
     ),
   );
 }

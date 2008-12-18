@@ -321,7 +321,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
 
   // Give this item an id, which is really just the nth version
   // of this particular context.
-  $id = ctools_get_arg_id($ref, $name) + 1;
+  $id = ctools_context_next_id($ref, $name) + 1;
 
   // Figure out the position for our new context.
   $position = empty($ref) ? 0 : max(array_keys($ref)) + 1;
@@ -908,20 +908,6 @@ function ctools_save_context($type, &$ref, $form_values) {
     $new[] = $ref[$id];
   }
   $ref = $new;
-}
-
-// TODO: Move this somewhere more appropriate
-function ctools_get_arg_id($arguments, $name) {
-  // Figure out which instance of this argument we're creating
-  $id = 0;
-  foreach ($arguments as $arg) {
-    if ($arg['name'] == $name) {
-      if ($arg['id'] > $id) {
-        $id = $arg['id'];
-      }
-    }
-  }
-  return $id;
 }
 
 function ctools_get_keyword($page, $word) {
