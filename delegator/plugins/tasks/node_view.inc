@@ -53,6 +53,10 @@ function delegator_node_view($node) {
     if ($function = ctools_plugin_load_function('delegator', 'task_handlers', $handler->handler, 'render')) {
       $output = $function($handler, $node);
       if ($output) {
+        // Since we're not using node_show() we need to emulate what it used to do.
+        // Update the history table, stating that this user viewed this node.
+        node_tag_new($node->nid);
+
         // TRUE is a special return used to let us know that it handled the
         // task but does not wish us to render anything, as it already did.
         // This is needed for the 'no blocks' functionality.

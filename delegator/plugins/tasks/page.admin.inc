@@ -10,6 +10,161 @@
  */
 
 /**
+ * Delegated implementation of hook_menu().
+ */
+function delegator_page_menu(&$items, $task) {
+  // Set up access permissions.
+  $access_callback = isset($task['admin access callback']) ? $task['admin access callback'] : 'user_access';
+  $access_arguments = isset($task['admin access arguments']) ? $task['admin access arguments'] : array('administer delegator');
+
+  $base = array(
+    'access callback' => $access_callback,
+    'access arguments' => $access_arguments,
+    'file' => 'plugins/tasks/page.admin.inc',
+  );
+
+  $items['admin/build/pages/add'] = array(
+    'title' => 'Add page',
+    'description' => 'Add a delegator page subtask.',
+    'page callback' => 'delegator_page_add_subtask',
+    'type' => MENU_LOCAL_TASK,
+  ) + $base;
+
+  $form_info = delegator_page_edit_form_info();
+  $default_task = FALSE;
+  $weight = 0;
+  foreach ($form_info['order'] as $form_id => $form_title) {
+    // The first edit form is the default for tabs, so it gets a bit
+    // of special treatment here.
+    if (!$default_task) {
+      $default_task = TRUE;
+      // Add the callback for the default tab.
+      $items["admin/build/pages/edit/%"] = array(
+        'title' => t('Edit'),
+        'page callback' => 'delegator_page_edit_subtask',
+        'page arguments' => array(4, $form_id),
+      ) + $base;
+
+      // And make sure it's the default local task.
+      $type = MENU_DEFAULT_LOCAL_TASK;
+    }
+    else {
+      // This allows an empty form title to provide a hidden form
+      // which is useful for doing more branch-like multi-step
+      // functionality.
+      $type = $form_title ? MENU_LOCAL_TASK : MENU_CALLBACK;
+    }
+
+    // Handler to edit delegator task handlers. May exist in its own UI.
+    $items["admin/build/pages/edit/%/$form_id"] = array(
+      'title' => $form_title,
+      'page callback' => 'delegator_page_edit_subtask',
+      'page arguments' => array(4, 5),
+      'type' => $type,
+      'weight' => $weight++,
+    ) + $base;
+  }
+
+  // AJAX callbacks for argument modal.
+  $items['admin/build/delegator/argument'] = array(
+    'page callback' => 'delegator_page_subtask_argument_ajax',
+  ) + $base;
+
+  // Add menu entries for each subtask
+  foreach (delegator_page_load_all() as $subtask_id => $subtask) {
+    if (!isset($subtask->access['settings'])) {
+      $subtask->access['settings'] = NULL;
+    }
+
+    $path = array();
+    $page_arguments = array($subtask_id);
+    $access_arguments = array($subtask->access['type'], $subtask->access['settings']);
+    $load_arguments = array($subtask_id, '%index');
+
+    // Replace named placeholders with our own placeholder to load contexts.
+    foreach (explode('/', $subtask->path) as $position => $bit) {
+      if ($bit[0] == '%' && $bit != '%') {
+        // If an argument, swap it out with our argument loader and make sure
+        // the argument gets passed through to the page callback.
+        $path[] = '%dp_arg';
+        $page_arguments[] = $position;
+        $access_arguments[] = $position;
+      }
+      else {
+        $path[] = $bit;
+      }
+    }
+
+    $menu_path = implode('/', $path);
+
+    $items[$menu_path] = delegator_page_menu_item($subtask->menu, $access_arguments, $page_arguments, $load_arguments);
+
+    // Add a parent menu item if one is configured.
+    if ($subtask->menu['type'] == 'default tab' && $subtask->menu['parent']['type'] != 'none') {
+      array_pop($path);
+      $parent_path = implode('/', $path);
+      $items[$parent_path] = delegator_page_menu_item($subtask->menu['parent'], $access_arguments, $page_arguments, $load_arguments);
+    }
+  }
+}
+
+/**
+ * Create a menu item for delegator pages.
+ *
+ * @param $menu
+ *   The configuration to use. It will contain a type, and depending on the
+ *   type may also contain weight, title and name. These are presumed to have
+ *   been configured from the UI.
+ * @param $access_arguments
+ *   Arguments that go with ctools_access_menu; it should be loaded with
+ *   the access plugin type, settings, and positions of any arguments that
+ *   may produce contexts.
+ * @param $page_arguments
+ *   This should be seeded with the subtask name for easy loading and like
+ *   the access arguments above should contain positions of arguments so
+ *   that the menu system passes contexts through.
+ * @param $load_arguments
+ *   Arguments to send to the arg loader; should be the subtask id and '%index'.
+ */
+function delegator_page_menu_item($menu, $access_arguments, $page_arguments, $load_arguments) {
+  $item = array(
+    'access callback' => 'ctools_access_menu',
+    'access arguments' => $access_arguments,
+    'page callback' => 'delegator_page_execute',
+    'page arguments' => $page_arguments,
+    'load arguments' => $load_arguments,
+    'file' => 'plugins/tasks/page.admin.inc',
+  );
+
+  if (isset($menu['title'])) {
+    $item['title'] = $menu['title'];
+  }
+  if (isset($menu['weight'])) {
+    $item['weight'] = $menu['weight'];
+  }
+
+  switch ($menu['type']) {
+    case 'none':
+    default:
+      $item['type'] = MENU_CALLBACK;
+      break;
+    case 'normal':
+      $item['type'] = MENU_NORMAL_ITEM;
+      // Insert item into the proper menu
+      $item['menu_name'] = $menu['name'];
+      break;
+    case 'tab':
+      $item['type'] = MENU_LOCAL_TASK;
+      break;
+    case 'default tab':
+      $item['type'] = MENU_DEFAULT_LOCAL_TASK;
+      break;
+  }
+
+  return $item;
+}
+
+/**
  * Get the cached changes to a given task handler.
  */
 function delegator_page_get_page_cache($name) {
@@ -147,7 +302,7 @@ function delegator_page_edit_subtask($page_name, $step = NULL) {
 function delegator_page_add_subtask_finish(&$form_state) {
   $page = &$form_state['page'];
   // Ensure $page->arguments contains only real arguments:
-  $arguments = delegator_page_get_arguments($page->path);
+  $arguments = delegator_page_get_named_arguments($page->path);
   $args = array();
   foreach ($arguments as $keyword => $position) {
     if (isset($page->arguments[$keyword])) {
@@ -240,7 +395,7 @@ function delegator_page_form_basic_validate_filter($value) {
  */
 function delegator_page_form_basic_validate(&$form, &$form_state) {
   // Ensure name is properly formed.
-  $args = delegator_page_get_arguments($form_state['values']['path']);
+  $args = delegator_page_get_named_arguments($form_state['values']['path']);
   if ($invalid_args = array_filter($args, 'delegator_page_form_basic_validate_filter')) {
     foreach ($invalid_args as $arg => $position) {
       form_error($form['path'], t('Duplicated argument %arg', array('%arg' => $arg)));
@@ -428,14 +583,7 @@ function delegator_page_form_access(&$form, &$form_state) {
 
   $contexts = array();
   // Load contexts based on argument data:
-  if ($page->arguments) {
-    $arguments = array();
-    foreach ($page->arguments as $keyword => $argument) {
-      if (isset($argument['name'])) {
-        $argument['keyword'] = $keyword;
-        $arguments[$argument['id']] = $argument;
-      }
-    }
+  if ($arguments = delegator_page_get_arguments($page)) {
     $contexts = ctools_context_get_placeholders_from_argument($arguments);
   }
 
@@ -549,7 +697,7 @@ function delegator_page_form_argument(&$form, &$form_state) {
   $path = $form_state['page']->path;
   $page = &$form_state['page'];
 
-  $arguments = delegator_page_get_arguments($path);
+  $arguments = delegator_page_get_named_arguments($path);
 
   $form['table'] = array(
     '#theme' => 'delegator_page_form_argument_table',
@@ -671,7 +819,7 @@ function delegator_page_subtask_argument_ajax($step = NULL, $cache_name = NULL, 
   }
 
   $path = $page->path;
-  $arguments = delegator_page_get_arguments($path);
+  $arguments = delegator_page_get_named_arguments($path);
 
   // Load stored object from cache.
   if (!isset($arguments[$keyword])) {

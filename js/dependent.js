@@ -1,6 +1,6 @@
 // $Id$
 /**
- * @file dependent.js
+ * @file
  *
  * Written by dmitrig01 (Dmitri Gaskin) for CTools; this provides dependent
  * visibility for form items in CTools' ajax forms.

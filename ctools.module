@@ -106,3 +106,76 @@ function ctools_get_roles() {
 
   return $roles;
 }
+
+/**
+ * Determine if the current user has access via a plugin.
+ *
+ * This function is meant to be embedded in the Drupal menu system, and
+ * therefore is in the .module file since sub files can't be loaded, and
+ * takes arguments a little bit more haphazardly than ctools_access().
+ *
+ * @param $plugin_name
+ *   The access plugin to use. If empty or 'none' then no access control
+ *   is being used and this function returns TRUE. If the plugin can't be
+ *   found otherwise, this function automatically returns FALSE.
+ * @param $settings
+ *   An array of settings theoretically set by the user.
+ * @param ...
+ *   zero or more context arguments generated from argument plugins. These
+ *   contexts must have an 'id' attached to them so that they can be
+ *   properly associated. The argument plugin system should set this, but
+ *   if the context is coming from elsewhere it will need to be set manually.
+ *
+ * @return
+ *   TRUE if access is granted, false if otherwise.
+ */
+function ctools_access_menu($plugin_name, $settings) {
+  $contexts = array();
+  foreach (func_get_args() as $arg) {
+    if (is_object($arg) && get_class($arg) == 'ctools_context') {
+      $contexts[$arg->id] = $arg;
+    }
+  }
+
+  global $user;
+  return ctools_access($plugin_name, $settings, $contexts, $user);
+}
+
+/**
+ * Determine if the current user has access via  plugin.
+ *
+ * @param $plugin_name
+ *   The access plugin to use. If empty or 'none' then no access control
+ *   is being used and this function returns TRUE. If the plugin can't be
+ *   found otherwise, this function automatically returns FALSE.
+ * @param $settings
+ *   An array of settings theoretically set by the user.
+ * @param $contexts
+ *   An array of zero or more contexts that may be used to determine if
+ *   the user has access.
+ * @param $account
+ *   The account to test against. If NULL the logged in user will be tested.
+ *
+ * @return
+ *   TRUE if access is granted, false if otherwise.
+ */
+function ctools_access($plugin_name, $settings, $contexts = array(), $account = NULL) {
+  if (!$account) {
+    global $user;
+    $account = $user;
+  }
+
+  if (empty($plugin_name) || $plugin_name == 'none') {
+    return TRUE;
+  }
+
+  ctools_include('context');
+  $plugin = ctools_get_access_plugin($plugin_name);
+  if (!$plugin) {
+    return FALSE;
+  }
+
+  if ($function = ctools_plugin_get_function($plugin, 'callback')) {
+    return $function($settings, $contexts, $account);
+  }
+}

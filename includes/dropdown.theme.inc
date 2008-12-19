@@ -3,7 +3,34 @@
 
 /**
  * @file
- * Theme registry for dropdown-div tool.
+ * Provide a javascript based dropdown menu.
+ *
+ * The dropdown menu will show up as a clickable link; when clicked,
+ * a small menu will slide down beneath it, showing the list of links.
+ *
+ * The dropdown will stay open until either the user has moved the mouse
+ * away from the box for > .5 seconds, or can be immediately closed by
+ * clicking the link again. The code is smart enough that if the mouse
+ * moves away and then back within the .5 second window, it will not
+ * re-close.
+ *
+ * Multiple dropdowns can be placed per page.
+ *
+ * If the user does not have javascript enabled, the link will not appear,
+ * and instead by default the list of links will appear as a normal inline
+ * list.
+ *
+ * The menu is heavily styled by default, and to make it look different
+ * will require a little bit of CSS. You can apply your own class to the
+ * dropdown to help ensure that your CSS can override the dropdown's CSS.
+ *
+ * In particular, the text, link, background and border colors may need to
+ * be changed. Please see dropdown.css for information about the existing
+ * styling.
+ */
+
+/**
+ * Delegated implementation of hook_theme()
  */
 function ctools_dropdown_theme(&$items) {
   $items['ctools_dropdown'] = array(
@@ -14,6 +41,16 @@ function ctools_dropdown_theme(&$items) {
 
 /**
  * Create a dropdown menu.
+ *
+ * @param $title
+ *   The text to place in the clickable area to activate the dropdown.
+ * @param $links
+ *   A list of links to provide within the dropdown, suitable for use
+ *   in via Drupal's theme('links').
+ * @param $class
+ *   An optional class to add to the dropdown's container div to allow you
+ *   to style a single dropdown however you like without interfering with
+ *   other dropdowns.
  */
 function theme_ctools_dropdown($title, $links, $class = '') {
   // Provide a unique identifier for every dropdown on the page.

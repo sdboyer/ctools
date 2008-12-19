@@ -1,5 +1,26 @@
 // $Id$
-
+/**
+ * @file
+ * Implement a simple, clickable dropdown menu.
+ *
+ * See dropdown.theme.inc for primary documentation.
+ *
+ * The javascript relies on four classes:
+ * - The dropdown must be fully contained in a div with the class 
+ *   ctools-dropdown. It must also contain the class ctools-dropdown-no-js
+ *   which will be immediately removed by the javascript; this allows for
+ *   graceful degradation.
+ * - The trigger that opens the dropdown must be an a tag wit hthe class
+ *   ctools-dropdown-link. The href should just be '#' as this will never
+ *   be allowed to complete.
+ * - The part of the dropdown that will appear when the link is clicked must
+ *   be a div with class ctools-dropdown-container.
+ * - Finally, ctools-dropdown-hover will be placed on any link that is being
+ *   hovered over, so that the browser can restyle the links.
+ *
+ * This tool isn't meant to replace click-tips or anything, it is specifically
+ * meant to work well presenting menus.
+ */
 Drupal.behaviors.CToolsDropdown = function() {
   $('div.ctools-dropdown:not(.ctools-dropdown-processed)')
     .removeClass('ctools-dropdown-no-js')

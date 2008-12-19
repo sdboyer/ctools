@@ -13,3 +13,8 @@ string as though it came from a URL element.
     'settings form' => params: $form, $form_state, $conf -- gets the whole form. Should put anything it wants to keep automatically in $form['settings']
     'settings form validate' => params: $form, $form_state
     'settings form submit' => params: $form, $form_state
+
+    'criteria form' => params: $form, &$form_state, $conf, $argument, $id -- gets the whole argument. It should only put form widgets in $form[$id]. $conf may not be properly initialized so always guard against this due to arguments being changed and handlers not being updated to match.
+    + submit + validate
+
+    'criteria select' => returns true if the selected criteria matches the context. params: $context, $conf

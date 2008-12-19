@@ -16,7 +16,9 @@ function ctools_uid_ctools_arguments() {
     // keyword to use for %substitution
     'keyword' => 'user',
     'description' => t('Creates a user context from a user ID argument.'),
-    'context' => 'ctools_uid_context',
+    'context' => 'ctools_argument_uid_context',
+    'criteria form' => 'ctools_argument_uid_criteria_form',
+    'criteria select' => 'ctools_argument_uid_criteria_select',
   );
   return $args;
 }
@@ -24,7 +26,7 @@ function ctools_uid_ctools_arguments() {
 /**
  * Discover if this argument gives us the user we crave.
  */
-function ctools_uid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
+function ctools_argument_uid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   // If unset it wants a generic, unfilled context.
   if ($empty) {
     return ctools_context_create_empty('user');
@@ -40,4 +42,48 @@ function ctools_uid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   }
 
   return ctools_context_create('user', $account);
+}
+
+/**
+ * Provide a criteria form for selecting a node.
+ */
+function ctools_argument_uid_criteria_form(&$form, &$form_state, $conf, $argument, $id) {
+  // Ensure $conf has valid defaults:
+  if (!is_array($conf)) {
+    $conf = array();
+  }
+
+  $conf += array(
+    'rids' => array(),
+  );
+
+
+  $form[$id]['rids'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Select roles for %identifier', array('%identifier' => $argument['identifier'])),
+    '#default_value' => $conf['rids'],
+    '#options' => ctools_get_roles(),
+    '#description' => t('This item will only be selected for users having the selected roles. If no roles are selected, it will be selected for all users.'),
+  );
+}
+
+/**
+ * Provide a criteria form for selecting a node.
+ */
+function ctools_argument_uid_criteria_select($conf, $context) {
+  // As far as I know there should always be a context at this point, but this
+  // is safe.
+  if (empty($context) || empty($context->data) || !isset($context->data->roles)) {
+    return FALSE;
+  }
+
+  $rids = array_filter($conf['rids']);
+  if (!$rids) {
+    return TRUE;
+  }
+
+  $roles = array_keys($context->data->roles);
+  $roles[] = $context->data->uid ? DRUPAL_AUTHENTICATED_RID : DRUPAL_ANONYMOUS_RID;
+
+  return array_intersect($rids, $roles);
 }

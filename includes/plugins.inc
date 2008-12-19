@@ -258,7 +258,6 @@ function ctools_plugin_get_function($plugin, $function_name) {
   // If cached the .inc file may not have been loaded. require_once is quite safe
   // and fast so it's okay to keep calling it.
   if (isset($plugin['file'])) {
-    if (!is_array($plugin)) { vpr_trace(); }
     require_once './' . $plugin['path'] . '/' . $plugin['file'];
   }
 

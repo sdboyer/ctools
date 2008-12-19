@@ -1,11 +1,8 @@
 // $Id$
-
-// All CTools tools begin with this:
-if (!Drupal.CTools) {
-  Drupal.CTools = {};
-}
-
 /**
+ * @file
+ * Javascript required for a simple collapsible div.
+ *
  * Creating a collapsible div with this doesn't take too much. There are 
  * three classes necessary:
  *
@@ -20,6 +17,12 @@ if (!Drupal.CTools) {
  * The div will be 'open' unless the container class has 'ctools-collapsed' as
  * a class, which will cause the container to draw collapsed.
  */
+
+// All CTools tools begin with this if they need to use the CTools namespace.
+if (!Drupal.CTools) {
+  Drupal.CTools = {};
+}
+
 
 // Set up an array for callbacks.
 Drupal.CTools.CollapsibleCallbacks = [];

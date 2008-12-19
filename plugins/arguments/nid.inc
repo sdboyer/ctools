@@ -15,7 +15,9 @@ function ctools_nid_ctools_arguments() {
     'title' => t("Node ID"),
     'keyword' => 'node',
     'description' => t('Creates a node context from a node ID argument.'),
-    'context' => 'ctools_nid_context',
+    'context' => 'ctools_argument_nid_context',
+    'criteria form' => 'ctools_argument_nid_criteria_form',
+    'criteria select' => 'ctools_argument_nid_criteria_select',
   );
   return $args;
 }
@@ -23,19 +25,65 @@ function ctools_nid_ctools_arguments() {
 /**
  * Discover if this argument gives us the node we crave.
  */
-function ctools_nid_context($node = NULL, $conf = NULL, $empty = FALSE) {
+function ctools_argument_nid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   // If unset it wants a generic, unfilled context.
   if ($empty) {
     return ctools_context_create_empty('node');
   }
 
-  if (!is_object($node)) {
-    return NULL;
+  if (!is_numeric($arg)) {
+    return FALSE;
   }
 
-  if (array_filter($conf['types']) && empty($conf['types'][$node->type])) {
-    return NULL;
+  $node = node_load($arg);
+  if (!$node) {
+    return FALSE;
   }
 
   return ctools_context_create('node', $node);
+}
+
+/**
+ * Provide a criteria form for selecting a node.
+ */
+function ctools_argument_nid_criteria_form(&$form, &$form_state, $conf, $argument, $id) {
+  // Ensure $conf has valid defaults:
+  if (!is_array($conf)) {
+    $conf = array();
+  }
+
+  $conf += array(
+    'type' => array(),
+  );
+
+  $types = node_get_types();
+  foreach ($types as $type => $info) {
+    $options[$type] = check_plain($info->name);
+  }
+
+  $form[$id]['type'] = array(
+    '#title' => t('Select types for %identifier', array('%identifier' => $argument['identifier'])),
+    '#type' => 'checkboxes',
+    '#options' => $options,
+    '#description' => t('This item will only be selected for nodes having the selected node types. If no node types are selected, it will be selected for all node types.'),
+    '#default_value' => $conf['type'],
+  );
+}
+
+
+/**
+ * Provide a criteria form for selecting a node.
+ */
+function ctools_argument_nid_criteria_select($conf, $context) {
+  // As far as I know there should always be a context at this point, but this
+  // is safe.
+  if (empty($context) || empty($context->data) || empty($context->data->type)) {
+    return FALSE;
+  }
+
+  if (array_filter($conf['type']) && empty($conf['type'][$context->data->type])) {
+    return FALSE;
+  }
+
+  return TRUE;
 }

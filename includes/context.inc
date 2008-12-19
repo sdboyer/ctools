@@ -480,6 +480,8 @@ function ctools_context_get_context_from_argument($argument, $arg, $empty = FALS
       $context->identifier = $argument['identifier'];
       $context->page_title = isset($argument['title']) ? $argument['title'] : '';
       $context->keyword    = $argument['keyword'];
+      $context->id         = ctools_context_id($argument, 'argument');
+      $context->original_argument = $arg;
     }
     return $context;
   }
