@@ -19,6 +19,7 @@ function ctools_uid_ctools_arguments() {
     'context' => 'ctools_argument_uid_context',
     'criteria form' => 'ctools_argument_uid_criteria_form',
     'criteria select' => 'ctools_argument_uid_criteria_select',
+    'criteria summary' => 'ctools_argument_uid_criteria_summary',
   );
   return $args;
 }
@@ -86,4 +87,25 @@ function ctools_argument_uid_criteria_select($conf, $context) {
   $roles[] = $context->data->uid ? DRUPAL_AUTHENTICATED_RID : DRUPAL_ANONYMOUS_RID;
 
   return array_intersect($rids, $roles);
+}
+
+/**
+ * Provide a summary of the criteria for selecting this node.
+ */
+function ctools_argument_uid_criteria_summary($conf, $argument) {
+  if (!isset($conf['rids'])) {
+    $conf['rids'] = array();
+  }
+  $roles = ctools_get_roles();
+
+  $names = array();
+  foreach (array_filter($conf['rids']) as $rid) {
+    $names[] = check_plain($roles[$rid]);
+  }
+
+  if (empty($names)) {
+    return t('@identifier can have any role', array('@identifier' => $argument['identifier']));
+  }
+
+  return format_plural(count($names), '@identifier must have role "@roles"', '@identifier can be one of "@roles"', array('@roles' => implode(', ', $names), '@identifier' => $argument['identifier']));
 }

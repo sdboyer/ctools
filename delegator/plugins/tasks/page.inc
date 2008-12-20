@@ -91,12 +91,37 @@ function delegator_page_build_subtask($task, $page) {
   }
 
   $operations = array();
+  $task_name = delegator_make_task_name($task['name'], $name);
 
   if (empty($page->disabled)) {
-    $operations[] = array(
-      'title' => t('Task handlers'),
-      'href' => "admin/build/delegator/" . delegator_make_task_name($task['name'], $name),
-    );
+    if ($page->multiple) {
+      $operations[] = array(
+        'title' => t('Task handlers'),
+        'href' => "admin/build/delegator/$task_name",
+      );
+    }
+    else {
+      $task_handlers = delegator_load_task_handlers($task, $page->name);
+      if ($task_handlers) {
+        $handler = array_shift($task_handlers);
+        $plugin = delegator_get_task_handler($handler->handler);
+        if (!empty($plugin['edit forms'])) {
+          $actions = array();
+          foreach ($plugin['edit forms'] as $edit_id => $title) {
+            if ($title) {
+              $actions[] = array(
+                'title' => $title,
+                'href' => "admin/build/delegator/$task_name/$handler->handler/$handler->name/$edit_id",
+              );
+            }
+          }
+          $operations[] =  array(
+            'title' => '<span class="text">' . t('Edit handler') . '</span>' . theme('links', $actions),
+            'html' => TRUE,
+          );
+        }
+      }
+    }
     $operations[] =  array(
       'title' => '<span class="text">' . t('Edit page') . '</span>' . theme('links', $edit_links),
       'html' => TRUE,
@@ -141,6 +166,7 @@ function delegator_page_build_subtask($task, $page) {
     'admin path' => $page->path,
     'subtask' => $page,
     'operations' => $operations,
+    'single task' => empty($page->multiple),
   );
 }
 
@@ -174,6 +200,7 @@ function delegator_page_edit_form_info() {
       'access' => t('Access type'),
       'access-settings' => t('Access settings'),
       'menu' => t('Menu settings'),
+      'multiple' => t('Task handlers'),
     ),
     'forms' => array(
       'basic' => array(
@@ -190,6 +217,9 @@ function delegator_page_edit_form_info() {
       ),
       'argument' => array(
         'form id' => 'delegator_page_form_argument'
+      ),
+      'multiple' => array(
+        'form id' => 'delegator_page_argument_form_multiple'
       ),
     ),
   );

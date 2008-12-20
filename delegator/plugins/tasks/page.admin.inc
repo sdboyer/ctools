@@ -72,6 +72,9 @@ function delegator_page_menu(&$items, $task) {
 
   // Add menu entries for each subtask
   foreach (delegator_page_load_all() as $subtask_id => $subtask) {
+    if (!isset($subtask->access['type'])) {
+      $subtask->access['type'] = 'none';
+    }
     if (!isset($subtask->access['settings'])) {
       $subtask->access['settings'] = NULL;
     }
@@ -207,7 +210,7 @@ function delegator_page_clear_page_cache($name) {
  *   The value will be the position of the argument so that it can easily
  *   be found. Items with a position of -1 have multiple positions.
  */
-function delegator_page_get_arguments($path) {
+function delegator_page_get_named_arguments($path) {
   $arguments = array();
   $bits = explode('/', $path);
   foreach ($bits as $position => $bit) {
@@ -327,7 +330,18 @@ function delegator_page_add_subtask_finish(&$form_state) {
   // Force a menu rebuild to recognize our new subtask
   menu_rebuild();
 
-  if ($form_state['type'] == 'add') {
+  if (isset($form_state['create task handler'])) {
+    require_once './' . drupal_get_path('module', 'delegator') . '/delegator.admin.inc';
+    $task = $form_state['task'];
+    $task_name = delegator_make_task_name($task['name'], $page->name);
+    $cache = delegator_admin_get_task_cache($task, $page->name, $form_state['task_handlers']);
+    $plugin = delegator_get_task_handler($form_state['create task handler']);
+
+    // Create a new handler.
+    $handler = delegator_new_task_handler($task, $page->name, $plugin, 0, $cache);
+    $form_state['redirect'] = delegator_admin_new_task_handler($handler, $task_name, $task, $page->name, $cache, $plugin);
+  }
+  else if ($form_state['type'] == 'add') {
     // Redirect to the new page's task handler editor.
     $form_state['redirect'] = 'admin/build/delegator/page-' . $page->name;
   }
@@ -1091,5 +1105,61 @@ function delegator_page_argument_form_settings_submit(&$form, &$form_state) {
   }
   else {
     $page->temporary_arguments[$keyword]['settings'] = array();
+  }
+}
+
+/**
+ * Form to configure a page to have a single task handler or multiple
+ * task handlers.
+ */
+function delegator_page_argument_form_multiple(&$form, &$form_state) {
+  $task = delegator_get_task('page');
+  $task_handlers = delegator_load_task_handlers($task, $form_state['page']->name);
+
+  $form['multiple'] = array(
+    '#type' => 'radios',
+    '#options' => array(
+      1 => t('Allow multiple handlers for this page.'),
+      0 => t('Create a single handler for this page.'),
+    ),
+    '#default_value' => $form_state['page']->multiple,
+    '#description' => t('By allowing multiple handlers, the task handler UI will open up, allowing you to add and remove task handlers and adjust their priority.'),
+  );
+
+  if (count($task_handlers) > 1) {
+    $form['multiple']['#disabled'] = TRUE;
+    $form['multiple']['#description'] .= t('You may not modify this value while multiple task handlers exist. If you wish to change this to single only, you must reduce the number of task handlers attached to the page to zero or one.');
+  }
+
+  $form_state['task'] = $task;
+  $form_state['task_handlers'] = $task_handlers;
+
+  if ($form_state['type'] == 'add' || empty($task_handlers)) {
+    // Get a list of possible task handlers for this task.
+    $task_handler_plugins = delegator_get_task_handler_plugins($task);
+    foreach ($task_handler_plugins as $id => $plugin) {
+      $options[$id] = $plugin['title'];
+    }
+
+    ctools_include('dependent');
+    $form['handler'] = array(
+      '#title' => t('Select the handler for this page'),
+      '#type' => 'select',
+      '#options' => $options,
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('radio:multiple' => array(0)),
+    );
+  }
+}
+
+/**
+ * Submit handler for the multiple form.
+ */
+function delegator_page_argument_form_multiple_submit(&$form, &$form_state) {
+  $form_state['page']->multiple = $form_state['values']['multiple'];
+
+  // The task handler will be created in the _finish hook.
+  if (!$form_state['page']->multiple && empty($task_handlers)) {
+    $form_state['create task handler'] = $form_state['values']['handler'];
   }
 }

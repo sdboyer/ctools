@@ -38,8 +38,8 @@
  * @code { ctools_include('dependent'); }
  *
  * On any form item, add
- * - @code '#process' => 'ctools_dependent_process' @endcode
- * - @code '#dependency' => array('id-of-form-without-the-#' => array(list, of, values, that, make, this, gadget, visible)); @endcode
+ * - @code '#process' => array('ctools_dependent_process'), @endcode
+ * - @code '#dependency' => array('id-of-form-without-the-#' => array(list, of, values, that, make, this, gadget, visible)), @endcode
  */
 
 /**

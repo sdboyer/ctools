@@ -34,10 +34,6 @@ function delegator_theme() {
       'arguments' => array('form' => NULL),
       'file' => 'delegator.admin.inc',
     ),
-    'delegator_breadcrumb' => array(
-      'arguments' => array('breadcrumb' => array()),
-      'file' => 'delegator.admin.inc',
-    ),
   );
 
   // Allow task plugins to have theme registrations by passing through:
@@ -358,6 +354,66 @@ function delegator_export_task_handler($handler, $indent = '') {
   $output .= $append;
 
   return $output;
+}
+
+/**
+ * Create a new task handler object.
+ *
+ * @param $task
+ *   The task this task handler is for.
+ * @param $subtask_id
+ *   The subtask this task handler is for.
+ * @param $plugin
+ *   The plugin this task handler is created from.
+ * @param $weight
+ *   The weight to give this new task handler.
+ * @param $cache
+ *   The task cache if the task is currently being edited. This must be used
+ *   if task handlers already exist as it is used to determine a unique name
+ *   and without this naming collisions could occur.
+ */
+function delegator_new_task_handler($task, $subtask_id, $plugin, $weight = 0, $cache = NULL) {
+  // Generate a unique name. Unlike most named objects, we don't let people choose
+  // names for task handlers because they mostly don't make sense.
+  $base = $task['name'];
+  if ($subtask_id) {
+    $base .= '_' . $subtask_id;
+  }
+  $base .= '_' . $plugin['name'];
+
+  // Once we have a base, check to see if it is used. If it is, start counting up.
+  $name = $base;
+  $count = 1;
+  // If taken
+  while (isset($cache->handlers[$name])) {
+    $name = $base . '_' . ++$count;
+  }
+
+  // Create a new, empty handler object.
+  $handler = new stdClass;
+  $handler->task = $task['name'];
+  $handler->subtask = $subtask_id;
+  $handler->name = $name;
+  $handler->handler = $plugin['name'];
+  $handler->weight = $weight;
+  $handler->conf = array();
+
+  // These are provided by the core export API provided by ctools and we
+  // set defaults here so that we don't cause notices. Perhaps ctools should
+  // provide a way to do this for us so we don't have to muck with it.
+  $handler->export_type = EXPORT_IN_DATABASE;
+  $handler->type = t('Local');
+
+  if (isset($plugin['default conf'])) {
+    if (is_array($plugin['default conf'])) {
+      $handler->conf = $plugin['default conf'];
+    }
+    else if (function_exists($plugin['default conf'])) {
+      $handler->conf = $plugin['default conf']($handler, $task, $subtask_id);
+    }
+  }
+
+  return $handler;
 }
 
 /**

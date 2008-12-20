@@ -63,3 +63,16 @@
   display: block;
 }
 */
+
+html.js .delegator-operations {
+  width: 170px;
+}
+
+div.delegator-task-handler-operations {
+  display: none;
+}
+
+html.js div.delegator-task-handler-operations {
+  display: block;
+}
+

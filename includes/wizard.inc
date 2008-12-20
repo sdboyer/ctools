@@ -245,9 +245,19 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     $form['buttons']['cancel'] = array(
       '#type' => 'submit',
       '#value' => isset($form_info['cancel text']) ? $form_info['cancel text'] : t('Cancel'),
-      '#submit' => array('ctools_wizard_cancel'),
       '#wizard type' => 'cancel',
+      // hardcode the submit so that it doesn't try to save data.
+      '#submit' => array('ctools_wizard_submit'),
     );
+  }
+
+  // Set up optional validate handlers.
+  $form['#validate'] = array();
+  if (function_exists($info['form id'] . '_validate')) {
+    $form['#validate'][] = $info['form id'] . '_validate';
+  }
+  if (isset($info['validate']) && function_exists($info['validate'])) {
+    $form['#validate'][] = $info['validate'];
   }
 
   // Set up our submit handler after theirs. Since putting something here will
@@ -258,6 +268,9 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
   $form['#submit'] = array();
   if (function_exists($info['form id'] . '_submit')) {
     $form['#submit'][] = $info['form id'] . '_submit';
+  }
+  if (isset($info['submit']) && function_exists($info['submit'])) {
+    $form['#submit'][] = $info['submit'];
   }
   $form['#submit'][] = 'ctools_wizard_submit';
 
@@ -280,13 +293,14 @@ function ctools_wizard_submit(&$form, &$form_state) {
       }
     }
     else {
-      if ($type == 'return' || $type == 'finish') {
-        if (isset($form_state['form_info']['return path'])) {
-          $form_state['redirect'] = $form_state['form_info']['return path'];
-        }
+      if ($type == 'cancel' && isset($form_state['form_info']['cancel path'])) {
+        $form_state['redirect'] = $form_state['form_info']['return path'];
       }
-      else {
+      else if ($type == 'next') {
         $form_state['redirect'] = ctools_wizard_get_path($form_state['form_info'], $form_state['clicked_button']['#next']);
+      }
+      else if (isset($form_state['form_info']['return path'])) {
+        $form_state['redirect'] = $form_state['form_info']['return path'];
       }
     }
   }

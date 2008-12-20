@@ -407,6 +407,10 @@ function ctools_context_id($context, $type = 'context') {
 function ctools_context_next_id($objects, $name) {
   // Figure out which instance of this argument we're creating
   $id = 0;
+  if (!$objects) {
+    return $id;
+  }
+
   foreach ($objects as $object) {
     if (isset($object['name']) && $object['name'] == $name) {
       if ($object['id'] > $id) {

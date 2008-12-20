@@ -120,6 +120,12 @@ function delegator_schema_1() {
         'default' => '',
         'serialize' => TRUE,
       ),
+      'multiple' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'description' => t('True if the UI is set up to allow multiple handlers per page.'),
+        'default' => 0,
+      ),
       'menu' => array(
         'type' => 'text',
         'size' => 'big',

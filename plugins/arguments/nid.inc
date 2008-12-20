@@ -18,6 +18,7 @@ function ctools_nid_ctools_arguments() {
     'context' => 'ctools_argument_nid_context',
     'criteria form' => 'ctools_argument_nid_criteria_form',
     'criteria select' => 'ctools_argument_nid_criteria_select',
+    'criteria summary' => 'ctools_argument_nid_criteria_summary',
   );
   return $args;
 }
@@ -86,4 +87,25 @@ function ctools_argument_nid_criteria_select($conf, $context) {
   }
 
   return TRUE;
+}
+
+/**
+ * Provide a summary of the criteria for selecting this node.
+ */
+function ctools_argument_nid_criteria_summary($conf, $argument) {
+  if (!isset($conf['type'])) {
+    $conf['type'] = array();
+  }
+  $types = node_get_types();
+
+  $names = array();
+  foreach (array_filter($conf['type']) as $type) {
+    $names[] = check_plain($types[$type]->name);
+  }
+
+  if (empty($names)) {
+    return t('@identifier can be any node type', array('@identifier' => $argument['identifier']));
+  }
+
+  return format_plural(count($names), '@identifier can be type "@types"', '@identifier can be types "@types"', array('@types' => implode(', ', $names), '@identifier' => $argument['identifier']));
 }

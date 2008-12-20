@@ -20,22 +20,29 @@ Drupal.behaviors.zzGoLastDelegatorTaskList = function(context) {
   }
 
   $('.delegator-operations select:not(.delegator-processed)', context).each(function() {
+    var $select = $(this);
     var $next = $(this).parent().next('input');
     $next.hide();
-    $(this).change(function() {
-      var val = $(this).val();
+    $(this).hide();
+
+    $dropdown = $(this).parent().siblings('.ctools-dropdown');
+   
+    $('.ctools-dropdown-container a', $dropdown).click(function() {
+      var val = $(this).attr('href').replace('/', '');
+
       // ignore empty
       if (!val) {
-        return;
+        return false;
       }
 
       // force confirm on delete
-      if ($(this).val() == 'delete' && !confirm(Drupal.t('Remove this task?'))) {
-        $(this).val('');
-        return;
+      if (val == 'delete' && !confirm(Drupal.t('Remove this task?'))) {
+        return false;
       }
-
+      
+      $select.val(val);
       $next.trigger('click');
+      return false;
     });
   });
 }

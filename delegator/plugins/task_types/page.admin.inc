@@ -3,7 +3,11 @@
 
 /**
  * @file
- * Administrative functions for the page system
+ * Administrative functions for the page task type system
+ *
+ * This system provides a unified administrative interface to handle page
+ * tasks of all types, including a generic 'page' task that lets a user
+ * create pages as well as specific page tasks for handling built-in pages.
  */
 function delegator_page_type_list() {
   $tasks = delegator_get_tasks_by_type('page');
@@ -27,14 +31,11 @@ function delegator_page_type_list() {
   );
 
   foreach ($tables as $bucket => $info) {
-    if (!empty($info['rows'])) {
-      $output .= '<h3>' . check_plain($info['title']) . '</h3>';
-      $output .= '<div class="description">' . check_plain($info['description']) . '</div>';
-      if (isset($info['operations'])) {
-        $info['rows'][] = array('data' => array(array('data' => theme('links', $info['operations']), 'colspan' => 3)), 'class' => 'delegator-page-operations');
-      }
+    $output .= '<h3>' . check_plain($info['title']) . '</h3>';
+    $output .= '<div class="description">' . check_plain($info['description']) . '</div>';
+    if (isset($info['operations'])) {
+      $info['rows'][] = array('data' => array(array('data' => theme('links', $info['operations']), 'colspan' => 3)), 'class' => 'delegator-page-operations');
     }
-
     $output .= theme('table', $header, $info['rows']);
   }
 
