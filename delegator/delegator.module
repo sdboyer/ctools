@@ -285,8 +285,15 @@ function delegator_load_task_handlers($task, $subtask_id = NULL) {
 /**
  * Load all task handlers for a given task and subtask and sort them.
  */
-function delegator_load_sorted_handlers($task, $subtask_id = NULL) {
+function delegator_load_sorted_handlers($task, $subtask_id = NULL, $enabled = FALSE) {
   $handlers = delegator_load_task_handlers($task, $subtask_id);
+  if ($enabled) {
+    foreach ($handlers as $id => $handler) {
+      if (!empty($handler->disabled)) {
+        unset($handlers[$id]);
+      }
+    }
+  }
   uasort($handlers, '_delegator_sort_task_handlers');
   return $handlers;
 }
@@ -604,3 +611,9 @@ function dp_arg_load($value, $subtask, $argument) {
   return _dp_arg_load($value, $subtask, $argument);
 }
 
+/**
+ * Get the render function for a handler.
+ */
+function delegator_get_renderer($handler) {
+  return ctools_plugin_load_function('delegator', 'task_handlers', $handler->handler, 'render');
+}

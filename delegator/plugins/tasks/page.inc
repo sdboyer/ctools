@@ -46,7 +46,7 @@ function delegator_page_delegator_tasks() {
 
       // context only items
       'type' => 'context',
-      'get arguments' => 'delegator_page_get_argument_callback',
+      'get arguments' => 'delegator_page_get_arguments',
       'get context placeholders' => 'delegator_page_get_contexts',
     ),
   );
@@ -295,8 +295,8 @@ function delegator_page_execute($subtask_id) {
 
   // Try each handler.
   foreach ($handlers as $handler) {
-    if ($function = ctools_plugin_load_function('delegator', 'task_handlers', $handler->handler, 'render')) {
-      $output = $function($handler, $page, $contexts);
+    if ($function = delegator_get_renderer($handler)) {
+      $output = $function($handler, $contexts);
       if ($output) {
         // TRUE is a special return used to let us know that it handled the
         // task but does not wish us to render anything, as it already did.
@@ -318,44 +318,27 @@ function delegator_page_execute($subtask_id) {
 /**
  * Return a list of arguments used by this task.
  */
-function delegator_page_get_argument_callback($task, $subtask_id) {
+function delegator_page_get_arguments($task, $subtask_id) {
+  $arguments = array();
+
   $page = delegator_page_load($subtask_id);
-
-  if ($page) {
-    return delegator_page_get_arguments($page);
-  }
-}
-
-/**
- * Get a group of context placeholders for the arguments.
- */
-function delegator_page_get_contexts($task, $subtask_id) {
-  $page = delegator_page_load($subtask_id);
-
-  if ($page && $arguments = delegator_page_get_arguments($page)) {
-    ctools_include('context');
-    return ctools_context_get_placeholders_from_argument($arguments);
-  }
-}
-
-/**
- * Return a list of arguments used by this page.
- *
- * This provides a list of arguments suitable for using in the context
- * system, which is slightly more data than we store in the database.
- * This also filters out arguments that have no contexts.
- */
-function delegator_page_get_arguments($page) {
-  if ($page->arguments) {
-    $arguments = array();
+  if (!empty($page->arguments)) {
     foreach ($page->arguments as $keyword => $argument) {
       if (isset($argument['name'])) {
         $argument['keyword'] = $keyword;
         $arguments[$keyword] = $argument;
       }
     }
-    return $arguments;
   }
+  return $arguments;
+}
+
+/**
+ * Get a group of context placeholders for the arguments.
+ */
+function delegator_page_get_contexts($task, $subtask_id) {
+  ctools_include('context');
+  return ctools_context_get_placeholders_from_argument(delegator_page_get_arguments($task, $subtask_id));
 }
 
 // --------------------------------------------------------------------------

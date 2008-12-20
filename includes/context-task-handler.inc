@@ -18,19 +18,18 @@
 /**
  * Compare arguments to contexts for selection purposes.
  *
- * @param $task
- *   The task plugin definition.
- * @param $subtask_id
- *   The id of the subtask being used.
+ * @param $handler
+ *   The handler in question.
  * @param $contexts
  *   The context objects provided by the task.
  * @return
  *   TRUE if these contexts match the selection criteria. NULL or FALSE
  *   otherwise.
  */
-function ctools_context_handler_select($task, $subtask_id, $contexts) {
+function ctools_context_handler_select($handler, $contexts) {
+  $task = delegator_get_task($handler->task);
   if ($function = ctools_plugin_get_function($task, 'get arguments')) {
-    $arguments = $function($task, $subtask_id);
+    $arguments = $function($task, $handler->subtask);
     foreach ($arguments as $argument) {
       $id = ctools_context_id($argument, 'argument');
       if (empty($handler->conf[$id]) || empty($contexts[$id])) {

@@ -8,15 +8,25 @@
 function delegator_node_view_delegator_tasks() {
   return array(
     'node_view' => array(
-       'title' => t('Node view'),
-       'description' => t('The node view task allows you to control what handler will handle the job of rendering a node view at the path <em>node/%node</em>. If no handler is set or matches the criteria, the default Drupal node renderer will be used.'),
-       'type' => 'node_view', // handler type -- misnamed
-       'admin title' => 'Node view', // translated by menu system
-       'admin description' => 'Overrides for the built in node view handler at <em>node/%node</em>.',
-       'admin path' => 'node/%node',
-       'hook menu' => 'delegator_node_view_menu',
-       'hook menu alter' => 'delegator_node_view_menu_alter',
-       'task type' => 'page',
+      // This is a 'page' task and will fall under the page admin UI
+      'task type' => 'page',
+
+      'title' => t('Node view'),
+      'description' => t('The node view task allows you to control what handler will handle the job of rendering a node view at the path <em>node/%node</em>. If no handler is set or matches the criteria, the default Drupal node renderer will be used.'),
+
+      'admin title' => 'Node view', // translated by menu system
+      'admin description' => 'Overrides for the built in node view handler at <em>node/%node</em>.',
+      'admin path' => 'node/%node',
+
+      // Menu hooks so that we can alter the node/%node menu entry to point to us.
+      'hook menu' => 'delegator_node_view_menu',
+      'hook menu alter' => 'delegator_node_view_menu_alter',
+
+      // This is task uses 'context' handlers and must implement these to give the
+      // handler data it needs.
+      'type' => 'context', // handler type -- misnamed
+      'get arguments' => 'delegator_node_view_get_arguments',
+      'get context placeholders' => 'delegator_node_view_get_contexts',
     ),
   );
 }
@@ -46,12 +56,26 @@ function delegator_node_view_menu_alter(&$items, $task) {
 function delegator_node_view($node) {
   // Load my task plugin:
   $task = delegator_get_task('node_view');
-  $handlers = delegator_load_sorted_handlers($task);
+  $handlers = delegator_load_sorted_handlers($task, '', TRUE);
+
+  // Load the node into a context
+  ctools_include('context');
+  $context = ctools_context_create('node', $node);
+  $context->identifier = t('Node being viewed');
+  $context->keyword = 'node';
+
+  // The ID used here was determined by ctools_context_get_id and is
+  // used in the contexts returned by the get context placeholders
+  // callback. It must match or this context will not be the same
+  // context the UI configured.
+  $contexts = array(
+    'argument_nid_0' => $context,
+  );
 
   // Try each handler.
   foreach ($handlers as $handler) {
-    if ($function = ctools_plugin_load_function('delegator', 'task_handlers', $handler->handler, 'render')) {
-      $output = $function($handler, $node);
+    if ($function = delegator_get_renderer($handler)) {
+      $output = $function($handler, $contexts);
       if ($output) {
         // Since we're not using node_show() we need to emulate what it used to do.
         // Update the history table, stating that this user viewed this node.
@@ -70,4 +94,29 @@ function delegator_node_view($node) {
 
   // Fall back!
   return node_page_view($node);
+}
+
+/**
+ * Callback to get arguments provided by this task handler.
+ *
+ * Since this is the node view and there is no UI on the arguments, we
+ * create dummy arguments that contain the needed data.
+ */
+function delegator_node_view_get_arguments($task, $subtask_id) {
+  return array(
+    array(
+      'keyword' => 'node',
+      'identifier' => t('Node being viewed'),
+      'id' => 0,
+      'name' => 'nid',
+      'settings' => array(),
+    ),
+  );
+}
+
+/**
+ * Callback to get context placeholders provided by this handler.
+ */
+function delegator_node_view_get_contexts($task, $subtask_id) {
+  return ctools_context_get_placeholders_from_argument(delegator_node_view_get_arguments($task, $subtask_id));
 }
