@@ -22,6 +22,12 @@ function ctools_context_theme(&$theme) {
     'arguments' => array('type', 'form', 'position', 'count', 'with_tr' => TRUE),
     'file' => 'includes/context.theme.inc',
   );
+
+  // For the access plugin
+  $theme['ctools_access_admin_add'] = array(
+    'arguments' => array('form'),
+    'file' => 'includes/context-admin.inc',
+  );
 }
 
 /**

@@ -1,10 +1,22 @@
 /* $Id$ */
 
-.delegator-page-operations {
-  text-align: right;
+.delegator-page-operations .ctools-dropdown-link-wrapper,
+th.delegator-page-operations {
+  text-align: right; 
 }
 
 td.delegator-page-operations {
   width: 175px;
 }
 
+.delegator-disabled {
+  color: #ccc;
+}
+
+.delegator-page-title {
+  width: 20%;
+}
+
+.delegator-page-path {
+  width: 20%;
+}

@@ -32,6 +32,11 @@ function ctools_argument_nid_context($arg = NULL, $conf = NULL, $empty = FALSE) 
     return ctools_context_create_empty('node');
   }
 
+  // We can accept either a node object or a pure nid.
+  if (is_object($arg)) {
+    return ctools_context_create('node', $arg);
+  }
+
   if (!is_numeric($arg)) {
     return FALSE;
   }

@@ -24,4 +24,17 @@ function ctools_context_menu(&$items) {
   $items['ctools/context/ajax/delete'] = array(
     'page callback' => 'ctools_context_ajax_item_delete',
   ) + $base;
+
+  // For the access system
+  $base['file'] = 'includes/context-access-admin.inc';
+  $items['ctools/context/ajax/access/add'] = array(
+    'page callback' => 'ctools_access_ajax_add',
+  ) + $base;
+  $items['ctools/context/ajax/access/configure'] = array(
+    'page callback' => 'ctools_access_ajax_edit',
+  ) + $base;
+  $items['ctools/context/ajax/access/delete'] = array(
+    'page callback' => 'ctools_access_ajax_delete',
+  ) + $base;
+
 }

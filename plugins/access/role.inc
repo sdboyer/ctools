@@ -3,8 +3,7 @@
 
 /**
  * @file
- *
- * Plugin to provide an argument handler for a node id
+ * Plugin to provide access control based upon role membership.
  */
 
 /**
@@ -12,13 +11,14 @@
  */
 function ctools_role_ctools_access() {
   $args['role'] = array(
-    'title' => t("By role"),
+    'title' => t("Access by user role"),
     'description' => t('Control access by role.'),
     'callback' => 'ctools_role_ctools_access_check',
     'default' => array('rids' => array()),
     'settings form' => 'ctools_role_ctools_access_settings',
     'settings form submit' => 'ctools_role_ctools_access_settings_submit',
-
+    'summary' => 'ctools_role_ctools_acesss_summary',
+    'required context' => new ctools_context_required(t('User'), 'user'),
   );
 
   return $args;
@@ -47,8 +47,35 @@ function ctools_role_ctools_access_settings_submit(&$form, &$form_state) {
 /**
  * Check for access.
  */
-function ctools_role_ctools_access_check($conf, $contexts, $account) {
-  $roles = array_keys($account->roles);
-  $roles[] = $account->uid ? DRUPAL_AUTHENTICATED_RID : DRUPAL_ANONYMOUS_RID;
-  return array_intersect($conf['rids'], $roles);
+function ctools_role_ctools_access_check($conf, $context) {
+  // As far as I know there should always be a context at this point, but this
+  // is safe.
+  if (empty($context) || empty($context->data) || !isset($context->data->roles)) {
+    return FALSE;
+  }
+
+  $roles = array_keys($context->data->roles);
+  $roles[] = $context->data->uid ? DRUPAL_AUTHENTICATED_RID : DRUPAL_ANONYMOUS_RID;
+  return (bool) array_intersect($conf['rids'], $roles);
+}
+
+/**
+ * Provide a summary description based upon the checked roles.
+ */
+function ctools_role_ctools_acesss_summary($conf, $context) {
+  if (!isset($conf['rids'])) {
+    $conf['rids'] = array();
+  }
+  $roles = ctools_get_roles();
+
+  $names = array();
+  foreach (array_filter($conf['rids']) as $rid) {
+    $names[] = check_plain($roles[$rid]);
+  }
+
+  if (empty($names)) {
+    return t('@identifier can have any role', array('@identifier' => $context->identifier));
+  }
+
+  return format_plural(count($names), '@identifier must have role "@roles"', '@identifier can be one of "@roles"', array('@roles' => implode(', ', $names), '@identifier' => $context->identifier));
 }

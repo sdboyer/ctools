@@ -24,7 +24,7 @@ function delegator_node_view_delegator_tasks() {
 
       // This is task uses 'context' handlers and must implement these to give the
       // handler data it needs.
-      'type' => 'context', // handler type -- misnamed
+      'handler type' => 'context', // handler type -- misnamed
       'get arguments' => 'delegator_node_view_get_arguments',
       'get context placeholders' => 'delegator_node_view_get_contexts',
     ),
@@ -54,23 +54,15 @@ function delegator_node_view_menu_alter(&$items, $task) {
  * node view, which is node_page_view().
  */
 function delegator_node_view($node) {
-  // Load my task plugin:
+  // Load my task plugin
   $task = delegator_get_task('node_view');
+
+  // Load the node into a context.
+  ctools_include('context-task-handler');
+  $contexts = ctools_context_handler_get_task_contexts($task, '', array($node));
+
+  // Load the landlers.
   $handlers = delegator_load_sorted_handlers($task, '', TRUE);
-
-  // Load the node into a context
-  ctools_include('context');
-  $context = ctools_context_create('node', $node);
-  $context->identifier = t('Node being viewed');
-  $context->keyword = 'node';
-
-  // The ID used here was determined by ctools_context_get_id and is
-  // used in the contexts returned by the get context placeholders
-  // callback. It must match or this context will not be the same
-  // context the UI configured.
-  $contexts = array(
-    'argument_nid_0' => $context,
-  );
 
   // Try each handler.
   foreach ($handlers as $handler) {

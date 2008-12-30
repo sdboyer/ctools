@@ -4,6 +4,10 @@
 /**
  * @file includes/common-context.inc
  * Provide API for adding contexts for modules that embed displays.
+ *
+ * Note that most of this code was directly copied from Panels 2, and as such
+ * a lot of this code is crusty. It could probably stand to be rewritten,
+ * and brought up to date, or at least better commented.
  */
 
 /**

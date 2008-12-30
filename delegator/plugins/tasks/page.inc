@@ -43,11 +43,17 @@ function delegator_page_delegator_tasks() {
           'href' => 'admin/build/pages/add',
         ),
       ),
-
+      'columns' => array(
+        'storage' => array(
+          'label' => t('Storage'),
+          'class' => 'delegator-page-storage',
+        ),
+      ),
       // context only items
-      'type' => 'context',
+      'handler type' => 'context',
       'get arguments' => 'delegator_page_get_arguments',
       'get context placeholders' => 'delegator_page_get_contexts',
+
     ),
   );
 }
@@ -162,11 +168,12 @@ function delegator_page_build_subtask($task, $page) {
   return array(
     'name' => $name,
     'admin title' => $page->admin_title,
-    'admin description' => t('TODO'),
     'admin path' => $page->path,
     'subtask' => $page,
     'operations' => $operations,
     'single task' => empty($page->multiple),
+    'row class' => empty($page->disabled) ? 'delegator-enabled' : 'delegator-disabled',
+    'storage' => $page->type,
   );
 }
 
@@ -197,8 +204,7 @@ function delegator_page_edit_form_info() {
     'order' => array(
       'basic' => t('Basic settings'),
       'argument' => t('Argument settings'),
-      'access' => t('Access type'),
-      'access-settings' => t('Access settings'),
+      'access' => t('Access control'),
       'menu' => t('Menu settings'),
       'multiple' => t('Task handlers'),
     ),
@@ -208,9 +214,6 @@ function delegator_page_edit_form_info() {
       ),
       'access' => array(
         'form id' => 'delegator_page_form_access'
-      ),
-      'access-settings' => array(
-        'form id' => 'delegator_page_form_access_settings'
       ),
       'menu' => array(
         'form id' => 'delegator_page_form_menu'
@@ -290,7 +293,6 @@ function delegator_page_execute($subtask_id) {
 
   $task = delegator_get_task('page');
   $handlers = delegator_load_sorted_handlers($task, $subtask_id);
-
   $page = delegator_page_load($subtask_id);
 
   // Try each handler.
@@ -319,9 +321,13 @@ function delegator_page_execute($subtask_id) {
  * Return a list of arguments used by this task.
  */
 function delegator_page_get_arguments($task, $subtask_id) {
+  $page = delegator_page_load($subtask_id);
+  return _delegator_page_get_arguments($page);
+}
+
+function _delegator_page_get_arguments($page) {
   $arguments = array();
 
-  $page = delegator_page_load($subtask_id);
   if (!empty($page->arguments)) {
     foreach ($page->arguments as $keyword => $argument) {
       if (isset($argument['name'])) {

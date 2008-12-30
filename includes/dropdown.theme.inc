@@ -65,7 +65,9 @@ function theme_ctools_dropdown($title, $links, $class = '') {
   $output = '';
 
   $output .= '<div class="' . $class . '" id="ctools-dropdown-' . $id . '">';
+  $output .= '<div class="ctools-dropdown-link-wrapper">'; // Test fix for IE
   $output .= '<a href="#" class="ctools-dropdown-link">' . check_plain($title) . '</a>';
+  $output .= '</div>'; // wrapper
   $output .= '<div class="ctools-dropdown-container">';
   $output .= theme('links', $links);
   $output .= '</div>'; // container

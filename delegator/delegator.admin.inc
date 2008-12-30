@@ -954,6 +954,9 @@ function delegator_administer_task_handler_export($task_name, $name) {
   return drupal_get_form('ctools_export_form', delegator_export_task_handler($handler), $title);
 }
 
+/**
+ * Basic form info for the wizard to multi-step edit a task handler.
+ */
 function delegator_admin_task_handler_form_info($task_name) {
   return array(
     'id' => 'delegator_task_handler',
@@ -1081,8 +1084,8 @@ function delegator_administer_task_handler_add($task_name, $name, $step) {
   $form_info['path'] = "admin/build/delegator/$task_name/add/$handler->name/%step";
   $form_info['show trail'] = TRUE;
 
-  $title = delegator_get_handler_title($plugin, $handler, $task, $subtask_id);
-  drupal_set_title(t('Add task handler "@title"', array('@title' => $title)));
+  $title = isset($subtask['admin title']) ? $subtask['admin title'] : $task['admin title'];
+  drupal_set_title(t('Add task handler for %task', array('%task' => $title)));
 
   delegator_set_trail($task);
   $form_state = array(
@@ -1304,7 +1307,7 @@ function delegator_admin_import_task_handler_validate($form, &$form_state) {
 }
 
 /**
- * Clone an existing task handler into a new handler.
+ * Submit handler to import an existing page.
  */
 function delegator_admin_import_task_handler_submit($form, &$form_state) {
   // Use the one from the database or an updated one in cache?

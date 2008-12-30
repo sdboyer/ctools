@@ -27,24 +27,12 @@
  *   otherwise.
  */
 function ctools_context_handler_select($handler, $contexts) {
-  $task = delegator_get_task($handler->task);
-  if ($function = ctools_plugin_get_function($task, 'get arguments')) {
-    $arguments = $function($task, $handler->subtask);
-    foreach ($arguments as $argument) {
-      $id = ctools_context_id($argument, 'argument');
-      if (empty($handler->conf[$id]) || empty($contexts[$id])) {
-        return FALSE;
-      }
-
-      if ($function = ctools_plugin_load_function('ctools', 'arguments', $argument['name'], 'criteria select')) {
-        if (!$function($handler->conf[$id], $contexts[$id])) {
-          return FALSE;
-        }
-      }
-    }
+  if (empty($handler->conf['access'])) {
+    return TRUE;
   }
-  // Either there are no arguments or all arguments passed.
-  return TRUE;
+
+  ctools_include('context');
+  return ctools_access($handler->conf['access'], $contexts);
 }
 
 /**
@@ -57,34 +45,107 @@ function ctools_context_handler_select($handler, $contexts) {
  *   The loaded task plugin.
  * @param $subtask_id
  *   The subtask id.
- * @param $conf
- *   The configuration array that will contain the various argument settings,
- *   keyed by argument ID.
+ * @param $handler
+ *   The handler to be checked.
  */
-function ctools_context_handler_summary($task, $subtask_id, $conf) {
+function ctools_context_handler_summary($task, $subtask_id, $handler) {
+  if (empty($handler->conf['access']['plugins'])) {
+    return array();
+  }
+
+  ctools_include('context');
   $strings = array();
-  if ($function = ctools_plugin_get_function($task, 'get arguments')) {
-    $arguments = $function($task, $subtask_id);
-    ctools_include('context');
-    foreach ($arguments as $argument) {
-      if ($function = ctools_plugin_load_function('ctools', 'arguments', $argument['name'], 'criteria summary')) {
-        $id = ctools_context_id($argument, 'argument');
-        if (!isset($conf[$id])) {
-          $conf[$id] = array();
-        }
-        $strings[] = $function($conf[$id], $argument);
-      }
+  $contexts = ctools_context_handler_get_all_contexts($task, $subtask_id, $handler);
+
+  foreach ($handler->conf['access']['plugins'] as $test) {
+    $plugin = ctools_get_access_plugin($test['name']);
+    if ($string = ctools_access_summary($plugin, $contexts, $test)) {
+      $strings[] = $string;
     }
   }
 
   return $strings;
 }
 
+// --------------------------------------------------------------------------
+// Tasks and Task handlers can both have their own sources of contexts.
+// Sometimes we need all of these contexts at once (when editing
+// the task handler, for example) but sometimes we need them separately
+// (when a task has contexts loaded and is trying out the task handlers,
+// for example). Therefore there are two paths we can take to getting contexts.
+
 /**
- * Get empty contexts for use with the delegator panels pages.
+ * Load the contexts for a task, using arguments.
+ *
+ * This creates the base array of contexts, loaded from arguments, suitable
+ * for use in rendering.
  */
-function ctools_context_handler_placeholders($task, $subtask_id) {
-  if ($function = ctools_plugin_get_function($task, 'get context placeholders')) {
+function ctools_context_handler_get_task_contexts($task, $subtask_id, $args) {
+  $contexts = array();
+
+  $arguments = ctools_context_handler_get_task_arguments($task, $subtask_id);
+  ctools_context_get_context_from_arguments($arguments, $contexts, $args);
+
+  return $contexts;
+}
+
+/**
+ * Load the contexts for a task handler.
+ *
+ * This expands a base set of contexts passed in from a task with the
+ * contexts defined on the task handler. The contexts from the task
+ * must already have been loaded.
+ */
+function ctools_context_handler_get_handler_contexts($contexts, $handler) {
+  $object = ctools_context_handler_get_handler_object($handler);
+  return ctools_context_load_contexts($object, FALSE, $contexts);
+}
+
+/**
+ * Load the contexts for a task and task handler together.
+ *
+ * This pulls the arguments from a task and everything else from a task
+ * handler and loads them as a group. Since there is no data, this loads
+ * the contexts as placeholders.
+ */
+function ctools_context_handler_get_all_contexts($task, $subtask_id, $handler) {
+  $object = ctools_context_handler_get_task_object($task, $subtask_id, $handler);
+  return ctools_context_load_contexts($object, TRUE);
+}
+
+/**
+ * Create an object suitable for use with the context system that kind of
+ * expects things in a certain, kind of clunky format.
+ */
+function ctools_context_handler_get_handler_object($handler) {
+  $object = new stdClass;
+  $object->name = $handler->name;
+  $object->contexts = isset($handler->conf['contexts']) ? $handler->conf['contexts'] : array();
+  $object->relationships = isset($handler->conf['relationships']) ? $handler->conf['relationships'] : array();
+
+  return $object;
+}
+
+/**
+ * Create an object suitable for use with the context system that kind of
+ * expects things in a certain, kind of clunky format. This one adds in
+ * arguments from the task.
+ */
+function ctools_context_handler_get_task_object($task, $subtask_id, $handler) {
+  $object = new stdClass;
+  $object->name = $handler->name;
+  $object->arguments = ctools_context_handler_get_task_arguments($task, $subtask_id);
+  $object->contexts = isset($handler->conf['contexts']) ? $handler->conf['contexts'] : array();
+  $object->relationships = isset($handler->conf['relationships']) ? $handler->conf['relationships'] : array();
+
+  return $object;
+}
+
+/**
+ * Get the arguments from a task that are used to load contexts.
+ */
+function ctools_context_handler_get_task_arguments($task, $subtask_id) {
+  if ($function = ctools_plugin_get_function($task, 'get arguments')) {
     return $function($task, $subtask_id);
   }
 
@@ -98,51 +159,85 @@ function ctools_context_handler_placeholders($task, $subtask_id) {
  * will be keyed by the argument ID.
  */
 function ctools_context_handler_edit_criteria(&$form, &$form_state) {
-  // All 'context' type tasks are required to implement this function.
-  $form_state['arguments'] = array();
-  if ($function = ctools_plugin_get_function($form_state['task'], 'get arguments')) {
-    $arguments = $function($form_state['task'], $form_state['subtask_id']);
-
-    ctools_include('context');
-    foreach ($arguments as $argument) {
-      if ($function = ctools_plugin_load_function('ctools', 'arguments', $argument['name'], 'criteria form')) {
-        $id = ctools_context_id($argument, 'argument');
-        if (!isset($form_state['handler']->conf[$id])) {
-          $form_state['handler']->conf[$id] = array();
-        }
-
-        $form[$id] = array('#tree' => TRUE);
-        $function($form, $form_state, $form_state['handler']->conf[$id], $argument, $id);
-      }
-    }
-    $form_state['arguments'] = $arguments;
+  if (!isset($form_state['handler']->conf['access'])) {
+    $form_state['handler']->conf['access'] = array();
   }
-}
 
-/**
- * Validate handler for criteria selection
- */
-function ctools_context_handler_edit_criteria_validate(&$form, &$form_state) {
-  foreach ($form_state['arguments'] as $argument) {
-    if ($function = ctools_plugin_load_function('ctools', 'arguments', $argument['name'], 'criteria form validate')) {
-      $id = ctools_context_id($argument, 'argument');
-      $function($form, $form_state, $form_state['handler']->conf[$id], $argument, $id);
-    }
-  }
+  ctools_include('context');
+  $form_state['module'] = 'delegator_task_handler';
+  // Encode a bunch of info into the argument so we can get our cache later
+  $form_state['callback argument'] = $form_state['task_name'] . '*' . $form_state['handler']->name;
+  $form_state['access'] = $form_state['handler']->conf['access'];
+  $form_state['no buttons'] = TRUE;
+  $form_state['contexts'] = ctools_context_handler_get_all_contexts($form_state['task'], $form_state['subtask_id'], $form_state['handler']);
+
+  ctools_include('context-access-admin');
+  $form = array_merge($form, ctools_access_admin_form($form_state));
 }
 
 /**
  * Submit handler for criteria selection
  */
 function ctools_context_handler_edit_criteria_submit(&$form, &$form_state) {
-  foreach ($form_state['arguments'] as $argument) {
-    $id = ctools_context_id($argument, 'argument');
-    if ($function = ctools_plugin_load_function('ctools', 'arguments', $argument['name'], 'criteria form submit')) {
-      $function($form, $form_state, $form_state['handler']->conf[$id], $argument, $id);
+  $form_state['handler']->conf['access']['logic'] = $form_state['values']['logic'];
+  if (!empty($form_state['handler']->conf['autogenerate_title'])) {
+    $strings = ctools_context_handler_summary($form_state['task'], $form_state['subtask_id'], $form_state['handler']);
+    if (!$strings) {
+      $form_state['handler']->conf['title'] = t('Panel');
     }
-
-    if (isset($form_state['values'][$id])) {
-      $form_state['handler']->conf[$id] = $form_state['values'][$id];
+    else {
+      $form_state['handler']->conf['title'] = t('Panel: !criteria', array('!criteria' => implode(', ', $strings)));
     }
   }
+}
+
+/**
+ * Edit contexts that go with this panel.
+ */
+function ctools_context_handler_edit_context(&$form, &$form_state) {
+  ctools_include('context-admin');
+  ctools_context_admin_includes();
+
+  $handler = $form_state['handler'];
+  // Check our context object cache.
+  if (!empty($_POST)) {
+    $cache = ctools_object_cache_get('context_object:delegator', $handler->name);
+  }
+  else {
+    $cache = ctools_context_handler_get_task_object($form_state['task'], $form_state['subtask_id'], $form_state['handler']);
+    ctools_object_cache_set('context_object:delegator', $handler->name, $cache);
+  }
+
+  $form['right'] = array(
+    '#prefix' => '<div class="clear-block"><div class="right-container">',
+    '#suffix' => '</div>',
+  );
+
+  $form['left'] = array(
+    '#prefix' => '<div class="left-container">',
+    '#suffix' => '</div></div>',
+  );
+
+  ctools_context_add_context_form('delegator', $form, $form_state, $form['right']['contexts_table'], $cache);
+  ctools_context_add_relationship_form('delegator', $form, $form_state, $form['right']['relationships_table'], $cache);
+
+  $form['left']['summary'] = array(
+    '#prefix' => '<div class="delegator-contexts">',
+    '#suffix' => '</div>',
+    '#value' => theme('ctools_context_list', $cache, t('Summary of contexts')),
+  );
+
+  // @todo -- this CSS is actually dependent upon the plugins which means
+  // the plugins need to be able to add it.
+  drupal_add_css(panels_get_path('css/panels_admin.css'));
+  $form_state['context_object'] = &$cache;
+}
+
+/**
+ * Process submission of the context edit form.
+ */
+function ctools_context_handler_edit_context_submit(&$form, &$form_state) {
+  $form_state['handler']->conf['contexts'] = $form_state['context_object']->contexts;
+  $form_state['handler']->conf['relationships'] = $form_state['context_object']->relationships;
+  ctools_object_cache_clear('context_object:delegator', $form_state['handler']->name);
 }

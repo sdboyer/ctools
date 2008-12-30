@@ -29,11 +29,17 @@ function delegator_page_menu(&$items, $task) {
     'page callback' => 'delegator_page_add_subtask',
     'type' => MENU_LOCAL_TASK,
   ) + $base;
+  $items['admin/build/pages/import'] = array(
+    'title' => 'Import page',
+    'description' => 'Import a delegator page subtask.',
+    'page callback' => 'delegator_page_import_subtask',
+    'type' => MENU_LOCAL_TASK,
+  ) + $base;
 
   $form_info = delegator_page_edit_form_info();
   $default_task = FALSE;
   $weight = 0;
-  foreach ($form_info['order'] as $form_id => $form_title) {
+  foreach ($form_info['order'] as $step => $form_title) {
     // The first edit form is the default for tabs, so it gets a bit
     // of special treatment here.
     if (!$default_task) {
@@ -42,7 +48,8 @@ function delegator_page_menu(&$items, $task) {
       $items["admin/build/pages/edit/%"] = array(
         'title' => t('Edit'),
         'page callback' => 'delegator_page_edit_subtask',
-        'page arguments' => array(4, $form_id),
+        'page arguments' => array(4, $step),
+        'type' => MENU_CALLBACK,
       ) + $base;
 
       // And make sure it's the default local task.
@@ -56,7 +63,7 @@ function delegator_page_menu(&$items, $task) {
     }
 
     // Handler to edit delegator task handlers. May exist in its own UI.
-    $items["admin/build/pages/edit/%/$form_id"] = array(
+    $items["admin/build/pages/edit/%/$step"] = array(
       'title' => $form_title,
       'page callback' => 'delegator_page_edit_subtask',
       'page arguments' => array(4, 5),
@@ -65,6 +72,48 @@ function delegator_page_menu(&$items, $task) {
     ) + $base;
   }
 
+  $items["admin/build/pages/delete/%"] = array(
+    'title' => t('Delete'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('delegator_page_delete_subtask', 4),
+    'type' => MENU_CALLBACK,
+  ) + $base;
+
+  $items["admin/build/pages/break-lock/%"] = array(
+    'title' => t('Break lock'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('delegator_page_break_lock_subtask', 4),
+    'type' => MENU_CALLBACK,
+  ) + $base;
+
+  $items["admin/build/pages/clone/%"] = array(
+    'title' => t('Clone'),
+    'page callback' => 'delegator_page_clone_subtask',
+    'page arguments' => array(4),
+    'type' => MENU_CALLBACK,
+  ) + $base;
+
+  $items["admin/build/pages/export/%"] = array(
+    'title' => t('Clone'),
+    'page callback' => 'delegator_page_export_subtask',
+    'page arguments' => array(4),
+    'type' => MENU_CALLBACK,
+  ) + $base;
+
+  $items["admin/build/pages/enable/%"] = array(
+    'title' => t('Break lock'),
+    'page callback' => 'delegator_page_enable_subtask',
+    'page arguments' => array(4),
+    'type' => MENU_CALLBACK,
+  ) + $base;
+
+  $items["admin/build/pages/disable/%"] = array(
+    'title' => t('Disable'),
+    'page callback' => 'delegator_page_disable_subtask',
+    'page arguments' => array(4),
+    'type' => MENU_CALLBACK,
+  ) + $base;
+
   // AJAX callbacks for argument modal.
   $items['admin/build/delegator/argument'] = array(
     'page callback' => 'delegator_page_subtask_argument_ajax',
@@ -72,6 +121,10 @@ function delegator_page_menu(&$items, $task) {
 
   // Add menu entries for each subtask
   foreach (delegator_page_load_all() as $subtask_id => $subtask) {
+    if (!empty($subtask->disabled)) {
+      continue;
+    }
+
     if (!isset($subtask->access['type'])) {
       $subtask->access['type'] = 'none';
     }
@@ -81,7 +134,7 @@ function delegator_page_menu(&$items, $task) {
 
     $path = array();
     $page_arguments = array($subtask_id);
-    $access_arguments = array($subtask->access['type'], $subtask->access['settings']);
+    $access_arguments = array($subtask->access);
     $load_arguments = array($subtask_id, '%index');
 
     // Replace named placeholders with our own placeholder to load contexts.
@@ -590,119 +643,28 @@ function delegator_page_form_menu_submit(&$form, &$form_state) {
  */
 function delegator_page_form_access(&$form, &$form_state) {
   ctools_include('context');
-  $page = &$form_state['page'];
-  if (!isset($page->access['type'])) {
-    $page->access['type'] = '';
-  }
+  $form_state['module'] = 'delegator_page';
+  $form_state['callback argument'] = $form_state['cache name'];
+  $form_state['access'] = $form_state['page']->access;
+  $form_state['no buttons'] = TRUE;
+  $form_state['contexts'] = array();
 
-  $contexts = array();
   // Load contexts based on argument data:
-  if ($arguments = delegator_page_get_arguments($page)) {
-    $contexts = ctools_context_get_placeholders_from_argument($arguments);
+  if ($arguments = _delegator_page_get_arguments($form_state['page'])) {
+    $form_state['contexts'] = ctools_context_get_placeholders_from_argument($arguments);
   }
 
-  $plugins = ctools_get_access_plugins();
-  $options = array();
-  foreach ($plugins as $id => $plugin) {
-    if (!empty($plugin['required context']) && !ctools_context_filter($contexts, $plugin['required context'])) {
-      continue;
-    }
-    $options[$id] = $plugin['title'];
-  }
-
-  asort($options);
-  $options = array('' => t('No access control')) + $options;
-
-  $form['type'] = array(
-    '#type' => 'radios',
-    '#options' => $options,
-    '#default_value' => $page->access['type'],
-  );
+  ctools_include('context-access-admin');
+  $form = array_merge($form, ctools_access_admin_form($form_state));
 }
 
 /**
  * Submit handler to deal with access control changes.
  */
 function delegator_page_form_access_submit(&$form, &$form_state) {
-  // First, see if the new mechanism is different from the existing mechanism.
-  $access = &$form_state['page']->access;
-  $type = $form_state['values']['type'];
-
-  ctools_include('context');
-  $plugin = $type ? ctools_get_access_plugin($type) : array();
-  if (!isset($access['type']) || $access['type'] != $type) {
-    if (isset($plugin['default'])) {
-      if (is_array($plugin['default'])) {
-        $access['settings'] = $plugin['default'];
-      }
-      else if (function_exists($plugin['default'])) {
-        $access['settings'] = $plugin['default']();
-      }
-      else {
-        $access['settings'] = array();
-      }
-    }
-  }
-
-  $access['type'] = $type;
-
-  // If there's no settings form, skip the settings form.
-  if (!$plugin) {
-    $form_state['clicked_button']['#next'] = 'menu';
-  }
+  $form_state['page']->access['logic'] = $form_state['values']['logic'];
 }
 
-/**
- * Form to change access settings.
- */
-function delegator_page_form_access_settings(&$form, &$form_state) {
-  $access = &$form_state['page']->access;
-
-  if (!isset($access['type'])) {
-    // This should be impossible and thus never seen.
-    $form['error'] = array('#value' => t('Error: missing argument.'));
-    return;
-  }
-
-  ctools_include('context');
-  $plugin = ctools_get_access_plugin($access['type']);
-
-  $form['settings'] = array(
-    '#tree' => TRUE,
-  );
-
-  if (!$plugin) {
-    // This should be impossible and thus never seen.
-    $form['error'] = array('#value' => t('Error: missing or invalid argument plugin %argument.', array('%argument', $argument)));
-    return;
-  }
-
-  if ($function = ctools_plugin_get_function($plugin, 'settings form')) {
-    $function($form, $form_state, $access['settings']);
-  }
-
-  $form_state['plugin'] = $plugin;
-}
-
-/**
- * Validate handler for argument settings.
- */
-function delegator_page_form_access_settings_validate(&$form, &$form_state) {
-  if ($function = ctools_plugin_get_function($form_state['plugin'], 'settings form validate')) {
-    $function($form, $form_state);
-  }
-}
-
-/**
- * Submit handler for argument settings.
- */
-function delegator_page_form_access_settings_submit(&$form, &$form_state) {
-  if ($function = ctools_plugin_get_function($form_state['plugin'], 'settings form submit')) {
-    $function($form, $form_state);
-  }
-
-  $form_state['page']->access['settings'] = $form_state['values']['settings'];
-}
 
 /**
  * Form to handle assigning argument handlers to named arguments.
@@ -1162,4 +1124,200 @@ function delegator_page_argument_form_multiple_submit(&$form, &$form_state) {
   if (!$form_state['page']->multiple && empty($task_handlers)) {
     $form_state['create task handler'] = $form_state['values']['handler'];
   }
+}
+
+/**
+ * Form to break a lock on a delegator page.
+ */
+function delegator_page_break_lock_subtask(&$form_state, $name) {
+  // This ensures the task .inc file is loaded
+  $task = delegator_get_task('page');
+  $page = delegator_page_load($name);
+
+  $form_state['name'] = $name;
+
+  ctools_include('object-cache');
+  $lock = ctools_object_cache_test('delegator_page', $name);
+
+  $form = array();
+
+  if (empty($lock)) {
+    return array('message' => array('#value' => t('There is no lock on this page to break.')));
+  }
+
+  $task = delegator_get_task($page->task);
+  delegator_set_trail($task);
+
+  $cancel = 'admin/build/pages';
+  if (!empty($_REQUEST['cancel'])) {
+    $cancel = $_REQUEST['cancel'];
+  }
+
+  $account = user_load($lock->uid);
+  return confirm_form($form,
+                  t('Are you sure you want to break this lock?'),
+                  $cancel,
+                  t('By breaking this lock, any unsaved changes made by !user will be lost!', array('!user' => theme('username', $account))),
+                  t('Break lock'),
+                  t('Cancel'));
+}
+
+/**
+ * Submit handler to break_lock a view.
+ */
+function delegator_page_break_lock_subtask_submit(&$form, &$form_state) {
+  ctools_object_cache_clear_all('delegator_page', $form_state['name']);
+  drupal_set_message(t('The lock has been broken and you may now edit this page.'));
+  $form_state['redirect'] = 'admin/build/pages';
+}
+
+/**
+ * Import a task handler from cut & paste
+ */
+function delegator_page_import_subtask(&$form_state) {
+  drupal_set_title(t('Import page'));
+  $form['object'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Paste page code here'),
+    '#rows' => 15,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Import'),
+  );
+  return $form;
+}
+
+/**
+ * Ensure we got a valid page.
+ */
+function delegator_page_import_subtask_validate($form, &$form_state) {
+  ob_start();
+  eval($form_state['values']['object']);
+  ob_end_clean();
+
+  if (!isset($page) || !is_object($page)) {
+    form_error($form['object'], t('Unable to interpret page code.'));
+  }
+
+  // See if the task is already locked.
+  $cache = delegator_page_get_page_cache($page->name);
+  if (!empty($cache->locked)) {
+    $account = user_load($cache->locked->uid);
+    $name = theme('username', $account);
+    $lock_age = format_interval(time() - $cache->locked->updated);
+    $break = url('admin/build/pages/break-lock/' . $page->name, array('query' => array('destination' => $_GET['q'], 'cancel' => $_GET['q'])));
+
+    form_error($form['object'], t('Unable to import page because it is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $name, '!age' => $lock_age, '!break' => $break)));
+  }
+
+  $page->type = t('Normal');
+
+  ctools_include('export');
+  $page->export_type = EXPORT_IN_DATABASE;
+
+  if (isset($cache)) {
+    drupal_set_message(t('Warning: The page you are importing already exists and this operation will overwrite an existing page. If this is not what you intend, you may Cancel this. You should then modify the <code>$page-&gt;name</code> field of your import to have a unique name.'), 'warning');
+    $page->pid = $cache->pid;
+  }
+
+  $form_state['page'] = $page;
+}
+
+/**
+ * Submit the import page to create the new page and redirect.
+ */
+function delegator_page_import_subtask_submit($form, &$form_state) {
+  // Use the one from the database or an updated one in cache?
+  $page = &$form_state['page'];
+
+  delegator_page_set_page_cache($page);
+  $form_state['redirect'] = 'admin/build/pages/edit' . $form_state['page']->name;
+}
+
+/**
+ * Entry point to export a page.
+ */
+function delegator_page_export_subtask($name) {
+  // This ensures the task .inc file is loaded
+  $task = delegator_get_task('page');
+  $page = delegator_page_load($name);
+
+  if (!$page) {
+    return drupal_not_found();
+  }
+
+  $title = $page->admin_title;
+  drupal_set_title(t('Export task page "@title"', array('@title' => $page->admin_title)));
+
+  return drupal_get_form('ctools_export_form', delegator_page_export($page), $title);
+}
+
+/**
+ * Entry point to export a page.
+ */
+function delegator_page_clone_subtask($name) {
+  return "Not yet implemented.";
+}
+
+/**
+ * Entry point to export a page.
+ */
+function delegator_page_enable_subtask($name) {
+  ctools_include('export');
+  ctools_export_set_status('delegator_pages', $name, FALSE);
+  drupal_goto('admin/build/pages');
+}
+
+/**
+ * Entry point to export a page.
+ */
+function delegator_page_disable_subtask($name) {
+  ctools_include('export');
+  ctools_export_set_status('delegator_pages', $name, TRUE);
+  drupal_goto('admin/build/pages');
+}
+
+/**
+ * Entry point to export a page.
+ */
+function delegator_page_delete_subtask($form_state, $name) {
+  // This ensures the task .inc file is loaded
+  $task = delegator_get_task('page');
+  $page = delegator_page_load($name);
+
+  if (!$page) {
+    return drupal_not_found();
+  }
+
+  $form_state['page'] = $page;
+  $form = array();
+
+  $cancel = 'admin/build/pages';
+
+  if ($page->type == t('Overridden')) {
+    $title = t('Are you sure you want to revert the page %name?', array('%name' => $page->admin_title));
+    $desc = t('Reverting the page will delete the page that is in the database, reverting it to the original default page. Any changes you have made will be lost and cannot be recovered.');
+  }
+  else {
+    $title = t('Are you sure you want to delete the page %name?', array('%name' => $page->admin_title));
+    $desc = t('Deleting a page cannot be undone.');
+  }
+
+  return confirm_form($form,
+                  $title,
+                  $cancel,
+                  $desc,
+                  t('Delete'),
+                  t('Cancel'));
+}
+
+/**
+ * Submit handler to delete a view.
+ */
+function delegator_page_delete_subtask_submit(&$form, &$form_state) {
+  delegator_page_delete($form_state['page']);
+  drupal_set_message(t('The page has been deleted.'));
+  $form_state['redirect'] = 'admin/build/pages';
 }

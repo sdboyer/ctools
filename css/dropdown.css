@@ -1,9 +1,9 @@
 /* $Id$ */
 html.js div.ctools-dropdown div.ctools-dropdown-container {
-  position: absolute;
-  z-index: 99;
+  z-index: 999;
   display: none;
   text-align: left;
+  position: absolute;
 }
 
 html.js div.ctools-dropdown div.ctools-dropdown-container ul li a {
@@ -11,12 +11,14 @@ html.js div.ctools-dropdown div.ctools-dropdown-container ul li a {
 }
 
 html.js div.ctools-dropdown div.ctools-dropdown-container ul {
-  display: inline;
   list-style-type: none;
 }
 
 html.js div.ctools-dropdown div.ctools-dropdown-container ul li {
   display: block;
+  /* prevent excess right margin in IE */
+  margin-right: 0;
+  padding-right: 0;
 }
 
 .ctools-dropdown-no-js .ctools-dropdown-link,
@@ -35,7 +37,8 @@ html.js div.ctools-dropdown div.ctools-dropdown-container {
   width: 175px;
   background: #fff;
   border: 1px solid black;
-  margin-top: 4px;
+  margin: 4px 1px 0 0;
+  padding: 0;
   color: #494949;
 }
 

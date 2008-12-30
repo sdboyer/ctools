@@ -282,7 +282,7 @@ function _ctools_context_selector($contexts, $required, $default, $num = 0) {
       '#type' => 'select',
       '#options' => $options,
       '#title' => $title,
-      '#description' => t('Multiple contexts are valid for this pane; one must be chosen.'),
+      '#description' => t('Multiple contexts are valid for this; one must be chosen.'),
       '#default_value' => $default,
     );
   }
@@ -655,12 +655,14 @@ function ctools_context_get_context_from_relationships($relationships, &$context
     if (empty($contexts[$rdata['context']])) {
       continue;
     }
+    /*
     $relationship = ctools_context_get_context_from_relationship($rdata['name']);
     // If the relationship can't be found or its context can't be found,
     // ignore.
     if (!$relationship) {
       continue;
     }
+    */
 
     $cid = ctools_context_id($rdata, 'relationship');
     if ($context = ctools_context_get_context_from_relationship($rdata, $contexts[$rdata['context']])) {
@@ -882,4 +884,101 @@ function ctools_get_access_plugin($name) {
 function ctools_get_access_plugins() {
   ctools_include('plugins');
   return ctools_get_plugins('ctools', 'access');
+}
+
+/**
+ * Fetch a list of access plugins that are available for a given list of
+ * contexts.
+ *
+ * if 'logged-in-user' is not in the list of contexts, it will be added as
+ * this is required.
+ */
+function ctools_get_relevant_access_plugins($contexts) {
+  if (!isset($contexts['logged-in-user'])) {
+    $contexts['logged-in-user'] = ctools_access_get_loggedin_context();
+  }
+
+  $all_plugins = ctools_get_access_plugins();
+  $plugins = array();
+  foreach ($all_plugins as $id => $plugin) {
+    if (!empty($plugin['required context']) && !ctools_context_filter($contexts, $plugin['required context'])) {
+      continue;
+    }
+    $plugins[$id] = $plugin;
+  }
+
+  return $plugins;
+}
+
+/**
+ * Create a context for the logged in user.
+ */
+function ctools_access_get_loggedin_context() {
+  global $user;
+  $context = ctools_context_create('user', $user);
+  $context->identifier = t('Logged in user');
+  $context->keyword = 'viewer';
+  $context->id = 0;
+
+  return $context;
+}
+
+/**
+ * Get a summary of an access plugin's settings.
+ */
+function ctools_access_summary($plugin, $contexts, $test) {
+  if (!isset($contexts['logged-in-user'])) {
+    $contexts['logged-in-user'] = ctools_access_get_loggedin_context();
+  }
+
+  $description = '';
+  if ($function = ctools_plugin_get_function($plugin, 'summary')) {
+    $description = $function($test['settings'], ctools_context_select($contexts, $plugin['required context'], $test['context']));
+  }
+  return $description;
+}
+
+/**
+ * Determine if the current user has access via  plugin.
+ *
+ * @param $plugin_name
+ *   The access plugin to use. If empty or 'none' then no access control
+ *   is being used and this function returns TRUE. If the plugin can't be
+ *   found otherwise, this function automatically returns FALSE.
+ * @param $settings
+ *   An array of settings theoretically set by the user.
+ * @param $contexts
+ *   An array of zero or more contexts that may be used to determine if
+ *   the user has access.
+ * @param $account
+ *   The account to test against. If NULL the logged in user will be tested.
+ *
+ * @return
+ *   TRUE if access is granted, false if otherwise.
+ */
+function ctools_access($settings, $contexts = array()) {
+  if (empty($settings['plugins'])) {
+    return TRUE;
+  }
+
+  if (!isset($contexts['logged-in-user'])) {
+    $contexts['logged-in-user'] = ctools_access_get_loggedin_context();
+  }
+
+  foreach ($settings['plugins'] as $test) {
+    $pass = FALSE;
+    $plugin = ctools_get_access_plugin($test['name']);
+    if ($plugin && $function = ctools_plugin_get_function($plugin, 'callback')) {
+      $pass = $function($test['settings'], ctools_context_select($contexts, $plugin['required context'], $test['context']));
+    }
+
+    if ($pass && $settings['logic'] == 'or') {
+      return TRUE;
+    }
+    else if (!$pass && $settings['logic'] == 'and') {
+      return FALSE;
+    }
+  }
+
+  return TRUE;
 }

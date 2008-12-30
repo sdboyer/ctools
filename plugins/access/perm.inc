@@ -3,8 +3,7 @@
 
 /**
  * @file
- *
- * Plugin to provide an argument handler for a node id
+ * Plugin to provide access control based on user permission strings.
  */
 
 /**
@@ -12,11 +11,13 @@
  */
 function ctools_perm_ctools_access() {
   $args['perm'] = array(
-    'title' => t("By permission string"),
+    'title' => t("Access by user permission string"),
     'description' => t('Control access by permission string.'),
     'callback' => 'ctools_perm_ctools_access_check',
     'default' => array('perm' => 'access content'),
     'settings form' => 'ctools_perm_ctools_access_settings',
+    'summary' => 'ctools_perm_ctools_acesss_summary',
+    'required context' => new ctools_context_required(t('User'), 'user'),
   );
 
   return $args;
@@ -48,6 +49,23 @@ function ctools_perm_ctools_access_settings(&$form, &$form_state, $conf) {
 /**
  * Check for access.
  */
-function ctools_perm_ctools_access_check($conf, $contexts, $account) {
-  return user_access($conf['perm'], $account);
+function ctools_perm_ctools_access_check($conf, $context) {
+  // As far as I know there should always be a context at this point, but this
+  // is safe.
+  if (empty($context) || empty($context->data)) {
+    return FALSE;
+  }
+
+  return user_access($conf['perm'], $context->data);
+}
+
+/**
+ * Provide a summary description based upon the checked roles.
+ */
+function ctools_perm_ctools_acesss_summary($conf, $context) {
+  if (!isset($conf['perm'])) {
+    return t('Error, unset permission');
+  }
+
+  return t('@identifier must have "@perm"', array('@identifier' => $context->identifier, '@perm' => $conf['perm']));
 }

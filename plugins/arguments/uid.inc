@@ -33,6 +33,11 @@ function ctools_argument_uid_context($arg = NULL, $conf = NULL, $empty = FALSE) 
     return ctools_context_create_empty('user');
   }
 
+  // We can accept either a node object or a pure nid.
+  if (is_object($arg)) {
+    return ctools_context_create('user', $arg);
+  }
+
   if (!is_numeric($arg)) {
     return NULL;
   }

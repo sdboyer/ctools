@@ -16,6 +16,13 @@ function delegator_page_type_list() {
     'singles' => array(
       'title' => t('System pages'),
       'description' => t('Pages provided by the system that can be overridden to provide alternate content or layout.'),
+      // add extra columns to single tasks.
+      'columns' => array(
+        'admin description' => array(
+          'label' => t('Description'),
+          'class' => 'delegator-page-description',
+        ),
+      ),
       'rows' => array(),
     ),
     'page' => array(), // give this one special weighting,
@@ -24,17 +31,27 @@ function delegator_page_type_list() {
   delegator_page_type_sort_tasks($tasks, $tables, 'singles');
 
   $output = '';
-  $header = array(
-    array('data' => t('Title'), 'class' => 'delegator-page-title'),
-    array('data' => t('Path'), 'class' => 'delegator-page-path'),
-    array('data' => t('Operations'), 'class' => 'delegator-page-operations'),
-  );
 
   foreach ($tables as $bucket => $info) {
+    // The header can vary a little bit based upon what the task said it
+    // should have:
+    $header = array(
+      array('data' => t('Title'), 'class' => 'delegator-page-title'),
+      array('data' => t('Path'), 'class' => 'delegator-page-path'),
+    );
+
+    if (isset($info['columns'])) {
+      foreach ($info['columns'] as $id => $column_info) {
+        $header[] = array('data' => $column_info['label'], 'class' => $column_info['class']);
+      }
+    }
+
+    $header[] = array('data' => t('Operations'), 'class' => 'delegator-page-operations');
+
     $output .= '<h3>' . check_plain($info['title']) . '</h3>';
     $output .= '<div class="description">' . check_plain($info['description']) . '</div>';
     if (isset($info['operations'])) {
-      $info['rows'][] = array('data' => array(array('data' => theme('links', $info['operations']), 'colspan' => 3)), 'class' => 'delegator-page-operations');
+      $info['rows'][] = array('data' => array(array('data' => theme('links', $info['operations']), 'colspan' => count($header))), 'class' => 'delegator-page-operations');
     }
     $output .= theme('table', $header, $info['rows']);
   }
@@ -55,6 +72,9 @@ function delegator_page_type_sort_tasks($tasks, &$tables, $bucket, $task_id = NU
       if (isset($task['operations'])) {
         $tables[$id]['operations'] = $task['operations'];
       }
+      if (isset($task['columns'])) {
+        $tables[$id]['columns'] = $task['columns'];
+      }
 
       delegator_page_type_sort_tasks(delegator_get_task_subtasks($task), $tables, $id, $task['name']);
       continue;
@@ -67,9 +87,20 @@ function delegator_page_type_sort_tasks($tasks, &$tables, $bucket, $task_id = NU
       $task_name = $task['name'];
     }
 
-    $row = array('data' => array(), 'class' => 'page-task-' . $id);
+    $class = 'page-task-' . $id;
+    if (isset($task['row class'])) {
+      $class .= ' ' . $task['row class'];
+    }
+
+    $row = array('data' => array(), 'class' => $class);
     $row['data'][] = array('data' => $task['admin title'], 'class' => 'delegator-page-title');
     $row['data'][] = array('data' => $task['admin path'], 'class' => 'delegator-page-path');
+    if (isset($tables[$bucket]['columns'])) {
+      foreach ($tables[$bucket]['columns'] as $column_id => $column_info) {
+        $row['data'][] = array('data' => $task[$column_id], 'class' => $column_info['class']);
+      }
+    }
+
     if (isset($task['operations'])) {
       $operations = $task['operations'];
     }
