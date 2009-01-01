@@ -58,6 +58,7 @@ function delegator_node_view($node) {
   $task = delegator_get_task('node_view');
 
   // Load the node into a context.
+  ctools_include('context');
   ctools_include('context-task-handler');
   $contexts = ctools_context_handler_get_task_contexts($task, '', array($node));
 

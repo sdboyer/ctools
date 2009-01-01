@@ -57,6 +57,7 @@ function delegator_user_view($account) {
   $task = delegator_get_task('user_view');
 
   // Load the account into a context.
+  ctools_include('context');
   ctools_include('context-task-handler');
   $contexts = ctools_context_handler_get_task_contexts($task, '', array($account));
 
