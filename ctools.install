@@ -59,6 +59,7 @@ function ctools_schema_1() {
       ),
       'data' => array(
         'type' => 'blob',
+        'size' => 'big',
         'description' => t('Serialized data being stored.'),
         'serialize' => TRUE,
       ),
