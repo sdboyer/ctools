@@ -55,6 +55,7 @@ function ctools_modal_add_js() {
   ));
 
   drupal_add_js($settings, 'setting');
+  drupal_add_js('/misc/jquery.form.js');
   ctools_add_js('dimensions');
   ctools_add_js('mc');
   ctools_add_js('ajax-responder');
