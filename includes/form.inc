@@ -69,7 +69,8 @@ function ctools_build_form($form_id, &$form_state) {
       else {
         // Use a copy of the function's arguments for manipulation
         $args_temp = $args;
-        $args_temp[0] = &$form_state;
+        array_unshift($args_temp, 'placeholder');
+        $args_temp[0] = &$form_state; // replaces the placeholder.
         array_unshift($args_temp, $form_id);
 
         $form = call_user_func_array('drupal_retrieve_form', $args_temp);
@@ -131,6 +132,11 @@ function ctools_build_form($form_id, &$form_state) {
     $form = ctools_rebuild_form($form_id, $form_state, $args);
   }
 
+  // If whoever is calling this wants the $form array (so that it can render it
+  // another way, for example) then return it.
+  if (!empty($form_state['want form'])) {
+    return $form;
+  }
   // If we haven't redirected to a new location by now, we want to
   // render whatever form array is currently in hand.
   return drupal_render_form($form_id, $form);
@@ -145,7 +151,8 @@ function ctools_rebuild_form($form_id, &$form_state, $args, $form_build_id = NUL
   // Remove the first argument. This is $form_id.when called from
   // drupal_get_form and the original $form_state when called from some AHAH
   // callback. Neither is needed. After that, put in the current state.
-  $args[0] = &$form_state;
+  array_unshift($args, 'placeholder');
+  $args[0] = &$form_state; // Replaces placeholder.
   // And the form_id.
   array_unshift($args, $form_id);
   $form = call_user_func_array('drupal_retrieve_form', $args);

@@ -30,16 +30,17 @@ function ctools_node_edit_context($arg = NULL, $conf = NULL, $empty = FALSE) {
     return ctools_context_create_empty('node_edit_form');
   }
 
+  // We can accept either a node object or a pure nid.
+  if (is_object($arg)) {
+    return ctools_context_create('node_edit_form', $arg);
+  }
+
   if (!is_numeric($arg)) {
-    return NULL;
+    return FALSE;
   }
 
   $node = node_load($arg);
   if (!$node) {
-    return NULL;
-  }
-
-  if (array_filter($conf['types']) && empty($conf['types'][$node->type])) {
     return NULL;
   }
 

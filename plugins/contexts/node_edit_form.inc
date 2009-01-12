@@ -41,25 +41,21 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
   }
 
   if (!empty($node) && node_access('update', $node)) {
-    // This is from node_edit_page cause Drupal still doesn't use fapi right.
-    if ($_POST['op'] == t('Delete')) {
-      // Note: we redirect from node/nid/edit to node/nid/delete to make the tabs disappear.
-      if ($_REQUEST['destination']) {
-        $destination = drupal_get_destination();
-        unset($_REQUEST['destination']);
-      }
-      drupal_goto('node/'. $node->nid .'/delete', $destination);
-    }
+    module_load_include('inc', 'node', 'node.pages');
+    ctools_include('form');
+    $form_id = $node->type . '_node_form';
 
-    $form = drupal_retrieve_form($node->type . '_node_form', $node);
-    drupal_process_form($node->type . '_node_form', $form);
+    $form_state = array('want form' => TRUE, 'args' => array($node));
+    $form = ctools_build_form($form_id, $form_state);
+
     // Fill in the 'node' portion of the context
     $context->data     = $node;
     $context->title    = $node->title;
     $context->argument = $node->nid;
 
     $context->form       = $form;
-    $context->form_id    = $node->type . '_node_form';
+    $context->form_state = &$form_state;
+    $context->form_id    = $form_id;
     $context->form_title = $node->title;
     $context->node_type  = $node->type;
     return $context;
