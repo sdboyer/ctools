@@ -33,10 +33,11 @@ function ctools_node_language_ctools_access_settings(&$form, &$form_state, $conf
   $options = array(
     'current' => t('Current site language'),
     'default' => t('Default site language'),
+    'no_language' => t('No language'),
   );
   $options = array_merge($options, locale_language_list());
   $form['settings']['language'] = array(
-    '#title' => t('Access type'),
+    '#title' => t('Language'),
     '#type' => 'checkboxes',
     '#options' => $options,
     '#description' => t('Pass only if the node is in one of the selected languages.'),
@@ -55,6 +56,14 @@ function ctools_node_language_ctools_access_check($conf, $context) {
   }
 
   global $language;
+
+  // Specialcase: if 'no language' is checked, return TRUE if the language field is
+  // empty.
+  if (!empty($conf['language']['no_language'])) {
+    if (empty($context->data->language)) {
+      return TRUE;
+    }
+  }
 
   // Specialcase: if 'current' is checked, return TRUE if the current site language
   // matches the node language.
@@ -86,6 +95,7 @@ function ctools_node_language_ctools_acesss_summary($conf, $context) {
   $languages = array(
     'current' => t('Current site language'),
     'default' => t('Default site language'),
+    'no_language' => t('No language'),
   );
   $languages = array_merge($languages, locale_language_list());
 

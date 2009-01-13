@@ -452,7 +452,9 @@ function ctools_access_ajax_edit_item_submit(&$form, &$form_state) {
   }
 
   $form_state['test']['settings'] = $form_state['values']['settings'];
-  $form_state['test']['context'] = $form_state['values']['context'];
+  if (isset($form_state['values']['context'])) {
+    $form_state['test']['context'] = $form_state['values']['context'];
+  }
 }
 
 /**
