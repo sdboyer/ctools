@@ -429,13 +429,16 @@ function delegator_page_add_subtask_cancel(&$form_state) {
 function delegator_page_form_basic(&$form, &$form_state) {
   $page = &$form_state['page'];
 
-  // @todo do not let the user change this name during the edit process.
   $form['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Name'),
-    '#description' => t('The machine readable name of this page. It must be unique, and it must contain only alphanumeric characters and underscores.'),
+    '#description' => t('The machine readable name of this page. It must be unique, and it must contain only alphanumeric characters and underscores. Once created, you will not be able to change this value!'),
     '#default_value' => $page->name,
   );
+
+  if (isset($page->pid)) {
+    $form['name']['#disabled'] = TRUE;
+  }
 
   $form['admin_title'] = array(
     '#type' => 'textfield',
@@ -448,7 +451,7 @@ function delegator_page_form_basic(&$form, &$form_state) {
   $form['path'] = array(
     '#type' => 'textfield',
     '#title' => t('Path'),
-    '#description' => t('The URL path to get to this page. You may create placeholders in the path by using %, or named placeholders by using %name. For example: "node/%node/foo", "forum/%forum" or "dashboard/%". Named placeholders can have more information attached to them on the arguments form.'),
+    '#description' => t('The URL path to get to this page. You may create placeholders in the path by using %, or named placeholders by using %name. For example: "node/%node/foo", "forum/%forum" or "dashboard/%input". Named placeholders can be turned into contexts on the arguments form.'),
     '#default_value' => $page->path,
   );
 }
@@ -461,7 +464,38 @@ function delegator_page_form_basic_validate_filter($value) {
  * Validate the basic form.
  */
 function delegator_page_form_basic_validate(&$form, &$form_state) {
-  // Ensure name is properly formed.
+  // Ensure path is unused by other pages.
+  $pages = delegator_page_load_all();
+  $name = !empty($form_state['values']['name']) ? $form_state['values']['name'] : $form_state['page']->name;
+  foreach ($pages as $page) {
+    if ($page->name != $name && $page->path == $form_state['values']['path'] && empty($page->disabled)) {
+      form_error($form['path'], t('That path is used by another page: @page', array('@page' => $page->admin_title)));
+    }
+  }
+
+  // Ensure path is unused by things NOT pages. We do the double check because
+  // we're checking against our page callback.
+
+  // Replace named placeholders with our own placeholder to load contexts.
+  $path = array();
+  foreach (explode('/', $form_state['values']['path']) as $bit) {
+    if ($bit[0] == '%') {
+      $path[] = '%';
+    }
+    else {
+      $path[] = $bit;
+    }
+  }
+
+  $path = implode('/', $path);
+  $result = db_query("SELECT * FROM menu_router WHERE path = '%s'", $path);
+  while ($router = db_fetch_object($result)) {
+    if ($router->page_callback != 'delegator_page_execute') {
+      form_error($form['path'], t('That path is already in used. This system cannot override existing paths.'));
+    }
+  }
+
+  // Ensure path is properly formed.
   $args = delegator_page_get_named_arguments($form_state['values']['path']);
   if ($invalid_args = array_filter($args, 'delegator_page_form_basic_validate_filter')) {
     foreach ($invalid_args as $arg => $position) {
@@ -477,18 +511,29 @@ function delegator_page_form_basic_validate(&$form, &$form_state) {
     $form_state['clicked_button']['#next'] = 'access';
   }
 
-  // Ensure name is unique.
-  // @todo
+  // Do name checking if it's something that can be changed.
+  if (empty($form_state['page']->pid)) {
+    // Ensure name fits the rules:
+    if (preg_match('/[^a-zA-Z0-9_]/', $form_state['values']['name'])) {
+      form_error($form['name'], t('Page name must be alphanumeric or underscores only.'));
+    }
 
-  // Ensure path is unused.
-  // @todo
+    // Ensure name is unique.
+    if (delegator_page_load($form_state['values']['name'])) {
+      form_error($form['name'], t('That name is already used; the name must be unique.'));
+    }
+  }
+
 }
 
 /**
  * Store the values from the basic settings form.
  */
 function delegator_page_form_basic_submit(&$form, &$form_state) {
-  $form_state['page']->name = $form_state['values']['name'];
+  if (!isset($form_state['page']->pid)) {
+    $form_state['page']->name = $form_state['values']['name'];
+  }
+
   $form_state['page']->admin_title = $form_state['values']['admin_title'];
   $form_state['page']->path = $form_state['values']['path'];
 }
