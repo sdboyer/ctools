@@ -11,7 +11,7 @@
  */
 function ctools_node_access_ctools_access() {
   $args['node_access'] = array(
-    'title' => t("Operation"),
+    'title' => t("Node access by node security"),
     'description' => t('Control access with built in Drupal node access test.'),
     'callback' => 'ctools_node_access_ctools_access_check',
     'default' => array('type' => 'view'),
@@ -32,7 +32,7 @@ function ctools_node_access_ctools_access() {
  */
 function ctools_node_access_ctools_access_settings(&$form, &$form_state, $conf) {
   $form['settings']['type'] = array(
-    '#title' => t('Access type'),
+    '#title' => t('Operation'),
     '#type' => 'radios',
     '#options' => array(
       'view' => t('View'),
