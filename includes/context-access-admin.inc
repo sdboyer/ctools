@@ -290,9 +290,20 @@ function ctools_access_ajax_add($fragment = NULL, $name = NULL) {
 
   $test = array(
     'name' => $name,
-    'context' => '',
     'settings' => array() // TODO defaults
   );
+
+  if (isset($plugin['required context'])) {
+    if (is_object($plugin['required context'])) {
+      $test['context'] = '';
+    }
+    else {
+      $test['context'] = array();
+      foreach ($plugin['required context'] as $required) {
+        $test['context'][] = '';
+      }
+    }
+  }
 
   if (isset($plugin['default'])) {
     if (is_array($plugin['default'])) {

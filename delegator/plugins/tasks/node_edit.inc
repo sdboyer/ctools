@@ -11,8 +11,8 @@ function delegator_node_edit_delegator_tasks() {
       // This is a 'page' task and will fall under the page admin UI
       'task type' => 'page',
 
-      'title' => t('Node view'),
-      'description' => t('The node edit task allows you to control what handler will handle the job of editing a node at the path <em>node/%node/edit</em>. If no handler is set or matches the criteria, the default Drupal node renderer will be used.'),
+      'title' => t('Node edit'),
+      'description' => t('The node edit task allows you to control what handler will handle the job of editing a node at the path <em>node/%node/edit</em>. It also handles the node add page at node/add/%type. If no handler is set or matches the criteria, the default Drupal node renderer will be used. Please note that some modules sufficiently customize their node add and edit procedure that this may not successfully override adding or editing of all types.'),
 
       'admin title' => 'Node edit', // translated by menu system
       'admin description' => 'Overrides for the built in node edit handler at <em>node/%node/edit</em>.',
@@ -34,22 +34,36 @@ function delegator_node_edit_delegator_tasks() {
 /**
  * Callback defined by delegator_node_edit_delegator_tasks().
  *
- * Alter the node view input so that node view comes to us rather than the
- * normal node view process.
+ * Alter the node edit input so that node edit comes to us rather than the
+ * normal node edit process.
  */
 function delegator_node_edit_menu_alter(&$items, $task) {
-  // Override the node view handler for our purpose.
+  // Override the node edit handler for our purpose.
   $items['node/%node/edit']['page callback'] = 'delegator_node_edit';
   $items['node/%node/edit']['file path'] = $task['path'];
   $items['node/%node/edit']['file'] = $task['file'];
+
+  // Also catch node/add handling:
+  foreach (node_get_types('types', NULL, TRUE) as $type) {
+    $path = 'node/add/' . str_replace('_', '-', $type->type);
+    if ($items[$path]['page callback'] != 'node_add') {
+      continue;
+    }
+
+    $items[$path]['page callback'] = 'delegator_node_add';
+    $items[$path]['file path'] = $task['path'];
+    $items[$path]['file'] = $task['file'];
+    // Why str_replace things back?
+    $items[$path]['page arguments'] = array($type->type);
+  }
 }
 
 /**
- * Entry point for our overridden node view.
+ * Entry point for our overridden node edit.
  *
  * This function asks its assigned handlers who, if anyone, would like
  * to run with it. If no one does, it passes through to Drupal core's
- * node view, which is node_page_view().
+ * node edit, which is node_page_edit().
  */
 function delegator_node_edit($node) {
   // Load my task plugin
@@ -68,10 +82,6 @@ function delegator_node_edit($node) {
     if ($function = delegator_get_renderer($handler)) {
       $output = $function($handler, $contexts);
       if ($output) {
-        // Since we're not using node_show() we need to emulate what it used to do.
-        // Update the history table, stating that this user viewed this node.
-        node_tag_new($node->nid);
-
         // TRUE is a special return used to let us know that it handled the
         // task but does not wish us to render anything, as it already did.
         // This is needed for the 'no blocks' functionality.
@@ -85,13 +95,39 @@ function delegator_node_edit($node) {
 
   // Fall back!
   module_load_include('inc', 'node', 'node.pages');
-  return node_page_edit($node);
+  return drupal_get_form($node->type .'_node_form', $node);
+}
+
+/**
+ * Callback to handle the process of adding a node.
+ *
+ * This creates a basic $node and passes that off to delegator_node_edit().
+ * It is modeled after Drupal's node_add() function.
+ *
+ * Unlike node_add() we do not need to check node_access because that was
+ * already checked by the menu system.
+ */
+function delegator_node_add($type) {
+  global $user;
+
+  $types = node_get_types();
+
+  // Initialize settings:
+  $node = (object) array(
+    'uid' => $user->uid,
+    'name' => (isset($user->name) ? $user->name : ''),
+    'type' => $type,
+    'language' => ''
+  );
+
+  drupal_set_title(t('Create @name', array('@name' => $types[$type]->name)));
+  return delegator_node_edit($node);
 }
 
 /**
  * Callback to get arguments provided by this task handler.
  *
- * Since this is the node view and there is no UI on the arguments, we
+ * Since this is the node edit and there is no UI on the arguments, we
  * create dummy arguments that contain the needed data.
  */
 function delegator_node_edit_get_arguments($task, $subtask_id) {

@@ -241,7 +241,7 @@ function _ctools_context_filter($contexts, $required) {
  */
 function ctools_context_selector($contexts, $required, $default) {
   if (is_array($required)) {
-    $result = array();
+    $result = array('#tree' => TRUE);
     $count = 1;
     foreach ($required as $id => $r) {
       $result[] = _ctools_context_selector($contexts, $r, $default[$id], $count++);

@@ -40,7 +40,7 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
     $node = node_load($node['nid']);
   }
 
-  if (!empty($node) && node_access('update', $node)) {
+  if (!empty($node)) {
     module_load_include('inc', 'node', 'node.pages');
     ctools_include('form');
     $form_id = $node->type . '_node_form';
@@ -51,7 +51,7 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
     // Fill in the 'node' portion of the context
     $context->data     = $node;
     $context->title    = $node->title;
-    $context->argument = $node->nid;
+    $context->argument = isset($node->nid) ? $node->nid : $node->type;
 
     $context->form       = $form;
     $context->form_state = &$form_state;
