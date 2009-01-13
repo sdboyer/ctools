@@ -10,6 +10,70 @@
  */
 
 /**
+ * Load a group of API files.
+ *
+ * This will ask each module if they support the given API, and if they do
+ * it will load the specified file name. The API and the file name
+ * coincide by design.
+ *
+ * This function invokes hook_ctools_api. This invokation is statically
+ * cached, so feel free to call it as often per page run as you like, it
+ * will cost very little.
+ *
+ * @param $owner
+ *   The name of the module that controls the API.
+ * @param $api
+ *   The name of the api. The api name forms the file name:
+ *   $module.$api.inc
+ * @param $minimum_version
+ *   The lowest version API that is compatible with this one. If a module
+ *   reports its API as older than this, its files will not be loaded. This
+ *   should never change during operation.
+ * @param $current_version
+ *   The current version of the api. If a module reports its minimum API as
+ *   higher than this, its files will not be loaded. This should never change
+ *   during operation.
+ *
+ * @return
+ *   The API information, in case you need it.
+ */
+function ctools_plugin_api_include($owner, $api, $minimum_version, $current_version) {
+  static $cache = array();
+  if (!isset($cache[$owner][$api])) {
+    $cache[$owner][$api] = array();
+    foreach (module_implements('ctools_plugin_api') as $module) {
+      $function = $module . '_ctools_plugin_api';
+      $info = $function();
+      if (!isset($info['version'])) {
+        continue;
+      }
+
+      // Only process if version is between minimum and current, inclusive.
+      if ($info['version'] >= $minimum_version && $info_version <= $current_version) {
+        if (!isset($info['path'])) {
+          $info['path'] = drupal_get_path('module', $module);
+        }
+        if (!isset($info['file'])) {
+          $info['file'] = "$module.$api.inc";
+        }
+        $cache[$owner][$api][$module] = $info;
+      }
+    }
+
+    // Now that we have a list, do our includes.
+    foreach ($cache[$owner][$api] as $module => $info) {
+      if (file_exists("./$info[path]/$info[file]")) {
+        $cache[$owner][$api][$module]['included'] = TRUE;
+        require_once "./$info[path]/$info[file]";
+      }
+    }
+
+  }
+
+  return $cache[$module][$api];
+}
+
+/**
  * Fetch a group of plugins by name.
  *
  * @param $module

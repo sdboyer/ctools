@@ -2,6 +2,15 @@
 // $Id$
 
 /**
+ * @file
+ * Handle the 'node view' override task.
+ *
+ * This plugin overrides node/%node and reroutes it to the delegator, where
+ * a list of tasks can be used to service this request based upon criteria
+ * supplied by access plugins.
+ */
+
+/**
  * Specialized implementation of hook_delegator_tasks(). See api-task.html for
  * more information.
  */

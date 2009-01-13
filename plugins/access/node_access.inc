@@ -11,7 +11,7 @@
  */
 function ctools_node_access_ctools_access() {
   $args['node_access'] = array(
-    'title' => t("Node access"),
+    'title' => t("Operation"),
     'description' => t('Control access with built in Drupal node access test.'),
     'callback' => 'ctools_node_access_ctools_access_check',
     'default' => array('type' => 'view'),
