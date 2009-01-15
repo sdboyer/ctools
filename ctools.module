@@ -146,3 +146,15 @@ function ctools_access_menu($access) {
   ctools_include('context');
   return ctools_access($access, $contexts);
 }
+
+/**
+ * Implementation of hook_cron. Clean up old caches.
+ */
+function ctools_cron() {
+  if (variable_get('ctools_last_cron', 0) < time() - 86400) {
+    variable_set('ctools_last_cron', time());
+    ctools_include('object-cache');
+    ctools_object_cache_cron();
+  }
+}
+

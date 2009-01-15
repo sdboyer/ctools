@@ -42,7 +42,7 @@ function ctools_context_create_user($empty, $data = NULL, $conf = FALSE) {
 
   if (!empty($data)) {
     $context->data     = $data;
-    $context->title    = $data->name;
+    $context->title    = isset($data->name) ? $data->name : t('Anonymous');
     $context->argument = $data->uid;
     return $context;
   }

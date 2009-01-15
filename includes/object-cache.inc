@@ -120,3 +120,11 @@ function ctools_object_cache_clean($age = NULL) {
 function ctools_object_cache_test($obj, $name) {
   return db_fetch_object(db_query("SELECT s.uid, c.updated FROM {ctools_object_cache} c INNER JOIN {sessions}  s ON c.sid = s.sid WHERE s.sid != '%s' AND c.obj = '%s' AND c.name = '%s' ORDER BY c.updated ASC", session_id(), $obj, $name));
 }
+
+/**
+ * Clean up old cached items on cron.
+ */
+function ctools_object_cache_cron() {
+  // delete anything 7 days old or more.
+  db_query("DELETE FROM {ctools_object_cache} WHERE timestamp < %d", time() - (86400 * 7));
+}
