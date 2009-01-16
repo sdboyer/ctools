@@ -34,7 +34,10 @@ Use of hook_ctools_plugin_TYPE to define info about your plugin.
     'cache' => FALSE,
     'defaults' => array(),
     'hook' => $module . '_' . $type,
+    'load themes' => FALSE,
   );
+
+if 'load themes' is true, all enabled themes will be polled for the plugin as well. This will NOT force loading the template.php and *every* enabled theme will get their plugins regardless of which theme is currently active.
 
 General feature for callbacks:
   either 'function_name' or

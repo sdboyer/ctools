@@ -217,6 +217,16 @@ function ctools_plugin_get_directories($info) {
       $directories[$module] = drupal_get_path('module', $module) . '/' . $result;
     }
   }
+
+  if (!empty($info['load themes'])) {
+    $themes = list_themes();
+    foreach ($themes as $name => $theme) {
+      if (!empty($theme->status) && !empty($theme->info['plugins'][$info['module']][$info['type']])) {
+        $directories[$name] = drupal_get_path('theme', $name) . '/' . $theme->info['plugins'][$info['module']][$info['type']];
+      }
+    }
+
+  }
   return $directories;
 }
 
@@ -300,6 +310,7 @@ function ctools_plugin_get_info($module, $type) {
     'cache' => FALSE,
     'defaults' => array(),
     'hook' => $module . '_' . $type,
+    'load themes' => FALSE,
   );
 
   return $info;
