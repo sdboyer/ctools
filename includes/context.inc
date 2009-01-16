@@ -337,6 +337,7 @@ function _ctools_context_select($contexts, $required, $context) {
  *   A $context or NULL if one could not be created.
  */
 function ctools_context_create($type, $data = NULL, $conf = FALSE) {
+  ctools_include('plugins');
   if ($function = ctools_plugin_load_function('ctools', 'contexts', $type, 'context')) {
     return $function(FALSE, $data, $conf);
   }
