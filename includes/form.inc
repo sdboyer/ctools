@@ -269,7 +269,7 @@ function ctools_process_form($form_id, &$form, &$form_state) {
 /**
  * The original version of drupal_validate_form does not have an override for
  * the static check to only validate a form id once. Unfortunately, we need
- * to be able to overridet his.
+ * to be able to override this.
  */
 function ctools_validate_form($form_id, $form, &$form_state) {
   static $validated_forms = array();

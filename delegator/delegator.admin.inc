@@ -1204,11 +1204,9 @@ function delegator_administer_break_lock(&$form_state, $task_name) {
   list($task_id, $subtask_id) = delegator_get_task_id($task_name);
 
   $form_state['task_name'] = $task_name;
-  $form_state['key'] = $task_id . ':' . $subtask_id;
 
   ctools_include('object-cache');
-  $lock = ctools_object_cache_test('delegator_handlers', $form_state['key']);
-
+  $lock = ctools_object_cache_test('delegator_handlers', $form_state['task_name']);
   $form = array();
 
   // @todo put task title here, but also needs subtask support.
@@ -1237,7 +1235,7 @@ function delegator_administer_break_lock(&$form_state, $task_name) {
  * Submit handler to break_lock a view.
  */
 function delegator_administer_break_lock_submit(&$form, &$form_state) {
-  ctools_object_cache_clear_all('delegator_handlers', $form_state['key']);
+  ctools_object_cache_clear_all('delegator_handlers', $form_state['task_name']);
   drupal_set_message(t('The lock has been broken and you may now edit this task.'));
   $form_state['redirect'] = 'admin/build/delegator/' . $form_state['task_name'];
 }

@@ -55,7 +55,7 @@ function ctools_modal_add_js() {
   ));
 
   drupal_add_js($settings, 'setting');
-  drupal_add_js('/misc/jquery.form.js');
+  drupal_add_js('misc/jquery.form.js');
   ctools_add_js('dimensions');
   ctools_add_js('mc');
   ctools_add_js('ajax-responder');
@@ -131,6 +131,15 @@ function ctools_modal_text_button($text, $dest, $alt, $class = '') {
  * Wrap a form so that we can use it properly with AJAX. Essentially if the
  * form wishes to render, it automatically does that, otherwise it returns
  * so we can see submission results.
+ *
+ * @return
+ *   The output of the form, if it was rendered. If $form_state['ajax']
+ *   is set, this will use ctools_modal_form_render so it will be
+ *   a $command object suitable for ctools_ajax_render already.
+ *
+ *   The return will be NULL if the form was successfully submitted unless
+ *   you specifically set re_render = TRUE. If ajax is set the
+ *   form will never be redirected.
  */
 function ctools_modal_form_wrapper($form_id, &$form_state) {
   ctools_include('form');
@@ -161,4 +170,16 @@ function ctools_modal_form_render($form_state, $output) {
   }
 
   return array(ctools_modal_command_display($title, $output));
+}
+
+/**
+ * Perform a simple modal render and immediately exit.
+ *
+ * This is primarily used for error displays, since usually modals will
+ * contain forms.
+ */
+function ctools_modal_render($title, $output) {
+  $commands = array();
+  $commands[] = ctools_modal_command_display($title, $output);
+  ctools_ajax_render($commands);
 }

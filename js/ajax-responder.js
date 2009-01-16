@@ -119,9 +119,11 @@ Drupal.CTools.AJAX.commands = {
   }, 
 
   changed: function(data) {
-    $(data.selector).addClass('changed');
-    if (data.star) {
-      $(data.selector).find(data.star).append(' <span class="star">*</span> ');
+    if (!$(data.selector).hasClass('changed')) {
+      $(data.selector).addClass('changed');
+      if (data.star) {
+        $(data.selector).find(data.star).append(' <span class="star">*</span> ');
+      }
     }
   },
 

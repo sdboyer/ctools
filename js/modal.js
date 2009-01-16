@@ -112,6 +112,7 @@ Drupal.CTools.Modal.submitAjaxForm = function() {
   });
   return false;
 }
+
 /**
  * Bind links that will open modals to the appropriate function.
  */
