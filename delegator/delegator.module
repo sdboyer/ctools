@@ -70,6 +70,7 @@ function delegator_menu() {
   // Set up our own menu items here.
   // @todo -- this is more or less deprecated now, but we need to change
   // the import function so that it can import on a per task basis.
+/*
   $items['admin/build/delegator'] = array(
     'title' => 'Delegator',
     'description' => 'Assign handlers to tasks such as node overrides',
@@ -85,16 +86,7 @@ function delegator_menu() {
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
   );
-
-  // Set up our own menu items here.
-  $items['admin/build/delegator/import'] = array(
-    'title' => 'Import',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('delegator_admin_import_task_handler'),
-    'access arguments' => array('administer delegator'),
-    'file' => 'delegator.admin.inc',
-    'type' => MENU_LOCAL_TASK,
-  );
+*/
 
   // Task types get menu entries so they can set up their own administrative
   // areas.
@@ -193,6 +185,14 @@ function delegator_menu_task_items(&$items, $task_id, $task, $handlers, $subtask
     'title' => 'Break lock',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('delegator_administer_break_lock', $task_name),
+    'type' => MENU_CALLBACK,
+  ) + $base;
+
+  // Form to import a task handler for this task.
+  $items['admin/build/delegator/' . $task_name . '/import'] = array(
+    'title' => 'Import',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('delegator_admin_import_task_handler', $task_name),
     'type' => MENU_CALLBACK,
   ) + $base;
 

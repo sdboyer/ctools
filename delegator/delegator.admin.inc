@@ -34,7 +34,7 @@ define('DGA_CHANGED_STATUS', 0x08);
  * with whatever is in the admin path; that way task types can provide
  * their own administration.
  */
-function delegator_set_trail($task) {
+function delegator_set_trail($task, $task_name = NULL) {
   $task_type = delegator_get_task_type($task['task type']);
   if (empty($task_type['admin path'])) {
     return;
@@ -481,6 +481,12 @@ function delegator_admin_list_form(&$form_state) {
     '#submit' => array('delegator_admin_list_form_add'),
   );
 
+  $form['import_handler'] = array(
+    '#type' => 'submit',
+    '#value' => t('Import task handler'),
+    '#submit' => array('delegator_admin_list_form_import'),
+  );
+
   $form['save'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
@@ -642,7 +648,8 @@ function theme_delegator_admin_list_form($form) {
   $output .= theme('table', $header, $rows, $attributes);
 
   // Render the add button + select box as a table too.
-  $output .= theme('table', array(), array(array(drupal_render($form['handler']), drupal_render($form['add_handler']))));
+  $left = '<div class="container-inline">' . drupal_render($form['handler']) . drupal_render($form['add_handler']) . '</div>';
+  $output .= theme('table', array(), array(array($left, drupal_render($form['import_handler']))));
 
   $path = drupal_get_path('module', 'delegator');
   drupal_add_js("$path/js/task-handlers.js");
@@ -712,6 +719,19 @@ function delegator_admin_list_form_add($form, &$form_state) {
   $handler = delegator_new_task_handler($form_state['task'], $form_state['subtask_id'], $plugin, $weight, $form_state['cache']);
 
   $form_state['redirect'] = delegator_admin_new_task_handler($handler, $form_state['task_name'], $form_state['task'], $form_state['subtask_id'], $form_state['cache'], $plugin);
+}
+
+/**
+ * Import a new task handler.
+ */
+function delegator_admin_list_form_import($form, &$form_state) {
+  // Update the weights from the form.
+  delegator_admin_update_weights($form_state);
+
+  // Store the changed task handler list.
+  delegator_admin_set_task_cache($form_state['task'], $form_state['subtask_id'], $form_state['cache']);
+
+  $form_state['redirect'] = 'admin/build/delegator/' . $form_state['task_name'] . '/import';
 }
 
 /**
@@ -1211,13 +1231,13 @@ function delegator_administer_break_lock(&$form_state, $task_name) {
   $lock = ctools_object_cache_test('delegator_handlers', $form_state['task_name']);
   $form = array();
 
+  $task = delegator_get_task($task_id);
+  delegator_set_trail($task);
+
   // @todo put task title here, but also needs subtask support.
   if (empty($lock)) {
     return array('message' => array('#value' => t('There is no lock on this task to break.')));
   }
-
-  $task = delegator_get_task($task_id);
-  delegator_set_trail($task);
 
   $cancel = 'admin/build/delegator/' . $task_name;
   if (!empty($_REQUEST['cancel'])) {
@@ -1245,8 +1265,16 @@ function delegator_administer_break_lock_submit(&$form, &$form_state) {
 /**
  * Import a task handler from cut & paste
  */
-function delegator_admin_import_task_handler(&$form_state) {
+function delegator_admin_import_task_handler(&$form_state, $task_name) {
   drupal_set_title(t('Import task handler'));
+
+  $form_state['task_name'] = $task_name;
+  list($form_state['task_id'], $form_state['subtask_id']) = delegator_get_task_id($task_name);
+  $form_state['task'] = delegator_get_task($form_state['task_id']);
+//  $form_state['subtask'] = delegator_get_task_subtask($task, $subtask_id);
+
+  delegator_set_trail($form_state['task']);
+
   $form['object'] = array(
     '#type' => 'textarea',
     '#title' => t('Paste task handler code here'),
@@ -1272,14 +1300,23 @@ function delegator_admin_import_task_handler_validate($form, &$form_state) {
     form_error($form['object'], t('Unable to interpret task handler code.'));
   }
 
-  // @todo support subtasks here
-  $task = delegator_get_task($handler->task);
-  if (!$task) {
-    form_error($form['object'], t('The task for that handler does not seem to exist.'));
+  $old_name = $handler->task;
+  if (!empty($handler->subtask)) {
+    $old_name .= '_' . $handler->subtask;
   }
 
+  $new_name = $form_state['task_id'];
+  if (!empty($form_state['subtask_id'])) {
+    $new_name .= '_' . $form_state['subtask_id'];
+  }
+
+  $handler->name = preg_replace('/^' . $old_name . '/', $new_name, $handler->name);
+
+  $handler->task = $form_state['task_id'];
+  $handler->subtask = $form_state['subtask_id'];
+
   // See if the task is already locked.
-  $cache = delegator_admin_get_task_cache($task, $handler->subtask);
+  $cache = delegator_admin_get_task_cache($form_state['task'], $handler->subtask);
   if ($cache->locked) {
     $account = user_load($cache->locked->uid);
     $name = theme('username', $account);
@@ -1301,7 +1338,6 @@ function delegator_admin_import_task_handler_validate($form, &$form_state) {
     $handler->export_type = $old_handler->export_type | EXPORT_IN_DATABASE;
   }
 
-  $form_state['task'] = $task;
   $form_state['cache'] = $cache;
   $form_state['handler'] = $handler;
 }
