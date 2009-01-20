@@ -24,6 +24,8 @@ task definition:
   subtasks callback -- A callback which returns an array of all subtasks. 
     This MUST return an array, even if it's empty.Param: $task
 
+  default handlers -- If the task contains any default handlers, they can be included here.
+
 task names must not contain a - as that is used to separate the task name from the subtask ID.
 
 subtasks implement data very similar to their parent task. In particular, they

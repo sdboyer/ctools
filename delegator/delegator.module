@@ -239,13 +239,22 @@ function delegator_menu_task_items(&$items, $task_id, $task, $handlers, $subtask
 
 /**
  * Load a single task handler by name.
+ *
+ * Handlers can come from multiple sources; either the database or by normal
+ * export method, which is handled by the ctools library, but handlers can
+ * also be bundled with task/subtask. We have to check there and perform
+ * overrides as appropriate.
+ *
+ * Handlers bundled with the task are of a higher priority than default
+ * handlers provided by normal code, and are of a lower priority than
+ * the database, so we have to check the source of handlers when we have
+ * multiple to choose from.
  */
-function delegator_load_task_handler($name) {
+function delegator_load_task_handler($task, $subtask_id, $name) {
   ctools_include('export');
   $result = ctools_export_load_object('delegator_handlers', 'names', array($name));
-  if (isset($result[$name])) {
-    return $result[$name];
-  }
+  $handlers = delegator_get_default_task_handlers($task, $subtask_id);
+  return delegator_compare_task_handlers($result, $handlers, $name);
 }
 
 /**
@@ -262,6 +271,13 @@ function delegator_load_task_handlers($task, $subtask_id = NULL) {
   }
 
   $handlers = ctools_export_load_object('delegator_handlers', 'conditions', $conditions);
+  $defaults = delegator_get_default_task_handlers($task, $subtask_id);
+  foreach ($defaults as $name => $default) {
+    $result = delegator_compare_task_handlers($handlers, $defaults, $name);
+    if ($result) {
+      $handlers[$name] = $result;
+    }
+  }
 
   // Override weights from the weight table.
   if ($handlers) {
@@ -279,6 +295,73 @@ function delegator_load_task_handlers($task, $subtask_id = NULL) {
   }
 
   return $handlers;
+}
+
+/**
+ * Get the default task handlers from a task, if they exist.
+ *
+ * Tasks can contain 'default' task handlers which are provided by the
+ * default task. Because these can come from either the task or the
+ * subtask, the logic is abstracted to reduce code duplication.
+ */
+function delegator_get_default_task_handlers($task, $subtask_id) {
+  // Load default handlers that are provied by the task/subtask itself.
+  $handlers = array();
+  if ($subtask_id) {
+    $subtask = delegator_get_task_subtask($task, $subtask_id);
+    if (isset($subtask['default handlers'])) {
+      $handlers = $subtask['default handlers'];
+    }
+  }
+  else if (isset($task['default handlers'])) {
+    $handlers = $task['default handlers'];
+  }
+
+  return $handlers;
+}
+
+/**
+ * Compare a single task handler from two lists and provide the correct one.
+ *
+ * Task handlers can be gotten from multiple sources. As exportable objects,
+ * they can be provided by default hooks and the database. But also, because
+ * they are tightly bound to tasks, they can also be provided by default
+ * tasks. This function reconciles where to pick up a task handler between
+ * the exportables list and the defaults provided by the task itself.
+ *
+ * @param $result
+ *   A list of handlers provided by export.inc
+ * @param $handlers
+ *   A list of handlers provided by the default task.
+ * @param $name
+ *   Which handler to compare.
+ * @return
+ *   Which handler to use, if any. May be NULL.
+ */
+function delegator_compare_task_handlers($result, $handlers, $name) {
+  // Compare our special default handler against the actual result, if
+  // any, and do the right thing.
+  if (!isset($result[$name]) && isset($handlers[$name])) {
+    $handlers[$name]->type = t('Default');
+    $handlers[$name]->export_type = EXPORT_IN_CODE;
+    return $handlers[$name];
+  }
+  else if (isset($result[$name]) && !isset($handlers[$name])) {
+    return $result[$name];
+  }
+  else if (isset($result[$name]) && isset($handlers[$name])) {
+    if ($result[$name]->export_type & EXPORT_IN_DATABASE) {
+      $result[$name]->type = t('Overridden');
+      $result[$name]->export_type = $result[$name]->export_type | EXPORT_IN_CODE;
+      return $result[$name];
+    }
+    else {
+      // In this case, our default is a higher priority than the standard default.
+      $handlers[$name]->type = t('Default');
+      $handlers[$name]->export_type = EXPORT_IN_CODE;
+      return $handlers[$name];
+    }
+  }
 }
 
 /**
@@ -331,6 +414,11 @@ function delegator_save_task_handler(&$handler) {
 
   drupal_write_record('delegator_handlers', $handler, $update);
   db_query("DELETE FROM {delegator_weights} WHERE name = '%s'", $handler->name);
+
+  // If this was previously a default handler, we may have to write task handlers.
+  if (!$update) {
+
+  }
   return $handler;
 }
 

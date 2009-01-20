@@ -32,7 +32,8 @@ function delegator_page_menu(&$items, $task) {
   $items['admin/build/pages/import'] = array(
     'title' => 'Import page',
     'description' => 'Import a delegator page subtask.',
-    'page callback' => 'delegator_page_import_subtask',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('delegator_page_import_subtask'),
     'type' => MENU_LOCAL_TASK,
   ) + $base;
 
@@ -88,8 +89,8 @@ function delegator_page_menu(&$items, $task) {
 
   $items["admin/build/pages/clone/%"] = array(
     'title' => t('Clone'),
-    'page callback' => 'delegator_page_clone_subtask',
-    'page arguments' => array(4),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('delegator_page_clone_subtask', 4),
     'type' => MENU_CALLBACK,
   ) + $base;
 
@@ -436,7 +437,7 @@ function delegator_page_form_basic(&$form, &$form_state) {
     '#default_value' => $page->name,
   );
 
-  if (isset($page->pid)) {
+  if (isset($page->pid) || !empty($page->import)) {
     $form['name']['#disabled'] = TRUE;
   }
 
@@ -523,14 +524,13 @@ function delegator_page_form_basic_validate(&$form, &$form_state) {
       form_error($form['name'], t('That name is already used; the name must be unique.'));
     }
   }
-
 }
 
 /**
  * Store the values from the basic settings form.
  */
 function delegator_page_form_basic_submit(&$form, &$form_state) {
-  if (!isset($form_state['page']->pid)) {
+  if (!isset($form_state['page']->pid) && empty($form_state['page']->import)) {
     $form_state['page']->name = $form_state['values']['name'];
   }
 
@@ -1221,6 +1221,12 @@ function delegator_page_break_lock_subtask_submit(&$form, &$form_state) {
  */
 function delegator_page_import_subtask(&$form_state) {
   drupal_set_title(t('Import page'));
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Page name'),
+    '#description' => t('Enter the name to use for this page if it is different from the source page. Leave blank to use the name of the page.'),
+  );
+
   $form['object'] = array(
     '#type' => 'textarea',
     '#title' => t('Paste page code here'),
@@ -1246,15 +1252,17 @@ function delegator_page_import_subtask_validate($form, &$form_state) {
     form_error($form['object'], t('Unable to interpret page code.'));
   }
 
+  $name = !empty($form_state['values']['name']) ? $form_state['values']['name'] : $page->name;
+
   // See if the task is already locked.
-  $cache = delegator_page_get_page_cache($page->name);
+  $cache = delegator_page_get_page_cache($name);
   if (!empty($cache->locked)) {
     $account = user_load($cache->locked->uid);
-    $name = theme('username', $account);
+    $username = theme('username', $account);
     $lock_age = format_interval(time() - $cache->locked->updated);
-    $break = url('admin/build/pages/break-lock/' . $page->name, array('query' => array('destination' => $_GET['q'], 'cancel' => $_GET['q'])));
+    $break = url('admin/build/pages/break-lock/' . $name, array('query' => array('destination' => $_GET['q'], 'cancel' => $_GET['q'])));
 
-    form_error($form['object'], t('Unable to import page because it is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $name, '!age' => $lock_age, '!break' => $break)));
+    form_error($form['object'], t('Unable to import page because it is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $username, '!age' => $lock_age, '!break' => $break)));
   }
 
   $page->type = t('Normal');
@@ -1262,11 +1270,20 @@ function delegator_page_import_subtask_validate($form, &$form_state) {
   ctools_include('export');
   $page->export_type = EXPORT_IN_DATABASE;
 
-  if (isset($cache)) {
-    drupal_set_message(t('Warning: The page you are importing already exists and this operation will overwrite an existing page. If this is not what you intend, you may Cancel this. You should then modify the <code>$page-&gt;name</code> field of your import to have a unique name.'), 'warning');
+  if (isset($cache) && isset($cache->pid)) {
+    drupal_set_message(t('Warning: The page you are importing already exists and this operation will overwrite an existing page. If this is not what you intend, you may Cancel this. You should then choose a different page name to ensure you use a unique name.'), 'warning');
     $page->pid = $cache->pid;
   }
 
+  if (preg_match('/[^a-zA-Z0-9_]/', $name)) {
+    form_error($form['name'], t('Page name must be alphanumeric or underscores only.'));
+  }
+
+  if ($page->name != $name) {
+    $page->old_name = $page->name;
+    $page->name = $name;
+  }
+  $page->import = TRUE; // set a flag so that we can get special import behavior.
   $form_state['page'] = $page;
 }
 
@@ -1277,14 +1294,23 @@ function delegator_page_import_subtask_submit($form, &$form_state) {
   // Use the one from the database or an updated one in cache?
   $page = &$form_state['page'];
 
+  // If the name was changed, go through and rename any default handlers so
+  // that they'll actually work.
+  if (isset($page->old_name) && isset($page->default_handlers)) {
+    foreach ($page->default_handlers as $name => $handler) {
+      // replace the old name with the new name at the start of the name string.
+      $page->default_handlers[$name]->name = preg_replace('/^page_' . $page->old_name . '/', 'page_' . $page->name, $handler->name);
+    }
+  }
+
   delegator_page_set_page_cache($page);
-  $form_state['redirect'] = 'admin/build/pages/edit' . $form_state['page']->name;
+  $form_state['redirect'] = 'admin/build/pages/edit/' . $page->name;
 }
 
 /**
  * Entry point to export a page.
  */
-function delegator_page_export_subtask($name) {
+function delegator_page_export_subtask($name, $handlers = FALSE) {
   // This ensures the task .inc file is loaded
   $task = delegator_get_task('page');
   $page = delegator_page_load($name);
@@ -1294,20 +1320,101 @@ function delegator_page_export_subtask($name) {
   }
 
   $title = $page->admin_title;
-  drupal_set_title(t('Export task page "@title"', array('@title' => $page->admin_title)));
+  if ($handlers) {
+    drupal_set_title(t('Export task page "@title" with handlers', array('@title' => $page->admin_title)));
+    $export = delegator_page_export($page, TRUE);
+  }
+  else {
+    drupal_set_title(t('Export task page "@title"', array('@title' => $page->admin_title)));
+    $export = delegator_page_export($page);
+  }
 
-  return drupal_get_form('ctools_export_form', delegator_page_export($page), $title);
+  return drupal_get_form('ctools_export_form', $export, $title);
 }
 
 /**
- * Entry point to export a page.
+ * Entry point to clone a page.
  */
-function delegator_page_clone_subtask($name) {
-  return "Not yet implemented.";
+function delegator_page_clone_subtask(&$form_state, $name) {
+  // This ensures the task .inc file is loaded
+  $form_state['task'] = delegator_get_task('page');
+  $page = delegator_page_load($name);
+
+  if (!$page) {
+    drupal_not_found();
+    exit;
+  }
+
+  $form_state['page'] = $page;
+  $form = array();
+
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Page name'),
+    '#description' => t('Enter the name to the new page It must be unique and contain only alphanumeric characters and underscores.'),
+  );
+
+  $form['handlers'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Clone handlers'),
+    '#description' => t('If checked all task handlers associated with the task will be cloned as well.'),
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Clone'),
+  );
+
+  return $form;
 }
 
 /**
- * Entry point to export a page.
+ * Validate clone page form.
+ */
+function delegator_page_clone_subtask_validate(&$form, &$form_state) {
+  // Ensure name fits the rules:
+  if (preg_match('/[^a-zA-Z0-9_]/', $form_state['values']['name'])) {
+    form_error($form['name'], t('Page name must be alphanumeric or underscores only.'));
+  }
+
+  // Ensure name is unique.
+  if (delegator_page_load($form_state['values']['name'])) {
+    form_error($form['name'], t('That name is already used; the name must be unique.'));
+  }
+}
+
+/**
+ * submit clone page form.
+ *
+ * Load the page, change the name(s) to protect the innocent, and if
+ * requested, load all the task handlers so that they get saved properly too.
+ */
+function delegator_page_clone_subtask_submit(&$form, &$form_state) {
+  $page = $form_state['page'];
+  $task = $form_state['task'];
+  $name = $form_state['values']['name'];
+
+  if (!empty($form_state['values']['handlers'])) {
+    $handlers = delegator_load_task_handlers($task, $page->name);
+    $page->default_handlers = array();
+
+    foreach ($handlers as $handler_name => $handler) {
+      // replace the old name with the new name at the start of the name string.
+      $handler->name = preg_replace('/^page_' . $page->name . '/', 'page_' . $name, $handler->name);
+      $handler->subtask = $name;
+      // Pretend these handlers are all default handlers so they get saved as new.
+      $handler->type = t('Default');
+      $handler->export_type = EXPORT_IN_CODE;
+      $page->default_handlers[$handler_name] = $handler;
+    }
+  }
+
+  $page->name = $name;
+  delegator_page_set_page_cache($page);
+  $form_state['redirect'] = 'admin/build/pages/edit/' . $page->name;
+}
+/**
+ * Entry point to enable a page.
  */
 function delegator_page_enable_subtask($name) {
   ctools_include('export');
@@ -1316,7 +1423,7 @@ function delegator_page_enable_subtask($name) {
 }
 
 /**
- * Entry point to export a page.
+ * Entry point to disable a page.
  */
 function delegator_page_disable_subtask($name) {
   ctools_include('export');

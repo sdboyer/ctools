@@ -254,7 +254,9 @@ function delegator_admin_find_handler($id, $cache, $task_name, $task_handlers = 
       $handler = $task_handlers[$id];
     }
     else {
-      $handler = delegator_load_task_handler($id);
+      list($task_id, $subtask_id) = delegator_get_task_id($task_name);
+      $task = delegator_get_task($task_id);
+      $handler = delegator_load_task_handler($task, $subtask_id, $id);
     }
   }
 
@@ -933,17 +935,17 @@ function delegator_admin_list_form_action_disable($form, &$form_state, $id, $act
  */
 function delegator_administer_task_handler_export($task_name, $name) {
   list($task_id, $subtask_id) = delegator_get_task_id($task_name);
+  $task = delegator_get_task($task_id);
 
   $handler = delegator_admin_get_task_handler_cache($name);
   if (!$handler) {
-    $handler = delegator_load_task_handler($name);
+    $handler = delegator_load_task_handler($task, $subtask_id, $name);
   }
 
   if (!$handler) {
     return drupal_not_found();
   }
 
-  $task = delegator_get_task($task_id);
   $plugin = delegator_get_task_handler($handler->handler);
 
   $title = delegator_get_handler_title($plugin, $handler, $task, $subtask_id);

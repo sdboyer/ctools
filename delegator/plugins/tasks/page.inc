@@ -140,6 +140,10 @@ function delegator_page_build_subtask($task, $page) {
       'title' => t('Export'),
       'href' => "admin/build/pages/export/$name",
     );
+    $operations[] = array(
+      'title' => t('Export (with handlers)'),
+      'href' => "admin/build/pages/export/$name/handlers",
+    );
     if ($page->export_type == (EXPORT_IN_CODE | EXPORT_IN_DATABASE)) {
       $operations[] = array(
         'title' => t('Revert'),
@@ -165,7 +169,7 @@ function delegator_page_build_subtask($task, $page) {
       'href' => "admin/build/pages/enable/$name",
     );
   }
-  return array(
+  $subtask = array(
     'name' => $name,
     'admin title' => $page->admin_title,
     'admin path' => $page->path,
@@ -175,6 +179,12 @@ function delegator_page_build_subtask($task, $page) {
     'row class' => empty($page->disabled) ? 'delegator-enabled' : 'delegator-disabled',
     'storage' => $page->type,
   );
+
+  // default handlers may appear from a default subtask.
+  if (isset($page->default_handlers)) {
+    $subtask['default handlers'] = $page->default_handlers;
+  }
+  return $subtask;
 }
 
 /**
@@ -383,6 +393,19 @@ function delegator_page_load_all() {
 function delegator_page_save(&$subtask) {
   $update = (isset($subtask->pid)) ? array('pid') : array();
   drupal_write_record('delegator_pages', $subtask, $update);
+
+  // If this was a default page we may need to write default task
+  // handlers that we provided as well.
+  if (!$update || isset($subtask->default_handlers)) {
+    $handlers = delegator_load_task_handlers(delegator_get_task('page'), $subtask->name);
+    foreach ($subtask->default_handlers as $name => $handler) {
+      if (!isset($handlers[$name]) || !($handlers[$name]->export_type & EXPORT_IN_DATABASE)) {
+        // Make sure this is right, as exports can wander a bit.
+        $handler->subtask = $subtask->name;
+        delegator_save_task_handler($handler);
+      }
+    }
+  }
   return $subtask;
 }
 
@@ -396,9 +419,17 @@ function delegator_page_delete($subtask) {
 /**
  * Export a page subtask.
  */
-function delegator_page_export($subtask, $indent = '') {
+function delegator_page_export($subtask, $with_handlers = FALSE, $indent = '') {
   ctools_include('export');
   $output = ctools_export_object('delegator_pages', $subtask, 'page', $indent);
+  if ($with_handlers) {
+    $handlers = delegator_load_task_handlers(delegator_get_task('page'), $subtask->name);
+    $output .= $indent . '$page->default_handlers = array();' . "\n";
+    foreach ($handlers as $handler) {
+      $output .= delegator_export_task_handler($handler, $indent);
+      $output .= $indent . '$page->default_handlers[$handler->name] = $handler;' . "\n";
+    }
+  }
   return $output;
 }
 
