@@ -43,13 +43,13 @@ function ctools_plugin_api_include($owner, $api, $minimum_version, $current_vers
     $cache[$owner][$api] = array();
     foreach (module_implements('ctools_plugin_api') as $module) {
       $function = $module . '_ctools_plugin_api';
-      $info = $function();
+      $info = $function($owner, $api);
       if (!isset($info['version'])) {
         continue;
       }
 
       // Only process if version is between minimum and current, inclusive.
-      if ($info['version'] >= $minimum_version && $info_version <= $current_version) {
+      if ($info['version'] >= $minimum_version && $info['version'] <= $current_version) {
         if (!isset($info['path'])) {
           $info['path'] = drupal_get_path('module', $module);
         }
@@ -70,7 +70,7 @@ function ctools_plugin_api_include($owner, $api, $minimum_version, $current_vers
 
   }
 
-  return $cache[$module][$api];
+  return $cache[$owner][$api];
 }
 
 /**
@@ -286,7 +286,7 @@ function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL)
     );
 
     // Fill in plugin specific defaults, if they exist.
-    if ($info['defaults']) {
+    if (!empty($info['defaults'])) {
       $result[$name] += $info['defaults'];
     }
   }
