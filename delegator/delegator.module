@@ -165,6 +165,7 @@ function delegator_menu_task_items(&$items, $task_id, $task, $handlers, $subtask
       'description' => isset($task['admin description']) ? $task['admin description'] : '',
       'page callback' => 'delegator_administer_task',
       'page arguments' => array($task_name),
+      'type' => MENU_CALLBACK,
     ) + $base;
   }
 
@@ -260,7 +261,7 @@ function delegator_load_task_handler($task, $subtask_id, $name) {
 /**
  * Load all task handlers for a given task/subtask.
  */
-function delegator_load_task_handlers($task, $subtask_id = NULL) {
+function delegator_load_task_handlers($task, $subtask_id = NULL, $default_handlers = NULL) {
   ctools_include('export');
   $conditions = array(
     'task' => $task['name'],
@@ -271,7 +272,7 @@ function delegator_load_task_handlers($task, $subtask_id = NULL) {
   }
 
   $handlers = ctools_export_load_object('delegator_handlers', 'conditions', $conditions);
-  $defaults = delegator_get_default_task_handlers($task, $subtask_id);
+  $defaults = isset($default_handlers) ? $default_handlers : delegator_get_default_task_handlers($task, $subtask_id);
   foreach ($defaults as $name => $default) {
     $result = delegator_compare_task_handlers($handlers, $defaults, $name);
     if ($result) {

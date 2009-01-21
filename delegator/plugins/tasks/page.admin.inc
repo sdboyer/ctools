@@ -190,7 +190,7 @@ function delegator_page_menu_item($menu, $access_arguments, $page_arguments, $lo
     'page callback' => 'delegator_page_execute',
     'page arguments' => $page_arguments,
     'load arguments' => $load_arguments,
-    'file' => 'plugins/tasks/page.admin.inc',
+    'file' => 'plugins/tasks/page.inc',
   );
 
   if (isset($menu['title'])) {
@@ -585,6 +585,8 @@ function delegator_page_form_menu(&$form, &$form_state) {
     '#dependency' => array('radio:menu[type]' => array('normal', 'tab', 'default tab')),
   );
 
+  list($major, $minor) = explode('.', VERSION, 2);
+
   $form['menu']['name-warning'] = array(
     '#type' => 'markup',
     '#prefix' => '<div class="warning">',
@@ -592,7 +594,7 @@ function delegator_page_form_menu(&$form, &$form_state) {
     '#suffix' => '</div>',
     '#process' => array('ctools_dependent_process'),
     '#dependency' => array('radio:menu[type]' => array('normal')),
-    '#access' => (VERSION < 6.5),
+    '#access' => ($minor < 5),
   );
 
   // Only display the menu selector if menu module is enabled.

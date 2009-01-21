@@ -11,7 +11,7 @@
  */
 function ctools_node_language_ctools_access() {
   if (module_exists('locale')) {
-    $args['node_language'] = array(
+    $items['node_language'] = array(
       'title' => t("Node access by language"),
       'description' => t('Control access by node language.'),
       'callback' => 'ctools_node_language_ctools_access_check',
@@ -21,9 +21,8 @@ function ctools_node_language_ctools_access() {
       'summary' => 'ctools_node_language_ctools_acesss_summary',
       'required context' => new ctools_context_required(t('Node'), 'node'),
     );
+    return $items;
   }
-
-  return $args;
 }
 
 /**

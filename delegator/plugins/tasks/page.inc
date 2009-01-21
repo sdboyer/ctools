@@ -107,7 +107,8 @@ function delegator_page_build_subtask($task, $page) {
       );
     }
     else {
-      $task_handlers = delegator_load_task_handlers($task, $page->name);
+      $default_handlers = isset($page->default_handlers) ? $page->default_handlers : array();
+      $task_handlers = delegator_load_task_handlers($task, $page->name, $default_handlers);
       if ($task_handlers) {
         $handler = array_shift($task_handlers);
         $plugin = delegator_get_task_handler($handler->handler);
@@ -396,7 +397,7 @@ function delegator_page_save(&$subtask) {
 
   // If this was a default page we may need to write default task
   // handlers that we provided as well.
-  if (!$update || isset($subtask->default_handlers)) {
+  if (!$update && isset($subtask->default_handlers)) {
     $handlers = delegator_load_task_handlers(delegator_get_task('page'), $subtask->name);
     foreach ($subtask->default_handlers as $name => $handler) {
       if (!isset($handlers[$name]) || !($handlers[$name]->export_type & EXPORT_IN_DATABASE)) {

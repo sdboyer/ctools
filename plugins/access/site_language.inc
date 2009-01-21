@@ -11,7 +11,7 @@
  */
 function ctools_site_language_ctools_access() {
   if (module_exists('locale')) {
-    $args['site_language'] = array(
+    $items['site_language'] = array(
       'title' => t("Access by site language"),
       'description' => t('Control access by the language the site currently uses.'),
       'callback' => 'ctools_site_language_ctools_access_check',
@@ -19,11 +19,9 @@ function ctools_site_language_ctools_access() {
       'settings form' => 'ctools_site_language_ctools_access_settings',
       'settings form submit' => 'ctools_site_language_ctools_access_settings_submit',
       'summary' => 'ctools_site_language_ctools_acesss_summary',
-//      'required context' => new ctools_context_required(t('Node'), 'node'),
     );
+    return $items;
   }
-
-  return $args;
 }
 
 /**

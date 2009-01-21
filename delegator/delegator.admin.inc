@@ -910,6 +910,7 @@ function delegator_admin_list_form_action_clone($form, &$form_state, $id, $actio
   }
 
   $handler->name = $name;
+  unset($handler->did);
 
   // Store the new handler.
   if (!$form_state['cache']->locked) {
