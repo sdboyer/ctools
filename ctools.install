@@ -25,7 +25,19 @@ function ctools_uninstall() {
 function ctools_schema() {
   // Currently, schema 1 is the only schema we have. As we make updates,
   // we might either create a new schema 2 or make adjustments here.
-  return ctools_schema_1();
+  return ctools_schema_2();
+}
+
+/**
+ * Version 2 of the CTools schema.
+ */
+function ctools_schema_2() {
+  $schema = ctools_schema_1();
+
+  // update the 'name' field to be 128 bytes long:
+  $schema['ctools_object_cache']['fields']['name']['length'] = 128;
+
+  return $schema;
 }
 
 /**
@@ -70,4 +82,19 @@ function ctools_schema_1() {
     ),
   );
   return $schema;
+}
+
+/**
+ * Enlarge the ctools_object_cache.name column to prevent truncation and weird
+ * errors.
+ */
+function ctools_update_6001() {
+  $ret = array();
+
+  // Perform updates like this to reduce code duplication.
+  $schema = ctools_schema_2();
+
+  db_change_field($ret, 'ctools_object_cache', 'name', 'name', $schema['ctools_object_cache']['fields']['name']);
+
+  return $ret;
 }
