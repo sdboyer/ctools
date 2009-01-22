@@ -185,7 +185,7 @@ function ctools_plugin_load_includes($info, $file = NULL) {
       // For example, 'foo.inc' in the module 'mogul' using the plugin
       // whose hook is named 'borg_type' should have a function named (deep breath)
       // mogul_foo_borg_type()
-      $result = ctools_plugin_process($info, $module, $module . '_' . $file->name, dirname($file->filename), basename($file->filename));
+      $result = ctools_plugin_process($info, $module, $module . '_' . $file->name, dirname($file->filename), basename($file->filename), $file->name);
       if (is_array($result)) {
         $plugins = array_merge($plugins, $result);
       }
@@ -265,8 +265,13 @@ function ctools_plugin_load_hooks($info) {
  *   The path where files utilized by this plugin will be found.
  * @param $file
  *   The file that was loaded for this plugin, if it exists.
+ * @param $base
+ *   The base plugin name to use. If a file was loaded for the plugin, this
+ *   is the plugin to assume must be present. This is used to automatically
+ *   translate the array to make the syntax more friendly to plugin
+ *   implementors.
  */
-function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL) {
+function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL, $base = NULL) {
   $function = $identifier . '_' . $info['hook'];
   if (!function_exists($function)) {
     return NULL;
@@ -274,6 +279,13 @@ function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL)
   $result = $function();
   if (!isset($result) || !is_array($result)) {
     return NULL;
+  }
+
+  // Automatically convert to the proper format that lets plugin implementations
+  // not nest arrays as deeply as they used to, but still support the older
+  // format where they do:
+  if ($base && (!isset($result[$base]) || !is_array($result[$base]))) {
+    $result = array($base => $result);
   }
 
   // Fill in defaults.
@@ -288,6 +300,11 @@ function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL)
     // Fill in plugin specific defaults, if they exist.
     if (!empty($info['defaults'])) {
       $result[$name] += $info['defaults'];
+    }
+
+    // Allow the plugin owner to do additional processing.
+    if (!empty($info['process']) && function_exists($info['process'])) {
+      $info['process']($result[$name], $info);
     }
   }
   return $result;

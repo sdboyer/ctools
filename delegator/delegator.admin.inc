@@ -295,6 +295,7 @@ function delegator_administer_task($task_name) {
     'task_handlers' => $task_handlers,
     'cache' => delegator_admin_get_task_cache($task, $subtask_id, $task_handlers),
   );
+
   ctools_include('form');
   return ctools_build_form('delegator_admin_list_form', $form_state);
 }
