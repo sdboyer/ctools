@@ -52,5 +52,5 @@ function delegator_page_type_menu(&$items, $task) {
     'page callback' => 'delegator_page_type_list',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
-  );
+  ) + $base;
 }

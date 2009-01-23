@@ -1057,11 +1057,6 @@ function delegator_administer_task_handler_edit($task_name, $handler_id, $name, 
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
 
   drupal_add_css(drupal_get_path('module', 'delegator') . '/css/task-handlers.css');
-  if (!$output) {
-    // redirect.
-    drupal_redirect_form(array(), $form_state['redirect']);
-  }
-
   if (!empty($plugin['forms'][$step]['no blocks'])) {
     print theme('page', $output, FALSE);
   }
@@ -1128,25 +1123,13 @@ function delegator_administer_task_handler_add($task_name, $name, $step) {
   ctools_include('wizard');
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
 
-  if (!$output) {
-    // redirect.
-    drupal_redirect_form(array(), $form_state['redirect']);
-  }
-
   drupal_add_css(drupal_get_path('module', 'delegator') . '/css/task-handlers.css');
-
   if (!empty($plugin['forms'][$step]['no blocks'])) {
     print theme('page', $output, FALSE);
   }
   else {
     return $output;
   }
-
-  /*
-  if (empty($not_first)) {
-    $output .= '<div class="delegator-explanation">' . t('Before proceeding, you must configure your new "@type"', array('@type' => $plugin['title'])) . '</div>';
-  }
-  */
 }
 
 /**
