@@ -13,25 +13,6 @@
  */
 
 /**
-  in schema:
-    'export' = array(
-      'key' => 'name', // unique key to identify records
-      'default hook' => '', // name of hook to get default objects
-      'status' => '', // name of variable to store enabled/disabled status
-      'object' => '', // name of the object to put this data on
-      'sub records' => array(
-        /////// sub records not yet implemented
-        array(
-          'table' => // table subsidiary records are in
-          'parent' => // field in parent that matches
-          'child' => // field in child that matches
-          'array' => // name of array to store record in
-          'key' => // field to use as a key to store sub records.
-        ),
-      ),
-  */
-
-/**
  * A bit flag used to let us know if an object is in the database.
  */
 define('EXPORT_IN_DATABASE', 0x01);

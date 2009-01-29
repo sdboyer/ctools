@@ -16,6 +16,56 @@
  */
 
 /**
+ * Render a context type task handler given a list of handlers
+ * attached to a type.
+ *
+ * @param $task
+ *   The $task object in use.
+ * @param $subtask_id
+ *   The id of the subtask in use.
+ * @param $contexts
+ *   The context objects in use.
+ * @param $page
+ *   If TRUE then this renderer owns the page and can use theme('page')
+ *   for no blocks; if false, output is returned regardless of any no
+ *   blocks settings.
+ * @return
+ *   Either the output or NULL if there was output, FALSE if no handler
+ *   accepted the task. If $page is FALSE then the $info block is returned instead.
+ */
+function ctools_context_handler_render($task, $subtask_id, $contexts, $page = TRUE) {
+  // Load the landlers, choosing only enabled handlers.
+  $handlers = delegator_load_sorted_handlers($task, $subtask_id, TRUE);
+
+  // Try each handler.
+  foreach ($handlers as $handler) {
+    if ($function = delegator_get_renderer($handler)) {
+      if ($info = $function($handler, $contexts)) {
+        // If we don't own the page, let the caller deal with rendering.
+        if (!$page) {
+          return $info;
+        }
+
+        if (isset($info['title'])) {
+          drupal_set_title($info['title']);
+        }
+
+        // Only directly output if $page was set to true.
+        if (!empty($info['no_blocks'])) {
+          print theme('page', $info['content'], FALSE);
+          return;
+        }
+        else {
+          return $info['content'];
+        }
+      }
+    }
+  }
+
+  return FALSE;
+}
+
+/**
  * Compare arguments to contexts for selection purposes.
  *
  * @param $handler

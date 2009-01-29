@@ -74,28 +74,14 @@ function delegator_node_edit($node) {
   ctools_include('context-task-handler');
   $contexts = ctools_context_handler_get_task_contexts($task, '', array($node));
 
-  // Load the landlers.
-  $handlers = delegator_load_sorted_handlers($task, '', TRUE);
-
-  // Try each handler.
-  foreach ($handlers as $handler) {
-    if ($function = delegator_get_renderer($handler)) {
-      $output = $function($handler, $contexts);
-      if ($output) {
-        // TRUE is a special return used to let us know that it handled the
-        // task but does not wish us to render anything, as it already did.
-        // This is needed for the 'no blocks' functionality.
-        if ($output === TRUE) {
-          return;
-        }
-        return $output;
-      }
-    }
+  $output = ctools_context_handler_render($task, '', $contexts);
+  if ($output === FALSE) {
+    // Fall back!
+    module_load_include('inc', 'node', 'node.pages');
+    $output = drupal_get_form($node->type . '_node_form', $node);
   }
 
-  // Fall back!
-  module_load_include('inc', 'node', 'node.pages');
-  return drupal_get_form($node->type .'_node_form', $node);
+  return $output;
 }
 
 /**

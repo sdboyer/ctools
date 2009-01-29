@@ -303,26 +303,13 @@ function delegator_page_execute($subtask_id) {
   }
 
   $task = delegator_get_task('page');
-  $handlers = delegator_load_sorted_handlers($task, $subtask_id);
-  $page = delegator_page_load($subtask_id);
 
-  // Try each handler.
-  foreach ($handlers as $handler) {
-    if ($function = delegator_get_renderer($handler)) {
-      $output = $function($handler, $contexts);
-      if ($output) {
-        // TRUE is a special return used to let us know that it handled the
-        // task but does not wish us to render anything, as it already did.
-        // This is needed for the 'no blocks' functionality.
-        if ($output === TRUE) {
-          return;
-        }
-        return $output;
-      }
-    }
+  $output = ctools_context_handler_render($task, $subtask_id, $contexts);
+  if ($output === FALSE) {
+    return drupal_not_found();
   }
 
-  return drupal_access_denied();
+  return $output;
 }
 
 // --------------------------------------------------------------------------
