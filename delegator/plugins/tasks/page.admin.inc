@@ -1135,7 +1135,9 @@ function delegator_page_argument_form_multiple(&$form, &$form_state) {
     '#description' => t('By allowing multiple handlers, the task handler UI will open up, allowing you to add and remove task handlers and adjust their priority.'),
   );
 
-  if (count($task_handlers) > 1) {
+  // If they've selected multiple handlers and actually have more than one
+  // don't let them switch back to single.
+  if ($form_state['page']->multiple && count($task_handlers) > 1) {
     $form['multiple']['#disabled'] = TRUE;
     $form['multiple']['#description'] .= t('You may not modify this value while multiple task handlers exist. If you wish to change this to single only, you must reduce the number of task handlers attached to the page to zero or one.');
   }
