@@ -303,6 +303,7 @@ function delegator_page_execute($subtask_id) {
 
   $task = delegator_get_task('page');
 
+  ctools_include('context-task-handler');
   $output = ctools_context_handler_render($task, $subtask_id, $contexts);
   if ($output === FALSE) {
     return drupal_not_found();

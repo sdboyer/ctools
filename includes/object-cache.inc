@@ -72,6 +72,7 @@ function ctools_object_cache_clear($obj, $name) {
   db_query("DELETE FROM {ctools_object_cache} WHERE sid = '%s' AND obj = '%s' AND name = '%s'", session_id(), $obj, $name);
 }
 
+
 /**
  * Determine if another user has a given object cached.
  *
