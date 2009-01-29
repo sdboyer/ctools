@@ -113,3 +113,4 @@ function ctools_node_language_ctools_acesss_summary($conf, $context) {
 
   return format_plural(count($names), '@identifier can be in languages "@languages"', '@identifier can be in language "@languages"', array('@languages' => implode(', ', $names), '@identifier' => $context->identifier));
 }
+

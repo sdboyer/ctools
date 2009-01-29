@@ -183,3 +183,4 @@ function ctools_modal_render($title, $output) {
   $commands[] = ctools_modal_command_display($title, $output);
   ctools_ajax_render($commands);
 }
+

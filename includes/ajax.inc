@@ -1,5 +1,6 @@
 <?php
 // $Id$
+
 /**
  * @file
  * Utilize the CTools AJAX responder.
@@ -38,12 +39,12 @@
  * Commands are usually created with a couple of helper functions, so they
  * look like this:
  *
- * @code{
+ * @code
  *   $commands = array();
  *   $commands[] = ctools_ajax_command_replace('#ctools-object-1', 'some html here');
  *   $commands[] = ctools_ajax_command_changed('#ctools-object-1');
  *   ctools_ajax_render($commands); // this function exits.
- * }
+ * @endcode
  */
 
 /**
@@ -186,3 +187,4 @@ function ctools_ajax_render_error($error = '') {
   $commands[] = ctools_ajax_command_error($error);
   ctools_ajax_render($commands);
 }
+

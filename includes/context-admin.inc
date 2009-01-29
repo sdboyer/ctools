@@ -25,7 +25,7 @@ function ctools_context_info($type = NULL) {
       'argument' => array(
         'title' => t('Arguments'),
         'singular title' => t('argument'),
-        'description' => '', /* t("Arguments are parsed from the URL and translated into contexts that may be added to the display via the 'content' tab. These arguments are parsed in the order received, and you may use % in your URL to hold the place of an object; the rest of the arguments will come after the URL. For example, if the URL is node/%/panel and your user visits node/1/panel/foo, the first argument will be 1, and the second argument will be foo."), */
+        'description' => '', // t("Arguments are parsed from the URL and translated into contexts that may be added to the display via the 'content' tab. These arguments are parsed in the order received, and you may use % in your URL to hold the place of an object; the rest of the arguments will come after the URL. For example, if the URL is node/%/panel and your user visits node/1/panel/foo, the first argument will be 1, and the second argument will be foo."),
         'add button' => t('Add argument'),
         'context function' => 'ctools_get_argument',
         'form id' => 'ctools_edit_argument_form',
@@ -35,7 +35,7 @@ function ctools_context_info($type = NULL) {
       'relationship' => array(
         'title' => t('Relationships'),
         'singular title' => t('relationship'),
-        'description' => '', /* t('Relationships are contexts that are created from already existing contexts; the add relationship button will only appear once there is another context available. Relationships can load objects based upon how they are related to each other; for example, the author of a node, or a taxonomy term attached to a node, or the vocabulary of a taxonomy term.'), */
+        'description' => '', // t('Relationships are contexts that are created from already existing contexts; the add relationship button will only appear once there is another context available. Relationships can load objects based upon how they are related to each other; for example, the author of a node, or a taxonomy term attached to a node, or the vocabulary of a taxonomy term.'),
         'add button' => t('Add relationship'),
         'context function' => 'ctools_get_relationship',
         'form id' => 'ctools_edit_relationship_form',
@@ -45,7 +45,7 @@ function ctools_context_info($type = NULL) {
       'context' => array(
         'title' => t('Contexts'),
         'singular title' => t('context'),
-        'description' => '', /* t('Contexts are embedded directly into the panel; you generally must select an object in the panel. For example, you could select node 5, or the term "animals" or the user "administrator"'), */
+        'description' => '', // t('Contexts are embedded directly into the panel; you generally must select an object in the panel. For example, you could select node 5, or the term "animals" or the user "administrator"'),
         'add button' => t('Add context'),
         'context function' => 'ctools_get_context',
         'form id' => 'ctools_edit_context_form',
@@ -55,7 +55,7 @@ function ctools_context_info($type = NULL) {
       'requiredcontext' => array(
         'title' => t('Required contexts'),
         'singular title' => t('required context'),
-        'description' => '', /* t('Required contexts are passed in from some external source, such as a containing panel. If a mini panel has required contexts, it can only appear when that context is available, and therefore will not show up as a standard Drupal block.'), */
+        'description' => '', // t('Required contexts are passed in from some external source, such as a containing panel. If a mini panel has required contexts, it can only appear when that context is available, and therefore will not show up as a standard Drupal block.'),
         'add button' => t('Add required context'),
         'context function' => 'ctools_get_context',
         'form id' => 'ctools_edit_requiredcontext_form',
@@ -183,7 +183,6 @@ function ctools_context_add_relationship_form($module, &$form, &$form_state, &$f
   $available_relationships = ctools_context_get_relevant_relationships(ctools_context_load_contexts($object, TRUE, $base_contexts));
 
   ctools_context_add_item_table('relationship', $form_location, $available_relationships, $object->relationships);
-
 }
 
 /**
@@ -281,11 +280,11 @@ function ctools_context_add_item_to_form($module, $type, $name, &$form, $positio
   }
 
   $form['remove'] = array(
-    '#value' => ctools_ajax_image_button(ctools_image_path('icon-delete.png'), "ctools/context/ajax/delete/$module/$type/$name/$position", t('Remove this item.'))
+    '#value' => ctools_ajax_image_button(ctools_image_path('icon-delete.png'), "ctools/context/ajax/delete/$module/$type/$name/$position", t('Remove this item.')),
   );
 
   $form['settings'] = array(
-    '#value' => ctools_modal_image_button(ctools_image_path('icon-configure.png'), "ctools/context/ajax/configure/$module/$type/$name/$position", t('Configure settings for this item.'))
+    '#value' => ctools_modal_image_button(ctools_image_path('icon-configure.png'), "ctools/context/ajax/configure/$module/$type/$name/$position", t('Configure settings for this item.')),
   );
 }
 
@@ -508,8 +507,8 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
  * Form (for ajax use) to add a context
  */
 function ctools_edit_context_form(&$form_state) {
-  $object = $form_state['object'];
-  $context = $form_state['info'];
+  $object   = $form_state['object'];
+  $context  = $form_state['info'];
   $position = $form_state['position'];
   $contexts = $form_state['contexts'];
 
@@ -537,7 +536,7 @@ function ctools_edit_context_form(&$form_state) {
   $form['context']['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Identifier'),
-    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' =>t('context'))),
+    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' => t('context'))),
     '#default_value' => $ctext['identifier'],
   );
 
@@ -595,8 +594,8 @@ function ctools_edit_context_form_submit($form, &$form_state) {
  * Form (for ajax use) to add a context
  */
 function ctools_edit_requiredcontext_form(&$form_state) {
-  $object = $form_state['object'];
-  $context = $form_state['info'];
+  $object   = $form_state['object'];
+  $context  = $form_state['info'];
   $position = $form_state['position'];
   $contexts = $form_state['contexts'];
 
@@ -625,7 +624,7 @@ function ctools_edit_requiredcontext_form(&$form_state) {
   $form['requiredcontext']['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Identifier'),
-    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' =>t('required context'))),
+    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' => t('required context'))),
     '#default_value' => $ctext['identifier'],
   );
 
@@ -656,10 +655,10 @@ function ctools_edit_requiredcontext_form_submit($form, &$form_state) {
  * Form (for ajax use) to add a relationship
  */
 function ctools_edit_relationship_form(&$form_state) {
-  $object = $form_state['object'];
+  $object       = $form_state['object'];
   $relationship = $form_state['info'];
-  $position = $form_state['position'];
-  $contexts = $form_state['contexts'];
+  $position     = $form_state['position'];
+  $contexts     = $form_state['contexts'];
 
   $rel = $object->relationships[$position];
 
@@ -687,7 +686,7 @@ function ctools_edit_relationship_form(&$form_state) {
   $form['relationship']['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Identifier'),
-    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' =>t('relationship'))),
+    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' => t('relationship'))),
     '#default_value' => $rel['identifier'],
   );
 
@@ -745,7 +744,7 @@ function ctools_edit_relationship_form_submit($form, &$form_state) {
  */
 function ctools_edit_argument_form(&$form_state) {
   // Basic values required to orient ourselves
-  $object = $form_state['object'];
+  $object   = $form_state['object'];
   $argument = $form_state['info'];
   $position = $form_state['position'];
   $contexts = $form_state['contexts'];
@@ -797,7 +796,7 @@ function ctools_edit_argument_form(&$form_state) {
   $form['argument']['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Identifier'),
-    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' =>t('argument'))),
+    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' => t('argument'))),
     '#default_value' => $arg['identifier'],
   );
 
@@ -887,7 +886,7 @@ function ctools_context_ajax_item_delete($module = NULL, $type = NULL, $object_n
   unset($ref[$position]);
   ctools_object_cache_set("context_object:$module", $object_name, $object);
 
-  $output = array();
+  $output   = array();
   $output[] = ctools_ajax_command_replace('#' . $type . '-row-' . $position, '');
   $output[] = ctools_ajax_command_restripe("#$type-table");
   ctools_ajax_render($output);

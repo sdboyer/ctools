@@ -10,18 +10,14 @@ function delegator_node_edit_delegator_tasks() {
     'node_edit' => array(
       // This is a 'page' task and will fall under the page admin UI
       'task type' => 'page',
-
       'title' => t('Node edit'),
       'description' => t('The node edit task allows you to control what handler will handle the job of editing a node at the path <em>node/%node/edit</em>. It also handles the node add page at node/add/%type. If no handler is set or matches the criteria, the default Drupal node renderer will be used. Please note that some modules sufficiently customize their node add and edit procedure that this may not successfully override adding or editing of all types.'),
-
       'admin title' => 'Node edit', // translated by menu system
       'admin description' => 'Overrides for the built in node edit handler at <em>node/%node/edit</em>.',
       'admin path' => 'node/%node/edit',
-
       // Menu hooks so that we can alter the node/%node menu entry to point to us.
       'hook menu' => 'delegator_node_edit_menu',
       'hook menu alter' => 'delegator_node_edit_menu_alter',
-
       // This is task uses 'context' handlers and must implement these to give the
       // handler data it needs.
       'handler type' => 'context', // handler type -- misnamed
@@ -103,7 +99,7 @@ function delegator_node_add($type) {
     'uid' => $user->uid,
     'name' => (isset($user->name) ? $user->name : ''),
     'type' => $type,
-    'language' => ''
+    'language' => '',
   );
 
   drupal_set_title(t('Create @name', array('@name' => $types[$type]->name)));
@@ -134,3 +130,4 @@ function delegator_node_edit_get_arguments($task, $subtask_id) {
 function delegator_node_edit_get_contexts($task, $subtask_id) {
   return ctools_context_get_placeholders_from_argument(delegator_node_edit_get_arguments($task, $subtask_id));
 }
+

@@ -45,3 +45,4 @@ function ctools_argument_nid_context($arg = NULL, $conf = NULL, $empty = FALSE) 
 
   return ctools_context_create('node', $node);
 }
+

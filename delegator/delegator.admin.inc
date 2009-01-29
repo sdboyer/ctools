@@ -205,6 +205,7 @@ function delegator_admin_new_task_handler($handler, $task_name, $task, $subtask_
     return "admin/build/delegator/$task_name";
   }
 }
+
 /**
  * Used as a callback to uasort to sort the task cache by weight.
  *
@@ -304,10 +305,10 @@ function delegator_administer_task($task_name) {
  * Form to administer task handlers assigned to a task.
  */
 function delegator_admin_list_form(&$form_state) {
-  $task = &$form_state['task'];
-  $subtask = &$form_state['subtask'];
+  $task          = &$form_state['task'];
+  $subtask       = &$form_state['subtask'];
   $task_handlers = &$form_state['task_handlers'];
-  $cache = &$form_state['cache'];
+  $cache         = &$form_state['cache'];
 
   // Get a list of possible task handlers for this task.
   $task_handler_plugins = delegator_get_task_handler_plugins($task);
@@ -415,7 +416,7 @@ function delegator_admin_list_form(&$form_state) {
     }
 
     $form['handlers'][$id]['dropdown'] = array(
-      '#value' => theme('ctools_dropdown', t('Operations'), delegator_admin_make_dropdown_links($actions), 'delegator-task-handler-operations')
+      '#value' => theme('ctools_dropdown', t('Operations'), delegator_admin_make_dropdown_links($actions), 'delegator-task-handler-operations'),
     );
 
     $form['handlers'][$id]['action'] = array(
@@ -535,7 +536,7 @@ function delegator_admin_make_dropdown_links($actions) {
     }
 
     if (is_array($text)) {
-      $links[] =  array(
+      $links[] = array(
         'title' => '<span class="text">' . $id . '</span>' . theme('links', delegator_admin_make_dropdown_links($text)),
         'html' => TRUE,
       );
@@ -557,10 +558,10 @@ function delegator_admin_make_dropdown_links($actions) {
 function theme_delegator_admin_list_form($form) {
   $output = '';
   if (!empty($form['#delegator-lock'])) {
-    $account = user_load($form['#delegator-lock']->uid);
-    $name = theme('username', $account);
+    $account  = user_load($form['#delegator-lock']->uid);
+    $name     = theme('username', $account);
     $lock_age = format_interval(time() - $form['#delegator-lock']->updated);
-    $break = url('admin/build/delegator/' . $form['#task-name'] . '/break-lock');
+    $break    = url('admin/build/delegator/' . $form['#task-name'] . '/break-lock');
 
     $output .= '<div class="delegator-locked">';
     $output .= t('This task is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $name, '!age' => $lock_age, '!break' => $break));
@@ -636,7 +637,7 @@ function theme_delegator_admin_list_form($form) {
     array('data' => t('Task handler'), 'class' => 'delegator-handler'),
     array('data' => t('Type'), 'class' => 'delegator-type'),
     t('Weight'),
-    array('data' => t('Operations'), 'class' => 'delegator-operations')
+    array('data' => t('Operations'), 'class' => 'delegator-operations'),
   );
 
   drupal_add_tabledrag('delegator-task-list-arrange', 'order', 'sibling', 'weight');
@@ -858,7 +859,6 @@ function delegator_admin_list_form_action($form, &$form_state) {
   return;
 }
 
-
 /**
  * Delegated submit handler to delete an item.
  */
@@ -986,10 +986,8 @@ function delegator_admin_task_handler_form_info($task_name) {
     'id' => 'delegator_task_handler',
     'show back' => TRUE,
     'show cancel' => TRUE,
-
     'return path' => "admin/build/delegator/$task_name",
-
-    'next callback'   => 'delegator_admin_edit_task_handler_next',
+    'next callback' => 'delegator_admin_edit_task_handler_next',
     'finish callback' => 'delegator_admin_edit_task_handler_finish',
     'return callback' => 'delegator_admin_edit_task_handler_finish',
     'cancel callback' => 'delegator_admin_edit_task_handler_cancel',
@@ -1002,9 +1000,9 @@ function delegator_admin_task_handler_form_info($task_name) {
 function delegator_administer_task_handler_edit($task_name, $handler_id, $name, $step) {
   list($task_id, $subtask_id) = delegator_get_task_id($task_name);
 
-  $task = delegator_get_task($task_id);
+  $task    = delegator_get_task($task_id);
   $subtask = delegator_get_task_subtask($task, $subtask_id);
-  $plugin = delegator_get_task_handler($handler_id);
+  $plugin  = delegator_get_task_handler($handler_id);
 
   $cache = delegator_admin_get_task_cache($task, $subtask_id);
 
@@ -1031,7 +1029,7 @@ function delegator_administer_task_handler_edit($task_name, $handler_id, $name, 
   }
   $form_info['order'] = $plugin['edit forms'];
   $form_info['forms'] = $plugin['forms'];
-  $form_info['path'] = "admin/build/delegator/$task_name/$handler_id/$name/%step";
+  $form_info['path']  = "admin/build/delegator/$task_name/$handler_id/$name/%step";
   if (empty($plugin['forms'][$step]['no return'])) {
     $form_info['show return'] = TRUE;
   }
@@ -1077,9 +1075,9 @@ function delegator_administer_task_handler_add($task_name, $name, $step) {
     return drupal_not_found();
   }
 
-  $task = delegator_get_task($task_id);
+  $task    = delegator_get_task($task_id);
   $subtask = delegator_get_task_subtask($task, $subtask_id);
-  $plugin = delegator_get_task_handler($handler->handler);
+  $plugin  = delegator_get_task_handler($handler->handler);
 
   // Prevent silliness of using some other handler type's tabs for this
   // particular handler, or of somehow having invalid tasks or task handlers.
@@ -1152,7 +1150,6 @@ function delegator_admin_edit_task_handler_next(&$form_state) {
     delegator_admin_set_task_cache($form_state['task'], $form_state['subtask_id'], $form_state['cache']);
   }
 }
-
 
 /**
  * Form wizard finish handler; called to update everything the wizard touched.
@@ -1231,11 +1228,12 @@ function delegator_administer_break_lock(&$form_state, $task_name) {
 
   $account = user_load($lock->uid);
   return confirm_form($form,
-                  t('Are you sure you want to break this lock?'),
-                  $cancel,
-                  t('By breaking this lock, any unsaved changes made by !user will be lost!', array('!user' => theme('username', $account))),
-                  t('Break lock'),
-                  t('Cancel'));
+    t('Are you sure you want to break this lock?'),
+    $cancel,
+    t('By breaking this lock, any unsaved changes made by !user will be lost!', array('!user' => theme('username', $account))),
+    t('Break lock'),
+    t('Cancel')
+  );
 }
 
 /**
@@ -1303,10 +1301,10 @@ function delegator_admin_import_task_handler_validate($form, &$form_state) {
   // See if the task is already locked.
   $cache = delegator_admin_get_task_cache($form_state['task'], $handler->subtask);
   if ($cache->locked) {
-    $account = user_load($cache->locked->uid);
-    $name = theme('username', $account);
+    $account  = user_load($cache->locked->uid);
+    $name     = theme('username', $account);
     $lock_age = format_interval(time() - $cache->locked->updated);
-    $break = url('admin/build/delegator/' . $handler->task . '/break-lock', array('query' => array('destination' => $_GET['q'], 'cancel' => $_GET['q'])));
+    $break    = url('admin/build/delegator/' . $handler->task . '/break-lock', array('query' => array('destination' => $_GET['q'], 'cancel' => $_GET['q'])));
 
     form_error($form['object'], t('Unable to import task handler because the task is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $name, '!age' => $lock_age, '!break' => $break)));
   }
@@ -1348,3 +1346,4 @@ function delegator_admin_import_task_handler_submit($form, &$form_state) {
   delegator_admin_set_task_cache($form_state['task'], $handler->subtask, $cache);
   $form_state['redirect'] = 'admin/build/delegator/' . $form_state['task_name'];
 }
+

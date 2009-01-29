@@ -1,5 +1,6 @@
 <?php
 // $Id$
+
 /**
  * @file
  * Groups tasks that provide pages and provides a common administrative UI for them.
@@ -54,3 +55,4 @@ function delegator_page_type_menu(&$items, $task) {
     'weight' => -10,
   ) + $base;
 }
+

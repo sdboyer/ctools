@@ -78,11 +78,15 @@ function ctools_node_access_ctools_acesss_summary($conf, $context) {
   switch ($conf['type']) {
     case 'view':
       return t('@user can view @node.', $replacement);
+
     case 'update':
       return t('@user can edit @node.', $replacement);
+
     case 'delete':
       return t('@user can delete @node.', $replacement);
+
     case 'create':
       return t('@user can create nodes of the same type as @node.', $replacement);
   }
 }
+

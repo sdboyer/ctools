@@ -1,7 +1,5 @@
 <?php
 /* $Id$ */
-// Original author: Dmitri Gaskin
-// Most of the rest of the work: Sam Boyer
 
 /*
  * @file
@@ -108,6 +106,7 @@ function ctools_css_filter($css, $compressed = TRUE) {
  * @param array $css_data
  *   An array of css data, as produced by @see ctools_css_disassemble()
  *   disassembler and the @see ctools_css_filter_css_data() filter.
+ *
  * @return string $css
  *   css optimized for human viewing.
  */
@@ -137,6 +136,7 @@ function ctools_css_assemble($css_data) {
  * @param array $css_data
  *   An array of css data, as produced by @see ctools_css_disassemble()
  *   disassembler and the @see ctools_css_filter_css_data() filter.
+ *
  * @return string $css
  *   css optimized for use.
  */
@@ -172,6 +172,7 @@ function ctools_css_compress($css_data) {
  *
  * @param string $css
  *   A string containing the css to be disassembled.
+ *
  * @return array $disassembled_css
  *   An array of disassembled, slightly cleaned-up/formatted css statements.
  */
@@ -221,16 +222,15 @@ function _ctools_css_disassemble_selector($selector_str) {
     }
     else {
       // Selector is no good, so we scrap it.
-      unset ($selectors[$key]);
+      unset($selectors[$key]);
     }
   }
-    // Check for malformed selectors; if found, we skip this declaration.
+  // Check for malformed selectors; if found, we skip this declaration.
   if (empty($selectors)) {
     return FALSE;
   }
   return implode(', ', $selectors);
 }
-
 
 function _ctools_css_disassemble_declaration($declaration) {
   $formatted_statement = array();
@@ -244,11 +244,11 @@ function _ctools_css_disassemble_declaration($declaration) {
         continue;
       }
       // Clean up the current property-value pair.
-      $propval_pair =  preg_replace("/[\n|\t|\\|\s]+/", ' ', strtolower(trim($propval_pair)));
+      $propval_pair = preg_replace("/[\n|\t|\\|\s]+/", ' ', strtolower(trim($propval_pair)));
       // Explode the remaining fragements some more, but clean them up first.
       list($property, $value) = explode(':', $propval_pair);
       // If the property survived, toss it onto the stack.
-      if(!empty($property)) {
+      if (!empty($property)) {
         $formatted_statement[trim($property)] = trim($value);
       }
     }
@@ -274,7 +274,7 @@ function _ctools_css_disassemble_declaration($declaration) {
  *   An array of disassembled, filtered CSS.
  */
 function ctools_css_filter_css_data($css, $allowed_properties = array(), $allowed_values = array(), $allowed_values_regex = '', $disallowed_values_regex = '') {
-//  function ctools_css_filter_css_data($css, &$filtered = NULL, $allowed_properties = array(), $allowed_values = array(), $allowed_values_regex = '', $disallowed_values_regex = '') {
+//function ctools_css_filter_css_data($css, &$filtered = NULL, $allowed_properties = array(), $allowed_values = array(), $allowed_values_regex = '', $disallowed_values_regex = '') {
   // Retrieve the default list of allowed properties if none is provided.
   $allowed_properties = !empty($allowed_properties) ? $allowed_properties : ctools_css_filter_default_allowed_properties();
   // Retrieve the default list of allowed values if none is provided.
@@ -438,3 +438,4 @@ function ctools_css_filter_default_allowed_values() {
     'yellow',
   );
 }
+

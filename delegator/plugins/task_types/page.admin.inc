@@ -108,7 +108,7 @@ function delegator_page_type_sort_tasks($tasks, &$tables, $bucket, $task_id = NU
       $operations = array(
         array(
           'title' => t('Task handlers'),
-          'href' => "admin/build/delegator/$task_name"
+          'href' => "admin/build/delegator/$task_name",
         ),
       );
     }

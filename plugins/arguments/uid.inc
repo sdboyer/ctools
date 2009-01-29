@@ -46,3 +46,4 @@ function ctools_argument_uid_context($arg = NULL, $conf = NULL, $empty = FALSE) 
 
   return ctools_context_create('user', $account);
 }
+

@@ -1,5 +1,6 @@
 <?php
 // $Id$
+
 /**
  * @file
  * Installation routines for delegator module.
@@ -84,7 +85,7 @@ function delegator_schema_1() {
     ),
     'primary key' => array('name'),
     'indexes' => array(
-      'weights'        => array('name', 'weight'),
+      'weights' => array('name', 'weight'),
     ),
   );
 

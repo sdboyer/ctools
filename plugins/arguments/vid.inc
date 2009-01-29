@@ -41,3 +41,4 @@ function ctools_vid_context($arg = NULL, $conf = NULL, $empty = FALSE) {
 
   return ctools_context_create('vocabulary', $vocabulary);
 }
+

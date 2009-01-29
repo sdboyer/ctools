@@ -50,7 +50,7 @@ function ctools_context_create_node($empty, $data = NULL, $conf = FALSE) {
     $nid = is_array($data) && isset($data['nid']) ? $data['nid'] : (is_object($data) ? $data->nid : 0);
 
     if (module_exists('translation')) {
-       if ($translation = module_invoke('translation', 'node_nid', $nid, $GLOBALS['language']->language)) {
+      if ($translation = module_invoke('translation', 'node_nid', $nid, $GLOBALS['language']->language)) {
         $nid = $translation;
         $reload = TRUE;
       }
@@ -138,9 +138,9 @@ function ctools_context_node_settings_form_validate($form, &$form_values, &$form
     return;
   }
 
-  $nid = $form_values['node'];
+  $nid          = $form_values['node'];
   $preg_matches = array();
-  $match = preg_match('/\[nid: (\d+)\]/', $nid, $preg_matches);
+  $match        = preg_match('/\[nid: (\d+)\]/', $nid, $preg_matches);
   if (!$match) {
     $match = preg_match('/^nid: (\d+)/', $nid, $preg_matches);
   }
@@ -173,3 +173,4 @@ function ctools_context_node_settings_form_submit($form, &$form_values, &$form_s
   // Don't let this be stored.
   unset($form_values['set_identifier']);
 }
+

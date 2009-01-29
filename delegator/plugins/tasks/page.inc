@@ -1,5 +1,6 @@
 <?php
 // $Id$
+
 /**
  * @file
  * Handle the 'page' task, which creates pages with arbitrary tasks and lets
@@ -30,7 +31,6 @@ function delegator_page_delegator_tasks() {
         'function' => 'delegator_page_menu',
       ),
       'hook theme' => 'delegator_page_theme',
-
       // page only items
       'task type' => 'page',
       'operations' => array(
@@ -53,7 +53,6 @@ function delegator_page_delegator_tasks() {
       'handler type' => 'context',
       'get arguments' => 'delegator_page_get_arguments',
       'get context placeholders' => 'delegator_page_get_contexts',
-
     ),
   );
 }
@@ -85,9 +84,9 @@ function delegator_page_subtask($task, $subtask_id) {
  * Build a subtask array for a given page.
  */
 function delegator_page_build_subtask($task, $page) {
-  $form_info = delegator_page_edit_form_info();
+  $form_info  = delegator_page_edit_form_info();
   $edit_links = array();
-  $name = $page->name;
+  $name       = $page->name;
 
   foreach ($form_info['order'] as $form_id => $form_title) {
     $edit_links[] = array(
@@ -122,14 +121,14 @@ function delegator_page_build_subtask($task, $page) {
               );
             }
           }
-          $operations[] =  array(
+          $operations[] = array(
             'title' => '<span class="text">' . t('Edit handler') . '</span>' . theme('links', $actions),
             'html' => TRUE,
           );
         }
       }
     }
-    $operations[] =  array(
+    $operations[] = array(
       'title' => '<span class="text">' . t('Edit page') . '</span>' . theme('links', $edit_links),
       'html' => TRUE,
     );
@@ -221,19 +220,19 @@ function delegator_page_edit_form_info() {
     ),
     'forms' => array(
       'basic' => array(
-        'form id' => 'delegator_page_form_basic'
+        'form id' => 'delegator_page_form_basic',
       ),
       'access' => array(
-        'form id' => 'delegator_page_form_access'
+        'form id' => 'delegator_page_form_access',
       ),
       'menu' => array(
-        'form id' => 'delegator_page_form_menu'
+        'form id' => 'delegator_page_form_menu',
       ),
       'argument' => array(
-        'form id' => 'delegator_page_form_argument'
+        'form id' => 'delegator_page_form_argument',
       ),
       'multiple' => array(
-        'form id' => 'delegator_page_argument_form_multiple'
+        'form id' => 'delegator_page_argument_form_multiple',
       ),
     ),
   );

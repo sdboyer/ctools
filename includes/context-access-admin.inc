@@ -1,5 +1,6 @@
 <?php
 // $Id$
+
 /**
  * @file
  * Contains administrative screens for the access control plugins.
@@ -29,7 +30,7 @@
  * control is used to let the user pick the and/or logic.
  *
  * Access control is stored in an array:
- * @code{
+ * @code
  *   array(
  *     'plugins' => array(
  *       0 => array(
@@ -40,7 +41,7 @@
  *     ),
  *     'operator' => 'AND', // or 'OR',
  *   ),
- * }
+ * @endcode
  *
  * To add this widget to your UI, you need to do a little bit of setup.
  *
@@ -79,7 +80,7 @@
  * }
  *
  * To utilize this form:
- * @code{
+ * @code
  *   ctools_include('context-access-admin');
  *   ctools_include('form'),
  *   $form_state = array(
@@ -94,7 +95,7 @@
  *   if (!empty($form_state['executed'])) {
  *     // save $form_state['access'] however you like.
  *   }
- * }
+ * @endcode
  *
  * Additionally, you may add 'no buttons' => TRUE if you wish to embed this
  * form into your own, and instead call
@@ -155,7 +156,7 @@ function ctools_access_admin_form(&$form_state) {
     '#type' => 'submit',
     '#attributes' => array('class' => 'ctools-use-modal'),
     '#id' => "ctools-access-add",
-    '#value' => t('Add')
+    '#value' => t('Add'),
   );
 
   $form['logic'] = array(
@@ -192,9 +193,9 @@ function ctools_access_admin_render_table($access, $fragment, $contexts) {
   }
 
   foreach ($access['plugins'] as $id => $test) {
-    $row = array();
+    $row    = array();
     $plugin = ctools_get_access_plugin($test['name']);
-    $title = isset($plugin['title']) ? $plugin['title'] : t('Broken/missing access plugin %plugin', array('%plugin' => $test['name']));
+    $title  = isset($plugin['title']) ? $plugin['title'] : t('Broken/missing access plugin %plugin', array('%plugin' => $test['name']));
 
     $row[] = array('data' => $title, 'class' => 'ctools-access-title');
 
@@ -290,7 +291,8 @@ function ctools_access_ajax_add($fragment = NULL, $name = NULL) {
 
   $test = array(
     'name' => $name,
-    'settings' => array() // TODO defaults
+    // TODO defaults
+    'settings' => array(),
   );
 
   if (isset($plugin['required context'])) {
@@ -337,8 +339,8 @@ function ctools_access_ajax_add($fragment = NULL, $name = NULL) {
       $function($argument, $access);
     }
 
-    $table = ctools_access_admin_render_table($access, $fragment, $contexts);
-    $output = array();
+    $table    = ctools_access_admin_render_table($access, $fragment, $contexts);
+    $output   = array();
     $output[] = ctools_ajax_command_replace('table#ctools-access-table', $table);
     $output[] = ctools_modal_command_dismiss();
   }
@@ -401,8 +403,8 @@ function ctools_access_ajax_edit($fragment = NULL, $id = NULL) {
       $function($argument, $access);
     }
 
-    $table = ctools_access_admin_render_table($access, $fragment, $contexts);
-    $output = array();
+    $table    = ctools_access_admin_render_table($access, $fragment, $contexts);
+    $output   = array();
     $output[] = ctools_ajax_command_replace('table#ctools-access-table', $table);
     $output[] = ctools_modal_command_dismiss();
   }
@@ -495,9 +497,10 @@ function ctools_access_ajax_delete($fragment = NULL, $id = NULL) {
     $function($argument, $access);
   }
 
-  $table = ctools_access_admin_render_table($access, $fragment, $contexts);
-  $output = array();
+  $table    = ctools_access_admin_render_table($access, $fragment, $contexts);
+  $output   = array();
   $output[] = ctools_ajax_command_replace('table#ctools-access-table', $table);
 
   ctools_ajax_render($output);
 }
+

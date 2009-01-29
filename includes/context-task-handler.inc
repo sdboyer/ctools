@@ -1,5 +1,6 @@
 <?php
 // $Id$
+
 /**
  * @file
  * Support for creating 'context' type task handlers.
@@ -72,6 +73,7 @@ function ctools_context_handler_render($task, $subtask_id, $contexts, $page = TR
  *   The handler in question.
  * @param $contexts
  *   The context objects provided by the task.
+ *
  * @return
  *   TRUE if these contexts match the selection criteria. NULL or FALSE
  *   otherwise.
@@ -291,3 +293,4 @@ function ctools_context_handler_edit_context_submit(&$form, &$form_state) {
   $form_state['handler']->conf['relationships'] = $form_state['context_object']->relationships;
   ctools_object_cache_clear('context_object:delegator', $form_state['handler']->name);
 }
+

@@ -86,3 +86,4 @@ function ctools_site_language_ctools_acesss_summary($conf, $context) {
 
   return format_plural(count($names), 'Site language can be languages "@languages"', 'Site language can be language "@languages"', array('@languages' => implode(', ', $names)));
 }
+

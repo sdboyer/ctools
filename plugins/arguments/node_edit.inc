@@ -47,3 +47,4 @@ function ctools_node_edit_context($arg = NULL, $conf = NULL, $empty = FALSE) {
   // This will perform a node_access check, so we don't have to.
   return ctools_context_create('node_edit_form', $node);
 }
+

@@ -79,3 +79,4 @@ function ctools_role_ctools_acesss_summary($conf, $context) {
 
   return format_plural(count($names), '@identifier must have role "@roles"', '@identifier can be one of "@roles"', array('@roles' => implode(', ', $names), '@identifier' => $context->identifier));
 }
+

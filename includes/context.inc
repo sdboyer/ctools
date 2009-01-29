@@ -100,6 +100,7 @@ class ctools_context_required {
   var $title = NULL;
 
   /**
+   *
    * @param $title
    *   The first parameter should be the 'title' of the context for use
    *   in UYI selectors when multiple contexts qualify.
@@ -572,6 +573,7 @@ function ctools_get_relationships() {
 }
 
 /**
+ *
  * @param $relationship
  *   The configuration of a relationship. It must contain the following data:
  *   - name: The name of the relationship plugin being used.
@@ -701,6 +703,7 @@ function ctools_get_contexts() {
 }
 
 /**
+ *
  * @param $context
  *   The configuration of a context. It must contain the following data:
  *   - name: The name of the context plugin being used.
@@ -918,8 +921,8 @@ function ctools_access_get_loggedin_context() {
   global $user;
   $context = ctools_context_create('user', $user);
   $context->identifier = t('Logged in user');
-  $context->keyword = 'viewer';
-  $context->id = 0;
+  $context->keyword    = 'viewer';
+  $context->id         = 0;
 
   return $context;
 }
@@ -935,8 +938,8 @@ function ctools_access_summary($plugin, $contexts, $test) {
   $description = '';
   if ($function = ctools_plugin_get_function($plugin, 'summary')) {
     $required_context = isset($plugin['required context']) ? $plugin['required context'] : array();
-    $context = isset($test['context']) ? $test['context'] : array();
-    $description = $function($test['settings'], ctools_context_select($contexts, $required_context, $context));
+    $context          = isset($test['context']) ? $test['context'] : array();
+    $description      = $function($test['settings'], ctools_context_select($contexts, $required_context, $context));
   }
   return $description;
 }
@@ -972,9 +975,9 @@ function ctools_access($settings, $contexts = array()) {
     $pass = FALSE;
     $plugin = ctools_get_access_plugin($test['name']);
     if ($plugin && $function = ctools_plugin_get_function($plugin, 'callback')) {
-    $required_context = isset($plugin['required context']) ? $plugin['required context'] : array();
-    $context = isset($test['context']) ? $test['context'] : array();
-      $pass = $function($test['settings'], ctools_context_select($contexts, $required_context, $context));
+      $required_context = isset($plugin['required context']) ? $plugin['required context'] : array();
+      $context          = isset($test['context']) ? $test['context'] : array();
+      $pass             = $function($test['settings'], ctools_context_select($contexts, $required_context, $context));
     }
 
     if ($pass && $settings['logic'] == 'or') {
@@ -987,3 +990,4 @@ function ctools_access($settings, $contexts = array()) {
 
   return TRUE;
 }
+

@@ -1,5 +1,6 @@
 <?php
 // $Id$
+
 /**
  * @file
  * Contains theme registry and theme implementations for the context tool.
@@ -270,3 +271,4 @@ function theme_ctools_context_list_no_table($object) {
 
   return $output;
 }
+

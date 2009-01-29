@@ -1,5 +1,6 @@
 <?php
 // $Id$
+
 /**
  * @file
  * The non-volatile object cache is used to store an object while it is
@@ -119,4 +120,3 @@ function ctools_object_cache_clean($age = NULL) {
   }
   db_query("DELETE FROM {ctools_object_cache} WHERE updated < %d", time() - $age);
 }
-

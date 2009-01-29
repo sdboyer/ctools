@@ -9,6 +9,7 @@
  * nothing more than a few convenience functions and some hooks that
  * must be implemented in the module file.
  */
+
 /**
  * Include ctools .inc files as necessary.
  */

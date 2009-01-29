@@ -1,5 +1,6 @@
 <?php
 // $Id$
+
 /**
  * @file
  * Administrative functions for the page subtasks.
@@ -37,9 +38,9 @@ function delegator_page_menu(&$items, $task) {
     'type' => MENU_LOCAL_TASK,
   ) + $base;
 
-  $form_info = delegator_page_edit_form_info();
+  $form_info    = delegator_page_edit_form_info();
   $default_task = FALSE;
-  $weight = 0;
+  $weight       = 0;
   foreach ($form_info['order'] as $step => $form_title) {
     // The first edit form is the default for tabs, so it gets a bit
     // of special treatment here.
@@ -133,18 +134,18 @@ function delegator_page_menu(&$items, $task) {
       $subtask->access['settings'] = NULL;
     }
 
-    $path = array();
-    $page_arguments = array($subtask_id);
+    $path             = array();
+    $page_arguments   = array($subtask_id);
     $access_arguments = array($subtask->access);
-    $load_arguments = array($subtask_id, '%index');
+    $load_arguments   = array($subtask_id, '%index');
 
     // Replace named placeholders with our own placeholder to load contexts.
     foreach (explode('/', $subtask->path) as $position => $bit) {
       if ($bit[0] == '%' && $bit != '%') {
         // If an argument, swap it out with our argument loader and make sure
         // the argument gets passed through to the page callback.
-        $path[] = '%dp_arg';
-        $page_arguments[] = $position;
+        $path[]             = '%dp_arg';
+        $page_arguments[]   = $position;
         $access_arguments[] = $position;
       }
       else {
@@ -205,14 +206,17 @@ function delegator_page_menu_item($menu, $access_arguments, $page_arguments, $lo
     default:
       $item['type'] = MENU_CALLBACK;
       break;
+
     case 'normal':
       $item['type'] = MENU_NORMAL_ITEM;
       // Insert item into the proper menu
       $item['menu_name'] = $menu['name'];
       break;
+
     case 'tab':
       $item['type'] = MENU_LOCAL_TASK;
       break;
+
     case 'default tab':
       $item['type'] = MENU_DEFAULT_LOCAL_TASK;
       break;
@@ -292,8 +296,8 @@ function delegator_page_add_subtask($step = NULL) {
   // If step is unset, we're creating a new one. Wipe out our values and start
   // over.
   if (!isset($step) || !$page = delegator_page_get_page_cache('::new')) {
-    $step = 'basic';
-    $page = delegator_page_new();
+    $step      = 'basic';
+    $page      = delegator_page_new();
     $page->new = TRUE;
     delegator_page_set_page_cache($page);
   }
@@ -370,7 +374,7 @@ function delegator_page_add_subtask_finish(&$form_state) {
         'id' => '',
         'identifier' => '',
         'argument' => '',
-        'settings' => array()
+        'settings' => array(),
       );
     }
   }
@@ -386,10 +390,10 @@ function delegator_page_add_subtask_finish(&$form_state) {
 
   if (isset($form_state['create task handler'])) {
     require_once './' . drupal_get_path('module', 'delegator') . '/delegator.admin.inc';
-    $task = $form_state['task'];
+    $task      = $form_state['task'];
     $task_name = delegator_make_task_name($task['name'], $page->name);
-    $cache = delegator_admin_get_task_cache($task, $page->name, $form_state['task_handlers']);
-    $plugin = delegator_get_task_handler($form_state['create task handler']);
+    $cache     = delegator_admin_get_task_cache($task, $page->name, $form_state['task_handlers']);
+    $plugin    = delegator_get_task_handler($form_state['create task handler']);
 
     // Create a new handler.
     $handler = delegator_new_task_handler($task, $page->name, $plugin, 0, $cache);
@@ -571,7 +575,7 @@ function delegator_page_form_menu(&$form, &$form_state) {
       'none' => t('No menu entry'),
       'normal' => t('Normal menu entry'),
       'tab' => t('Menu tab'),
-      'default tab' => t('Default menu tab')
+      'default tab' => t('Default menu tab'),
     ),
     '#default_value' => $menu['type'],
   );
@@ -604,7 +608,7 @@ function delegator_page_form_menu(&$form, &$form_state) {
       '#type' => 'select',
       '#options' => menu_get_menus(),
       '#default_value' => $menu['name'],
-      '#description' => t('Insert item into an available menu.'), //
+      '#description' => t('Insert item into an available menu.'),
       '#process' => array('ctools_dependent_process'),
       '#dependency' => array('radio:menu[type]' => array('normal')),
     );
@@ -711,7 +715,6 @@ function delegator_page_form_access(&$form, &$form_state) {
 function delegator_page_form_access_submit(&$form, &$form_state) {
   $form_state['page']->access['logic'] = $form_state['values']['logic'];
 }
-
 
 /**
  * Form to handle assigning argument handlers to named arguments.
@@ -854,11 +857,9 @@ function delegator_page_subtask_argument_ajax($step = NULL, $cache_name = NULL, 
     'id' => 'delegator_page_argument',
     'path' => "admin/build/delegator/argument/%step/$cache_name/$keyword",
     'show cancel' => TRUE,
-
     'next callback' => 'delegator_page_argument_next',
     'finish callback' => 'delegator_page_argument_finish',
     'cancel callback' => 'delegator_page_argument_cancel',
-
     'order' => array(
       'change' => t('Change context type'),
       'settings' => t('Argument settings'),
@@ -866,11 +867,11 @@ function delegator_page_subtask_argument_ajax($step = NULL, $cache_name = NULL, 
     'forms' => array(
       'change' => array(
         'title' => t('Change argument'),
-        'form id' => 'delegator_page_argument_form_change'
+        'form id' => 'delegator_page_argument_form_change',
       ),
       'settings' => array(
         'title' => t('Argument settings'),
-        'form id' => 'delegator_page_argument_form_settings'
+        'form id' => 'delegator_page_argument_form_settings',
       ),
     ),
   );
@@ -989,8 +990,8 @@ function delegator_page_argument_form_change(&$form, &$form_state) {
  * Submit handler to change an argument.
  */
 function delegator_page_argument_form_change_submit(&$form, &$form_state) {
-  $page = &$form_state['page'];
-  $keyword = &$form_state['keyword'];
+  $page     = &$form_state['page'];
+  $keyword  = &$form_state['keyword'];
   $argument = $form_state['values']['argument'];
 
   // If the argument is not changing, we do not need to do anything.
@@ -1204,11 +1205,12 @@ function delegator_page_break_lock_subtask(&$form_state, $name) {
 
   $account = user_load($lock->uid);
   return confirm_form($form,
-                  t('Are you sure you want to break this lock?'),
-                  $cancel,
-                  t('By breaking this lock, any unsaved changes made by !user will be lost!', array('!user' => theme('username', $account))),
-                  t('Break lock'),
-                  t('Cancel'));
+    t('Are you sure you want to break this lock?'),
+    $cancel,
+    t('By breaking this lock, any unsaved changes made by !user will be lost!', array('!user' => theme('username', $account))),
+    t('Break lock'),
+    t('Cancel')
+  );
 }
 
 /**
@@ -1261,10 +1263,10 @@ function delegator_page_import_subtask_validate($form, &$form_state) {
   // See if the task is already locked.
   $cache = delegator_page_get_page_cache($name);
   if (!empty($cache->locked)) {
-    $account = user_load($cache->locked->uid);
+    $account  = user_load($cache->locked->uid);
     $username = theme('username', $account);
     $lock_age = format_interval(time() - $cache->locked->updated);
-    $break = url('admin/build/pages/break-lock/' . $name, array('query' => array('destination' => $_GET['q'], 'cancel' => $_GET['q'])));
+    $break    = url('admin/build/pages/break-lock/' . $name, array('query' => array('destination' => $_GET['q'], 'cancel' => $_GET['q'])));
 
     form_error($form['object'], t('Unable to import page because it is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $username, '!age' => $lock_age, '!break' => $break)));
   }
@@ -1462,11 +1464,12 @@ function delegator_page_delete_subtask($form_state, $name) {
   }
 
   return confirm_form($form,
-                  $title,
-                  $cancel,
-                  $desc,
-                  t('Delete'),
-                  t('Cancel'));
+    $title,
+    $cancel,
+    $desc,
+    t('Delete'),
+    t('Cancel')
+  );
 }
 
 /**
@@ -1477,3 +1480,4 @@ function delegator_page_delete_subtask_submit(&$form, &$form_state) {
   drupal_set_message(t('The page has been deleted.'));
   $form_state['redirect'] = 'admin/build/pages';
 }
+

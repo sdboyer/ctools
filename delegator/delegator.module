@@ -1,5 +1,6 @@
 <?php
 // $Id$
+
 /**
  * @file
  *
@@ -485,14 +486,14 @@ function delegator_new_task_handler($task, $subtask_id, $plugin, $weight = 0, $c
   }
 
   // Create a new, empty handler object.
-  $handler = new stdClass;
-  $handler->title = '';
-  $handler->task = $task['name'];
+  $handler          = new stdClass;
+  $handler->title   = '';
+  $handler->task    = $task['name'];
   $handler->subtask = $subtask_id;
-  $handler->name = $name;
+  $handler->name    = $name;
   $handler->handler = $plugin['name'];
-  $handler->weight = $weight;
-  $handler->conf = array();
+  $handler->weight  = $weight;
+  $handler->conf    = array();
 
   // These are provided by the core export API provided by ctools and we
   // set defaults here so that we don't cause notices. Perhaps ctools should
@@ -787,3 +788,4 @@ function delegator_task_handler_ctools_access_set($argument, $access) {
     delegator_admin_set_task_cache($task, $subtask_id, $cache);
   }
 }
+

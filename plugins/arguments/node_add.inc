@@ -36,3 +36,4 @@ function ctools_node_add_context($arg = NULL, $conf = NULL, $empty = FALSE) {
 
   return ctools_context_create('node_add_form', $arg);
 }
+

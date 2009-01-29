@@ -39,13 +39,10 @@ function theme_ctools_collapsible($handle, $content, $collapsed = FALSE) {
 
   $class = $collapsed ? ' ctools-collapsed' : '';
   $output = '<div class="ctools-collapsible-container' . $class . '">';
-  $output .=   '<div class="ctools-collapsible-handle">';
-  $output .=   $handle;
-  $output .=   '</div>';
-  $output .=   '<div class="ctools-collapsible-content">';
-  $output .=   $content;
-  $output .=   '</div>';
+  $output .= '<div class="ctools-collapsible-handle">' . $handle . '</div>';
+  $output .= '<div class="ctools-collapsible-content">' . $content . '</div>';
   $output .= '</div>';
 
   return $output;
 }
+

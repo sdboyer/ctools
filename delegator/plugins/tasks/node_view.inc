@@ -19,18 +19,14 @@ function delegator_node_view_delegator_tasks() {
     'node_view' => array(
       // This is a 'page' task and will fall under the page admin UI
       'task type' => 'page',
-
       'title' => t('Node view'),
       'description' => t('The node view task allows you to control what handler will handle the job of rendering a node view at the path <em>node/%node</em>. If no handler is set or matches the criteria, the default Drupal node renderer will be used.'),
-
       'admin title' => 'Node view', // translated by menu system
       'admin description' => 'Overrides for the built in node view handler at <em>node/%node</em>.',
       'admin path' => 'node/%node',
-
       // Menu hooks so that we can alter the node/%node menu entry to point to us.
       'hook menu' => 'delegator_node_view_menu',
       'hook menu alter' => 'delegator_node_view_menu_alter',
-
       // This is task uses 'context' handlers and must implement these to give the
       // handler data it needs.
       'handler type' => 'context', // handler type -- misnamed
@@ -52,7 +48,7 @@ function delegator_node_view_menu_alter(&$items, $task) {
   $items['node/%node']['file path'] = $task['path'];
   $items['node/%node']['file'] = $task['file'];
 
-//  @todo override node revision handler as well?
+  // @todo override node revision handler as well?
 }
 
 /**
@@ -105,3 +101,4 @@ function delegator_node_view_get_arguments($task, $subtask_id) {
 function delegator_node_view_get_contexts($task, $subtask_id) {
   return ctools_context_get_placeholders_from_argument(delegator_node_view_get_arguments($task, $subtask_id));
 }
+

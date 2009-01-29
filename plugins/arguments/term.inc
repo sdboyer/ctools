@@ -85,3 +85,4 @@ function ctools_term_settings_form(&$form, &$form_state, $conf) {
     '#suffix' => '</div>',
   );
 }
+

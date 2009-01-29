@@ -1,5 +1,6 @@
 <?php
 // $Id$
+
 /**
  * @file
  *
@@ -67,7 +68,6 @@ function ctools_plugin_api_include($owner, $api, $minimum_version, $current_vers
         require_once "./$info[path]/$info[file]";
       }
     }
-
   }
 
   return $cache[$owner][$api];
@@ -107,7 +107,7 @@ function ctools_get_plugins($module, $type, $id = NULL) {
 
     // if cache load successful, set $all_hooks and $all_files to true.
     if (!empty($cache->data)) {
-      $plugins[$type] = $cache->data;
+      $plugins[$type]   = $cache->data;
       $all_hooks[$type] = TRUE;
       $all_files[$type] = TRUE;
     }
@@ -225,7 +225,6 @@ function ctools_plugin_get_directories($info) {
         $directories[$name] = drupal_get_path('theme', $name) . '/' . $theme->info['plugins'][$info['module']][$info['type']];
       }
     }
-
   }
   return $directories;
 }
@@ -294,7 +293,7 @@ function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL,
       'module' => $module,
       'name' => $name,
       'path' => $path,
-      'file' => $file
+      'file' => $file,
     );
 
     // Fill in plugin specific defaults, if they exist.
@@ -397,3 +396,4 @@ function ctools_plugin_load_function($module, $type, $id, $function_name) {
   $plugin = ctools_get_plugins($module, $type, $id);
   return ctools_plugin_get_function($plugin, $function_name);
 }
+

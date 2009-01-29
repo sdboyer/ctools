@@ -69,3 +69,4 @@ function ctools_perm_ctools_acesss_summary($conf, $context) {
 
   return t('@identifier must have "@perm"', array('@identifier' => $context->identifier, '@perm' => $conf['perm']));
 }
+

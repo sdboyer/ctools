@@ -10,9 +10,9 @@
  * file helps smooth some edges out.
  */
 function ctools_get_menu_trail($path = NULL) {
-  $trail = array();
+  $trail   = array();
   $trail[] = array('title' => t('Home'), 'href' => '<front>', 'localized_options' => array(), 'type' => 0);
-  $item = menu_get_item($path);
+  $item    = menu_get_item($path);
 
   // Check whether the current item is a local task (displayed as a tab).
   if ($item['tab_parent']) {
@@ -71,6 +71,7 @@ function ctools_get_menu_trail($path = NULL) {
  *
  * @param $menu_name
  *   The named menu links to return
+ *
  * @return
  *   An array of menu links, in the order they should be rendered. The array
  *   is a list of associative arrays -- these have two keys, link and below.
@@ -166,3 +167,4 @@ function ctools_menu_tree_page_data($item, $menu_name = 'navigation') {
   }
   return $tree[$cid];
 }
+
