@@ -493,7 +493,7 @@ function delegator_page_form_basic_validate(&$form, &$form_state) {
   }
 
   $path = implode('/', $path);
-  $result = db_query("SELECT * FROM menu_router WHERE path = '%s'", $path);
+  $result = db_query("SELECT * FROM {menu_router} WHERE path = '%s'", $path);
   while ($router = db_fetch_object($result)) {
     if ($router->page_callback != 'delegator_page_execute') {
       form_error($form['path'], t('That path is already in used. This system cannot override existing paths.'));
