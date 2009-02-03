@@ -60,7 +60,6 @@ function delegator_schema_1() {
         'size' => 'big',
         'description' => t('Serialized configuration of the handler, if needed.'),
         'not null' => TRUE,
-        'default' => '',
         'serialize' => TRUE,
       ),
     ),
@@ -118,7 +117,6 @@ function delegator_schema_1() {
         'size' => 'big',
         'description' => t('Access configuration for this path.'),
         'not null' => TRUE,
-        'default' => '',
         'serialize' => TRUE,
       ),
       'multiple' => array(
@@ -132,7 +130,6 @@ function delegator_schema_1() {
         'size' => 'big',
         'description' => t('Serialized configuration of Drupal menu visibility settings for this item.'),
         'not null' => TRUE,
-        'default' => '',
         'serialize' => TRUE,
       ),
       'arguments' => array(
@@ -140,7 +137,6 @@ function delegator_schema_1() {
         'size' => 'big',
         'description' => t('Configuration of arguments for this menu item.'),
         'not null' => TRUE,
-        'default' => '',
         'serialize' => TRUE,
       ),
     ),
