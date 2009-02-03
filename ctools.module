@@ -232,7 +232,7 @@ function ctools_object_load(&$object, $table, $data) {
 
   // Go through our schema and build correlations.
   foreach ($schema['fields'] as $field => $info) {
-    if (isset($data->$field) {
+    if (isset($data->$field)) {
       $object->$field = empty($info['serialize']) ? $data->$field : unserialize($data->$field);
     }
   }
