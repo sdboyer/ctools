@@ -1,7 +1,6 @@
 <?php
 // $Id$
 
-
 /**
  * @file
  *
@@ -47,23 +46,4 @@ function ctools_context_create_term($empty, $data = NULL, $conf = FALSE) {
     $context->argument = $data->tid;
     return $context;
   }
-}
-
-function ctools_context_term_settings_form($conf, $external = FALSE) {
-  $form = array();
-  if ($external) {
-    $form['external'] = array(
-      '#type' => 'checkbox',
-      '#default_value' => $conf['external'],
-      '#title' => t('Require this context from an external source (such as a containing panel page).'),
-      '#description' => t('If selected, term selection (below) will be ignored'),
-    );
-  }
-  return $form;
-}
-
-/**
- * Validate a term.
- */
-function ctools_context_term_settings_form_validate($form, &$form_values, &$form_state) {
 }

@@ -158,3 +158,42 @@ function ctools_cron() {
     ctools_object_cache_clean();
   }
 }
+
+/*
+ * Break x,y,z and x+y+z into an array. Numeric only.
+ *
+ * @param $str
+ *   The string to parse.
+ *
+ * @return $object
+ *   An object containing
+ *   - operator: Either 'and' or 'or'
+ *   - value: An array of numeric values.
+ */
+function ctools_break_phrase($str) {
+  $object = new stdClass();
+
+  if (preg_match('/^([0-9]+[+ ])+[0-9]+$/', $str)) {
+    // The '+' character in a query string may be parsed as ' '.
+    $object->operator = 'or';
+    $object->value = preg_split('/[+ ]/', $str);
+  }
+  else if (preg_match('/^([0-9]+,)*[0-9]+$/', $str)) {
+    $object->operator = 'and';
+    $object->value = explode(',', $str);
+  }
+
+  // Keep an 'error' value if invalid strings were given.
+  if (!empty($str) && (empty($object->value) || !is_array($object->value))) {
+    $object->value = array(-1);
+    $object->invalid_input = TRUE;
+    return $object;
+  }
+
+  // Doubly ensure that all values are numeric only.
+  foreach ($object->value as $id => $value) {
+    $object->value[$id] = intval($value);
+  }
+
+  return $object;
+}

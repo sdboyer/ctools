@@ -20,7 +20,7 @@
 function delegator_page_delegator_tasks() {
   return array(
     'page' => array(
-      'title' => t('User pages'),
+      'title' => t('Custom pages'),
       'description' => t('Administrator created pages that have a URL path, access control and entries in the Drupal menu system.'),
       'subtasks' => TRUE,
       'subtask callback' => 'delegator_page_subtask',
