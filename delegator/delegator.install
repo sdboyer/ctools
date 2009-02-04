@@ -22,6 +22,9 @@ function delegator_schema_1() {
   $schema = array();
 
   $schema['delegator_handlers'] = array(
+    'export' => array(
+      'identifier' => 'handler',
+    ),
     'fields' => array(
       'did' => array(
         'type' => 'serial',
@@ -90,6 +93,9 @@ function delegator_schema_1() {
 
   $schema['delegator_pages'] = array(
     'description' => t('Contains page subtasks for implementing pages with arbitrary tasks.'),
+    'export' => array(
+      'identifier' => 'page',
+    ),
     'fields' => array(
       'pid' => array(
         'type' => 'serial',

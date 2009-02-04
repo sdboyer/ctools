@@ -446,7 +446,7 @@ function delegator_export_task_handler($handler, $indent = '') {
     $append = $function($handler, $indent);
   }
 
-  $output = ctools_export_object('delegator_handlers', $handler, 'handler', $indent);
+  $output = ctools_export_object('delegator_handlers', $handler, $indent);
   $output .= $append;
 
   return $output;

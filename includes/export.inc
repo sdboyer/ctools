@@ -102,7 +102,7 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
 
     // Unpack the results of the query onto objects and cache them.
     while ($data = db_fetch_object($result)) {
-      $object = ctools_export_unpack_object($schema, $data, $export['object']);
+      $object = _ctools_export_unpack_object($schema, $data, $export['object']);
       $object->type = t('Normal');
       $object->export_type = EXPORT_IN_DATABASE;
 
@@ -241,7 +241,7 @@ function ctools_get_default_object($table, $name) {
  *   If an object, data will be unpacked onto it. If a string
  *   an object of that type will be created.
  */
-function ctools_export_unpack_object($schema, $data, $object = 'stdClass') {
+function _ctools_export_unpack_object($schema, $data, $object = 'stdClass') {
   if (is_string($object)) {
     if (class_exists($object)) {
       $object = new $object;
@@ -257,6 +257,19 @@ function ctools_export_unpack_object($schema, $data, $object = 'stdClass') {
   }
 
   return $object;
+}
+
+/**
+ * Unpack data loaded from the database onto an object.
+ *
+ * @param $table
+ *   The name of the table this object represents.
+ * @param $data
+ *   The data as loaded by db_fetch_object().
+ */
+function ctools_export_unpack_object($table, $data) {
+  $schema = ctools_export_get_schema($table);
+  return _ctools_export_unpack_object($schema, $data, $schema['export']['object']);
 }
 
 /**
@@ -297,12 +310,17 @@ function ctools_var_export($var, $prefix = '') {
 /**
  * Export an object into code.
  */
-function ctools_export_object($table, $object, $identifier, $indent = '', $additions = array(), $additions2 = array()) {
-  $schema = drupal_get_schema($table);
+function ctools_export_object($table, $object, $indent = '', $identifier = NULL, $additions = array(), $additions2 = array()) {
+  $schema = ctools_export_get_schema($table);
+  if (!isset($identifier)) {
+    $identifier = $schema['export']['identifier'];
+  }
 
   $output = $indent . '$' . $identifier . ' = new ' . get_class($object) . ";\n";
 
-  $output .= $indent . '$' . $identifier . '->disabled' . ' = FALSE; /* Edit this to true to make a default ' . $identifier . ' disabled initially */' . "\n";
+  if ($schema['export']['can disable']) {
+    $output .= $indent . '$' . $identifier . '->disabled' . ' = FALSE; /* Edit this to true to make a default ' . $identifier . ' disabled initially */' . "\n";
+  }
 
   // Put top additions here:
   foreach ($additions as $field => $value) {
@@ -358,6 +376,8 @@ function ctools_export_get_schema($table) {
     'object' => 'stdClass',
     'status' => 'default_' . $table,
     'default hook' => 'default_' . $table,
+    'can disable' => TRUE,
+    'identifier' => $table,
   );
 
   return $schema;
@@ -406,11 +426,11 @@ function ctools_export_form(&$form_state, $code, $title = '') {
  * use 'object default' to fill in default values if default is not set
  * That's a little safer to use as it won't cause weird database default situations.
  */
-function ctools_export_new_object($table) {
+function ctools_export_new_object($table, $set_defaults = TRUE) {
   $schema = ctools_export_get_schema($table);
   $export = $schema['export'];
 
-  $object = new stdClass;
+  $object = new $export['object'];
   foreach ($schema['fields'] as $field => $info) {
     if (isset($info['object default'])) {
       $object->$field = $info['object default'];
@@ -423,9 +443,10 @@ function ctools_export_new_object($table) {
     }
   }
 
-  // Set some defaults so this data always exists.
-
-  $object->export_type = EXPORT_IN_DATABASE;
-  $object->type = t('Local');
+  if ($set_defaults) {
+    // Set some defaults so this data always exists.
+    $object->export_type = EXPORT_IN_DATABASE;
+    $object->type = t('Local');
+  }
   return $object;
 }

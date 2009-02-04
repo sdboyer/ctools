@@ -409,7 +409,7 @@ function delegator_page_delete($subtask) {
  */
 function delegator_page_export($subtask, $with_handlers = FALSE, $indent = '') {
   ctools_include('export');
-  $output = ctools_export_object('delegator_pages', $subtask, 'page', $indent);
+  $output = ctools_export_object('delegator_pages', $subtask, $indent);
   if ($with_handlers) {
     $handlers = delegator_load_task_handlers(delegator_get_task('page'), $subtask->name);
     $output .= $indent . '$page->default_handlers = array();' . "\n";
