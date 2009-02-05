@@ -31,7 +31,84 @@
  * a backup method of re-generating the CSS cache in case it is removed, so
  * that it is easy to force a re-cache by simply deleting the contents of the
  * directory.
+ *
+ * Finally, if for some reason your application cannot store the filename
+ * (which is true of Panels where the style can't force the display to
+ * resave unconditionally) you can use the ctools storage mechanism. You
+ * simply have to come up with a unique Id:
+ *
+ * @code
+ *   $filename = ctools_css_store($id, $css, TRUE);
+ * @endcode
+ *
+ * Then later on:
+ * @code
+ *   $filename = ctools_css_retrieve($id);
+ *   drupal_add_css($filename);
+ * @endcode
+ *
+ * The CSS that was generated will be stored in the database, so even if the
+ * file was removed the cached CSS will be used. It is your module's
+ * responsibility to know when this CSS is outdated and needs to be
+ * changed. This storage is non-volatile and will never be removed unless
+ * you remove it:
+ *
+ * @code
+ *   ctools_css_clear($id);
+ * @endcode
  */
+
+/**
+ * Store CSS with a given id and return the filename to use.
+ *
+ * This function associates a piece of CSS with an id, and stores the
+ * cached filename and the actual CSS for later use with
+ * ctools_css_retrieve.
+ */
+function ctools_css_store($id, $css, $filter = TRUE) {
+  $filename = db_result(db_query("SELECT filename FROM {ctools_css_cache} WHERE cid = '%s'", $id));
+  if ($filename) {
+    file_delete($filename);
+  }
+  // Remove any previous records.
+  db_query("DELETE FROM {ctools_css_cache} WHERE cid = '%s'", $id);
+
+  $filename = ctools_css_cache($css, $filter);
+
+  db_query("INSERT INTO {ctools_css_cache} (cid, filename, css, filter) VALUES ('%s', '%s', '%s', %d)", $id, $filename, $css, $filter);
+
+  return $filename;
+}
+
+/**
+ * Retrieve a filename associated with an id of previously cached CSS.
+ *
+ * This will ensure the file still exists and, if not, create it.
+ */
+function ctools_css_retrieve($id) {
+  $cache = db_fetch_object(db_query("SELECT * FROM {ctools_css_cache} WHERE cid = '%s'", $id));
+  if (!$cache) {
+    return;
+  }
+
+  if (!file_exists($cache->filename)) {
+    $filename = ctools_css_cache($cache->css, $cache->filter);
+    if ($filename != $cache->filename) {
+      db_query("UPDATE {ctools_css_cache} SET filename = '%s' WHERE cid = '%s'", $filename, $id);
+      $cache->filename = $filename;
+    }
+  }
+
+  return $cache->filename;
+}
+
+/**
+ * Remove stored CSS and any associated file.
+ */
+function ctools_css_clear($id) {
+  db_query("DELETE FROM {ctools_css_cache} WHERE cid = '%s'", $id);
+}
+
 
 /**
  * Write a chunk of CSS to a temporary cache file and return the file name.
@@ -50,6 +127,9 @@
  * @param $filter
  *   If TRUE the css will be filtered. If FALSE the text will be cached
  *   as-is.
+ *
+ * @return $filename
+ *   The filename the CSS will be cached in.
  */
 function ctools_css_cache($css, $filter = TRUE) {
   if ($filter) {

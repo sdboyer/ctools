@@ -38,11 +38,43 @@ function ctools_schema_2() {
   // update the 'name' field to be 128 bytes long:
   $schema['ctools_object_cache']['fields']['name']['length'] = 128;
 
+  // DO NOT MODIFY THIS TABLE -- this definition is used to create the table.
+  // Changes to this table must be made in schema_3 or higher.
+  $schema['ctools_css_cache'] = array(
+    'description' => t('A special cache used to store CSS that must be non-volatile.'),
+    'fields' => array(
+      'cid' => array(
+        'type' => 'varchar',
+        'length' => '128',
+        'description' => t('The CSS ID this cache object belongs to.'),
+      ),
+      'filename' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => t('The filename this CSS is stored in.'),
+      ),
+      'css' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => t('CSS being stored.'),
+        'serialize' => TRUE,
+      ),
+      'filter' => array(
+         'type' => 'int',
+         'size' => 'tiny',
+         'description' => t('Whether or not this CSS needs to be filtered.'),
+       ),
+    ),
+    'primary key' => array('cid'),
+  );
+
   return $schema;
 }
 
 /**
- * ctools' initial schema; separated for the purposes of updates.
+ * CTools' initial schema; separated for the purposes of updates.
+ *
+ * DO NOT MAKE CHANGES HERE. This schema version is locked.
  */
 function ctools_schema_1() {
   $schema['ctools_object_cache'] = array(
@@ -71,7 +103,7 @@ function ctools_schema_1() {
         'description' => t('The time this cache was created or updated.'),
       ),
       'data' => array(
-        'type' => 'blob',
+        'type' => 'text',
         'size' => 'big',
         'description' => t('Serialized data being stored.'),
         'serialize' => TRUE,
@@ -97,5 +129,18 @@ function ctools_update_6001() {
 
   db_change_field($ret, 'ctools_object_cache', 'name', 'name', $schema['ctools_object_cache']['fields']['name']);
 
+  return $ret;
+}
+
+/**
+ * Add the new css cache table.
+ */
+function ctools_update_6002() {
+  $ret = array();
+
+  // Schema 2 is locked and should not be changed.
+  $schema = ctools_schema_2();
+
+  db_create_table($ret, 'ctools_css_cache', $schema['ctools_css_cache']);
   return $ret;
 }
