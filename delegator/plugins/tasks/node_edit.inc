@@ -76,8 +76,10 @@ function delegator_node_edit($node) {
   $output = ctools_context_handler_render($task, '', $contexts);
   if ($output === FALSE) {
     // Fall back!
-    module_load_include('inc', 'node', 'node.pages');
-    $output = drupal_get_form($node->type . '_node_form', $node);
+    // We've already built the form with the context, so we can't build it again, or
+    // form_clean_id will mess up our ids. But we don't really need to, either:
+    $context = current($contexts);
+    $output = drupal_render_form($context->form_id, $context->form);
   }
 
   return $output;

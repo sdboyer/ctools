@@ -48,8 +48,11 @@ function ctools_context_create_node_add_form($empty, $data = NULL, $conf = FALSE
       global $user;
       $node = array('uid' => $user->uid, 'name' => $user->name, 'type' => $type);
 
-      $form = drupal_retrieve_form($type . '_node_form', $node);
-      drupal_process_form($type . '_node_form', $form);
+      ctools_include('form');
+      $form_id = $node->type . '_node_form';
+
+      $form_state = array('want form' => TRUE, 'args' => array($node));
+      $form = ctools_build_form($form_id, $form_state);
       // In a form, $data is the object being edited.
       $context->data     = $type;
       $context->title    = $types[$type]->name;

@@ -28,7 +28,7 @@ html.js div.ctools-dropdown div.ctools-dropdown-container ul li {
 
 /* Everything from here down is purely visual style and can be overridden. */
 
-html.js div.ctools-dropdown a.ctools-dropdown-link {
+html.js div.ctools-dropdown a.ctools-dropdown-text-link {
   background: url(../images/collapsible-expanded.png) 3px 5px no-repeat;
   padding-left: 12px;
 }

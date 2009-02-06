@@ -34,7 +34,7 @@
  */
 function ctools_dropdown_theme(&$items) {
   $items['ctools_dropdown'] = array(
-    'arguments' => array('title' => NULL, 'links' => NULL),
+    'arguments' => array('title' => NULL, 'links' => NULL, 'image' => FALSE, 'class' => ''),
     'file' => 'includes/dropdown.theme.inc',
   );
 }
@@ -47,12 +47,15 @@ function ctools_dropdown_theme(&$items) {
  * @param $links
  *   A list of links to provide within the dropdown, suitable for use
  *   in via Drupal's theme('links').
+ * @param $image
+ *   If true, the dropdown link is an image and will not get extra decorations
+ *   that a text dropdown link will.
  * @param $class
  *   An optional class to add to the dropdown's container div to allow you
  *   to style a single dropdown however you like without interfering with
  *   other dropdowns.
  */
-function theme_ctools_dropdown($title, $links, $class = '') {
+function theme_ctools_dropdown($title, $links, $image = FALSE, $class = '') {
   // Provide a unique identifier for every dropdown on the page.
   static $id = 0;
   $id++;
@@ -65,12 +68,20 @@ function theme_ctools_dropdown($title, $links, $class = '') {
   $output = '';
 
   $output .= '<div class="' . $class . '" id="ctools-dropdown-' . $id . '">';
-  $output .= '<div class="ctools-dropdown-link-wrapper">'; // Test fix for IE
-  $output .= '<a href="#" class="ctools-dropdown-link">' . check_plain($title) . '</a>';
+  $output .= '<div class="ctools-dropdown-link-wrapper">';
+  if ($image) {
+    $output .= '<a href="#" class="ctools-dropdown-link ctools-dropdown-image-link">' . $title . '</a>';
+  }
+  else {
+    $output .= '<a href="#" class="ctools-dropdown-link ctools-dropdown-text-link">' . check_plain($title) . '</a>';
+  }
+
   $output .= '</div>'; // wrapper
+  $output .= '<div class="ctools-dropdown-container-wrapper">';
   $output .= '<div class="ctools-dropdown-container">';
   $output .= theme('links', $links);
   $output .= '</div>'; // container
+  $output .= '</div>'; // container wrapper
   $output .= '</div>'; // dropdown
   return $output;
 }
