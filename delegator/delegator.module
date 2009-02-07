@@ -630,12 +630,13 @@ function delegator_get_task_handler($id) {
  */
 function delegator_get_task_handler_plugins($task) {
   $type = isset($task['handler type']) ? $task['handler type'] : $task['name'];
+  $name = $task['name'];
 
   $handlers = array();
   $task_handlers = delegator_get_task_handlers();
   foreach ($task_handlers as $id => $handler) {
     $task_type = is_array($handler['handler type']) ? $handler['handler type'] : array($handler['handler type']);
-    if (in_array($type, $task_type)) {
+    if (in_array($type, $task_type) || in_array($name, $task_type)) {
       $handlers[$id] = $handler;
     }
   }
