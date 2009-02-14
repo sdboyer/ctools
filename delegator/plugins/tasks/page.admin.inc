@@ -119,6 +119,7 @@ function delegator_page_menu(&$items, $task) {
   // AJAX callbacks for argument modal.
   $items['admin/build/delegator/argument'] = array(
     'page callback' => 'delegator_page_subtask_argument_ajax',
+    'type' => MENU_CALLBACK,
   ) + $base;
 
   // Add menu entries for each subtask
