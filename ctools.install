@@ -47,6 +47,7 @@ function ctools_schema_2() {
         'type' => 'varchar',
         'length' => '128',
         'description' => t('The CSS ID this cache object belongs to.'),
+        'not null' => TRUE,
       ),
       'filename' => array(
         'type' => 'varchar',
