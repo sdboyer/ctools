@@ -108,6 +108,11 @@ Drupal.CTools.AJAX.findURL = function(item) {
 };
 
 Drupal.CTools.AJAX.commands = {
+  prepend: function(data) {
+    $(data.selector).prepend(data.data);
+    Drupal.attachBehaviors($(data.selector));
+  },
+
   append: function(data) {
     $(data.selector).append(data.data);
     Drupal.attachBehaviors($(data.selector));
@@ -117,6 +122,26 @@ Drupal.CTools.AJAX.commands = {
     $(data.selector).replaceWith(data.data);
     Drupal.attachBehaviors($(data.selector));
   }, 
+
+  after: function(data) {
+    var object = $(data.data);
+    $(data.selector).after(object);
+    Drupal.attachBehaviors(object);
+  },
+
+  before: function(data) {
+    var html = $(data.selector).before(data.data);
+    Drupal.attachBehaviors(html);
+  },
+
+  html: function(data) {
+    $(data.selector).html(data.data);
+    Drupal.attachBehaviors($(data.selector));
+  }, 
+
+  remove: function(data) {
+    $(data.selector).remove();
+  },
 
   changed: function(data) {
     if (!$(data.selector).hasClass('changed')) {
@@ -129,6 +154,19 @@ Drupal.CTools.AJAX.commands = {
 
   alert: function(data) {
     alert(data.text, data.title);
+  }, 
+
+  css: function(data) {
+/*
+    if (data.selector && data.selector.contains('* html ')) {
+      // This indicates an IE hack and we should only do it if we are IE.
+      if (!jQuery.browser.msie) {
+        return;
+      }
+      data.selector = data.selector.replace('* html ', '');
+    }
+*/
+    $(data.selector).css(data.argument);
   }, 
 
   restripe: function(data) {

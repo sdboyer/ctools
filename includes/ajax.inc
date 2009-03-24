@@ -24,9 +24,24 @@
  *   - selector: The CSS selector. This can be any selector jquery uses in $().
  *   - data: The data to use with the jquery replace() function.
  *
+ * - prepend
+ *   - selector: The CSS selector. This can be any selector jquery uses in $().
+ *   - data: The data to use with the jquery prepend() function.
+ *
  * - append
  *   - selector: The CSS selector. This can be any selector jquery uses in $().
  *   - data: The data to use with the jquery append() function.
+ *
+ * - after
+ *   - selector: The CSS selector. This can be any selector jquery uses in $().
+ *   - data: The data to use with the jquery after() function.
+ *
+ * - before
+ *   - selector: The CSS selector. This can be any selector jquery uses in $().
+ *   - data: The data to use with the jquery before() function.
+ *
+ * - remove
+ *   - selector: The CSS selector. This can be any selector jquery uses in $().
  *
  * - changed
  *   - selector: The CSS selector. This selector will have 'changed' added as a clas.
@@ -35,6 +50,10 @@
  * - alert
  *   - title: The title of the alert.
  *   - data: The data in the alert.
+ *
+ * - css
+ *   - selector: The CSS selector to add CSS to.
+ *   - argument: An array of 'key': 'value' CSS selectors to set.
  *
  * Commands are usually created with a couple of helper functions, so they
  * look like this:
@@ -118,6 +137,40 @@ function ctools_ajax_command_replace($selector, $html) {
 }
 
 /**
+ * Set the HTML of a given selector to the given data.
+ *
+ * @param $selector
+ *   The CSS selector. This can be any selector jquery uses in $().
+ * @param $html
+ *   The data to use with the jquery replace() function.
+ */
+function ctools_ajax_command_html($selector, $html) {
+  return array(
+    'command' => 'html',
+    'selector' => $selector,
+    'data' => $html,
+  );
+}
+
+/**
+ * Create a prepend command for the AJAX responder.
+ *
+ * This will prepend the HTML to the specified selector.
+ *
+ * @param $selector
+ *   The CSS selector. This can be any selector jquery uses in $().
+ * @param $html
+ *   The data to use with the jquery prepend() function.
+ */
+function ctools_ajax_command_prepend($selector, $html) {
+  return array(
+    'command' => 'prepend',
+    'selector' => $selector,
+    'data' => $html,
+  );
+}
+
+/**
  * Create an append command for the AJAX responder.
  *
  * This will append the HTML to the specified selector.
@@ -132,6 +185,57 @@ function ctools_ajax_command_append($selector, $html) {
     'command' => 'append',
     'selector' => $selector,
     'data' => $html,
+  );
+}
+
+/**
+ * Create an after command for the AJAX responder.
+ *
+ * This will add the HTML after the specified selector.
+ *
+ * @param $selector
+ *   The CSS selector. This can be any selector jquery uses in $().
+ * @param $html
+ *   The data to use with the jquery after() function.
+ */
+function ctools_ajax_command_after($selector, $html) {
+  return array(
+    'command' => 'after',
+    'selector' => $selector,
+    'data' => $html,
+  );
+}
+
+/**
+ * Create a before command for the AJAX responder.
+ *
+ * This will add the HTML before the specified selector.
+ *
+ * @param $selector
+ *   The CSS selector. This can be any selector jquery uses in $().
+ * @param $html
+ *   The data to use with the jquery before() function.
+ */
+function ctools_ajax_command_before($selector, $html) {
+  return array(
+    'command' => 'before',
+    'selector' => $selector,
+    'data' => $html,
+  );
+}
+
+/**
+ * Create a remove command for the AJAX responder.
+ *
+ * This will remove the specified selector and everything within it.
+ *
+ * @param $selector
+ *   The CSS selector. This can be any selector jquery uses in $().
+ */
+function ctools_ajax_command_remove($selector) {
+  return array(
+    'command' => 'remove',
+    'selector' => $selector,
   );
 }
 
@@ -151,6 +255,24 @@ function ctools_ajax_command_changed($selector, $star = '') {
     'command' => 'changed',
     'selector' => $selector,
     'star' => $star,
+  );
+}
+
+/**
+ * Create a changed command for the AJAX responder.
+ *
+ * This will mark an item as 'changed'.
+ *
+ * @param $selector
+ *   The CSS selector. This can be any selector jquery uses in $().
+ * @param $argument
+ *   An array of key: value pairs to set in the CSS for the selector.
+ */
+function ctools_ajax_command_css($selector, $argument) {
+  return array(
+    'command' => 'css',
+    'selector' => $selector,
+    'argument' => $argument,
   );
 }
 

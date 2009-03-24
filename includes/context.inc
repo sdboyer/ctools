@@ -947,17 +947,11 @@ function ctools_access_summary($plugin, $contexts, $test) {
 /**
  * Determine if the current user has access via  plugin.
  *
- * @param $plugin_name
- *   The access plugin to use. If empty or 'none' then no access control
- *   is being used and this function returns TRUE. If the plugin can't be
- *   found otherwise, this function automatically returns FALSE.
  * @param $settings
  *   An array of settings theoretically set by the user.
  * @param $contexts
  *   An array of zero or more contexts that may be used to determine if
  *   the user has access.
- * @param $account
- *   The account to test against. If NULL the logged in user will be tested.
  *
  * @return
  *   TRUE if access is granted, false if otherwise.
@@ -965,6 +959,10 @@ function ctools_access_summary($plugin, $contexts, $test) {
 function ctools_access($settings, $contexts = array()) {
   if (empty($settings['plugins'])) {
     return TRUE;
+  }
+
+  if (!isset($settings['logic'])) {
+    $settings['logic'] = 'and';
   }
 
   if (!isset($contexts['logged-in-user'])) {
@@ -991,3 +989,46 @@ function ctools_access($settings, $contexts = array()) {
   return TRUE;
 }
 
+/**
+ * Create default settings for a new access plugin.
+ *
+ * @param $plugin
+ *   The access plugin being used.
+ *
+ * @return
+ *   A default configured test that should be placed in $access['plugins'];
+ */
+function ctools_access_new_test($plugin) {
+  $test = array(
+    'name' => $plugin['name'],
+    'settings' => array(),
+  );
+
+  // Set up required context defaults.
+  if (isset($plugin['required context'])) {
+    if (is_object($plugin['required context'])) {
+      $test['context'] = '';
+    }
+    else {
+      $test['context'] = array();
+      foreach ($plugin['required context'] as $required) {
+        $test['context'][] = '';
+      }
+    }
+  }
+
+  // Setup plugin defaults.
+  if (isset($plugin['default'])) {
+    if (is_array($plugin['default'])) {
+      $test['settings'] = $plugin['default'];
+    }
+    else if (function_exists($plugin['default'])) {
+      $test['settings'] = $plugin['default']();
+    }
+    else {
+      $test['settings'] = array();
+    }
+  }
+
+  return $test;
+}

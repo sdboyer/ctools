@@ -39,7 +39,7 @@
  *       ),
  *       // ... as many as needed
  *     ),
- *     'operator' => 'AND', // or 'OR',
+ *     'logic' => 'AND', // or 'OR',
  *   ),
  * @endcode
  *
@@ -106,7 +106,7 @@
  *
  * You'll be responsible for adding a submit button.
  *
- * You may use ctools_access_test($access, $contexts) which will return
+ * You may use ctools_access($access, $contexts) which will return
  * TRUE if access is passed or FALSE if access is not passed.
  */
 
@@ -289,35 +289,7 @@ function ctools_access_ajax_add($fragment = NULL, $name = NULL) {
     $access['plugins'] = array();
   }
 
-  $test = array(
-    'name' => $name,
-    // TODO defaults
-    'settings' => array(),
-  );
-
-  if (isset($plugin['required context'])) {
-    if (is_object($plugin['required context'])) {
-      $test['context'] = '';
-    }
-    else {
-      $test['context'] = array();
-      foreach ($plugin['required context'] as $required) {
-        $test['context'][] = '';
-      }
-    }
-  }
-
-  if (isset($plugin['default'])) {
-    if (is_array($plugin['default'])) {
-      $test['settings'] = $plugin['default'];
-    }
-    else if (function_exists($plugin['default'])) {
-      $test['settings'] = $plugin['default']();
-    }
-    else {
-      $test['settings'] = array();
-    }
-  }
+  $test = ctools_access_new_test($plugin);
 
   $id = $access['plugins'] ? max(array_keys($access['plugins'])) + 1 : 0;
   $access['plugins'][$id] = $test;
@@ -503,4 +475,3 @@ function ctools_access_ajax_delete($fragment = NULL, $id = NULL) {
 
   ctools_ajax_render($output);
 }
-
