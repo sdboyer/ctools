@@ -67,7 +67,7 @@
  */
 function ctools_css_store($id, $css, $filter = TRUE) {
   $filename = db_result(db_query("SELECT filename FROM {ctools_css_cache} WHERE cid = '%s'", $id));
-  if ($filename) {
+  if ($filename && file_exists($filename)) {
     file_delete($filename);
   }
   // Remove any previous records.
