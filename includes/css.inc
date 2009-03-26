@@ -106,6 +106,15 @@ function ctools_css_retrieve($id) {
  * Remove stored CSS and any associated file.
  */
 function ctools_css_clear($id) {
+  $cache = db_fetch_object(db_query("SELECT * FROM {ctools_css_cache} WHERE cid = '%s'", $id));
+  if (!$cache) {
+    return;
+  }
+
+  if (file_exists($cache->filename)) {
+    file_delete($cache->filename);
+  }
+
   db_query("DELETE FROM {ctools_css_cache} WHERE cid = '%s'", $id);
 }
 

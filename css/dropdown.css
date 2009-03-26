@@ -1,6 +1,6 @@
 /* $Id$ */
 html.js div.ctools-dropdown div.ctools-dropdown-container {
-  z-index: 999;
+  z-index: 1001;
   display: none;
   text-align: left;
   position: absolute;
