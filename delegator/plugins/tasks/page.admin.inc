@@ -1417,6 +1417,8 @@ function delegator_page_clone_subtask_submit(&$form, &$form_state) {
   }
 
   $page->name = $name;
+  unset($page->pid);
+
   delegator_page_set_page_cache($page);
   $form_state['redirect'] = 'admin/build/pages/edit/' . $page->name;
 }
