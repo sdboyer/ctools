@@ -118,6 +118,7 @@ function theme_ctools_context_list($object, $header = '') {
   $titles = array();
   $output = '';
   $count  = 1;
+
   // Describe 'built in' contexts.
   if (!empty($object->base_contexts)) {
     foreach ($object->base_contexts as $id => $context) {
@@ -152,6 +153,7 @@ function theme_ctools_context_list($object, $header = '') {
       $count++;
     }
   }
+
   $count = 1;
   // Then, make a nice list of contexts.
   if (!empty($object->contexts)) {
@@ -168,6 +170,7 @@ function theme_ctools_context_list($object, $header = '') {
       $count++;
     }
   }
+
   // And relationships
   if (!empty($object->relationships)) {
     foreach ($object->relationships as $relationship) {
@@ -183,15 +186,15 @@ function theme_ctools_context_list($object, $header = '') {
       $count++;
     }
   }
-  if ($output) {
-    $head = '';
-    if ($header) {
-      $head .= '<thead><tr>';
-      $head .= '<th colspan="2">' . $header . '</th>';
-      $head .= '</tr></thead>';
-    }
-    return "<table>$head<tbody>$output</tbody></table>\n";
+
+  $head = '';
+  if ($header) {
+    $head .= '<thead><tr>';
+    $head .= '<th colspan="2">' . $header . '</th>';
+    $head .= '</tr></thead>';
   }
+
+  return $output ? "<table>$head<tbody>$output</tbody></table>\n" : "<table>$head</table>\n";
 }
 
 /**
