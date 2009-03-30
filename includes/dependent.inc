@@ -32,6 +32,8 @@
  * field that is used to determine where in $form_state['values'] you will find
  * the value of the form.
  *
+ * The item that is dependent on, should be set to #tree = TRUE.
+ *
  * Usage:
  *
  * First, ensure this tool is loaded:
@@ -40,6 +42,43 @@
  * On any form item, add
  * - @code '#process' => array('ctools_dependent_process'), @endcode
  * - @code '#dependency' => array('id-of-form-without-the-#' => array(list, of, values, that, make, this, gadget, visible)), @endcode
+ *
+ * A fuller example, that hides the menu title when no menu is selected:
+ * @code
+ *function ctools_dependent_example() {
+ *  $form = array();
+ *  $form['menu'] = array(
+ *    '#type' => 'fieldset',
+ *    '#title' => t('Menu settings'),
+ *    '#tree' => TRUE,
+ *  );
+ *  $form['menu']['type'] = array(
+ *    '#title' => t('Menu type'),
+ *    '#type' => 'radios',
+ *    '#options' => array(
+ *      'none' => t('No menu entry'),
+ *      'normal' => t('Normal menu entry'),
+ *      'tab' => t('Menu tab'),
+ *      'default tab' => t('Default menu tab'),
+ *    ),
+ *    '#default_value' => 'none',
+ *  );
+ *
+ *  $form['menu']['title'] = array(
+ *    '#title' => t('Title'),
+ *    '#type' => 'textfield',
+ *    '#default_value' => '',
+ *    '#description' => t('If set to normal or tab, enter the text to use for the menu item.'),
+ *    '#process' => array('ctools_dependent_process'),
+ *    '#dependency' => array('radio:menu[type]' => array('normal', 'tab', 'default tab')),
+ *   );
+ *
+ *  $form['menu']['title']['#process'] = array('ctools_dependent_process');
+ *  $form['menu']['title']['#dependency'] =  array('radio:menu[type]' => array('normal', 'tab', 'default tab'));
+ *
+ *  return system_settings_form($form);
+ *}
+ * @endcode
  */
 
 /**
