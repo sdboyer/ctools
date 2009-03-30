@@ -79,6 +79,8 @@ function delegator_schema_1() {
         'type' => 'varchar',
         'length' => '255',
         'description' => t('Unique ID for this task handler. Used to identify it programmatically.'),
+        'not null' => TRUE,
+        'default' => '',
       ),
       'weight' => array(
         'type' => 'int',
