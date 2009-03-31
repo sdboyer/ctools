@@ -40,13 +40,26 @@ function delegator_set_trail($task, $task_name = NULL) {
     return;
   }
 
+
   ctools_include('menu');
   $trail = menu_get_active_trail();
   $remove = ctools_get_menu_trail('admin/build/delegator');
-  foreach ($remove as $id => $info) {
-    if (isset($trail[$id])) {
-      unset($trail[$id]);
+  foreach ($remove as $info) {
+    foreach ($trail as $id => $crumb) {
+      if ($crumb['href'] == $info['href']) {
+        unset($trail[$id]);
+      }
     }
+  }
+
+  if ($task_name) {
+    // Clean up broken 'Edit' link that Drupal leaves behind.
+    $trail = array_values($trail);
+    if (isset($trail[0]) && $trail[0]['title'] == t('Edit')) {
+      unset($trail[0]);
+    }
+
+    array_unshift($trail, menu_get_item('admin/build/delegator/' . $task_name));
   }
 
   $trail = array_merge(ctools_get_menu_trail($task_type['admin path']), $trail);
@@ -1001,7 +1014,7 @@ function delegator_administer_task_handler_export($task_name, $name) {
   drupal_set_title(t('Export task handler "@title"', array('@title' => $title)));
 
   ctools_include('export');
-  delegator_set_trail($task);
+  delegator_set_trail($task, $task_name);
   return drupal_get_form('ctools_export_form', delegator_export_task_handler($handler), $title);
 }
 
@@ -1064,7 +1077,7 @@ function delegator_administer_task_handler_edit($task_name, $handler_id, $name, 
   $title = delegator_get_handler_title($plugin, $handler, $task, $subtask_id);
   drupal_set_title(t('Edit task handler "@title"', array('@title' => $title)));
 
-  delegator_set_trail($task);
+  delegator_set_trail($task, $task_name);
   $form_state = array(
     'step' => $step,
     'task_name' => $task_name,
@@ -1250,7 +1263,7 @@ function delegator_administer_break_lock(&$form_state, $task_name) {
   $form = array();
 
   $task = delegator_get_task($task_id);
-  delegator_set_trail($task);
+  delegator_set_trail($task, $task_name);
 
   // @todo put task title here, but also needs subtask support.
   if (empty($lock)) {
