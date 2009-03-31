@@ -29,39 +29,39 @@ function delegator_schema_1() {
       'did' => array(
         'type' => 'serial',
         'not null' => TRUE,
-        'description' => t('Primary ID field for the table. Not used for anything except internal lookups.'),
+        'description' => 'Primary ID field for the table. Not used for anything except internal lookups.',
         'no export' => TRUE,
       ),
       'name' => array(
         'type' => 'varchar',
         'length' => '255',
-        'description' => t('Unique ID for this task handler. Used to identify it programmatically.'),
+        'description' => 'Unique ID for this task handler. Used to identify it programmatically.',
       ),
       'task' => array(
         'type' => 'varchar',
         'length' => '64',
-        'description' => t('ID of the task this handler is for.'),
+        'description' => 'ID of the task this handler is for.',
       ),
       'subtask' => array(
         'type' => 'varchar',
         'length' => '64',
-        'description' => t('ID of the subtask this handler is for.'),
+        'description' => 'ID of the subtask this handler is for.',
         'not null' => TRUE,
         'default' => '',
       ),
       'handler' => array(
         'type' => 'varchar',
         'length' => '64',
-        'description' => t('ID of the task handler being used.'),
+        'description' => 'ID of the task handler being used.',
       ),
       'weight' => array(
         'type' => 'int',
-        'description' => t('The order in which this handler appears. Lower numbers go first.'),
+        'description' => 'The order in which this handler appears. Lower numbers go first.',
       ),
       'conf' => array(
         'type' => 'text',
         'size' => 'big',
-        'description' => t('Serialized configuration of the handler, if needed.'),
+        'description' => 'Serialized configuration of the handler, if needed.',
         'not null' => TRUE,
         'serialize' => TRUE,
       ),
@@ -73,18 +73,18 @@ function delegator_schema_1() {
   );
 
   $schema['delegator_weights'] = array(
-    'description' => t('Contains override weights for delegator handlers that are in code.'),
+    'description' => 'Contains override weights for delegator handlers that are in code.',
     'fields' => array(
       'name' => array(
         'type' => 'varchar',
         'length' => '255',
-        'description' => t('Unique ID for this task handler. Used to identify it programmatically.'),
+        'description' => 'Unique ID for this task handler. Used to identify it programmatically.',
         'not null' => TRUE,
         'default' => '',
       ),
       'weight' => array(
         'type' => 'int',
-        'description' => t('The order in which this handler appears. Lower numbers go first.'),
+        'description' => 'The order in which this handler appears. Lower numbers go first.',
       ),
     ),
     'primary key' => array('name'),
@@ -94,7 +94,7 @@ function delegator_schema_1() {
   );
 
   $schema['delegator_pages'] = array(
-    'description' => t('Contains page subtasks for implementing pages with arbitrary tasks.'),
+    'description' => 'Contains page subtasks for implementing pages with arbitrary tasks.',
     'export' => array(
       'identifier' => 'page',
     ),
@@ -102,48 +102,60 @@ function delegator_schema_1() {
       'pid' => array(
         'type' => 'serial',
         'not null' => TRUE,
-        'description' => t('Primary ID field for the table. Not used for anything except internal lookups.'),
+        'description' => 'Primary ID field for the table. Not used for anything except internal lookups.',
         'no export' => TRUE,
       ),
       'name' => array(
         'type' => 'varchar',
         'length' => '255',
-        'description' => t('Unique ID for this subtask. Used to identify it programmatically.'),
+        'description' => 'Unique ID for this subtask. Used to identify it programmatically.',
+      ),
+      'type' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => 'What type of page this is, so that we can use the same mechanism for creating tighter UIs for targeted pages.',
       ),
       'admin_title' => array(
         'type' => 'varchar',
         'length' => '255',
-        'description' => t('Human readable title for this page subtask.'),
+        'description' => 'Human readable title for this page subtask.',
       ),
       'path' => array(
         'type' => 'varchar',
         'length' => '255',
-        'description' => t('The menu path that will invoke this task.'),
+        'description' => 'The menu path that will invoke this task.',
       ),
       'access' => array(
         'type' => 'text',
         'size' => 'big',
-        'description' => t('Access configuration for this path.'),
+        'description' => 'Access configuration for this path.',
         'not null' => TRUE,
         'serialize' => TRUE,
       ),
       'multiple' => array(
         'type' => 'int',
         'size' => 'tiny',
-        'description' => t('True if the UI is set up to allow multiple handlers per page.'),
+        'description' => 'True if the UI is set up to allow multiple handlers per page.',
         'default' => 0,
       ),
       'menu' => array(
         'type' => 'text',
         'size' => 'big',
-        'description' => t('Serialized configuration of Drupal menu visibility settings for this item.'),
+        'description' => 'Serialized configuration of Drupal menu visibility settings for this item.',
         'not null' => TRUE,
         'serialize' => TRUE,
       ),
       'arguments' => array(
         'type' => 'text',
         'size' => 'big',
-        'description' => t('Configuration of arguments for this menu item.'),
+        'description' => 'Configuration of arguments for this menu item.',
+        'not null' => TRUE,
+        'serialize' => TRUE,
+      ),
+      'conf' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'Serialized configuration of the page, if needed.',
         'not null' => TRUE,
         'serialize' => TRUE,
       ),
@@ -171,3 +183,27 @@ function delegator_uninstall() {
   drupal_uninstall_schema('delegator');
 }
 
+/**
+ * Update delegator page to include a little more data.
+ */
+function delegator_update_6100() {
+  $ret = array();
+  $type = array(
+    'type' => 'varchar',
+    'length' => '255',
+    'description' => 'What type of page this is, so that we can use the same mechanism for creating tighter UIs for targeted pages.',
+    'initial' => 'custom',
+  );
+  $conf = array(
+    'type' => 'text',
+    'size' => 'big',
+    'description' => 'Serialized configuration of the page, if needed.',
+    'not null' => TRUE,
+    'serialize' => TRUE,
+    'initial' => serialize(array()),
+  );
+  db_add_field($ret, 'delegator_pages', 'type', $type);
+  db_add_field($ret, 'delegator_pages', 'conf', $conf);
+
+  return $ret;
+}

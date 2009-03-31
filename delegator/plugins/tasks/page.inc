@@ -49,6 +49,10 @@ function delegator_page_delegator_tasks() {
           'class' => 'delegator-page-storage',
         ),
       ),
+      'page type' => 'custom',
+      // What page callback will execute this page. If it has handlers then
+      // delegator_page_execute should be the default.
+      'page callback' => 'delegator_page_execute',
       // context only items
       'handler type' => 'context',
       'get arguments' => 'delegator_page_get_arguments',
@@ -61,7 +65,7 @@ function delegator_page_delegator_tasks() {
  * Return a list of all subtasks.
  */
 function delegator_page_subtasks($task) {
-  $pages = delegator_page_load_all();
+  $pages = delegator_page_load_all('custom');
   $return = array();
   foreach ($pages as $name => $page) {
     $return[$name] = delegator_page_build_subtask($task, $page);
@@ -191,10 +195,18 @@ function delegator_page_build_subtask($task, $page) {
  * Delegated implementation of hook_theme().
  */
 function delegator_page_theme(&$items, $task) {
-  $items['delegator_page_form_argument_table'] = array(
-    'arguments' => array('form' => NULL),
+  $base = array(
     'file' => 'page.admin.inc',
     'path' => drupal_get_path('module', 'delegator') . '/plugins/tasks',
+  );
+  $items['delegator_page_form_argument_table'] = $base + array(
+    'arguments' => array('form' => NULL),
+  );
+  $items['delegator_page_lock'] = $base + array(
+    'arguments' => array('lock' => array(), 'task_name' => NULL),
+  );
+  $items['delegator_page_changed'] = $base + array(
+    'arguments' => array(),
   );
 }
 
@@ -370,9 +382,14 @@ function delegator_page_load($name) {
 /**
  * Load all page subtasks.
  */
-function delegator_page_load_all() {
+function delegator_page_load_all($type = NULL) {
   ctools_include('export');
-  return ctools_export_load_object('delegator_pages');
+  if (empty($type)) {
+    return ctools_export_load_object('delegator_pages');
+  }
+  else {
+    return ctools_export_load_object('delegator_pages', 'conditions', array('type' => $type));
+  }
 }
 
 /**

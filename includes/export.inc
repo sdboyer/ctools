@@ -40,7 +40,7 @@ define('EXPORT_IN_CODE', 0x02);
  *   A string to notify the loader what the argument is
  *   - all: load all items. This is the default. $args is unused.
  *   - names: $args will be an array of specific named objects to load.
- *   - condition: $args will be a keyed array of conditions. The conditions
+ *   - conditions: $args will be a keyed array of conditions. The conditions
  *       must be in the schema for this table or errors will result.
  * @param $args
  *   An array of arguments whose actual use is defined by the $type argument.

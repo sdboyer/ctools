@@ -132,6 +132,8 @@ function delegator_admin_set_task_cache($task, $subtask_id, $cache) {
   // Then write it.
   $key = delegator_make_task_name($task['name'], $subtask_id);
   ctools_include('object-cache');
+
+  $cache->changed = TRUE;
   $cache = ctools_object_cache_set('delegator_handlers', $key, $cache);
 }
 
@@ -500,8 +502,12 @@ function delegator_admin_list_form(&$form_state) {
     '#submit' => array('delegator_admin_list_form_cancel'),
   );
 
-  $form['#delegator-lock'] = $cache->locked;
-  $form['#task-name'] = $form_state['task_name'];
+  if (!empty($cache->locked)) {
+    $form['warning'] = array('#value' => theme('delegator_admin_lock', $cache->locked, $form_state['task_name']));
+  }
+  else if (!empty($cache->changed)) {
+    $form['warning'] = array('#value' => theme('delegator_admin_changed'));
+  }
 
   // Set up a list of callbacks for our actions. This method allows
   // clever form_alter uses to add more actions easily.
@@ -553,25 +559,46 @@ function delegator_admin_make_dropdown_links($actions) {
 }
 
 /**
+ * Draw the "this task is locked from editing" box.
+ */
+function theme_delegator_admin_lock($lock, $task_name) {
+  $account  = user_load($lock->uid);
+  $name     = theme('username', $account);
+  $lock_age = format_interval(time() - $lock->updated);
+  $break    = url('admin/build/delegator/' . $task_name . '/break-lock', array('query' => array('destination' => $_GET['q'], 'cancel' => $_GET['q'])));
+
+  ctools_add_css('ctools');
+  $output = '<div class="ctools-locked">';
+  $output .= t('This task handler is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $name, '!age' => $lock_age, '!break' => $break));
+  $output .= '</div>';
+  return $output;
+}
+
+/**
+ * Draw the "you have unsaved changes and this task is locked." message.
+ */
+function theme_delegator_admin_changed() {
+  ctools_add_css('ctools');
+  $output = '<div class="ctools-owns-lock">';
+  $output .= t('You have modified this task handler but the changes have not yet been permanently saved. It will be locked for editing by others until you save or cancel these changes.');
+  $output .= '</div>';
+
+  return $output;
+}
+
+/**
  * Theme the form so it has a table.
  */
 function theme_delegator_admin_list_form($form) {
   $output = '';
-  if (!empty($form['#delegator-lock'])) {
-    $account  = user_load($form['#delegator-lock']->uid);
-    $name     = theme('username', $account);
-    $lock_age = format_interval(time() - $form['#delegator-lock']->updated);
-    $break    = url('admin/build/delegator/' . $form['#task-name'] . '/break-lock');
 
-    $output .= '<div class="delegator-locked">';
-    $output .= t('This task is being edited by user !user, and is therefore locked from editing by others. This lock is !age old. Click here to <a href="!break">break this lock</a>.', array('!user' => $name, '!age' => $lock_age, '!break' => $break));
-    $output .= '</div>';
+  if (isset($form['warning'])) {
+    $output .= drupal_render($form['warning']);
   }
-
   if (isset($form['description'])) {
     $output .= drupal_render($form['description']);
   }
-  if (isset($form['subatsk_description'])) {
+  if (isset($form['subtask_description'])) {
     $output .= drupal_render($form['subtask_description']);
   }
 
@@ -1053,6 +1080,13 @@ function delegator_administer_task_handler_edit($task_name, $handler_id, $name, 
 
   ctools_include('wizard');
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
+
+  if (!empty($cache->locked)) {
+    $output = theme('delegator_admin_lock', $cache->locked, $task_name) . $output;
+  }
+  else if (!empty($cache->changed)) {
+    $output = theme('delegator_admin_changed') . $output;
+  }
 
   drupal_add_css(drupal_get_path('module', 'delegator') . '/css/task-handlers.css');
   if (!empty($plugin['forms'][$step]['no blocks'])) {

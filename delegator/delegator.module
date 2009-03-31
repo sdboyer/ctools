@@ -35,6 +35,14 @@ function delegator_theme() {
       'arguments' => array('form' => NULL),
       'file' => 'delegator.admin.inc',
     ),
+    'delegator_admin_lock' => array(
+      'arguments' => array('lock' => array(), 'task_name' => NULL),
+      'file' => 'delegator.admin.inc',
+    ),
+    'delegator_admin_changed' => array(
+      'arguments' => array(),
+      'file' => 'delegator.admin.inc',
+    ),
   );
 
   // Allow task plugins to have theme registrations by passing through:
