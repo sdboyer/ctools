@@ -11,7 +11,7 @@
  */
 function ctools_node_type_ctools_access() {
   $args['node_type'] = array(
-    'title' => t("Node access by type"),
+    'title' => t("Node: Type"),
     'description' => t('Control access by node_type.'),
     'callback' => 'ctools_node_type_ctools_access_check',
     'default' => array('type' => array()),

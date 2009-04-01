@@ -12,8 +12,8 @@
 function ctools_site_language_ctools_access() {
   if (module_exists('locale')) {
     $items['site_language'] = array(
-      'title' => t("Access by site language"),
-      'description' => t('Control access by the language the site currently uses.'),
+      'title' => t("User: language"),
+      'description' => t('Control access by the language the user or site currently uses.'),
       'callback' => 'ctools_site_language_ctools_access_check',
       'default' => array('language' => array()),
       'settings form' => 'ctools_site_language_ctools_access_settings',

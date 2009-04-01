@@ -88,8 +88,10 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
     }
     else if ($type == 'conditions') {
       foreach ($args as $key => $value) {
-        $conditions[] = "$key = " . db_type_placeholder($schema['fields'][$key]['type']);
-        $query_args[] = $value;
+        if (isset($schema['fields'][$key])) {
+          $conditions[] = "$key = " . db_type_placeholder($schema['fields'][$key]['type']);
+          $query_args[] = $value;
+        }
       }
     }
 

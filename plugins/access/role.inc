@@ -11,7 +11,7 @@
  */
 function ctools_role_ctools_access() {
   $args['role'] = array(
-    'title' => t("Access by user role"),
+    'title' => t("User: role"),
     'description' => t('Control access by role.'),
     'callback' => 'ctools_role_ctools_access_check',
     'default' => array('rids' => array()),

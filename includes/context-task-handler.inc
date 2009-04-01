@@ -6,7 +6,7 @@
  * Support for creating 'context' type task handlers.
  *
  * Context task handlers expect the task to provide 0 or more contexts. The
- * task handler should use those contexts as selection criteria, as well as
+ * task handler should use those contexts as selection rules, as well as
  * rendering with them.
  *
  * The functions and forms in this file should be common to every context type
@@ -75,7 +75,7 @@ function ctools_context_handler_render($task, $subtask_id, $contexts, $page = TR
  *   The context objects provided by the task.
  *
  * @return
- *   TRUE if these contexts match the selection criteria. NULL or FALSE
+ *   TRUE if these contexts match the selection rules. NULL or FALSE
  *   otherwise.
  */
 function ctools_context_handler_select($handler, $contexts) {
@@ -205,7 +205,7 @@ function ctools_context_handler_get_task_arguments($task, $subtask_id) {
 }
 
 /**
- * Form to choose context based selection criteria for a task handler.
+ * Form to choose context based selection rules for a task handler.
  *
  * The configuration will be assumed to go simply in $handler->conf and
  * will be keyed by the argument ID.
@@ -228,7 +228,7 @@ function ctools_context_handler_edit_criteria(&$form, &$form_state) {
 }
 
 /**
- * Submit handler for criteria selection
+ * Submit handler for rules selection
  */
 function ctools_context_handler_edit_criteria_submit(&$form, &$form_state) {
   $form_state['handler']->conf['access']['logic'] = $form_state['values']['logic'];

@@ -11,7 +11,7 @@
  */
 function ctools_term_vocabulary_ctools_access() {
   $args['term_vocabulary'] = array(
-    'title' => t("Term access by vocabulary"),
+    'title' => t("Taxonomy: Vocabulary"),
     'description' => t('Control access by term vocabulary.'),
     'callback' => 'ctools_term_vocabulary_ctools_access_check',
     'default' => array('vids' => array()),

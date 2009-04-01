@@ -12,7 +12,7 @@
 function ctools_node_language_ctools_access() {
   if (module_exists('locale')) {
     $items['node_language'] = array(
-      'title' => t("Node access by language"),
+      'title' => t("Node: Language"),
       'description' => t('Control access by node language.'),
       'callback' => 'ctools_node_language_ctools_access_check',
       'default' => array('language' => array()),

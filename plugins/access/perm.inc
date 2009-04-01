@@ -11,7 +11,7 @@
  */
 function ctools_perm_ctools_access() {
   $args['perm'] = array(
-    'title' => t("Access by user permission string"),
+    'title' => t("User: Permission string"),
     'description' => t('Control access by permission string.'),
     'callback' => 'ctools_perm_ctools_access_check',
     'default' => array('perm' => 'access content'),
