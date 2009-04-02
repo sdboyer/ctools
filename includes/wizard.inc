@@ -277,6 +277,10 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
   if (!empty($form_state['modal'])) {
     $form['#action'] = url(ctools_wizard_get_path($form_state['form_info'], $form_state['step']));
   }
+
+  if (isset($info['wrapper']) && function_exists($info['wrapper'])) {
+    $info['wrapper']($form, $form_state);
+  }
 }
 
 /**

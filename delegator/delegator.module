@@ -777,3 +777,44 @@ function delegator_task_handler_ctools_access_set($argument, $access) {
   }
 }
 
+/**
+ * Load a context from an argument for a given page task.
+ *
+ * This is used as a menu callback to translate arguments and that is why it is
+ * here in the .module file.
+ *
+ * @param $value
+ *   The incoming argument value.
+ * @param $subtask
+ *   The subtask id.
+ * @param $argument
+ *   The numeric position of the argument in the path, counting from 0.
+ *
+ * @return
+ *   A context item if one is configured, the argument if one is not, or
+ *   FALSE if restricted or invalid.
+ */
+function _dp_arg_load($value, $subtask, $argument) {
+  $page = delegator_page_load($subtask);
+  if (!$page) {
+    return FALSE;
+  }
+
+  $path = explode('/', $page->path);
+  if (empty($path[$argument])) {
+    return FALSE;
+  }
+
+  $keyword = substr($path[$argument], 1);
+  if (empty($page->arguments[$keyword])) {
+    return $value;
+  }
+
+  $page->arguments[$keyword]['keyword'] = $keyword;
+
+  ctools_include('context');
+  $context = ctools_context_get_context_from_argument($page->arguments[$keyword], $value);
+
+  // convert false equivalents to false.
+  return $context ? $context : FALSE;
+}

@@ -110,7 +110,7 @@ function delegator_schema_1() {
         'length' => '255',
         'description' => 'Unique ID for this subtask. Used to identify it programmatically.',
       ),
-      'type' => array(
+      'task' => array(
         'type' => 'varchar',
         'length' => '255',
         'description' => 'What type of page this is, so that we can use the same mechanism for creating tighter UIs for targeted pages.',
@@ -204,6 +204,24 @@ function delegator_update_6100() {
   );
   db_add_field($ret, 'delegator_pages', 'type', $type);
   db_add_field($ret, 'delegator_pages', 'conf', $conf);
+
+  return $ret;
+}
+
+/**
+ * Change 'type' field to 'task'.
+ */
+function delegator_update_6101() {
+  $ret = array();
+  $task = array(
+    'type' => 'varchar',
+    'length' => '255',
+    'description' => 'What type of page this is, so that we can use the same mechanism for creating tighter UIs for targeted pages.',
+    'initial' => 'page',
+  );
+
+  db_drop_field($ret, 'delegator_pages', 'type');
+  db_add_field($ret, 'delegator_pages', 'task', $task);
 
   return $ret;
 }

@@ -31,6 +31,7 @@ function delegator_page_delegator_tasks() {
         'function' => 'delegator_page_menu',
       ),
       'hook theme' => 'delegator_page_theme',
+      'form info' => 'delegator_page_edit_form_info',
       // page only items
       'task type' => 'page',
       'operations' => array(
@@ -57,6 +58,7 @@ function delegator_page_delegator_tasks() {
       'handler type' => 'context',
       'get arguments' => 'delegator_page_get_arguments',
       'get context placeholders' => 'delegator_page_get_contexts',
+      'uses handlers' => TRUE,
     ),
   );
 }
@@ -65,7 +67,7 @@ function delegator_page_delegator_tasks() {
  * Return a list of all subtasks.
  */
 function delegator_page_subtasks($task) {
-  $pages = delegator_page_load_all('custom');
+  $pages = delegator_page_load_all($task['name']);
   $return = array();
   foreach ($pages as $name => $page) {
     $return[$name] = delegator_page_build_subtask($task, $page);
@@ -88,14 +90,17 @@ function delegator_page_subtask($task, $subtask_id) {
  * Build a subtask array for a given page.
  */
 function delegator_page_build_subtask($task, $page) {
-  $form_info  = delegator_page_edit_form_info();
+  $function = ctools_plugin_get_function($task, 'form info');
+  $form_info = $function();
+
   $edit_links = array();
   $name       = $page->name;
 
   foreach ($form_info['order'] as $form_id => $form_title) {
+
     $edit_links[] = array(
       'title' => $form_title,
-      'href' => "admin/build/pages/edit/$name/$form_id",
+      'href' => str_replace(array('%page_name', '%step'), array($name, $form_id), $form_info['edit path']),
     );
   }
 
@@ -103,35 +108,38 @@ function delegator_page_build_subtask($task, $page) {
   $task_name = delegator_make_task_name($task['name'], $name);
 
   if (empty($page->disabled)) {
-    if ($page->multiple) {
-      $operations[] = array(
-        'title' => t('Task handlers'),
-        'href' => "admin/build/delegator/$task_name",
-      );
-    }
-    else {
-      $default_handlers = isset($page->default_handlers) ? $page->default_handlers : array();
-      $task_handlers = delegator_load_task_handlers($task, $page->name, $default_handlers);
-      if ($task_handlers) {
-        $handler = array_shift($task_handlers);
-        $plugin = delegator_get_task_handler($handler->handler);
-        if (!empty($plugin['edit forms'])) {
-          $actions = array();
-          foreach ($plugin['edit forms'] as $edit_id => $title) {
-            if ($title) {
-              $actions[] = array(
-                'title' => $title,
-                'href' => "admin/build/delegator/$task_name/$handler->handler/$handler->name/$edit_id",
-              );
+    if (!empty($task['uses handlers'])) {
+      if ($page->multiple) {
+        $operations[] = array(
+          'title' => t('Task handlers'),
+          'href' => "admin/build/delegator/$task_name",
+        );
+      }
+      else {
+        $default_handlers = isset($page->default_handlers) ? $page->default_handlers : array();
+        $task_handlers = delegator_load_task_handlers($task, $page->name, $default_handlers);
+        if ($task_handlers) {
+          $handler = array_shift($task_handlers);
+          $plugin = delegator_get_task_handler($handler->handler);
+          if (!empty($plugin['edit forms'])) {
+            $actions = array();
+            foreach ($plugin['edit forms'] as $edit_id => $title) {
+              if ($title) {
+                $actions[] = array(
+                  'title' => $title,
+                  'href' => "admin/build/delegator/$task_name/$handler->handler/$handler->name/$edit_id",
+                );
+              }
             }
+            $operations[] = array(
+              'title' => '<span class="text">' . t('Edit handler') . '</span>' . theme('links', $actions),
+              'html' => TRUE,
+            );
           }
-          $operations[] = array(
-            'title' => '<span class="text">' . t('Edit handler') . '</span>' . theme('links', $actions),
-            'html' => TRUE,
-          );
         }
       }
     }
+
     $operations[] = array(
       'title' => '<span class="text">' . t('Edit page') . '</span>' . theme('links', $edit_links),
       'html' => TRUE,
@@ -144,10 +152,12 @@ function delegator_page_build_subtask($task, $page) {
       'title' => t('Export'),
       'href' => "admin/build/pages/export/$name",
     );
-    $operations[] = array(
-      'title' => t('Export (with handlers)'),
-      'href' => "admin/build/pages/export/$name/handlers",
-    );
+    if (!empty($task['has handlers'])) {
+      $operations[] = array(
+        'title' => t('Export (with handlers)'),
+        'href' => "admin/build/pages/export/$name/handlers",
+      );
+    }
     if ($page->export_type == (EXPORT_IN_CODE | EXPORT_IN_DATABASE)) {
       $operations[] = array(
         'title' => t('Revert'),
@@ -173,6 +183,7 @@ function delegator_page_build_subtask($task, $page) {
       'href' => "admin/build/pages/enable/$name",
     );
   }
+
   $subtask = array(
     'name' => $name,
     'admin title' => $page->admin_title,
@@ -247,50 +258,15 @@ function delegator_page_edit_form_info() {
         'form id' => 'delegator_page_argument_form_multiple',
       ),
     ),
+    // Items specific to the 'add' routines that will get moved over:
+    'add path' => 'admin/build/pages/add/%step',
+    // Items specific to the 'edit' routines that will get moved over:
+    'edit path' => 'admin/build/pages/edit/%page_name/%step',
   );
 }
 
 // --------------------------------------------------------------------------
 // Page execution functions
-
-/**
- * Load a context from an argument for a given page task.
- *
- * @param $value
- *   The incoming argument value.
- * @param $subtask
- *   The subtask id.
- * @param $argument
- *   The numeric position of the argument in the path, counting from 0.
- *
- * @return
- *   A context item if one is configured, the argument if one is not, or
- *   FALSE if restricted or invalid.
- */
-function _dp_arg_load($value, $subtask, $argument) {
-  $page = delegator_page_load($subtask);
-  if (!$page) {
-    return FALSE;
-  }
-
-  $path = explode('/', $page->path);
-  if (empty($path[$argument])) {
-    return FALSE;
-  }
-
-  $keyword = substr($path[$argument], 1);
-  if (empty($page->arguments[$keyword])) {
-    return $value;
-  }
-
-  $page->arguments[$keyword]['keyword'] = $keyword;
-
-  ctools_include('context');
-  $context = ctools_context_get_context_from_argument($page->arguments[$keyword], $value);
-
-  // convert false equivalents to false.
-  return $context ? $context : FALSE;
-}
 
 /**
  * Execute a page task.
@@ -382,13 +358,13 @@ function delegator_page_load($name) {
 /**
  * Load all page subtasks.
  */
-function delegator_page_load_all($type = NULL) {
+function delegator_page_load_all($task = NULL) {
   ctools_include('export');
-  if (empty($type)) {
+  if (empty($task)) {
     return ctools_export_load_object('delegator_pages');
   }
   else {
-    return ctools_export_load_object('delegator_pages', 'conditions', array('type' => $type));
+    return ctools_export_load_object('delegator_pages', 'conditions', array('task' => $task));
   }
 }
 
