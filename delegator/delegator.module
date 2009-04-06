@@ -415,6 +415,10 @@ function delegator_save_task_handler(&$handler) {
  * Remove a task handler.
  */
 function delegator_delete_task_handler($handler) {
+  // Let the task handler respond to saves:
+  if ($function = ctools_plugin_load_function('delegator', 'task_handlers', $handler->handler, 'delete')) {
+    $function($handler);
+  }
   db_query("DELETE FROM {delegator_handlers} WHERE name = '%s'", $handler->name);
   db_query("DELETE FROM {delegator_weights} WHERE name = '%s'", $handler->name);
 }

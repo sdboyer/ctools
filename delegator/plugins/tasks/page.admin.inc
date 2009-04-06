@@ -25,7 +25,7 @@ function delegator_page_menu(&$items, $task) {
   );
 
   $items['admin/build/pages/add'] = array(
-    'title' => 'Add page',
+    'title' => 'Add custom page',
     'description' => 'Add a delegator page subtask.',
     'page callback' => 'delegator_page_add_subtask',
     'page arguments' => array('page'),
@@ -471,7 +471,7 @@ function delegator_page_add_subtask_finish(&$form_state) {
     $handler = delegator_new_task_handler($task, $page->name, $plugin, 0, $cache);
     $form_state['redirect'] = delegator_admin_new_task_handler($handler, $task_name, $task, $page->name, $cache, $plugin);
   }
-  else if ($form_state['type'] == 'add') {
+  else if ($form_state['type'] == 'add' && !empty($form_state['task']['uses handlers'])) {
     // Redirect to the new page's task handler editor.
     $form_state['redirect'] = 'admin/build/delegator/page-' . $page->name;
   }
@@ -1430,11 +1430,11 @@ function delegator_page_import_subtask_submit($form, &$form_state) {
 /**
  * Entry point to export a page.
  */
-function delegator_page_export_subtask($task_name, $name, $handlers = FALSE) {
+function delegator_page_export_subtask($name, $handlers = FALSE) {
   // This ensures the task .inc file is loaded
   delegator_get_task('page');
   $page = delegator_page_load($name);
-  $form_state['task'] = delegator_get_task($task_name);
+  $form_state['task'] = delegator_get_task($page->task);
 
   if (!$page) {
     return drupal_not_found();

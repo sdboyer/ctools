@@ -40,7 +40,7 @@ function delegator_page_delegator_tasks() {
           'href' => 'admin/build/pages/import',
         ),
         array(
-          'title' => t('Add page'),
+          'title' => t('Add custom page'),
           'href' => 'admin/build/pages/add',
         ),
       ),
@@ -371,40 +371,62 @@ function delegator_page_load_all($task = NULL) {
 /**
  * Write a page subtask to the database.
  */
-function delegator_page_save(&$subtask) {
-  $update = (isset($subtask->pid)) ? array('pid') : array();
-  drupal_write_record('delegator_pages', $subtask, $update);
+function delegator_page_save(&$page) {
+  $update = (isset($page->pid)) ? array('pid') : array();
+  $task = delegator_get_task($page->task);
+
+  if ($function = ctools_plugin_get_function($task, 'save')) {
+    $function($page, $update);
+  }
+  drupal_write_record('delegator_pages', $page, $update);
 
   // If this was a default page we may need to write default task
   // handlers that we provided as well.
-  if (!$update && isset($subtask->default_handlers)) {
-    $handlers = delegator_load_task_handlers(delegator_get_task('page'), $subtask->name);
-    foreach ($subtask->default_handlers as $name => $handler) {
+  if (!$update && isset($page->default_handlers)) {
+    $handlers = delegator_load_task_handlers(delegator_get_task('page'), $page->name);
+    foreach ($page->default_handlers as $name => $handler) {
       if (!isset($handlers[$name]) || !($handlers[$name]->export_type & EXPORT_IN_DATABASE)) {
         // Make sure this is right, as exports can wander a bit.
-        $handler->subtask = $subtask->name;
+        $handler->subtask = $page->name;
         delegator_save_task_handler($handler);
       }
     }
   }
-  return $subtask;
+  return $page;
 }
 
 /**
  * Remove a page subtask.
  */
-function delegator_page_delete($subtask) {
-  db_query("DELETE FROM {delegator_pages} WHERE name = '%s'", $subtask->name);
+function delegator_page_delete($page) {
+  $task = delegator_get_task($page->task);
+  if ($function = ctools_plugin_get_function($task, 'delete')) {
+    $function($page);
+  }
+  if (!empty($task['uses handlers'])) {
+    $handlers = delegator_load_task_handlers($task, $page->name);
+    foreach ($handlers as $handler) {
+      delegator_delete_task_handler($handler);
+    }
+  }
+  db_query("DELETE FROM {delegator_pages} WHERE name = '%s'", $page->name);
 }
 
 /**
  * Export a page subtask.
  */
-function delegator_page_export($subtask, $with_handlers = FALSE, $indent = '') {
+function delegator_page_export($page, $with_handlers = FALSE, $indent = '') {
+  $task = delegator_get_task($page->task);
+  if ($function = ctools_plugin_get_function($task, 'export')) {
+    $append = $function($page, $indent);
+  }
+
   ctools_include('export');
-  $output = ctools_export_object('delegator_pages', $subtask, $indent);
+  $output = ctools_export_object('delegator_pages', $page, $indent);
+  $output .= $append;
+
   if ($with_handlers) {
-    $handlers = delegator_load_task_handlers(delegator_get_task('page'), $subtask->name);
+    $handlers = delegator_load_task_handlers(delegator_get_task('page'), $page->name);
     $output .= $indent . '$page->default_handlers = array();' . "\n";
     foreach ($handlers as $handler) {
       $output .= delegator_export_task_handler($handler, $indent);

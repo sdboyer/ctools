@@ -112,8 +112,9 @@ function delegator_schema_1() {
       ),
       'task' => array(
         'type' => 'varchar',
-        'length' => '255',
+        'length' => '64',
         'description' => 'What type of page this is, so that we can use the same mechanism for creating tighter UIs for targeted pages.',
+        'default' => 'page',
       ),
       'admin_title' => array(
         'type' => 'varchar',
