@@ -6,6 +6,9 @@
  * Contains theme registry and theme implementations for the context tool.
  */
 
+/**
+ * Implementation of hook_theme()
+ */
 function ctools_context_theme(&$theme) {
   $theme['ctools_context_list'] = array(
     'arguments' => array('object'),

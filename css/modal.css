@@ -7,7 +7,7 @@ div.ctools-modal-content {
   border: 1px solid #000;
   width: 600px;
   text-align: left;
-} 
+}
 
 div.ctools-modal-content .modal-title {
   font-size: 120%;
@@ -37,11 +37,6 @@ div.ctools-modal-content .modal-content {
 div.ctools-modal-content .modal-form {
 }
 
-div.ctools-modal-content .form-checkboxes .form-item {
-  float: left;
-  width: 24%;
-}
-
 div.ctools-modal-content a.close {
   color: white;
 }
@@ -56,8 +51,6 @@ div.ctools-modal-content a.close img {
 }
 
 div.ctools-modal-content .modal-content .modal-throbber-wrapper {
-  width: 575px;
-  height: 400px;
   text-align: center;
 }
 

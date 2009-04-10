@@ -22,6 +22,14 @@ Drupal.CTools.Modal.show = function() {
   }
 
   $('span.modal-title', Drupal.CTools.Modal.modal).html(Drupal.t('Loading...'));
+  $('div.ctools-modal-content', Drupal.CTools.Modal.modal).css({
+    'width': $(window).width() * .8 + 'px', 
+    'height': $(window).height() * .8 + 'px'
+  });
+  $('div.ctools-modal-content .modal-content', Drupal.CTools.Modal.modal).css({
+    'width': ($(window).width() * .8 - 25) + 'px', 
+    'height': ($(window).height() * .8 - 22) + 'px'
+  });
   Drupal.CTools.Modal.modal.modalContent({
     // @todo this should be elsewhere.
     opacity: '.40', 
