@@ -364,14 +364,19 @@ function ctools_content_admin_info($type, $subtype, $conf, $context = NULL) {
 /**
  * Add the default FAPI elements to the content type configuration form
  */
-function ctools_content_configure_form_defaults($plugin, $subtype, $contexts, $conf) {
+function ctools_content_configure_form_defaults(&$form, &$form_state) {
+  $plugin = $form_state['plugin'];
+  $subtype = $form_state['subtype'];
+  $contexts = isset($form_state['contexts']) ? $form_state['contexts'] : NULL;
+  $conf = $form_state['conf'];
+
   if (!empty($subtype['required context']) && is_array($contexts)) {
     $form['context'] = ctools_context_selector($contexts, $subtype['required context'], isset($conf['context']) ? $conf['context'] : array());
   }
 
   // Unless we're not allowed to override the title on this content type, add this
   // gadget to all panes.
-  if (empty($plugin['no title override'])) {
+  if (empty($plugin['no title overridex'])) {
     $form['aligner_start'] = array(
       '#value' => '<div class="option-text-aligner">',
     );
@@ -390,11 +395,13 @@ function ctools_content_configure_form_defaults($plugin, $subtype, $contexts, $c
     $form['aligner_stop'] = array(
       '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
     );
-    $form['override_title_markup'] = array(
-      '#prefix' => '<div class="description">',
-      '#suffix' => '</div>',
-      '#value' => t('You may use %keywords from contexts, as well as %title to contain the original title.'),
-    );
+    if (is_array($contexts)) {
+      $form['override_title_markup'] = array(
+        '#prefix' => '<div class="description">',
+        '#suffix' => '</div>',
+        '#value' => t('You may use %keywords from contexts, as well as %title to contain the original title.'),
+      );
+    }
   }
 
   return $form;
@@ -446,6 +453,7 @@ function _ctools_content_create_add_form_info(&$form_info, $info, $plugin, $subt
       'form' => array(
         'title' => $title,
         'form id' => $info,
+        'wrapper' => 'ctools_content_configure_form_defaults',
       ),
     );
   }
@@ -462,6 +470,9 @@ function _ctools_content_create_add_form_info(&$form_info, $info, $plugin, $subt
         'title' => $title,
         'form id' => $form_id,
       );
+      if ($count == 1) {
+        $form_info['forms'][$step]['wrapper'] = 'ctools_content_configure_form_defaults';
+      }
     }
   }
 }
