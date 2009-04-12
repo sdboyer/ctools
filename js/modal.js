@@ -17,19 +17,27 @@ Drupal.CTools.Modal = Drupal.CTools.Modal || {};
  * Display the modal
  */
 Drupal.CTools.Modal.show = function() {
-  if (!Drupal.CTools.Modal.modal) {
-    Drupal.CTools.Modal.modal = $(Drupal.theme('CToolsModalDialog'));
+  var resize = function(e) {
+    // For reasons I do not understand, when creating the modal the context must be
+    // Drupal.CTools.Modal.modal but otherwise the context must be more than that.
+    var context = e ? document : Drupal.CTools.Modal.modal;
+    $('div.ctools-modal-content', context).css({
+      'width': $(window).width() * .8 + 'px', 
+      'height': $(window).height() * .8 + 'px'
+    });
+    $('div.ctools-modal-content .modal-content', context).css({
+      'width': ($(window).width() * .8 - 25) + 'px', 
+      'height': ($(window).height() * .8 - 22) + 'px'
+    });
   }
 
+  if (!Drupal.CTools.Modal.modal) {
+    Drupal.CTools.Modal.modal = $(Drupal.theme('CToolsModalDialog'));
+    $(window).bind('resize', resize);
+  }
+
+  resize();
   $('span.modal-title', Drupal.CTools.Modal.modal).html(Drupal.t('Loading...'));
-  $('div.ctools-modal-content', Drupal.CTools.Modal.modal).css({
-    'width': $(window).width() * .8 + 'px', 
-    'height': $(window).height() * .8 + 'px'
-  });
-  $('div.ctools-modal-content .modal-content', Drupal.CTools.Modal.modal).css({
-    'width': ($(window).width() * .8 - 25) + 'px', 
-    'height': ($(window).height() * .8 - 22) + 'px'
-  });
   Drupal.CTools.Modal.modal.modalContent({
     // @todo this should be elsewhere.
     opacity: '.40', 
