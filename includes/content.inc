@@ -17,7 +17,7 @@
  */
 function ctools_ctools_plugin_content_types() {
   return array(
-    'cache' => TRUE,
+    'cache' => FALSE,
     'defaults' => 'ctools_content_defaults',
   );
 }
@@ -61,20 +61,26 @@ function ctools_content_defaults($info, &$plugin) {
   }
 
   // Another ease of use check:
-  // If a content type is set to SINGLE and *no* subtypes are defined, this rewrites
-  // things so that the syntax is nicer.
-  if (!empty($plugin['single']) && !isset($plugin['content types'])) {
-    $type = array(
-      'title' => $plugin['title'],
-      'description' => $plugin['description'],
-      'icon' => $plugin['icon'],
-      'category' => $plugin['category'],
-    );
+  if (!isset($plugin['content types'])) {
+    // If a content type is set to SINGLE and *no* subtypes are defined, this rewrites
+    // things so that the syntax is nicer.
+    if (!empty($plugin['single'])) {
+      $type = array(
+        'title' => $plugin['title'],
+        'description' => $plugin['description'],
+        'icon' => $plugin['icon'],
+        'category' => $plugin['category'],
+      );
 
-    if (isset($plugin['required contexts'])) {
-      $type['required contexts'] = $plugin['required contexts'];
+      if (isset($plugin['required contexts'])) {
+        $type['required contexts'] = $plugin['required contexts'];
+      }
+      $plugin['content types'] = array($plugin['name'] => $type);
     }
-    $plugin['content types'] = array($plugin['name'] => $type);
+    // Otherwise, auto discover the function based upon pattern naming.
+    else if (function_exists($function_base . 'content_types')) {
+      $plugin['content types'] = $function_base . 'content_types';
+    }
   }
 }
 
@@ -376,7 +382,7 @@ function ctools_content_configure_form_defaults(&$form, &$form_state) {
 
   // Unless we're not allowed to override the title on this content type, add this
   // gadget to all panes.
-  if (empty($plugin['no title overridex'])) {
+  if (empty($plugin['no title override']) && empty($subtype['no title override'])) {
     $form['aligner_start'] = array(
       '#value' => '<div class="option-text-aligner">',
     );
@@ -412,7 +418,10 @@ function ctools_content_configure_form_defaults(&$form, &$form_state) {
  *
  * The $form_info and $form_state need to be preconfigured with data you'll need
  * such as whether or not you're using ajax, or the modal. $form_info will need
- * your next/submit callbacks so that you can cache your data appropriate. This
+ * your next/submit callbacks so that you can cache your data appropriate.
+ *
+ * @return
+ *   If this function returns false, no form exists.
  */
 function ctools_content_form($op, $form_info, &$form_state, $plugin, $subtype, &$conf, $step = NULL) {
   $form_state += array(
@@ -433,6 +442,10 @@ function ctools_content_form($op, $form_info, &$form_state, $plugin, $subtype, &
   // Use the edit form for the add form if add form was completely left off.
   else if (isset($plugin['edit form'])) {
     _ctools_content_create_add_form_info($form_info, $plugin['edit form'], $plugin, $subtype, $op);
+  }
+
+  if (empty($form_info['order'])) {
+    return FALSE;
   }
 
   ctools_include('wizard');

@@ -1,6 +1,14 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Custom content type.
+ *
+ * This content type is nothing more than a title and a body that is entered
+ * by the user and run through standard filters. The information is stored
+ * right in the config, so each custom content is unique.
+ */
 
 /**
  * Callback function to supply a list of content types.
@@ -88,6 +96,9 @@ function ctools_custom_content_type_edit_form(&$form, &$form_state) {
   return $form;
 }
 
+/**
+ * The submit form stores the data in $conf.
+ */
 function ctools_custom_content_type_edit_form_submit(&$form, &$form_state) {
   $form_state['conf'] = $form_state['values'];
 }
