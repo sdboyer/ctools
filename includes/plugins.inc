@@ -103,7 +103,7 @@ function ctools_get_plugins($module, $type, $id = NULL) {
   if ($info[$type]['cache'] && !isset($plugins['cache'])) {
     // @todo Maybe this should use our own table but free wiping
     // with content updates is convenient.
-    $cache = cache_get("plugins:$module:$type");
+    $cache = cache_get("plugins:$module:$type", $info[$type]['cache table']);
 
     // if cache load successful, set $all_hooks and $all_files to true.
     if (!empty($cache->data)) {
@@ -137,7 +137,7 @@ function ctools_get_plugins($module, $type, $id = NULL) {
   // If we were told earlier that this is cacheable and the cache was
   // empty, give something back.
   if (!empty($write_cache)) {
-    cache_set("plugins:$module:$type", $plugins[$type]);
+    cache_set("plugins:$module:$type", $plugins[$type], $info[$type]['cache table']);
   }
 
   // If no id was requested, we are finished here:
@@ -298,7 +298,12 @@ function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL,
 
     // Fill in plugin specific defaults, if they exist.
     if (!empty($info['defaults'])) {
-      $result[$name] += $info['defaults'];
+      if (is_array($info['defaults'])) {
+        $result[$name] += $info['defaults'];
+      }
+      else if (function_exists($info['defaults'])) {
+        $info['defaults']($info, $result[$name]);
+      }
     }
 
     // Allow the plugin owner to do additional processing.
@@ -324,6 +329,7 @@ function ctools_plugin_get_info($module, $type) {
     'module' => $module,
     'type' => $type,
     'cache' => FALSE,
+    'cache table' => 'cache',
     'defaults' => array(),
     'hook' => $module . '_' . $type,
     'load themes' => FALSE,

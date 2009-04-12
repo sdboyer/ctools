@@ -89,3 +89,9 @@ div.ctools-modal-content .modal-form fieldset,
 div.ctools-modal-content .modal-form .form-checkboxes {
   clear: left;
 }
+
+div.ctools-modal-content .resizable-textarea {
+  width: 90%;
+  margin-left: 8em;
+}
+

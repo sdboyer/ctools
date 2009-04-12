@@ -1,0 +1,79 @@
+<!-- $Id $ -->
+The CTools pluggable content system provides various pieces of content as discrete bits of data that can be added to other applications, such as Panels or Dashboard via the UI. Whatever the content is added to stores the configuration for that individual piece of content, and provides this to the content.
+
+Each content type plugin will be contained in a .inc file, with subsidiary files, if necessary, in or near the same directory. Each content type consists of some information and one or more subtypes, which all use the same renderer. Subtypes are considered to be instances of the type. For example, the 'views' content type would have each view in the system as a subtype. Many content types will have exactly one subtype.
+
+Because the content and forms can be provided via ajax, the plugin also provides a list of cs and js information that should be available on whatever page the content or forms may be ajaxed onto.
+
+For the purposes of selecting content from the UI, each content subtype will have the following information:
+<ul>
+<li>A title</li>
+<li>A short description</li>
+<li>A category [Do we want to add hierarchy categories? Do we want category to be more than just a string?]</li>
+<li>An icon [do we want multiple icons? This becomes a hefty requirement]</li>
+</ul>
+
+Each piece of content provides one or more configuration forms, if necessary, and the system that includes the content will handle the data storage. These forms can be provided in sequence as wizards or as extra forms that can be accessed through advanced administration.
+
+The plugin for a content type should contain:
+<ul>
+<li>title: For use on the content permissions screen.</li>
+<li>content types: Either an array of content type definitions, or a callback that will return content type definitions. This callback will get the plugin definition as an argument.</li>
+<li>content type: [Optional] Provide a single content type definition. This is only necessary if content types might be intensive.</li>
+<li>render callback: The callback to render the content. Params:
+<ul>
+<li>$subtype: The name of the subtype being rendered. NOT the loaded subtype data.</li>
+<li>$conf: The stored configuration for the content.</li>
+<li>$args: Any arguments passed.</li>
+<li>$context: An array of contexts requested by the required contexts and assigned by the configuration step.</li>
+<li>$incoming_content: Any 'incoming content' if this is a wrapper.</li>
+</ul></li>
+<li>admin title: A callback to provide the administrative title. If it is not a function, then it will be counted as a string to use as the admin title.</li>
+<li>admin info: A callback to provide administrative information about the content, to be displayed when manipulating the content. It should contain a summary of configuration.</li>
+<li>edit form: Either a single form ID or an array of forms *keyed* by form ID with the value to be used as the title of the form. %title me be used as a placeholder for the administrative title if necessary. Example:
+<pre>
+  array(
+    'ctools_example_content_form_second' => t('Configure first form'),
+    'ctools_example_content_form_first' => t('Configure second form'),
+  ),
+</pre>
+The first form will always have required configuration added to it. These forms are normal FAPI forms, but you do not need to provide buttons, these will be added by the form wizard.</li>
+<li>add form: [Optional] If different from the edit forms, provide them here in the same manner. Also may be set to FALSE to not have an add form.</li>
+<li>css: A file or array of CSS files that are necessary for the content.</li>
+<li>js: A file or array of javascript files that are necessary for the content to be displayed.</li>
+<li>admin css: A file or array of CSS files that are necessary for the forms.</li>
+<li>admin js: A file or array of javascript files that are necessary for the forms.</li>
+<li>extra forms: An array of form information to handle extra administrative forms.</li>
+<li>no title override: Set to TRUE if the title cannot be overridden.</li>
+<li>single: Set to TRUE if this content provides exactly one subtype.</li>
+<li>render last: Set to true if for some reason this content needs to render after other content. This is primarily used for forms to ensure that render order is correct.</li>
+</ul>
+
+TODO: many of the above callbacks can be assumed based upon patterns: modulename + '_' + name + '_' + function. i.e, render, admin_title, admin_info, etc.
+TODO: Some kind of simple access control to easily filter out content.
+
+The subtype definition should contain:
+<ul>
+<li>title: The title of the subtype.</li>
+<li>icon: The icon to display for the subtype.</li>
+<li>path: The path for the icon if it is not in the same directory as the plugin.</li>
+<li>description: The short description of the subtype, to be used when selecting it in the UI.</li>
+<li>category: Either a text string for the category, or an array of the text string followed by the category weight.</li>
+<li>required contexts: [Optional] Either a ctools_required_context or ctools_optional_context or array of contexts for this content. If omitted, no contexts are required.</li>
+</ul>
+
+<h3>Rendered content</h3>
+Rendered content is a little more than just HTML.
+<ul>
+<li>title: The safe to render title of the content.</li>
+<li>content: The safe to render HTML content.</li>
+<li>links: An array of links associated with the content suitable for theme('links').</li>
+<li>more: An optional 'more' link (destination only)</li>
+<li>admin_links: Administrative links associated with the content, suitable for theme('links').</li>
+<li>feeds: An array of feed icons or links associated with the content. Each member of the array is rendered HTML.</li>
+<li>type: The content type.</li>
+<li>subtype: The content subtype. These two may be used together as module-delta for block style rendering.</li>
+</ul>
+
+<h3>Todo: example</h3>
+Todo after implementations are updated to new version.

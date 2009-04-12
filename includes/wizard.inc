@@ -47,6 +47,11 @@
  *   whatever information the form(s) involved left for it.
  */
 function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
+  if (!isset($step)) {
+    $keys = array_keys($form_info['order']);
+    $step = array_shift($keys);
+  }
+
   $form_state['step'] = $step;
   $form_state['form_info'] = $form_info;
 

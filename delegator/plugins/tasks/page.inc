@@ -53,7 +53,7 @@ function delegator_page_delegator_tasks() {
       'page type' => 'custom',
       // What page callback will execute this page. If it has handlers then
       // delegator_page_execute should be the default.
-      'page callback' => 'delegator_page_execute',
+//      'page callback' => 'delegator_page_execute',
       // context only items
       'handler type' => 'context',
       'get arguments' => 'delegator_page_get_arguments',
@@ -281,6 +281,16 @@ function delegator_page_edit_form_info() {
  *   creating named arguments in the path.
  */
 function delegator_page_execute($subtask_id) {
+  $page = delegator_page_load($subtask_id);
+  $task = delegator_get_task($page->task);
+
+  if ($function = ctools_plugin_get_function($task, 'page callback')) {
+    $args = func_get_args();
+    // overwrite the id with the actual page so it won't be loaded again.
+    $args[0] = $page;
+    return call_user_func_array($function, $args);
+  }
+
   // Turn the contexts into a properly keyed array.
   $contexts = array();
   foreach (func_get_args() as $arg) {
@@ -288,8 +298,6 @@ function delegator_page_execute($subtask_id) {
       $contexts[$arg->id] = $arg;
     }
   }
-
-  $task = delegator_get_task('page');
 
   ctools_include('context-task-handler');
   $output = ctools_context_handler_render($task, $subtask_id, $contexts);

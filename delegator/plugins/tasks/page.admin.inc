@@ -190,7 +190,7 @@ function delegator_page_menu_item($task, $menu, $access_arguments, $page_argumen
   $item = array(
     'access callback' => 'ctools_access_menu',
     'access arguments' => $access_arguments,
-    'page callback' => isset($task['page callback']) ? $task['page callback'] : 'delegator_page_execute',
+    'page callback' => 'delegator_page_execute',
     'page arguments' => $page_arguments,
     'load arguments' => $load_arguments,
     'file' => 'plugins/tasks/page.inc',
