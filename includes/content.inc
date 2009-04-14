@@ -75,6 +75,9 @@ function ctools_content_defaults($info, &$plugin) {
       if (isset($plugin['required contexts'])) {
         $type['required contexts'] = $plugin['required contexts'];
       }
+      if (isset($plugin['top level'])) {
+        $type['top level'] = $plugin['top level'];
+      }
       $plugin['content types'] = array($plugin['name'] => $type);
     }
     // Otherwise, auto discover the function based upon pattern naming.
@@ -503,7 +506,7 @@ function _ctools_content_create_add_form_info(&$form_info, $info, $plugin, $subt
  * @param $default_types
  *   A default allowed/denied status for content that isn't known about
  */
-function ctools_get_available_content_types($contexts = NULL, $has_content = FALSE, $allowed_types = NULL, $default_types = NULL) {
+function ctools_content_get_available_types($contexts = NULL, $has_content = FALSE, $allowed_types = NULL, $default_types = NULL) {
   $plugins = ctools_get_content_types();
   $available = array();
 
@@ -546,7 +549,7 @@ function ctools_get_available_content_types($contexts = NULL, $has_content = FAL
  * availability.
  *
  */
-function ctools_get_all_content_types() {
+function ctools_content_get_all_types() {
   $plugins = ctools_get_content_types();
   $available = array();
 

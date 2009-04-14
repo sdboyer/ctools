@@ -276,17 +276,13 @@ function forum_ctools_block_info($module, $delta, &$info) {
 function profile_ctools_block_info($module, $delta, &$info) {
   // Hide the author information block which isn't as rich as what we can
   // do with context.
-  return NULL;
-  $info['icon'] = 'icon_core_authorinformation.png';
-  $info['category'] = t('Core blocks');
+  $info = NULL;
 }
 
 function book_ctools_block_info($module, $delta, &$info) {
   // Hide the book navigation block which isn't as rich as what we can
   // do with context.
-  return NULL;
-  $info['icon'] = 'icon_core_booknavigation.png';
-  $info['category'] = t('Core blocks');
+  $info = NULL;
 }
 
 function blog_ctools_block_info($module, $delta, &$info) {

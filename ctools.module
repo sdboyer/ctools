@@ -44,6 +44,13 @@ function ctools_add_js($file) {
 }
 
 /**
+ * Implement hook_init to keep our global CSS at the ready.
+ */
+function ctools_init() {
+  ctools_add_css('ctools');
+}
+
+/**
  * Provide a hook passthrough to included files.
  *
  * To organize things neatly, each CTools tool gets its own toolname.$type.inc

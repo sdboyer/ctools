@@ -20,6 +20,9 @@ function ctools_custom_ctools_content_types() {
     'title' => t('New custom content'),
     'icon' => 'icon_block_custom.png',
     'description' => t('Create a completely custom piece of HTML content.'),
+    // Make this a top level category so it appears higher in UIs that support
+    // that.
+    'top level' => TRUE,
     'category' => t('Custom'),
     'defaults' => array('title' => '', 'body' => '', 'format' => FILTER_FORMAT_DEFAULT),
     // render callback is automatically deduced:

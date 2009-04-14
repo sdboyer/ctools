@@ -29,31 +29,14 @@ Drupal.CTools.AJAX.respond = function(data) {
  * specified by the href of the link.
  */
 Drupal.CTools.AJAX.clickAJAXLink = function() {
-  var url = $(this).attr('href');
-  url.replace('/nojs/', '/ajax/');
-  $.ajax({
-    type: "POST",
-    url: url,
-    data: '',
-    global: true,
-    success: Drupal.CTools.AJAX.respond,
-    error: function() { 
-      alert("An error occurred while attempting to process " + url); 
-    },
-    dataType: 'json'
-  });
-  return false;
-};
+  if ($(this).hasClass('ctools-ajaxing')) {
+    return false;
+  }
 
-/**
- * Generic replacement click handler to open the modal with the destination
- * specified by the href of the link.
- */
-Drupal.CTools.AJAX.clickAJAXButton = function() {
-  // @todo -- if no url we should take the form action and submit the
-  // form.
-  var url = Drupal.CTools.AJAX.findURL(this);
-  if (url) {
+  var url = $(this).attr('href');
+  var object = $(this);
+  $(this).addClass('ctools-ajaxing');
+  try {
     url.replace('/nojs/', '/ajax/');
     $.ajax({
       type: "POST",
@@ -64,24 +47,75 @@ Drupal.CTools.AJAX.clickAJAXButton = function() {
       error: function() { 
         alert("An error occurred while attempting to process " + url); 
       },
-      dataType: 'json'
-    });
-  }
-  else {
-    var form = $(this).parents('form');
-    url = $(form).attr('action');
-    url.replace('/nojs/', '/ajax/');
-    $(form).ajaxSubmit({
-      type: "POST",
-      url: url,
-      data: '',
-      global: true,
-      success: Drupal.CTools.AJAX.respond,
-      error: function() { 
-        alert("An error occurred while attempting to process " + url); 
+      complete: function() {
+        object.removeClass('ctools-ajaxing');
       },
       dataType: 'json'
     });
+  }
+  catch (err) {
+    alert("An error occurred while attempting to process " + url); 
+    $(this).removeClass('ctools-ajaxing');
+    return false;
+  }
+
+  return false;
+};
+
+/**
+ * Generic replacement click handler to open the modal with the destination
+ * specified by the href of the link.
+ */
+Drupal.CTools.AJAX.clickAJAXButton = function() {
+  if ($(this).hasClass('ctools-ajaxing')) {
+    return false;
+  }
+
+  var url = Drupal.CTools.AJAX.findURL(this);
+  $(this).addClass('ctools-ajaxing');
+  var object = $(this);
+  try {
+    if (url) {
+      url.replace('/nojs/', '/ajax/');
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: '',
+        global: true,
+        success: Drupal.CTools.AJAX.respond,
+        error: function() { 
+          alert("An error occurred while attempting to process " + url); 
+        },
+        complete: function() {
+          object.removeClass('ctools-ajaxing');
+        },
+        dataType: 'json'
+      });
+    }
+    else {
+      var form = $(this).parents('form');
+      url = $(form).attr('action');
+      url.replace('/nojs/', '/ajax/');
+      $(form).ajaxSubmit({
+        type: "POST",
+        url: url,
+        data: '',
+        global: true,
+        success: Drupal.CTools.AJAX.respond,
+        error: function() { 
+          alert("An error occurred while attempting to process " + url); 
+        },
+        complete: function() {
+          object.removeClass('ctools-ajaxing');
+        },
+        dataType: 'json'
+      });
+    }
+  }
+  catch (err) {
+    alert("An error occurred while attempting to process " + url); 
+    $(this).removeClass('ctools-ajaxing');
+    return false;
   }
   return false;
 };

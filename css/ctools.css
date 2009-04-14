@@ -10,3 +10,13 @@
   border: 1px solid #F0C020;
   padding: 1em;
 }
+
+a.ctools-ajaxing {
+  padding-right: 18px !important;
+  background: url(../images/status-active.gif) right center no-repeat;
+}
+
+input.ctools-ajaxing {
+  padding-right: 18px;
+  background: url(../images/status-active.gif) right center no-repeat;
+}

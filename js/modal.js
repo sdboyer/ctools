@@ -27,7 +27,7 @@ Drupal.CTools.Modal.show = function() {
     });
     $('div.ctools-modal-content .modal-content', context).css({
       'width': ($(window).width() * .8 - 25) + 'px', 
-      'height': ($(window).height() * .8 - 22) + 'px'
+      'height': ($(window).height() * .8 - 35) + 'px'
     });
   }
 
@@ -97,7 +97,12 @@ Drupal.theme.prototype.CToolsModalThrobber = function () {
 Drupal.CTools.Modal.clickAjaxLink = function() {
   // show the empty dialog right away.
   Drupal.CTools.Modal.show();
-  return Drupal.CTools.AJAX.clickAJAXLink.apply(this);
+  Drupal.CTools.AJAX.clickAJAXLink.apply(this);
+  if (!$(this).hasClass('ctools-ajaxing')) {
+    Drupal.CTools.Modal.dismiss();
+  }
+
+  return false;
 };
 
 /**
@@ -105,27 +110,52 @@ Drupal.CTools.Modal.clickAjaxLink = function() {
  * specified by the href of the link.
  */
 Drupal.CTools.Modal.clickAjaxButton = function() {
+  if ($(this).hasClass('ctools-ajaxing')) {
+    return false;
+  }
+
   Drupal.CTools.Modal.show();
-  return Drupal.CTools.AJAX.clickAJAXButton.apply(this);
+  Drupal.CTools.AJAX.clickAJAXButton.apply(this);
+  if (!$(this).hasClass('ctools-ajaxing')) {
+    Drupal.CTools.Modal.dismiss();
+  }
+
+  return false;
 };
 
 /**
  * Submit responder to do an AJAX submit on all modal forms.
  */
 Drupal.CTools.Modal.submitAjaxForm = function() {
+  if ($(this).hasClass('ctools-ajaxing')) {
+    return false;
+  }
+
   url = $(this).attr('action');
-  url.replace('/nojs/', '/ajax/');
-  $(this).ajaxSubmit({
-    type: "POST",
-    url: url,
-    data: '',
-    global: true,
-    success: Drupal.CTools.AJAX.respond,
-    error: function() { 
-      alert("An error occurred while attempting to process " + url); 
-    },
-    dataType: 'json'
-  });
+  $(this).addClass('ctools-ajaxing');
+  var object = $(this);
+  try {
+    url.replace('/nojs/', '/ajax/');
+    $(this).ajaxSubmit({
+      type: "POST",
+      url: url,
+      data: '',
+      global: true,
+      success: Drupal.CTools.AJAX.respond,
+      error: function() { 
+        alert("An error occurred while attempting to process " + url); 
+      },
+      complete: function() {
+        object.removeClass('ctools-ajaxing');
+      },
+      dataType: 'json'
+    });
+  }
+  catch (err) {
+    alert("An error occurred while attempting to process " + url); 
+    $(this).removeClass('ctools-ajaxing');
+    return false;
+  }
   return false;
 }
 
