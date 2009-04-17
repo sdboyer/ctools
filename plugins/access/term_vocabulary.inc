@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_arguments().
+ * Implementation of specially named hook_ctools_access().
  */
 function ctools_term_vocabulary_ctools_access() {
   $args['term_vocabulary'] = array(

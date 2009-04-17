@@ -93,8 +93,12 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
     // Automatically use the modal tool if set to true.
     if (!empty($form_state['modal'])) {
       ctools_include('modal');
-      $title = isset($form_state['title']) ? $form_state['title'] : $info['title'];
-      $form_state['commands'][] = ctools_modal_command_display($title, $output);
+      if (empty($form_state['title'])) {
+        $form_state['title'] = $info['title'];
+      }
+
+      // This overwrites any previous commands.
+      $form_state['commands'] = ctools_modal_form_render($form_state, $output);
     }
   }
   else  {

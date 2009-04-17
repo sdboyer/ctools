@@ -18,6 +18,8 @@ function ctools_node_add_form_ctools_contexts() {
     'settings form' => 'ctools_context_node_add_form_settings_form',
     'keyword' => 'node_add',
     'context name' => 'node_add_form',
+    'convert list' => array('type' => t('Node type')),
+    'convert' => 'ctools_context_node_add_form_convert',
   );
   return $args;
 }
@@ -93,3 +95,12 @@ function ctools_context_node_add_form_settings_form($conf, $external = FALSE) {
   return $form;
 }
 
+/**
+ * Convert a context into a string.
+ */
+function ctools_context_node_add_form_convert($context, $type) {
+  switch ($type) {
+    case 'type':
+      return $context->data;
+  }
+}

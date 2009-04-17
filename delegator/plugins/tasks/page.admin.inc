@@ -1295,7 +1295,7 @@ function delegator_page_break_lock_subtask(&$form_state, $name) {
   delegator_get_task('page');
   $page = delegator_page_load($name);
 
-  $form_state['task'] = delegator_get_task($task_name);
+  $form_state['task'] = delegator_get_task($page->task);
   $form_state['name'] = $name;
 
   ctools_include('object-cache');

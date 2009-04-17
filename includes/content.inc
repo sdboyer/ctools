@@ -197,8 +197,10 @@ function ctools_content_get_subtype($type, $subtype_id) {
  * Ensure minimal required settings on a content subtype exist.
  */
 function ctools_content_prepare_subtype(&$subtype, $plugin) {
-  if (empty($subtype['path'])) {
-    $subtype['path'] = $plugin['path'];
+  foreach (array('path', 'js', 'css') as $key) {
+    if (!isset($subtype[$key]) && isset($plugin[$key])) {
+      $subtype[$key] = $plugin[$key];
+    }
   }
 }
 
@@ -236,7 +238,7 @@ function ctools_content_prepare_subtype(&$subtype, $plugin) {
  *   - subtype: The content subtype. These two may be used together as
  *     module-delta for block style rendering.
  */
-function ctools_content_render($type, $subtype, $conf, $args = array(), $context = array(), $incoming_content = '') {
+function ctools_content_render($type, $subtype, $conf, $keywords = array(), $args = array(), $context = array(), $incoming_content = '') {
   if (is_array($type)) {
     $plugin = $type;
   }
@@ -245,13 +247,57 @@ function ctools_content_render($type, $subtype, $conf, $args = array(), $context
   }
 
   if ($function = ctools_plugin_get_function($plugin, 'render callback')) {
-    $content = $function($subtype, $conf, $args, $context, $incoming_content);
+    if (empty($subtype['all contexts'])) {
+      $pane_context = ctools_content_select_context($type, $subtype, $conf, $context);
+      // FALSE means rendering was forbidden.
+      if ($pane_context === FALSE) {
+        return FALSE;
+      }
+    }
+    else {
+      $pane_context = $context;
+    }
+
+    $content = $function($subtype, $conf, $args, $pane_context, $incoming_content);
+
+    // Set up some defaults and other massaging on the content before we hand
+    // it back to the caller.
     if (!isset($content->type)) {
       $content->type = $plugin['name'];
     }
 
     if (!isset($content->subtype)) {
       $content->subtype = $subtype;
+    }
+
+    // Override the title if configured to
+    if (!empty($conf['override_title'])) {
+      // Give previous title as an available substitution here.
+      $keywords['%title'] = empty($content->title) ? '' : $content->title;
+      $content->title = $conf['override_title_text'];
+    }
+
+    if (!empty($content->title)) {
+      // Perform substitutions
+      if (!empty($keywords)) {
+        $content->title = strtr($content->title, $keywords);
+      }
+
+      // Sterilize the title
+      $content->title = filter_xss_admin($content->title);
+
+      // If a link is specified, populate.
+      if (!empty($content->title_link)) {
+        if (!is_array($content->title_link)) {
+          $url = array('href' => $content->title_link);
+        }
+        else {
+          $url = $content->title_link;
+        }
+        // set defaults so we don't bring up notices
+        $url += array('href' => '', 'attributes' => NULL, 'query' => NULL, 'fragment' => NULL, 'absolute' => NULL, 'html' => TRUE);
+        $content->title = l($content->title, $url['href'], $url);
+      }
     }
 
     return $content;
@@ -282,7 +328,17 @@ function ctools_content_admin_title($type, $subtype, $conf, $context = NULL) {
   }
 
   if ($function = ctools_plugin_get_function($plugin, 'admin title')) {
-    return $function($subtype, $conf, $context);
+    if (empty($subtype['all contexts'])) {
+      $pane_context = ctools_content_select_context($type, $subtype, $conf, $context);
+      // FALSE means rendering was forbidden.
+      if ($pane_context === FALSE) {
+        return FALSE;
+      }
+    }
+    else {
+      $pane_context = $context;
+    }
+    return $function($subtype, $conf, $pane_context);
   }
   else if (isset($plugin['admin title'])) {
     return $plugin['admin title'];
@@ -426,10 +482,11 @@ function ctools_content_configure_form_defaults(&$form, &$form_state) {
  * @return
  *   If this function returns false, no form exists.
  */
-function ctools_content_form($op, $form_info, &$form_state, $plugin, $subtype, &$conf, $step = NULL) {
+function ctools_content_form($op, $form_info, &$form_state, $plugin, $subtype_name, $subtype, &$conf, $step = NULL) {
   $form_state += array(
     'plugin' => $plugin,
     'subtype' => $subtype,
+    'subtype_name' => $subtype_name,
     'conf' => &$conf,
     'op' => $op,
   );
@@ -440,11 +497,11 @@ function ctools_content_form($op, $form_info, &$form_state, $plugin, $subtype, &
 
   // Turn the forms defined in the plugin into the format the wizard needs.
   if ($op == 'add' && isset($plugin['add form'])) {
-    _ctools_content_create_add_form_info($form_info, $plugin['add form'], $plugin, $subtype, $op);
+    _ctools_content_create_form_info($form_info, $plugin['add form'], $plugin, $subtype, $op);
   }
   // Use the edit form for the add form if add form was completely left off.
   else if (isset($plugin['edit form'])) {
-    _ctools_content_create_add_form_info($form_info, $plugin['edit form'], $plugin, $subtype, $op);
+    _ctools_content_create_form_info($form_info, $plugin['edit form'], $plugin, $subtype, $op);
   }
 
   if (empty($form_info['order'])) {
@@ -456,9 +513,12 @@ function ctools_content_form($op, $form_info, &$form_state, $plugin, $subtype, &
 
 }
 
-function _ctools_content_create_add_form_info(&$form_info, $info, $plugin, $subtype, $op) {
+function _ctools_content_create_form_info(&$form_info, $info, $plugin, $subtype, $op) {
   if (is_string($info)) {
-    if ($op == 'add') {
+    if (empty($subtype['title'])) {
+      $title = t('Configure');
+    }
+    else if ($op == 'add') {
       $title = t('Configure new !subtype_title', array('!subtype_title' => $subtype['title']));
     }
     else {
@@ -478,17 +538,29 @@ function _ctools_content_create_add_form_info(&$form_info, $info, $plugin, $subt
     $form_info['forms'] = array();
     $count = 0;
     $base = 'step';
+    $wrapper = NULL;
     foreach ($info as $form_id => $title) {
       // @todo -- docs say %title can be used to sub for the admin title.
       $step = $base . ++$count;
+      if (empty($wrapper)) {
+        $wrapper = $step;
+      }
+
+      if (is_array($title)) {
+        if (!empty($title['default'])) {
+          $wrapper = $step;
+        }
+        $title = $title['title'];
+      }
+
       $form_info['order'][$step] = $title;
       $form_info['forms'][$step] = array(
         'title' => $title,
         'form id' => $form_id,
       );
-      if ($count == 1) {
-        $form_info['forms'][$step]['wrapper'] = 'ctools_content_configure_form_defaults';
-      }
+    }
+    if ($wrapper) {
+      $form_info['forms'][$wrapper]['wrapper'] = 'ctools_content_configure_form_defaults';
     }
   }
 }

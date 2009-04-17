@@ -20,6 +20,12 @@ function ctools_term_ctools_contexts() {
     'keyword' => 'term',
     'no ui' => TRUE,
     'context name' => 'term',
+    'convert list' => array(
+      'id' => t('Term ID'),
+      'name' => t('Term name'),
+      'vid' => t('Vocabulary ID'),
+    ),
+    'convert' => 'ctools_context_term_convert',
   );
   return $args;
 }
@@ -45,5 +51,19 @@ function ctools_context_create_term($empty, $data = NULL, $conf = FALSE) {
     $context->title    = $data->name;
     $context->argument = $data->tid;
     return $context;
+  }
+}
+
+/**
+ * Convert a context into a string.
+ */
+function ctools_context_term_convert($context, $type) {
+  switch ($type) {
+    case 'tid':
+      return $context->data->tid;
+    case 'name':
+      return $context->data->name;
+    case 'vid':
+      return $context->data->vid;
   }
 }

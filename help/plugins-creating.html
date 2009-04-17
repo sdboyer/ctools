@@ -58,7 +58,7 @@ The following information can be specified:
 <dt>cache</dt>
 <dd>If set to TRUE, the results of ctools_get_plugins will be cached in the 'cache' table, thus preventing .inc files from being loaded. ctools_get_plugins looking for a specific plugin will always load the appropriate .inc file.</dd>
 <dt>defaults</dt>
-<dd>An array of defaults that should be applied to each plugin; this can be used to ensure that every plugin has the basic data necessary. These defaults will not ovewrite data supplied by the plugin.</dd>
+<dd>An array of defaults that should be applied to each plugin; this can be used to ensure that every plugin has the basic data necessary. These defaults will not ovewrite data supplied by the plugin. This could also be a function name, in which case the callback will be used to provide defaults.</dd>
 <dt>load themes</dt>
 <dd>If set to TRUE, then plugins can be supplied by themes as well as modules. If this is the case, all themes that are currently enabled will provide a plugin: NOTE: Due to a slight UI bug in Drupal, it is possible for the default theme to be active but not enabled. If this is the case, that theme will NOT provide plugins, so if you are using this feature, be sure to document that issue. Also, themes set via $custom_theme do not necessarily need to be enabled, but the system has no way of knowing what those themes are, so the enabled flag is the only true method of identifying which themes can provide layouts.</dd>
 <dt>hook</dt>

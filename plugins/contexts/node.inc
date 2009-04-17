@@ -21,6 +21,8 @@ function ctools_node_ctools_contexts() {
     'settings form submit' => 'ctools_context_node_settings_form_submit',
     'keyword' => 'node',
     'context name' => 'node',
+    'convert list' => 'ctools_context_node_convert_list',
+    'convert' => 'ctools_context_node_convert',
   );
   return $args;
 }
@@ -31,7 +33,7 @@ function ctools_node_ctools_contexts() {
  */
 function ctools_context_create_node($empty, $data = NULL, $conf = FALSE) {
   $types = array('node');
-  // FIXME this is broken when called from ctools_page's render process, through ctools_context_load_contexts(); it passes in $conf as TRUE.
+
   if (!empty($conf['types'])) {
     foreach ($conf['types'] as $type) {
       if ($type) {
@@ -174,3 +176,27 @@ function ctools_context_node_settings_form_submit($form, &$form_values, &$form_s
   unset($form_values['set_identifier']);
 }
 
+/**
+ * Provide a list of ways that this context can be converted to a string.
+ */
+function ctools_context_node_convert_list() {
+  return array(
+    'nid' => t('Node ID'),
+    'title' => t('Node title'),
+    'uid' => t('Author UID'),
+  );
+}
+
+/**
+ * Convert a context into a string.
+ */
+function ctools_context_node_convert($context, $type) {
+  switch ($type) {
+    case 'nid':
+      return $context->data->nid;
+    case 'title':
+      return $context->data->title;
+    case 'uid':
+      return $context->data->uid;
+  }
+}

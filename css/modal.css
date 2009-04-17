@@ -60,7 +60,7 @@ div.ctools-modal-content .modal-content .modal-throbber-wrapper img {
 
 /** modal forms CSS **/
 div.ctools-modal-content .form-item label {
-  width: 8em;
+  width: 15em;
   float: left;
 }
 
@@ -91,7 +91,8 @@ div.ctools-modal-content .modal-form .form-checkboxes {
 }
 
 div.ctools-modal-content .resizable-textarea {
-  width: 90%;
-  margin-left: 8em;
+  width: auto;
+  margin-left: 15em;
+  margin-right: 5em;
 }
 

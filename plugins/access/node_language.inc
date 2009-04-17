@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_arguments().
+ * Implementation of specially named hook_ctools_access().
  */
 function ctools_node_language_ctools_access() {
   if (module_exists('locale')) {

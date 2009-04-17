@@ -27,6 +27,7 @@ function ctools_custom_ctools_content_types() {
     'defaults' => array('title' => '', 'body' => '', 'format' => FILTER_FORMAT_DEFAULT),
     // render callback is automatically deduced:
     // 'render callback' => 'ctools_custom_content_type_render',
+    'js' => array('misc/autocomplete.js', 'misc/textarea.js', 'misc/collapse.js'),
   );
 }
 

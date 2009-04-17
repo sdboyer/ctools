@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_arguments().
+ * Implementation of specially named hook_ctools_access().
  */
 function ctools_node_access_ctools_access() {
   $args['node_access'] = array(

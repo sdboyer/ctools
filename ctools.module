@@ -204,3 +204,16 @@ function ctools_break_phrase($str) {
 
   return $object;
 }
+
+/**
+ * A theme preprocess function to automatically allow panels-based node
+ * templates based upon input when the panel was configured.
+ */
+function ctools_preprocess_node(&$vars) {
+  // The 'panel_identifier' attribute of the node is added when the pane is
+  // rendered.
+  if (!empty($vars['node']->panel_identifier)) {
+    $vars['panel_identifier'] = check_plain($vars['node']->panel_identifier);
+    $vars['template_files'][] = 'node-panel-' . check_plain($vars['node']->panel_identifier);
+  }
+}

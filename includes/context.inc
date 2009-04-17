@@ -255,6 +255,8 @@ function ctools_context_selector($contexts, $required, $default) {
 
 function _ctools_context_selector($contexts, $required, $default, $num = 0) {
   $filtered = ctools_context_filter($contexts, $required);
+  dsm($required);
+  dsm($filtered);
   $count = count($filtered);
 
   $form = array();
@@ -287,6 +289,155 @@ function _ctools_context_selector($contexts, $required, $default, $num = 0) {
       '#default_value' => $default,
     );
   }
+}
+
+/**
+ * Create a select box to choose possible contexts.
+ *
+ * This only creates a selector if there is actually a choice; if there
+ * is only one possible context, that one is silently assigned.
+ *
+ * If an array of required contexts is provided, one selector will be
+ * provided for each context.
+ *
+ * @param $contexts
+ *   A keyed array of all available contexts.
+ * @param $required
+ *   The required context object or array of objects.
+ *
+ * @return
+ *   A form element, or NULL if there are no contexts that satisfy the
+ *   requirements.
+ */
+function ctools_context_converter_selector($contexts, $required, $default) {
+  if (is_array($required)) {
+    $result = array('#tree' => TRUE);
+    $count = 1;
+    foreach ($required as $id => $r) {
+      $result[] = _ctools_context_converter_selector($contexts, $r, isset($default[$id]) ? $default[$id] : '', $count++);
+    }
+    return $result;
+  }
+
+  return _ctools_context_converter_selector($contexts, $required, $default);
+}
+
+function _ctools_context_converter_selector($contexts, $required, $default, $num = 0) {
+  $filtered = ctools_context_filter($contexts, $required);
+  $count = count($filtered);
+
+  $form = array();
+
+  if ($count > 1) {
+    // If there's more than one to choose from, create a select widget.
+    $options = array();
+    foreach ($filtered as $cid => $context) {
+      if ($context->type == 'any') {
+        $options[''] = t('No context');
+        continue;
+      }
+      $key = $context->get_identifier();
+      if ($converters = ctools_context_get_converters($cid, $context)) {
+        $options[$key] = $converters;
+      }
+    }
+    if (empty($options)) {
+      return array(
+        '#type' => 'value',
+        '#value' => 'any',
+      );
+    }
+    if (!empty($required->title)) {
+      $title = $required->title;
+    }
+    else {
+      $title = $num ? t('Context %count', array('%count' => $num)) : t('Context');
+    }
+
+    return array(
+      '#type' => 'select',
+      '#options' => $options,
+      '#title' => $title,
+      '#description' => t('Please choose which context and how you would like it converted.'),
+      '#default_value' => $default,
+    );
+  }
+}
+
+/**
+ * Get a list of converters available for a given context.
+ */
+function ctools_context_get_converters($cid, $context) {
+  if (empty($context->plugin)) {
+    return;
+  }
+
+  return _ctools_context_get_converters($cid, $context->plugin);
+}
+
+/**
+ * Get a list of converters available for a given context.
+ */
+function _ctools_context_get_converters($id, $plugin_name) {
+  $plugin = ctools_get_context($plugin_name);
+  if (empty($plugin['convert list'])) {
+    return;
+  }
+
+  $converters = array();
+  if (is_array($plugin['convert list'])) {
+    $converters = $plugin['convert list'];
+  }
+  else if ($function = ctools_plugin_get_function($plugin, 'convert list')) {
+    $converters = (array) $function();
+  }
+
+  foreach (module_implements('ctools_context_convert_list') as $module) {
+    $function = $module . '_ctools_context_convert_list';
+    $function($plugin, $converters);
+  }
+
+  // Now, change them all to include the plugin:
+  $return = array();
+  foreach ($converters as $key => $title) {
+    $return[$id . '.' . $key] = $title;
+  }
+
+  natcasesort($return);
+  return $return;
+}
+
+/**
+ * Get a list of all contexts + converters available.
+ */
+function ctools_context_get_all_converters() {
+  $contexts = ctools_get_contexts();
+  $converters = array();
+  foreach ($contexts as $name => $context) {
+    $context_converters = _ctools_context_get_converters($name, $name);
+    if ($context_converters) {
+      $converters[$context['title']] = $context_converters;
+    }
+  }
+
+  return $converters;
+}
+
+/**
+ * Let the context convert an argument based upon the converter that was given.
+ */
+function ctools_context_convert_context($context, $converter) {
+  $value = $context->argument;
+  if ($function = ctools_plugin_load_function('ctools', 'contexts', $context->plugin, 'convert')) {
+    $value = $function($context, $converter);
+  }
+
+  foreach (module_implements('ctools_context_converter_alter') as $module) {
+    $function = $module . '_ctools_context_convert_list';
+    $function($context, $converter, $value);
+  }
+
+  return $value;
 }
 
 /**

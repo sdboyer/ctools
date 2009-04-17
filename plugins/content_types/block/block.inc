@@ -223,7 +223,7 @@ function ctools_block_content_type_admin_title($subtype, $conf) {
 function ctools_block_content_type_admin_info($subtype, $conf) {
   list($module, $delta) = explode('-', $subtype, 2);
   $block = (object) module_invoke($module, 'block', 'view', $delta);
-  if (!empty($block)) {
+  if (!empty($block) && !empty($block->subject)) {
     $block->title = $block->subject;
     return $block;
   }

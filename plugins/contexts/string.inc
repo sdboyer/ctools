@@ -1,7 +1,6 @@
 <?php
 // $Id$
 
-
 /**
  * @file
  *
@@ -19,6 +18,8 @@ function ctools_string_ctools_contexts() {
     'keyword' => 'string',
     'no ui' => TRUE,
     'context name' => 'string',
+    'convert list' => array('raw' => t('Raw string')),
+    'convert' => 'ctools_context_string_convert',
   );
   return $args;
 }
@@ -42,4 +43,11 @@ function ctools_context_create_string($empty, $data = NULL, $conf = FALSE) {
     $context->data = $data;
     return $context;
   }
+}
+
+/**
+ * Convert a context into a string.
+ */
+function ctools_context_string_convert($context, $type) {
+  return $context->data;
 }
