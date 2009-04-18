@@ -16,7 +16,7 @@ function ctools_content_theme(&$theme) {
   $plugins = ctools_get_content_types();
   foreach ($plugins as $plugin) {
     if (ctools_plugin_get_function($plugin, 'hook theme')) {
-      $function($theme);
+      $function($theme, $plugin);
     }
   }
 }

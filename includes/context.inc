@@ -255,8 +255,6 @@ function ctools_context_selector($contexts, $required, $default) {
 
 function _ctools_context_selector($contexts, $required, $default, $num = 0) {
   $filtered = ctools_context_filter($contexts, $required);
-  dsm($required);
-  dsm($filtered);
   $count = count($filtered);
 
   $form = array();

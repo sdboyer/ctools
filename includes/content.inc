@@ -72,8 +72,8 @@ function ctools_content_defaults($info, &$plugin) {
         'category' => $plugin['category'],
       );
 
-      if (isset($plugin['required contexts'])) {
-        $type['required contexts'] = $plugin['required contexts'];
+      if (isset($plugin['required context'])) {
+        $type['required context'] = $plugin['required context'];
       }
       if (isset($plugin['top level'])) {
         $type['top level'] = $plugin['top level'];
@@ -187,9 +187,16 @@ function ctools_content_get_subtype($type, $subtype_id) {
     if (isset($subtypes[$subtype_id])) {
       $subtype = $subtypes[$subtype_id];
     }
+    // If there's only 1 and we somehow have the wrong subtype ID, do not
+    // care. Return the proper subtype anyway.
+    if (empty($subtype) && !empty($plugin['single'])) {
+      $subtype = current($subtypes);
+    }
   }
 
-  ctools_content_prepare_subtype($subtype, $plugin);
+  if ($subtype) {
+    ctools_content_prepare_subtype($subtype, $plugin);
+  }
   return $subtype;
 }
 
@@ -247,15 +254,9 @@ function ctools_content_render($type, $subtype, $conf, $keywords = array(), $arg
   }
 
   if ($function = ctools_plugin_get_function($plugin, 'render callback')) {
-    if (empty($subtype['all contexts'])) {
-      $pane_context = ctools_content_select_context($type, $subtype, $conf, $context);
-      // FALSE means rendering was forbidden.
-      if ($pane_context === FALSE) {
-        return FALSE;
-      }
-    }
-    else {
-      $pane_context = $context;
+    $pane_context = ctools_content_select_context($plugin, $subtype, $conf, $context);
+    if ($pane_context === FALSE) {
+      return;
     }
 
     $content = $function($subtype, $conf, $args, $pane_context, $incoming_content);
@@ -328,16 +329,11 @@ function ctools_content_admin_title($type, $subtype, $conf, $context = NULL) {
   }
 
   if ($function = ctools_plugin_get_function($plugin, 'admin title')) {
-    if (empty($subtype['all contexts'])) {
-      $pane_context = ctools_content_select_context($type, $subtype, $conf, $context);
-      // FALSE means rendering was forbidden.
-      if ($pane_context === FALSE) {
-        return FALSE;
-      }
+    $pane_context = ctools_content_select_context($plugin, $subtype, $conf, $context);
+    if ($pane_context === FALSE) {
+      return t('@type:@subtype will not display due to missing context', array('@type' => $plugin['name'], '@subtype' => '@subtype'));
     }
-    else {
-      $pane_context = $context;
-    }
+
     return $function($subtype, $conf, $pane_context);
   }
   else if (isset($plugin['admin title'])) {
@@ -435,8 +431,10 @@ function ctools_content_configure_form_defaults(&$form, &$form_state) {
   $contexts = isset($form_state['contexts']) ? $form_state['contexts'] : NULL;
   $conf = $form_state['conf'];
 
+  $add_submit = FALSE;
   if (!empty($subtype['required context']) && is_array($contexts)) {
     $form['context'] = ctools_context_selector($contexts, $subtype['required context'], isset($conf['context']) ? $conf['context'] : array());
+    $add_submit = TRUE;
   }
 
   // Unless we're not allowed to override the title on this content type, add this
@@ -467,9 +465,27 @@ function ctools_content_configure_form_defaults(&$form, &$form_state) {
         '#value' => t('You may use %keywords from contexts, as well as %title to contain the original title.'),
       );
     }
+    $add_submit = TRUE;
   }
 
+  if ($add_submit) {
+    // '#submit' is already set up due to the wizard.
+    $form['#submit'][] = 'ctools_content_configure_form_defaults_submit';
+  }
   return $form;
+}
+
+/**
+ * Submit handler to store context/title override info.
+ */
+function ctools_content_configure_form_defaults_submit(&$form, &$form_state) {
+  if (isset($form_state['values']['context'])) {
+    $form_state['conf']['context'] = $form_state['values']['context'];
+  }
+  if (isset($form_state['values']['override_title'])) {
+    $form_state['conf']['override_title'] = $form_state['values']['override_title'];
+    $form_state['conf']['override_title_text'] = $form_state['values']['override_title_text'];
+  }
 }
 
 /**
@@ -637,8 +653,8 @@ function ctools_content_get_all_types() {
 /**
  * Select the context to be used for a piece of content, based upon config.
  *
- * @param $type
- *   The type of the content.
+ * @param $plugin
+ *   The content plugin
  * @param $subtype
  *   The subtype of the content.
  * @param $conf
@@ -650,16 +666,24 @@ function ctools_content_get_all_types() {
  *   The matching contexts or NULL if none or necessary, or FALSE if
  *   requirements can't be met.
  */
-function ctools_content_select_context($type, $subtype, $conf, $contexts) {
+function ctools_content_select_context($plugin, $subtype, $conf, $contexts) {
   // Identify which of our possible contexts apply.
   if (empty($subtype)) {
     return;
   }
 
-  $subtype_info = ctools_content_get_subtype($type, $subtype);
+  $subtype_info = ctools_content_get_subtype($plugin, $subtype);
+  if (empty($subtype_info)) {
+    return FALSE;
+  }
+
+  if (!empty($subtype_info['all contexts']) || !empty($plugin['all contexts'])) {
+    return $contexts;
+  }
+
   // If the content requires a context, fetch it; if no context is returned,
   // do not display the pane.
-  if (empty($subtype_info) || empty($subtype_info['required context'])) {
+  if (empty($subtype_info['required context'])) {
     return;
   }
 
