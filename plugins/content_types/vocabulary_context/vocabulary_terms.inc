@@ -15,7 +15,6 @@ function ctools_vocabulary_terms_ctools_content_types() {
       'category' => t('Vocabulary'),
       'defaults' => array('max_depth' => 0, 'tree' => 1),
     );
-    return $items;
   }
 }
 

@@ -5,7 +5,7 @@
  * Callback function to supply a list of content types.
  */
 function ctools_node_content_ctools_content_types() {
-  $items['node_content'] = array(
+  return array(
     'single' => TRUE,
     'title' => t('Node content'),
     'icon' => 'icon_node.png',
@@ -24,7 +24,6 @@ function ctools_node_content_ctools_content_types() {
       'leave_node_title' => FALSE,
     ),
   );
-  return $items;
 }
 
 /**

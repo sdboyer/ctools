@@ -14,7 +14,6 @@ function panels_term_list_panels_content_types() {
     'category' => t('Taxonomy term'),
     'defaults' => array('title' => '', 'type' => 'child', 'list_type' => 'ul'),
   );
-  return $items;
 }
 
 function ctools_term_list_content_type_render($subtype, $conf, $panel_args, $context) {

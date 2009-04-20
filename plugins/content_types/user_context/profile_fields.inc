@@ -7,7 +7,7 @@
  */
 function panels_profile_fields_panels_content_types() {
   if (module_exists('profile') && !is_null(profile_categories())) {
-    $items['profile_fields'] = array(
+    return array(
       'single' => TRUE,
       'title' => t('Profile category'),
       'icon' => 'icon_user.png',
@@ -17,7 +17,6 @@ function panels_profile_fields_panels_content_types() {
       'defaults' => array('title' => '', 'category' => '', 'empty' => ''),
       'hook theme' => 'ctools_profile_fields_content_type_theme',
     );
-    return $items;
   }
 }
 

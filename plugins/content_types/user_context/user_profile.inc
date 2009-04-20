@@ -13,7 +13,6 @@ function ctools_user_profile_ctools_content_types() {
     'required context' => new ctools_context_required(t('User'), 'user'),
     'category' => t('User'),
   );
-  return $items;
 }
 
 function ctools_user_profile_content_type_render($subtype, $conf, $panel_args, $context) {
