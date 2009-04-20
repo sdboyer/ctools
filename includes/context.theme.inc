@@ -122,6 +122,8 @@ function theme_ctools_context_list($object, $header = '') {
   $output = '';
   $count  = 1;
 
+  $contexts = ctools_context_load_contexts($object);
+
   // Describe 'built in' contexts.
   if (!empty($object->base_contexts)) {
     foreach ($object->base_contexts as $id => $context) {
@@ -129,7 +131,12 @@ function theme_ctools_context_list($object, $header = '') {
       $output .= '<td valign="top"><em>' . t('Built in context') . '</em></td>';
       $desc = check_plain($context->identifier);
       if (isset($context->keyword)) {
-        $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $context->keyword)) . '</div>';
+        $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $context->keyword));
+        foreach (ctools_context_get_converters('%' . $context->keyword . ':', $context) as $keyword => $title) {
+          $desc .= '<br/>' . t('@keyword --&gt; @title', array('@context' => $keyword, '@title' => $title));
+        }
+        $desc .= '</div>';
+
       }
       if (isset($context->description)) {
         $desc .= '<div class="description">' . filter_xss_admin($context->description) . '</div>';
@@ -148,7 +155,11 @@ function theme_ctools_context_list($object, $header = '') {
       $output .= '<td valign="top"><em>' . t('Argument @count', array('@count' => $count)) . '</em></td>';
       $desc = check_plain($argument['identifier']);
       if (isset($argument['keyword'])) {
-        $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $argument['keyword'])) . '</div>';
+        $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $argument['keyword']));
+        foreach (ctools_context_get_converters('%' . $argument['keyword'] . ':', $contexts[ctools_context_id($argument, 'argument')]) as $keyword => $title) {
+          $desc .= '<br/>' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
+        }
+        $desc .= '</div>';
       }
       $output .= '<td>' . $desc . '</td>';
       $output .= '</tr>';
@@ -165,7 +176,11 @@ function theme_ctools_context_list($object, $header = '') {
       $output .= '<td valign="top"><em>' . t('Context @count', array('@count' => $count)) . '</em></td>';
       $desc = check_plain($context['identifier']);
       if (isset($context['keyword'])) {
-        $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $context['keyword'])) . '</div>';
+        $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $context['keyword']));
+        foreach (ctools_context_get_converters('%' . $context['keyword'] . ':', $contexts[ctools_context_id($context, 'context')]) as $keyword => $title) {
+          $desc .= '<br/>' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
+        }
+        $desc .= '</div>';
       }
       $output .= '<td>' . $desc . '</td>';
       $output .= '</tr>';
@@ -181,7 +196,11 @@ function theme_ctools_context_list($object, $header = '') {
       $output .= '<td valign="top"><em>' . t('From "@title"', array('@title' => $titles[$relationship['context']])) . '</em></td>';
       $desc = check_plain($relationship['identifier']);
       if (isset($relationship['keyword'])) {
-        $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $relationship['keyword'])) . '</div>';
+        $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $relationship['keyword']));
+        foreach (ctools_context_get_converters('%' . $relationship['keyword'] . ':', $contexts[ctools_context_id($relationship, 'relationship')]) as $keyword => $title) {
+          $desc .= '<br/>' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
+        }
+        $desc .= '</div>';
       }
       $output .= '<td>' . $desc . '</td>';
       $output .= '</tr>';

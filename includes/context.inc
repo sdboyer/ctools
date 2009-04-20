@@ -335,7 +335,7 @@ function _ctools_context_converter_selector($contexts, $required, $default, $num
         continue;
       }
       $key = $context->get_identifier();
-      if ($converters = ctools_context_get_converters($cid, $context)) {
+      if ($converters = ctools_context_get_converters($cid . '.', $context)) {
         $options[$key] = $converters;
       }
     }
@@ -367,7 +367,7 @@ function _ctools_context_converter_selector($contexts, $required, $default, $num
  */
 function ctools_context_get_converters($cid, $context) {
   if (empty($context->plugin)) {
-    return;
+    return array();
   }
 
   return _ctools_context_get_converters($cid, $context->plugin);
@@ -379,7 +379,7 @@ function ctools_context_get_converters($cid, $context) {
 function _ctools_context_get_converters($id, $plugin_name) {
   $plugin = ctools_get_context($plugin_name);
   if (empty($plugin['convert list'])) {
-    return;
+    return array();
   }
 
   $converters = array();
@@ -398,7 +398,7 @@ function _ctools_context_get_converters($id, $plugin_name) {
   // Now, change them all to include the plugin:
   $return = array();
   foreach ($converters as $key => $title) {
-    $return[$id . '.' . $key] = $title;
+    $return[$id . $key] = $title;
   }
 
   natcasesort($return);
@@ -412,7 +412,7 @@ function ctools_context_get_all_converters() {
   $contexts = ctools_get_contexts();
   $converters = array();
   foreach ($contexts as $name => $context) {
-    $context_converters = _ctools_context_get_converters($name, $name);
+    $context_converters = _ctools_context_get_converters($name . '.', $name);
     if ($context_converters) {
       $converters[$context['title']] = $context_converters;
     }
@@ -514,24 +514,44 @@ function ctools_context_create_empty($type) {
 }
 
 /**
- * Fetch keywords for use in string substitutions.
- *
- * @param $contexts
- *   An array of contexts.
- *
- * @return
- *   An array of keyword substitutions suitable for @code{strtr()}
+ * Perform keyword and context substitutions.
  */
-function ctools_context_get_keywords($contexts) {
-  $keywords = array();
-  if (!empty($contexts)) {
-    foreach ($contexts as $id => $context) {
-      if ($keyword = $context->get_keyword()) {
-        $keywords["%$keyword"] = $context->get_title();
+function ctools_context_keyword_substitute($string, $keywords, $contexts) {
+  // Ensure a default keyword exists:
+  $keywords['%%'] = '%';
+
+  // Match contexts to the base keywords:
+  $context_keywords = array();
+  foreach ($contexts as $context) {
+    if (isset($context->keyword)) {
+      $context_keywords[$context->keyword] = $context;
+    }
+  }
+
+  // Look for context matches we we only have to convert known matches.
+  $matches = array();
+  if (preg_match_all('/%([a-zA-Z%:]+)/us', $string, $matches)) {
+    foreach ($matches[1] as $keyword) {
+      // Ignore anything it finds with %%.
+      if ($keyword[0] == '%') {
+        continue;
+      }
+
+      if (strpos($keyword, ':')) {
+        list($context, $converter) = explode(':', $keyword);
+        if (isset($context_keywords[$context])) {
+          $keywords['%' . $keyword] = ctools_context_convert_context($context_keywords[$context], $converter);
+        }
+      }
+      else {
+        if (isset($context_keywords[$keyword])) {
+          $keywords['%' . $keyword] = $context_keywords[$keyword]->title;
+        }
       }
     }
   }
-  return $keywords;
+
+  return strtr($string, $keywords);
 }
 
 /**

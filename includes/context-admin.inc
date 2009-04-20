@@ -790,7 +790,7 @@ function ctools_edit_argument_form(&$form_state) {
     '#type' => 'textfield',
     '#title' => t('Title'),
     '#default_value' => $arg['title'],
-    '#description' => t('Enter a title to use when this argument is present. You may use %KEYWORD substitution, where the keyword is specified by the administrator.'),
+    '#description' => t('Enter a title to use when this argument is present. You may use %KEYWORD substitution, where the keyword is specified below.'),
   );
 
   $form['argument']['identifier'] = array(

@@ -21,7 +21,7 @@ function ctools_term_ctools_contexts() {
     'no ui' => TRUE,
     'context name' => 'term',
     'convert list' => array(
-      'id' => t('Term ID'),
+      'tid' => t('Term ID'),
       'name' => t('Term name'),
       'vid' => t('Vocabulary ID'),
     ),

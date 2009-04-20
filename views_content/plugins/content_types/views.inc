@@ -434,7 +434,7 @@ function views_content_views_content_type_admin_info($subtype, $conf, $contexts)
       }
 
       if (!empty($contexts[$cid])) {
-        $converters = ctools_context_get_converters($cid, $contexts[$cid]);
+        $converters = ctools_context_get_converters($cid . '.', $contexts[$cid]);
         $converter = !empty($converters[$context_info]) ? $converters[$context_info] : t('Default');
         $block->content .= '<li>' . t('Argument @arg using context @context converted into @converter', array(
           '@arg' => $argument->ui_name(), '@context' => $contexts[$cid]->get_identifier(),

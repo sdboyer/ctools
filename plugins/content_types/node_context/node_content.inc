@@ -122,6 +122,8 @@ function ctools_node_content_render_node($node, $conf) {
  * Returns an edit form for the custom type.
  */
 function ctools_node_content_content_type_edit_form(&$form, &$form_state) {
+  $conf = $form_state['conf'];
+
   $form['link'] = array(
     '#title' => t('Link title to node'),
     '#type' => 'checkbox',
@@ -163,7 +165,7 @@ function ctools_node_content_content_type_edit_form(&$form, &$form_state) {
 
   $form['leave_node_title'] = array(
     '#type' => 'checkbox',
-    '#default_value' => $conf['leave_node_title'],
+    '#default_value' => !empty($conf['leave_node_title']),
     '#title' => t('Leave node title'),
     '#description' => t('Advanced: if checked, do not touch the node title; this can cause the node title to appear twice unless your theme is aware of this.'),
   );

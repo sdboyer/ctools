@@ -220,6 +220,8 @@ function ctools_content_prepare_subtype(&$subtype, $plugin) {
  *   The name of the subtype being rendered.
  * @param $conf
  *   The configuration for the content type.
+ * @param $keywords
+ *   An array of replacement keywords that come from outside contexts.
  * @param $args
  *   The arguments provided to the owner of the content type. Some content may
  *   wish to configure itself based on the arguments the panel or dashboard
@@ -280,8 +282,8 @@ function ctools_content_render($type, $subtype, $conf, $keywords = array(), $arg
 
     if (!empty($content->title)) {
       // Perform substitutions
-      if (!empty($keywords)) {
-        $content->title = strtr($content->title, $keywords);
+      if (!empty($keywords) || !empty($contexts)) {
+        $content->title = ctools_context_keyword_substitute($content->title, $keywords, $context);
       }
 
       // Sterilize the title
