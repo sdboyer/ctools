@@ -152,7 +152,7 @@ class views_content_plugin_display_panel_pane extends views_plugin_display {
           'more_link' => t('More link'),
           'path_override' => t('Path override'),
           'title_override' => t('Title override'),
-          'exposed_form' => t('Use exposed widgets form as pane configuration'),
+//          'exposed_form' => t('Use exposed widgets form as pane configuration'),
         );
 
         $allow = array_filter($this->get_option('allow'));
