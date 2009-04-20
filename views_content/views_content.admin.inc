@@ -10,7 +10,7 @@
  */
 
 function views_content_admin_page() {
-  $form['panels_views_all_views'] = array(
+  $form['ctools_content_all_views'] = array(
     '#type' => 'checkbox',
     '#title' => t('Make all views available as panes'),
     '#description' => t("If checked, all views will be made available as content panes to be added to content types. If not checked, only Views that have a 'Content pane' display will be available as content panes."),
