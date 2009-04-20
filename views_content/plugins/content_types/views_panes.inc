@@ -13,6 +13,7 @@
 function views_content_views_panes_ctools_content_types() {
   return array(
     'title' => t('View panes'),
+    'js' => array(drupal_get_path('module', 'ctools') . '/js/dependent.js'),
   );
 }
 
@@ -291,14 +292,14 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
     if ($allow['link_to_view'] ) {
       $form['link_to_view'] = array(
         '#type' => 'checkbox',
-        '#default_value' => $conf['link_to_view'],
+        '#default_value' => isset($conf['link_to_view']) ? $conf['link_to_view'] : $view->display_handler->get_option('link_to_view'),
         '#title' => t('Link title to page'),
       );
     }
     if ($allow['more_link']) {
       $form['more_link'] = array(
         '#type' => 'checkbox',
-        '#default_value' => $conf['more_link'],
+        '#default_value' => isset($conf['more_link']) ? $conf['more_link'] : $view->display_handler->get_option('more_link'),
         '#title' => t('Provide a "more" link.'),
       );
     }
@@ -307,11 +308,12 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
   if (!empty($allow['feed_icons'])) {
     $form['feed_icons'] = array(
       '#type' => 'checkbox',
-      '#default_value' => $conf['feed_icons'],
+      '#default_value' => !empty($conf['feed_icons']),
       '#title' => t('Display feed icons'),
     );
   }
 
+  ctools_include('dependent');
   if ($allow['use_pager']) {
     $form['pager_aligner_start'] = array(
       '#value' => '<div class="option-text-aligner">',
@@ -319,15 +321,17 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
     $form['use_pager'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use pager'),
-      '#default_value' => $conf['use_pager'],
+        '#default_value' => isset($conf['use_pager']) ? $conf['use_pager'] : $view->display_handler->get_option('use_pager'),
       '#id' => 'use-pager-checkbox',
     );
     $form['pager_id'] = array(
       '#type' => 'textfield',
-      '#default_value' => $conf['pager_id'],
+      '#default_value' => isset($conf['pager_id']) ? $conf['pager_id'] : $view->display_handler->get_option('element_id'),
       '#title' => t('Pager ID'),
       '#size' => 4,
       '#id' => 'use-pager-textfield',
+      '#process' => array('ctools_dependent_process'),
+      '#dependency' => array('use-pager-checkbox' => array(1)),
     );
     $form['pager_aligner_stop'] = array(
       '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
@@ -336,7 +340,7 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
   if ($allow['items_per_page']) {
     $form['items_per_page'] = array(
       '#type' => 'textfield',
-      '#default_value' => $conf['items_per_page'],
+      '#default_value' => isset($conf['items_per_page']) ? $conf['items_per_page'] : $view->display_handler->get_option('items_per_page'),
       '#title' => t('Num items'),
       '#size' => 4,
       '#description' => t('Select the number of items to display, or 0 to display all results.'),
@@ -345,18 +349,16 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
   if ($allow['offset']) {
     $form['offset'] = array(
       '#type' => 'textfield',
-      '#default_value' => $conf['offset'],
+      '#default_value' => isset($conf['offset']) ? $conf['offset'] : $view->display_handler->get_option('offset'),
       '#title' => t('Offset'),
       '#size' => 4,
       '#description' => t('Enter the number of items to skip; enter 0 to skip no items.'),
     );
   }
   if ($allow['path_override']) {
-    // TODO: Because javascript in the dialogs is kind of weird, dependent checkboxes
-    // don't work right for external modules. This needs fixing in panels itself.
     $form['path'] = array(
       '#type' => 'textfield',
-      '#default_value' => $conf['path'],
+      '#default_value' => isset($conf['path']) ? $conf['path'] : $view->get_path(),
       '#title' => t('Override path'),
       '#size' => 30,
       '#description' => t('If this is set, override the View URL path; this can sometimes be useful to set to the panel URL.'),
@@ -373,7 +375,9 @@ function views_content_views_panes_content_type_edit_form_submit(&$form, &$form_
     'pager_id', 'items_per_page', 'offset', 'path_override', 'path');
 
   foreach ($keys as $key) {
-    $form_state['conf'][$key] = $form_state['values'][$key];
+    if (isset($form_state['values'][$key])) {
+      $form_state['conf'][$key] = $form_state['values'][$key];
+    }
   }
 }
 
