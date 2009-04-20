@@ -317,6 +317,8 @@ function views_content_views_content_type_edit_form(&$form, &$form_state) {
     '#title' => t('Pager ID'),
     '#size' => 4,
     '#id' => 'use-pager-textfield',
+    '#process' => array('ctools_dependent_process'),
+    '#dependency' => array('use-pager-checkbox' => array(1)),
   );
   $form['pager_aligner_stop'] = array(
     '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',

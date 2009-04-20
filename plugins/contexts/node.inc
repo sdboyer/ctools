@@ -99,7 +99,7 @@ function ctools_context_node_settings_form($conf, $external = FALSE) {
     '#title' => t('Enter the title or NID of a post'),
     '#type' => 'textfield',
     '#maxlength' => 512,
-    '#autocomplete_path' => 'ctools/node/autocomplete',
+    '#autocomplete_path' => 'ctools/autocomplete/node',
     '#weight' => -10,
   );
 
