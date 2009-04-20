@@ -674,7 +674,7 @@ function ctools_content_select_context($plugin, $subtype, $conf, $contexts) {
 
   $subtype_info = ctools_content_get_subtype($plugin, $subtype);
   if (empty($subtype_info)) {
-    return FALSE;
+    return;
   }
 
   if (!empty($subtype_info['all contexts']) || !empty($plugin['all contexts'])) {
