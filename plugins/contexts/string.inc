@@ -20,6 +20,10 @@ function ctools_string_ctools_contexts() {
     'context name' => 'string',
     'convert list' => array('raw' => t('Raw string')),
     'convert' => 'ctools_context_string_convert',
+    'placeholder form' => array(
+      '#type' => 'textfield',
+      '#description' => t('Enter the string for this context.'),
+    ),
   );
   return $args;
 }

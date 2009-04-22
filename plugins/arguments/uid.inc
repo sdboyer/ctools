@@ -17,6 +17,10 @@ function ctools_uid_ctools_arguments() {
     'keyword' => 'user',
     'description' => t('Creates a user context from a user ID argument.'),
     'context' => 'ctools_argument_uid_context',
+    'placeholder form' => array(
+      '#type' => 'textfield',
+      '#description' => t('Enter the user ID of a user for this argument'),
+    ),
   );
   return $args;
 }

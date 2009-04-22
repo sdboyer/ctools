@@ -17,6 +17,10 @@ function ctools_node_edit_ctools_arguments() {
     'keyword' => 'node',
     'description' => t('Creates a node edit form context from a node ID argument.'),
     'context' => 'ctools_node_edit_context',
+    'placeholder form' => array(
+      '#type' => 'textfield',
+      '#description' => t('Enter the node ID of a node for this argument'),
+    ),
   );
   return $args;
 }

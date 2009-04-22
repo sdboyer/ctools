@@ -71,6 +71,9 @@ Drupal.CTools.AJAX.clickAJAXButton = function() {
     return false;
   }
 
+  // Put our button in.
+  this.form.clk = this;
+
   var url = Drupal.CTools.AJAX.findURL(this);
   $(this).addClass('ctools-ajaxing');
   var object = $(this);

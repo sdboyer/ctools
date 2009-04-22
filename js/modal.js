@@ -147,6 +147,7 @@ Drupal.CTools.Modal.submitAjaxForm = function() {
       },
       complete: function() {
         object.removeClass('ctools-ajaxing');
+        $('.ctools-ajaxing', object).removeClass('ctools-ajaxing');
       },
       dataType: 'json'
     });
@@ -154,6 +155,7 @@ Drupal.CTools.Modal.submitAjaxForm = function() {
   catch (err) {
     alert("An error occurred while attempting to process " + url); 
     $(this).removeClass('ctools-ajaxing');
+    $('.ctools-ajaxing', this).removeClass('ctools-ajaxing');
     return false;
   }
   return false;
@@ -181,12 +183,15 @@ Drupal.behaviors.CToolsModal = function(context) {
       .append('<input type="hidden" name="op" value="">');
     // add click handlers so that we can tell which button was clicked,
     // because the AJAX submit does not set the values properly.
+
     $('input[type="submit"]:not(.ctools-use-modal-processed)', context)
       .addClass('ctools-use-modal-processed')
       .click(function() {
-        var name = $(this).attr('name');
-        $('input[name="' + name + '"]', context).val($(this).val());
+        // Make sure it knows our button.
+        this.form.clk = this;
+        $(this).after('<div class="ctools-ajaxing"> &nbsp; </div>');
       });
+
   }
 };
 

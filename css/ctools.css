@@ -11,12 +11,14 @@
   padding: 1em;
 }
 
-a.ctools-ajaxing {
+a.ctools-ajaxing,
+input.ctools-ajaxing {
   padding-right: 18px !important;
   background: url(../images/status-active.gif) right center no-repeat;
 }
 
-input.ctools-ajaxing {
-  padding-right: 18px;
-  background: url(../images/status-active.gif) right center no-repeat;
+div.ctools-ajaxing {
+  float: left;
+  width: 18px;
+  background: url(../images/status-active.gif) center center no-repeat;
 }

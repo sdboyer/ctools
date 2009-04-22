@@ -20,6 +20,10 @@ function ctools_node_add_form_ctools_contexts() {
     'context name' => 'node_add_form',
     'convert list' => array('type' => t('Node type')),
     'convert' => 'ctools_context_node_add_form_convert',
+    'placeholder form' => array(
+      '#type' => 'textfield',
+      '#description' => t('Enter the node type this context.'),
+    ),
   );
   return $args;
 }

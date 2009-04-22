@@ -16,6 +16,10 @@ function ctools_nid_ctools_arguments() {
     'keyword' => 'node',
     'description' => t('Creates a node context from a node ID argument.'),
     'context' => 'ctools_argument_nid_context',
+    'placeholder form' => array(
+      '#type' => 'textfield',
+      '#description' => t('Enter the node ID of a node for this argument'),
+    ),
   );
   return $args;
 }

@@ -23,6 +23,10 @@ function ctools_node_ctools_contexts() {
     'context name' => 'node',
     'convert list' => 'ctools_context_node_convert_list',
     'convert' => 'ctools_context_node_convert',
+    'placeholder form' => array(
+      '#type' => 'textfield',
+      '#description' => t('Enter the node ID of a node for this context.'),
+    ),
   );
   return $args;
 }

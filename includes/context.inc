@@ -509,7 +509,12 @@ function ctools_context_create($type, $data = NULL, $conf = FALSE) {
  */
 function ctools_context_create_empty($type) {
   if ($function = ctools_plugin_load_function('ctools', 'contexts', $type, 'context')) {
-    return $function(TRUE);
+    $context = $function(TRUE);
+    if (is_object($context)) {
+      $context->empty = TRUE;
+    }
+
+    return $context;
   }
 }
 
@@ -657,6 +662,13 @@ function ctools_context_get_context_from_argument($argument, $arg, $empty = FALS
       $context->keyword    = $argument['keyword'];
       $context->id         = ctools_context_id($argument, 'argument');
       $context->original_argument = $arg;
+
+      if (!empty($context->empty)) {
+        $context->placeholder = array(
+          'type' => 'argument',
+          'conf' => $argument,
+        );
+      }
     }
     return $context;
   }
@@ -768,6 +780,12 @@ function ctools_context_get_context_from_relationship($relationship, $source_con
       $context->identifier = $relationship['identifier'];
       $context->page_title = isset($relationship['title']) ? $relationship['title'] : '';
       $context->keyword    = $relationship['keyword'];
+      if (!empty($context->empty)) {
+        $context->placeholder = array(
+          'type' => 'relationship',
+          'conf' => $relationship,
+        );
+      }
       return $context;
     }
   }
@@ -827,14 +845,6 @@ function ctools_context_get_context_from_relationships($relationships, &$context
     if (empty($contexts[$rdata['context']])) {
       continue;
     }
-    /*
-    $relationship = ctools_context_get_context_from_relationship($rdata['name']);
-    // If the relationship can't be found or its context can't be found,
-    // ignore.
-    if (!$relationship) {
-      continue;
-    }
-    */
 
     $cid = ctools_context_id($rdata, 'relationship');
     if ($context = ctools_context_get_context_from_relationship($rdata, $contexts[$rdata['context']])) {
@@ -889,11 +899,16 @@ function ctools_get_contexts() {
  * @return
  *   A context object if one can be loaded.
  */
-function ctools_context_get_context_from_context($context, $type = 'context') {
+function ctools_context_get_context_from_context($context, $type = 'context', $argument = NULL) {
   ctools_include('plugins');
-  if ($function = ctools_plugin_load_function('ctools', 'contexts', $context['name'], 'context')) {
+  $plugin = ctools_get_context($context['name']);
+  if ($function = ctools_plugin_get_function($plugin, 'context')) {
     if (!isset($context['context_settings'])) {
       $context['context_settings'] = array();
+    }
+
+    if (isset($argument) && isset($plugin['placeholder name'])) {
+      $context['context_settings'][$plugin['placeholder name']] = $argument;
     }
 
     $return = $function($type == 'requiredcontext', $context['context_settings'], TRUE);
@@ -901,6 +916,14 @@ function ctools_context_get_context_from_context($context, $type = 'context') {
       $return->identifier = $context['identifier'];
       $return->page_title = isset($context['title']) ? $context['title'] : '';
       $return->keyword    = $context['keyword'];
+
+      if (!empty($context->empty)) {
+        $context->placeholder = array(
+          'type' => 'context',
+          'conf' => $context,
+        );
+      }
+
       return $return;
     }
   }
@@ -1026,6 +1049,105 @@ function ctools_context_get_form($contexts) {
     foreach ($contexts as $context) {
       if (!empty($context->form_id)) {
         return $context;
+      }
+    }
+  }
+}
+
+/**
+ * Replace placeholders with real contexts using data extracted from a form
+ * for the purposes of previews.
+ *
+ * @param $contexts
+ *   All of the contexts, including the placeholders.
+ * @param $arguments
+ *   The arguments. These will be acquired from $form_state['values'] and the
+ *   keys must match the context IDs.
+ *
+ * @return
+ *   A new $contexts array containing the replaced contexts. Not all contexts
+ *   may be replaced if, for example, an argument was unable to be converted
+ *   into a context.
+ */
+function ctools_context_replace_placeholders($contexts, $arguments) {
+  foreach ($contexts as $cid => $context) {
+    if (empty($context->empty)) {
+      continue;
+    }
+
+    $new_context = NULL;
+    switch ($context->placeholder['type']) {
+      case 'relationship':
+        $relationship = $context->placeholder['conf'];
+        if (isset($contexts[$relationship['context']])) {
+          $new_context = ctools_context_get_context_from_relationship($relationship, $contexts[$relationship['context']]);
+        }
+        break;
+      case 'argument':
+        if (!empty($arguments[$cid])) {
+          $argument = $context->placeholder['conf'];
+          $new_context = ctools_context_get_context_from_argument($argument, $arguments[$cid]);
+        }
+        break;
+      case 'context':
+        if (!empty($arguments[$cid])) {
+          $context_info = $context->placeholder['conf'];
+          $new_context = ctools_context_get_context_from_context($context_info, 'requiredcontext', $arguments[$cid]);
+        }
+        break;
+    }
+
+    if ($new_context && empty($new_context->empty)) {
+      $contexts[$cid] = $new_context;
+    }
+  }
+
+  return $contexts;
+}
+
+/**
+ * Provide a form array for getting data to replace placeholder contexts
+ * with real data.
+ */
+function ctools_context_replace_form(&$form, $contexts) {
+  foreach ($contexts as $cid => $context) {
+    if (empty($context->empty)) {
+      continue;
+    }
+
+    // Get plugin info from the context which should have been set when the
+    // empty context was created.
+    $info = NULL;
+    $plugin = NULL;
+    $settings = NULL;
+    switch ($context->placeholder['type']) {
+      case 'argument':
+        $info = $context->placeholder['conf'];
+        $plugin = ctools_get_argument($info['name']);
+        $settings = $info['settings'];
+
+        break;
+      case 'context':
+        $info = $context->placeholder['conf'];
+        $plugin = ctools_get_context($info['name']);
+        $settings = $info['context_settings'];
+        break;
+    }
+
+    // Ask the plugin where the form is.
+    if ($plugin && isset($plugin['placeholder form'])) {
+      if (is_array($plugin['placeholder form'])) {
+        $form[$cid] = $plugin['placeholder form'];
+      }
+      else if (function_exists($plugin['placeholder form'])) {
+        $widget = $plugin['placeholder form']($argument['settings']);
+        if ($widget) {
+          $form[$cid] = $widget;
+        }
+      }
+
+      if (!empty($form[$cid])) {
+        $form[$cid]['#title'] = t('@identifier (@keyword)', array('@keyword' => '%' . $context->keyword, '@identifier' => $context->identifier));
       }
     }
   }

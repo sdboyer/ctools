@@ -17,6 +17,10 @@ function ctools_vid_ctools_arguments() {
     'keyword' => 'vocabulary',
     'description' => t('Creates a vocabulary context from a vocabulary ID argument.'),
     'context' => 'ctools_vid_context',
+    'placeholder form' => array(
+      '#type' => 'textfield',
+      '#description' => t('Enter the vocabulary ID for this argument'),
+    ),
   );
   return $args;
 }

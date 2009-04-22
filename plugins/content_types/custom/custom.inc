@@ -104,5 +104,7 @@ function ctools_custom_content_type_edit_form(&$form, &$form_state) {
  * The submit form stores the data in $conf.
  */
 function ctools_custom_content_type_edit_form_submit(&$form, &$form_state) {
-  $form_state['conf'] = $form_state['values'];
+  foreach (array_keys($form_state['plugin']['defaults']) as $key) {
+    $form_state['conf'][$key] = $form_state['values'][$key];
+  }
 }

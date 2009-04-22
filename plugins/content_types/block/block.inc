@@ -70,7 +70,12 @@ function ctools_block_content_type_render($subtype, $conf) {
     return;
   }
 
-  $block->title = $block->subject;
+  if (isset($block->subject)) {
+    $block->title = $block->subject;
+  }
+  else {
+    $block->title = NULL;
+  }
 
   if (user_access('administer blocks')) {
     $block->admin_links = array(
@@ -129,13 +134,6 @@ function ctools_block_content_type_render($subtype, $conf) {
  */
 function ctools_block_content_type_edit_form(&$form, &$form_state) {
   // Does nothing!
-}
-
-/**
- * The submit form stores the data in $conf.
- */
-function ctools_block_content_type_edit_form_submit(&$form, &$form_state) {
-  $form_state['conf'] = $form_state['values'];
 }
 
 /**

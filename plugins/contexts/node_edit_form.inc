@@ -19,6 +19,10 @@ function ctools_node_edit_form_ctools_contexts() {
     'settings form validate' => 'ctools_context_node_edit_form_settings_form_validate',
     'keyword' => 'node_edit',
     'context name' => 'node_edit_form',
+    'placeholder form' => array(
+      '#type' => 'textfield',
+      '#description' => t('Enter the node ID of a node for this argument:'),
+    ),
   );
   return $args;
 }
