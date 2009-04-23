@@ -62,6 +62,7 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
     $context->form_id    = $form_id;
     $context->form_title = $node->title;
     $context->node_type  = $node->type;
+    $context->restrictions['type'] = array($node->type);
     return $context;
   }
 }

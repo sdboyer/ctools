@@ -19,6 +19,7 @@ function ctools_node_type_ctools_access() {
     'settings form submit' => 'ctools_node_type_ctools_access_settings_submit',
     'summary' => 'ctools_node_type_ctools_acesss_summary',
     'required context' => new ctools_context_required(t('Node'), 'node'),
+    'restrictions' => 'ctools_node_type_ctools_access_restrictions',
   );
 
   return $args;
@@ -64,6 +65,19 @@ function ctools_node_type_ctools_access_check($conf, $context) {
   }
 
   return TRUE;
+}
+
+/**
+ * Inform the UI that we've eliminated a bunch of possibilities for this
+ * context.
+ */
+function ctools_node_type_ctools_access_restrictions($conf, &$context) {
+  if (isset($context->restrictions['type'])) {
+    $context->restrictions['type'] = array_unique(array_merge($context->restrictions['type'], array_keys(array_filter($conf['type']))));
+  }
+  else {
+    $context->restrictions['type'] = array_keys(array_filter($conf['type']));
+  }
 }
 
 /**

@@ -40,6 +40,8 @@ class ctools_context {
   var $argument = NULL;
   var $keyword = '';
   var $original_argument = NULL;
+  var $restrictions = array();
+  var $empty = FALSE;
 
   function ctools_context($type = 'none', $data = NULL) {
     $this->type  = $type;
@@ -110,6 +112,12 @@ class ctools_context_required {
   function ctools_context_required($title) {
     $args = func_get_args();
     $this->title = array_shift($args);
+
+    // If we were given restrictions at the end, store them.
+    if (count($args) > 1 && is_array(end($args))) {
+      $this->restrictions = array_pop($args);
+    }
+
     if (count($args) == 1) {
       $args = array_shift($args);
     }
@@ -122,6 +130,21 @@ class ctools_context_required {
     // See which of these contexts are valid
     foreach ((array) $contexts as $cid => $context) {
       if ($context->is_type($this->keywords)) {
+        // Compare to see if our contexts were met.
+        if (!empty($this->restrictions) && !empty($context->restrictions)) {
+          foreach ($this->restrictions as $key => $values) {
+            // If we have a restriction, the context must either not have that
+            // restriction listed, which means we simply don't know what it is,
+            // or there must be an intersection of the restricted values on
+            // both sides.
+            if (!is_array($values)) {
+              $values = array($values);
+            }
+            if (!empty($context->restrictions[$key]) && !array_intersect($values, $context->restrictions[$key])) {
+              continue 2;
+            }
+          }
+        }
         $result[$cid] = $context;
       }
     }
@@ -1322,4 +1345,35 @@ function ctools_access_new_test($plugin) {
   }
 
   return $test;
+}
+
+/**
+ * Apply restrictions to contexts based upon the access control configured.
+ *
+ * These restrictions allow the UI to not show content that may not
+ * be relevant to all types of a particular context.
+ */
+function ctools_access_add_restrictions($settings, $contexts) {
+  if (empty($settings['plugins'])) {
+    return;
+  }
+
+  if (!isset($settings['logic'])) {
+    $settings['logic'] = 'and';
+  }
+
+  // We're not going to try to figure out restrictions on the or.
+  if ($settings['logic'] == 'or' && count($settings['plugins']) > 1) {
+    return;
+  }
+
+  foreach ($settings['plugins'] as $test) {
+    $plugin = ctools_get_access_plugin($test['name']);
+    if ($plugin && $function = ctools_plugin_get_function($plugin, 'restrictions')) {
+      $required_context = isset($plugin['required context']) ? $plugin['required context'] : array();
+      $context = isset($test['context']) ? $test['context'] : array();
+      $contexts = ctools_context_select($contexts, $required_context, $context);
+      $function($test['settings'], $contexts);
+    }
+  }
 }

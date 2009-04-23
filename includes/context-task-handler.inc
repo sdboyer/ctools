@@ -162,7 +162,9 @@ function ctools_context_handler_get_handler_contexts($contexts, $handler) {
  */
 function ctools_context_handler_get_all_contexts($task, $subtask_id, $handler) {
   $object = ctools_context_handler_get_task_object($task, $subtask_id, $handler);
-  return ctools_context_load_contexts($object, TRUE);
+  $contexts = ctools_context_load_contexts($object, TRUE);
+  ctools_context_handler_set_access_restrictions($task, $subtask_id, $handler, $contexts);
+  return $contexts;
 }
 
 /**
@@ -202,6 +204,28 @@ function ctools_context_handler_get_task_arguments($task, $subtask_id) {
   }
 
   return array();
+}
+
+/**
+ * Set any access restrictions on the contexts for a handler.
+ *
+ * Both the task and the handler could add restrictions to the contexts
+ * based upon the access control. These restrictions might be useful
+ * to limit what kind of content appears in the add content dialog;
+ * for example, if we have an access item that limits a node context
+ * to only 'story' and 'page' types, there is no need for content that
+ * only applies to the 'poll' type to appear.
+ */
+function ctools_context_handler_set_access_restrictions($task, $subtask_id, $handler, &$contexts) {
+  // First, for the task:
+  if ($function = ctools_plugin_get_function($task, 'access restrictions')) {
+    $function($task, $subtask_id, $contexts);
+  }
+
+  // Then for the handler:
+  if (isset($handler->conf['access'])) {
+    ctools_access_add_restrictions($handler->conf['access'], $contexts);
+  }
 }
 
 /**

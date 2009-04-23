@@ -36,16 +36,7 @@ function ctools_node_ctools_contexts() {
  * are not always created from the UI.
  */
 function ctools_context_create_node($empty, $data = NULL, $conf = FALSE) {
-  $types = array('node');
-
-  if (!empty($conf['types'])) {
-    foreach ($conf['types'] as $type) {
-      if ($type) {
-        $types[] = 'node-' . $type;
-      }
-    }
-  }
-  $context = new ctools_context($types);
+  $context = new ctools_context('node');
   $context->plugin = 'node';
 
   if ($empty) {
@@ -71,12 +62,8 @@ function ctools_context_create_node($empty, $data = NULL, $conf = FALSE) {
     $context->data     = $data;
     $context->title    = $data->title;
     $context->argument = $data->nid;
-    if (is_array($context->type)) {
-      $context->type[] = 'node-' . $data->type;
-    }
-    else {
-      $context->type = array($context->type, 'node-' . $data->type);
-    }
+
+    $context->restrictions['type'] = array($data->type);
     return $context;
   }
 }

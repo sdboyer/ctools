@@ -58,6 +58,7 @@ function delegator_page_delegator_tasks() {
       'handler type' => 'context',
       'get arguments' => 'delegator_page_get_arguments',
       'get context placeholders' => 'delegator_page_get_contexts',
+      'access restrictions' => 'delegator_page_access_restrictions',
       'uses handlers' => TRUE,
     ),
   );
@@ -339,6 +340,14 @@ function _delegator_page_get_arguments($page) {
 function delegator_page_get_contexts($task, $subtask_id) {
   ctools_include('context');
   return ctools_context_get_placeholders_from_argument(delegator_page_get_arguments($task, $subtask_id));
+}
+
+/**
+ * Return a list of arguments used by this task.
+ */
+function delegator_page_access_restrictions($task, $subtask_id, $contexts) {
+  $page = delegator_page_load($subtask_id);
+  return ctools_access_add_restrictions($page->access, $contexts);
 }
 
 // --------------------------------------------------------------------------
