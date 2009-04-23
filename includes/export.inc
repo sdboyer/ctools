@@ -47,14 +47,18 @@ define('EXPORT_IN_CODE', 0x02);
  */
 function ctools_export_load_object($table, $type = 'all', $args = array()) {
   static $cache = array();
-  static $cached_defaults = FALSE;
-  static $cached_database = FALSE;
+  static $cached_database = array();
 
   $schema = ctools_export_get_schema($table);
   $export = $schema['export'];
 
   if (!isset($cache[$table])) {
     $cache[$table] = array();
+  }
+
+  // If fetching all and cached all, we've done so and we are finished.
+  if ($type == 'all' && !empty($cached_database[$table])) {
+    return $cache[$table];
   }
 
   $return = array();
@@ -79,50 +83,42 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
   $conditions = array();
   $query_args = array();
 
-  // We do not have to load anything if we have already cached everything.
-  if ($type != 'all' || !$cached_database) {
-    // If they passed in names, add them to the query.
-    if ($type == 'names') {
-      $conditions[] = "$export[key] IN (" . db_placeholders($args, $schema['fields'][$export['key']]['type']) . ")";
-      $query_args = $args;
-    }
-    else if ($type == 'conditions') {
-      foreach ($args as $key => $value) {
-        if (isset($schema['fields'][$key])) {
-          $conditions[] = "$key = " . db_type_placeholder($schema['fields'][$key]['type']);
-          $query_args[] = $value;
-        }
-      }
-    }
-
-    // Make a string out of the conditions.
-    if ($conditions) {
-      $query .= " WHERE " . implode(' AND ', $conditions);
-    }
-
-    $result = db_query($query, $query_args);
-
-    // Unpack the results of the query onto objects and cache them.
-    while ($data = db_fetch_object($result)) {
-      $object = _ctools_export_unpack_object($schema, $data, $export['object']);
-      $object->type = t('Normal');
-      $object->export_type = EXPORT_IN_DATABASE;
-
-      $cache[$table][$object->{$export['key']}] = $object;
-      if ($type == 'conditions') {
-        $return[$object->{$export['key']}] = $object;
+  // If they passed in names, add them to the query.
+  if ($type == 'names') {
+    $conditions[] = "$export[key] IN (" . db_placeholders($args, $schema['fields'][$export['key']]['type']) . ")";
+    $query_args = $args;
+  }
+  else if ($type == 'conditions') {
+    foreach ($args as $key => $value) {
+      if (isset($schema['fields'][$key])) {
+        $conditions[] = "$key = " . db_type_placeholder($schema['fields'][$key]['type']);
+        $query_args[] = $value;
       }
     }
   }
 
-  if ($type == 'all') {
-    $cached_database = TRUE;
+  // Make a string out of the conditions.
+  if ($conditions) {
+    $query .= " WHERE " . implode(' AND ', $conditions);
   }
+
+  $result = db_query($query, $query_args);
+
+  // Unpack the results of the query onto objects and cache them.
+  while ($data = db_fetch_object($result)) {
+    $object = _ctools_export_unpack_object($schema, $data, $export['object']);
+    $object->type = t('Normal');
+    $object->export_type = EXPORT_IN_DATABASE;
+
+    $cache[$table][$object->{$export['key']}] = $object;
+    if ($type == 'conditions') {
+      $return[$object->{$export['key']}] = $object;
+    }
+  }
+
   // @todo Load subrecords.
 
-  if ($export['default hook'] && !$cached_defaults) {
-    // @todo add a method to load .inc files for this.
-    $defaults = module_invoke_all($export['default hook']);
+  if ($defaults = _ctools_export_get_defaults($table, $export)) {
     $status = variable_get($export['status'], array());
 
     foreach ($defaults as $object) {
@@ -162,22 +158,12 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
           $return[$object->name] = $object;
         }
       }
-
-    }
-
-    // We only actually force this when retrieving all, because we may not
-    // have retrieved an object from the database and could thus incorrectly
-    // identify one as being a 'default' object when it is actually
-    // overridden. So we settle for a potential minor performance decrease
-    // in order to get this correct.
-    if ($type == 'all') {
-      // Make sure we don't run that again later on.
-      $cached_defaults = TRUE;
     }
   }
 
   // If fetching all, we've done so and we are finished.
   if ($type == 'all') {
+    $cached_database[$table] = TRUE;
     return $cache[$table];
   }
 
@@ -211,7 +197,7 @@ function ctools_get_default_object($table, $name) {
   }
 
   // @todo add a method to load .inc files for this.
-  $defaults = module_invoke_all($export['default hook']);
+  $defaults = _ctools_export_get_defaults($table, $export);
   $status = variable_get($export['status'], array());
 
   if (!isset($defaults[$name])) {
@@ -230,6 +216,53 @@ function ctools_get_default_object($table, $name) {
   $object->in_code_only = TRUE;
 
   return $object;
+}
+
+/**
+ * Call the hook to get all default objects of the given type from the
+ * export. If configured properly, this could include loading up an API
+ * to get default objects.
+ */
+function _ctools_export_get_defaults($table, $export) {
+  static $cache = array();
+
+  if (!isset($cache[$table])) {
+    $cache[$table] = array();
+
+    if ($export['default hook']) {
+      if (!empty($export['api'])) {
+        $info = ctools_plugin_api_include($export['api']['owner'], $export['api']['api'],
+          $export['api']['minimum_version'], $export['api']['current_version']);
+        $modules = array_keys($info);
+      }
+      else {
+        $modules = module_implements($export['default hook']);
+      }
+
+      foreach ($modules as $module) {
+        $function = $module . '_' . $export['default hook'];
+        if (function_exists($function)) {
+          if (empty($export['api'])) {
+            $cache[$table] += (array) $function($export);
+          }
+          else {
+            foreach ((array) $function($export) as $name => $object) {
+              // If version checking is enabled, ensure that the object can be used.
+              if (isset($object->api_version) &&
+                $object->api_version >= $export['api']['minimum_version'] &&
+                $object->api_version <= $export['api']['current_version']) {
+                $cache[$table][$name] = $object;
+              }
+            }
+          }
+        }
+      }
+
+      drupal_alter($export['default hook'], $cache[$table]);
+    }
+  }
+
+  return $cache[$table];
 }
 
 /**
@@ -321,7 +354,10 @@ function ctools_export_object($table, $object, $indent = '', $identifier = NULL,
   $output = $indent . '$' . $identifier . ' = new ' . get_class($object) . ";\n";
 
   if ($schema['export']['can disable']) {
-    $output .= $indent . '$' . $identifier . '->disabled' . ' = FALSE; /* Edit this to true to make a default ' . $identifier . ' disabled initially */' . "\n";
+    $output .= $indent . '$' . $identifier . '->disabled = FALSE; /* Edit this to true to make a default ' . $identifier . ' disabled initially */' . "\n";
+  }
+  if (!empty($schema['export']['api']['current_version'])) {
+    $output .= $indent . '$' . $identifier . '->api_version = ' . $schema['export']['api']['current_version'] . ";\n";
   }
 
   // Put top additions here:

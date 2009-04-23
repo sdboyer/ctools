@@ -24,6 +24,12 @@ function delegator_schema_1() {
   $schema['delegator_handlers'] = array(
     'export' => array(
       'identifier' => 'handler',
+      'api' => array(
+        'owner' => 'delegator',
+        'api' => 'delegator_default',
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
     ),
     'fields' => array(
       'did' => array(
@@ -97,6 +103,12 @@ function delegator_schema_1() {
     'description' => 'Contains page subtasks for implementing pages with arbitrary tasks.',
     'export' => array(
       'identifier' => 'page',
+      'api' => array(
+        'owner' => 'delegator',
+        'api' => 'delegator_default',
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
     ),
     'fields' => array(
       'pid' => array(

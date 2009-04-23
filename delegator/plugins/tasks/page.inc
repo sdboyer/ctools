@@ -377,6 +377,7 @@ function delegator_page_load($name) {
  */
 function delegator_page_load_all($task = NULL) {
   ctools_include('export');
+
   if (empty($task)) {
     return ctools_export_load_object('delegator_pages');
   }
