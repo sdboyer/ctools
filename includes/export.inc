@@ -231,6 +231,7 @@ function _ctools_export_get_defaults($table, $export) {
 
     if ($export['default hook']) {
       if (!empty($export['api'])) {
+        ctools_include('plugins');
         $info = ctools_plugin_api_include($export['api']['owner'], $export['api']['api'],
           $export['api']['minimum_version'], $export['api']['current_version']);
         $modules = array_keys($info);
