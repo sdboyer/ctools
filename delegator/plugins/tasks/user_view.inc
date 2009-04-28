@@ -55,7 +55,7 @@ function delegator_user_view($account) {
   ctools_include('context-task-handler');
   $contexts = ctools_context_handler_get_task_contexts($task, '', array($account));
 
-  $output = ctools_context_handler_render($task, '', $contexts);
+  $output = ctools_context_handler_render($task, '', $contexts, array($account->uid));
   if ($output === FALSE) {
     // Fall back!
     module_load_include('inc', 'user', 'user.pages');
@@ -76,7 +76,7 @@ function delegator_user_view_get_arguments($task, $subtask_id) {
     array(
       'keyword' => 'user',
       'identifier' => t('User being viewed'),
-      'id' => 0,
+      'id' => 1,
       'name' => 'uid',
       'settings' => array(),
     ),

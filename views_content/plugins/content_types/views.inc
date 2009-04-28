@@ -105,6 +105,8 @@ function _views_content_views_content_type($view) {
  * Outputs a view based on the module and delta supplied in the configuration.
  */
 function views_content_views_content_type_render($subtype, $conf, $panel_args, $contexts) {
+  _views_content_views_update_conf($conf, views_content_views_ctools_content_types());
+
   if (!is_array($contexts)) {
     $contexts = array($contexts);
   }
@@ -115,7 +117,7 @@ function views_content_views_content_type_render($subtype, $conf, $panel_args, $
   }
   else {
     $view = views_get_view($subtype);
-    $display = $conf['display'];
+    $display = isset($conf['display']) ? $conf['display'] : 'default';
   }
 
   if (empty($view)) {
@@ -245,6 +247,7 @@ function views_content_views_select_display_submit(&$form, &$form_state) {
  */
 function views_content_views_content_type_edit_form(&$form, &$form_state) {
   $conf = $form_state['conf'];
+  _views_content_views_update_conf($conf, views_content_views_ctools_content_types());
   // This allows older content to continue to work, where we used to embed
   // the display directly.
   if (strpos($form_state['subtype_name'], '-')) {
@@ -381,11 +384,13 @@ function views_content_views_content_type_edit_form_submit(&$form, &$form_state)
  * Returns the administrative title for a type.
  */
 function views_content_views_content_type_admin_title($subtype, $conf) {
+  _views_content_views_update_conf($conf, views_content_views_ctools_content_types());
   if (strpos($subtype, '-')) {
     list($name, $display) = explode('-', $subtype);
     $view = views_get_view($name);
   }
   else {
+    $name = $subtype;
     $view = views_get_view($subtype);
   }
 
@@ -399,12 +404,14 @@ function views_content_views_content_type_admin_title($subtype, $conf) {
  * Returns the administrative title for a type.
  */
 function views_content_views_content_type_admin_info($subtype, $conf, $contexts) {
+  _views_content_views_update_conf($conf, views_content_views_ctools_content_types());
   if (strpos($subtype, '-')) {
     list($name, $conf['display']) = explode('-', $subtype);
     $view = views_get_view($name);
   }
   else {
     $view = views_get_view($subtype);
+    $name = $subtype;
   }
 
   if (empty($view)) {
@@ -473,4 +480,19 @@ function views_content_views_content_type_admin_info($subtype, $conf, $contexts)
 
   $view->destroy();
   return $block;
+}
+
+/**
+ * Update the $conf to deal with updates from Drupal 5.
+ */
+function _views_content_views_update_conf(&$conf, $task) {
+  if (isset($conf['display'])) {
+    return;
+  }
+  $conf['display'] = 'default';
+  foreach ($task['defaults'] as $key => $value) {
+    if (!isset($conf[$key])) {
+      $conf[$key] = $value;
+    }
+  }
 }

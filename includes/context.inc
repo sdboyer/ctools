@@ -741,7 +741,7 @@ function ctools_context_get_context_from_arguments($arguments, &$contexts, $args
       $context = $contexts[$id];
     }
 
-    if ((empty($context) || empty($context->data)) && $argument['default'] == '404') {
+    if ((empty($context) || empty($context->data)) && !empty($argument['default']) && $argument['default'] == '404') {
       return FALSE;
     }
   }
@@ -1148,8 +1148,8 @@ function ctools_context_replace_form(&$form, $contexts) {
         $info = $context->placeholder['conf'];
         $plugin = ctools_get_argument($info['name']);
         $settings = $info['settings'];
-
         break;
+
       case 'context':
         $info = $context->placeholder['conf'];
         $plugin = ctools_get_context($info['name']);
@@ -1163,7 +1163,7 @@ function ctools_context_replace_form(&$form, $contexts) {
         $form[$cid] = $plugin['placeholder form'];
       }
       else if (function_exists($plugin['placeholder form'])) {
-        $widget = $plugin['placeholder form']($argument['settings']);
+        $widget = $plugin['placeholder form']($info['settings']);
         if ($widget) {
           $form[$cid] = $widget;
         }

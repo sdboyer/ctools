@@ -27,46 +27,6 @@ define('DGA_CHANGED_DELETED', 0x04);
 define('DGA_CHANGED_STATUS', 0x08);
 
 /**
- * Reset the active menu trail to the trail specified by the task type.
- *
- * The task type can specify an 'admin path'. If it does,
- * 'admin/build/delegator' will be removed from the active trail and replaced
- * with whatever is in the admin path; that way task types can provide
- * their own administration.
- */
-function delegator_set_trail($task, $task_name = NULL) {
-  $task_type = delegator_get_task_type($task['task type']);
-  if (empty($task_type['admin path'])) {
-    return;
-  }
-
-
-  ctools_include('menu');
-  $trail = menu_get_active_trail();
-  $remove = ctools_get_menu_trail('admin/build/delegator');
-  foreach ($remove as $info) {
-    foreach ($trail as $id => $crumb) {
-      if ($crumb['href'] == $info['href']) {
-        unset($trail[$id]);
-      }
-    }
-  }
-
-  if ($task_name) {
-    // Clean up broken 'Edit' link that Drupal leaves behind.
-    $trail = array_values($trail);
-    if (isset($trail[0]) && $trail[0]['title'] == t('Edit')) {
-      unset($trail[0]);
-    }
-
-    array_unshift($trail, menu_get_item('admin/build/delegator/' . $task_name));
-  }
-
-  $trail = array_merge(ctools_get_menu_trail($task_type['admin path']), $trail);
-  menu_set_active_trail($trail);
-}
-
-/**
  * Get the cached changes to a group of task handlers for
  * a given task.
  *

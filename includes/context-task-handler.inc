@@ -26,6 +26,8 @@
  *   The id of the subtask in use.
  * @param $contexts
  *   The context objects in use.
+ * @param $args
+ *   The raw arguments behind the contexts.
  * @param $page
  *   If TRUE then this renderer owns the page and can use theme('page')
  *   for no blocks; if false, output is returned regardless of any no
@@ -34,14 +36,14 @@
  *   Either the output or NULL if there was output, FALSE if no handler
  *   accepted the task. If $page is FALSE then the $info block is returned instead.
  */
-function ctools_context_handler_render($task, $subtask_id, $contexts, $page = TRUE) {
+function ctools_context_handler_render($task, $subtask_id, $contexts, $args, $page = TRUE) {
   // Load the landlers, choosing only enabled handlers.
   $handlers = delegator_load_sorted_handlers($task, $subtask_id, TRUE);
 
   // Try each handler.
   foreach ($handlers as $handler) {
     if ($function = delegator_get_renderer($handler)) {
-      if ($info = $function($handler, $contexts)) {
+      if ($info = $function($handler, $contexts, $args)) {
         // If we don't own the page, let the caller deal with rendering.
         if (!$page) {
           return $info;

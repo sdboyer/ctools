@@ -70,7 +70,7 @@ function delegator_node_view($node) {
   ctools_include('context-task-handler');
   $contexts = ctools_context_handler_get_task_contexts($task, '', array($node));
 
-  $output = ctools_context_handler_render($task, '', $contexts);
+  $output = ctools_context_handler_render($task, '', $contexts, array($node->nid));
   if ($output !== FALSE) {
     node_tag_new($node->nid);
     return $output;
@@ -91,7 +91,7 @@ function delegator_node_view_get_arguments($task, $subtask_id) {
     array(
       'keyword' => 'node',
       'identifier' => t('Node being viewed'),
-      'id' => 0,
+      'id' => 1,
       'name' => 'nid',
       'settings' => array(),
     ),

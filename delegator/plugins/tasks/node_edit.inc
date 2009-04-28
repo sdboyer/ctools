@@ -73,7 +73,7 @@ function delegator_node_edit($node) {
   ctools_include('context-task-handler');
   $contexts = ctools_context_handler_get_task_contexts($task, '', array($node));
 
-  $output = ctools_context_handler_render($task, '', $contexts);
+  $output = ctools_context_handler_render($task, '', $contexts, array($node->nid));
   if ($output === FALSE) {
     // Fall back!
     // We've already built the form with the context, so we can't build it again, or
@@ -122,7 +122,7 @@ function delegator_node_edit_get_arguments($task, $subtask_id) {
     array(
       'keyword' => 'node',
       'identifier' => t('Node being edited'),
-      'id' => 0,
+      'id' => 1,
       'name' => 'node_edit',
       'settings' => array(),
     ),

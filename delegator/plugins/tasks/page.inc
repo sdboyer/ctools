@@ -294,14 +294,19 @@ function delegator_page_execute($subtask_id) {
 
   // Turn the contexts into a properly keyed array.
   $contexts = array();
-  foreach (func_get_args() as $arg) {
+  $args = array();
+  foreach (func_get_args() as $count => $arg) {
     if (is_object($arg) && get_class($arg) == 'ctools_context') {
       $contexts[$arg->id] = $arg;
+      $args[] = $arg->original_argument;
+    }
+    else if ($count) {
+      $args[] = $arg;
     }
   }
 
   ctools_include('context-task-handler');
-  $output = ctools_context_handler_render($task, $subtask_id, $contexts);
+  $output = ctools_context_handler_render($task, $subtask_id, $contexts, $args);
   if ($output === FALSE) {
     return drupal_not_found();
   }
