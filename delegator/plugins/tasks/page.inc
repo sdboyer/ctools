@@ -285,13 +285,6 @@ function delegator_page_execute($subtask_id) {
   $page = delegator_page_load($subtask_id);
   $task = delegator_get_task($page->task);
 
-  if ($function = ctools_plugin_get_function($task, 'page callback')) {
-    $args = func_get_args();
-    // overwrite the id with the actual page so it won't be loaded again.
-    $args[0] = $page;
-    return call_user_func_array($function, $args);
-  }
-
   // Turn the contexts into a properly keyed array.
   $contexts = array();
   $args = array();
@@ -303,6 +296,25 @@ function delegator_page_execute($subtask_id) {
     else if ($count) {
       $args[] = $arg;
     }
+  }
+
+  $count = 0;
+  $names = delegator_page_get_named_arguments($page->path);
+  $bits = explode('/', $page->path);
+
+  foreach ($page->arguments as $name => $argument) {
+    // Optional arguments must be converted to contexts too, if they exist.
+    if ($bits[$names[$name]][0] == '!' && isset($args[$count])) {
+      $argument['keyword'] = $name;
+      ctools_include('context');
+      $context = ctools_context_get_context_from_argument($argument, $args[$count]);
+      $contexts[$context->id] = $context;
+    }
+    $count++;
+  }
+
+  if ($function = ctools_plugin_get_function($task, 'page callback')) {
+    return call_user_func_array($function, array($page, $contexts, $args));
   }
 
   ctools_include('context-task-handler');
@@ -459,3 +471,26 @@ function delegator_page_export($page, $with_handlers = FALSE, $indent = '') {
   return $output;
 }
 
+/**
+ * Get a list of named arguments in a delegator page path.
+ *
+ * @param $path
+ *   A normal Drupal path.
+ *
+ * @return
+ *   An array of % marked variable arguments, keyed by the argument's name.
+ *   The value will be the position of the argument so that it can easily
+ *   be found. Items with a position of -1 have multiple positions.
+ */
+function delegator_page_get_named_arguments($path) {
+  $arguments = array();
+  $bits = explode('/', $path);
+  foreach ($bits as $position => $bit) {
+    if ($bit && ($bit[0] == '%' || $bit[0] == '!')) {
+      // special handling for duplicate path items and substr to remove the %
+      $arguments[substr($bit, 1)] = isset($arguments[$bit]) ? -1 : $position;
+    }
+  }
+
+  return $arguments;
+}

@@ -64,7 +64,7 @@ function ctools_block_content_type_content_types() {
  * based on the module and delta supplied in the configuration.
  */
 function ctools_block_content_type_render($subtype, $conf) {
-  list($module, $delta) = explode('-', $subtype, 2);
+  list($module, $delta) = _ctools_block_get_module_delta($subtype, $conf);
   $block = (object) module_invoke($module, 'block', 'view', $delta);
   if (empty($block)) {
     return;
@@ -137,6 +137,17 @@ function ctools_block_content_type_edit_form(&$form, &$form_state) {
 }
 
 /**
+ * Submit function to fix the subtype for really old panel panes.
+ */
+function ctools_block_content_type_edit_form_submit(&$form, &$form_state) {
+  if (empty($form_state['subtype']) && isset($form_state['pane'])) {
+    $form_state['pane']->subtype = $form_state['conf']['module'] . '-' . $form_state['conf']['delta'];
+    unset($form_state['conf']['module']);
+    unset($form_state['conf']['delta']);
+  }
+}
+
+/**
  * Returns an edit form for a block.
  */
 //function ctools_block_content_type_edit_form($id, $parents, $conf) {
@@ -204,7 +215,7 @@ function ctools_block_content_type_edit_form(&$form, &$form_state) {
  * Returns the administrative title for a type.
  */
 function ctools_block_content_type_admin_title($subtype, $conf) {
-  list($module, $delta) = explode('-', $subtype, 2);
+  list($module, $delta) = _ctools_block_get_module_delta($subtype, $conf);
   $block = module_invoke($module, 'block', 'list');
   if (empty($block) || empty($block[$delta])) {
     return t('Deleted/missing block @module-@delta', array('@module' => $module, '@delta' => $delta));
@@ -219,11 +230,20 @@ function ctools_block_content_type_admin_title($subtype, $conf) {
  * based on the module and delta supplied in the configuration.
  */
 function ctools_block_content_type_admin_info($subtype, $conf) {
-  list($module, $delta) = explode('-', $subtype, 2);
+  list($module, $delta) = _ctools_block_get_module_delta($subtype, $conf);
   $block = (object) module_invoke($module, 'block', 'view', $delta);
   if (!empty($block) && !empty($block->subject)) {
     $block->title = $block->subject;
     return $block;
+  }
+}
+
+function _ctools_block_get_module_delta($subtype, $conf) {
+  if (strpos($subtype, '-')) {
+    return explode('-', $subtype, 2);
+  }
+  else {
+    return array($conf['module'], $conf['delta']);
   }
 }
 

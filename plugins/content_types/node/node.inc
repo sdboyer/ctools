@@ -131,14 +131,14 @@ function ctools_node_content_type_edit_form(&$form, &$form_state) {
 
   $form['leave_node_title'] = array(
     '#type' => 'checkbox',
-    '#default_value' => $conf['leave_node_title'],
+    '#default_value' => !empty($conf['leave_node_title']),
     '#title' => t('Leave node title'),
     '#description' => t('Advanced: if checked, do not touch the node title; this can cause the node title to appear twice unless your theme is aware of this.'),
   );
 
   $form['identifier'] = array(
     '#type' => 'textfield',
-    '#default_value' => $conf['identifier'],
+    '#default_value' => !empty($conf['identifier']) ? $conf['identifier'] : '',
     '#title' => t('Identifier'),
     '#description' => t('Whatever is placed here will appear in $node->panel_identifier in the node template to make it easier to theme a node or part of a node as necessary. This identifier will automatically be added as a node template suggestion: node-panel-IDENTIFIER.tpl.php'),
   );

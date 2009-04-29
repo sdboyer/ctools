@@ -20,8 +20,8 @@ function ctools_user_profile_content_type_render($subtype, $conf, $panel_args, $
   $block = new stdClass();
   $block->module = 'user-profile';
 
-  if ($account === FALSE || ($account->access == 0 && !user_access('administer users'))) {
-    return drupal_not_found();
+  if (!$account || ($account->access == 0 && !user_access('administer users'))) {
+    return NULL;
   }
   // Retrieve and merge all profile fields:
   $fields = array();

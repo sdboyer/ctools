@@ -150,7 +150,7 @@ function delegator_page_menu(&$items, $task) {
         $page_arguments[]   = $position;
         $access_arguments[] = $position;
       }
-      else {
+      else if ($bit[0] != '!') {
         $path[] = $bit;
       }
     }
@@ -271,30 +271,6 @@ function delegator_page_clear_page_cache($name) {
 
   ctools_include('object-cache');
   ctools_object_cache_clear('delegator_page', $name);
-}
-
-/**
- * Get a list of named arguments in a delegator page path.
- *
- * @param $path
- *   A normal Drupal path.
- *
- * @return
- *   An array of % marked variable arguments, keyed by the argument's name.
- *   The value will be the position of the argument so that it can easily
- *   be found. Items with a position of -1 have multiple positions.
- */
-function delegator_page_get_named_arguments($path) {
-  $arguments = array();
-  $bits = explode('/', $path);
-  foreach ($bits as $position => $bit) {
-    if ($bit && $bit[0] == '%') {
-      // special handling for duplicate path items and substr to remove the %
-      $arguments[substr($bit, 1)] = isset($arguments[$bit]) ? -1 : $position;
-    }
-  }
-
-  return $arguments;
 }
 
 /**
@@ -528,7 +504,7 @@ function delegator_page_form_basic(&$form, &$form_state) {
   $form['path'] = array(
     '#type' => 'textfield',
     '#title' => t('Path'),
-    '#description' => t('The URL path to get to this page. You may create placeholders in the path by using %, or named placeholders by using %name. For example: "node/%node/foo", "forum/%forum" or "dashboard/%input". Named placeholders can be turned into contexts on the arguments form.'),
+    '#description' => t('The URL path to get to this page. You may create named placeholders for variable parts of the path by using %name for required elements and !name for optional elements. For example: "node/%node/foo", "forum/%forum" or "dashboard/!input". These named placeholders can be turned into contexts on the arguments form.'),
     '#default_value' => $page->path,
   );
 }
@@ -565,11 +541,22 @@ function delegator_page_form_basic_validate(&$form, &$form_state) {
     return;
   }
 
+  $found = FALSE;
+  $error = FALSE;
   foreach (explode('/', $form_state['values']['path']) as $bit) {
     if ($bit[0] == '%') {
+      if ($found) {
+        form_error($form['path'], t('You cannot have a dynamic path element after an optional path element.'));
+      }
       $path[] = '%';
     }
+    else if ($bit[0] == '!') {
+      $found = TRUE;
+    }
     else {
+      if ($found) {
+        form_error($form['path'], t('You cannot have a static path element after an optional path element.'));
+      }
       $path[] = $bit;
     }
   }

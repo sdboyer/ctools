@@ -153,6 +153,10 @@ class ctools_context_required {
   }
 
   function select($contexts, $context) {
+    if (!is_array($contexts)) {
+      $contexts = array($contexts);
+    }
+
     if (empty($context) || empty($contexts[$context])) {
       return FALSE;
     }
