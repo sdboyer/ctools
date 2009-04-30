@@ -56,7 +56,11 @@ function delegator_page_delegator_tasks() {
 //      'page callback' => 'delegator_page_execute',
       // context only items
       'handler type' => 'context',
-      'get arguments' => 'delegator_page_get_arguments',
+      'get arguments' => array(
+        'file' => 'page.admin.inc',
+        'path' => drupal_get_path('module', 'delegator') . '/plugins/tasks',
+        'function' => 'delegator_page_get_arguments',
+      ),
       'get context placeholders' => 'delegator_page_get_contexts',
       'access restrictions' => 'delegator_page_access_restrictions',
       'uses handlers' => TRUE,
@@ -333,13 +337,12 @@ function delegator_page_execute($subtask_id) {
  * Return a list of arguments used by this task.
  */
 function delegator_page_get_arguments($task, $subtask_id) {
-  $page = delegator_page_load($subtask_id);
+  $page = delegator_page_get_page_cache($subtask_id);
   return _delegator_page_get_arguments($page);
 }
 
 function _delegator_page_get_arguments($page) {
   $arguments = array();
-
   if (!empty($page->arguments)) {
     foreach ($page->arguments as $keyword => $argument) {
       if (isset($argument['name'])) {

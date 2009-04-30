@@ -619,9 +619,10 @@ function ctools_context_id($context, $type = 'context') {
  *   The name being used.
  */
 function ctools_context_next_id($objects, $name) {
+  $id = 0;
   // Figure out which instance of this argument we're creating
   if (!$objects) {
-    return $id;
+    return $id + 1;
   }
 
   foreach ($objects as $object) {
@@ -631,7 +632,8 @@ function ctools_context_next_id($objects, $name) {
       }
     }
   }
-  return $id;
+
+  return $id + 1;
 }
 
 
