@@ -913,6 +913,10 @@ function delegator_admin_list_form_action_clone($form, &$form_state, $id, $actio
   $handler->name = $name;
   unset($handler->did);
 
+  if ($function = ctools_plugin_load_function('delegator', 'task_handlers', $handler->handler, 'clone')) {
+    $function($handler);
+  }
+
   // Store the new handler.
   if (!$form_state['cache']->locked) {
     delegator_admin_set_task_handler_cache($handler);
