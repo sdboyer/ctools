@@ -71,7 +71,8 @@ function delegator_node_edit($node) {
   ctools_include('context-task-handler');
   $contexts = ctools_context_handler_get_task_contexts($task, '', array($node));
 
-  $output = ctools_context_handler_render($task, '', $contexts, array($node->nid));
+  $arg = array(isset($node->nid) ? $node->nid : $node->type);
+  $output = ctools_context_handler_render($task, '', $contexts, $arg);
   if ($output === FALSE) {
     // Fall back!
     // We've already built the form with the context, so we can't build it again, or

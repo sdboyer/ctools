@@ -240,7 +240,12 @@ function delegator_page_get_page_cache($name) {
     $cache = delegator_page_load($name);
   }
 
-  $cache->locked = ctools_object_cache_test('delegator_page', $name);
+  if ($name != '::new') {
+    $cache->locked = ctools_object_cache_test('delegator_page', $name);
+  }
+  else {
+    $cache->locked = FALSE;
+  }
 
   return $cache;
 }
