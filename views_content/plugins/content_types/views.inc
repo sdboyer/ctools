@@ -188,7 +188,12 @@ function views_content_views_content_type_render($subtype, $conf, $panel_args, $
     $block->more = array('href' => $view->get_url());
     $view->display_handler->set_option('use_more', FALSE);
   }
-  $view->display_handler->set_option('use_pager', $conf['use_pager']);
+
+  // Only set use_pager if they differ, this way we can avoid overwriting the
+  // pager type that Views uses.
+  if (!$view->display_handler->set_option('use_pager') || empty($conf['use_pager')) {
+    $view->display_handler->set_option('use_pager', $conf['use_pager']);
+  }
   $view->display_handler->set_option('pager_element', $conf['pager_id']);
   $view->display_handler->set_option('items_per_page', $conf['nodes_per_page']);
   $view->display_handler->set_option('offset', $conf['offset']);
