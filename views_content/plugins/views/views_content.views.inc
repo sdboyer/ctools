@@ -17,6 +17,7 @@ function views_content_views_plugins() {
         'help' => t('Is available as content for a panel or dashboard display.'),
         'handler' => 'views_content_plugin_display_panel_pane',
         'path' => drupal_get_path('module', 'views_content') . '/plugins/views',
+        'theme path' => drupal_get_path('module', 'views') . '/theme',
         'theme' => 'views_view',
         'use ajax' => TRUE,
         'use pager' => TRUE,
