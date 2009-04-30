@@ -16,36 +16,37 @@
  */
 function delegator_term_view_delegator_tasks() {
   return array(
-    'term_view' => array(
-      // This is a 'page' task and will fall under the page admin UI
-      'task type' => 'page',
+    // This is a 'page' task and will fall under the page admin UI
+    'task type' => 'page',
 
-      'title' => t('Taxonomy term view'),
-      'description' => t('Control what handles the job of displaying a term at taxonomy/term/%term.'),
-      'admin title' => 'Taxonomy term view', // translated by menu system
-      'admin description' => 'Overrides for the built in taxonomy term handler at <em>taxonomy/term/%term</em>.',
-      'admin path' => 'taxonomy/term/%term',
+    'title' => t('Taxonomy term view'),
+    'description' => t('Control what handles the job of displaying a term at taxonomy/term/%term.'),
+    'admin title' => 'Taxonomy term view', // translated by menu system
+    'admin description' => 'Overrides for the built in taxonomy term handler at <em>taxonomy/term/%term</em>.',
+    'admin path' => 'taxonomy/term/%term',
 
-      // Menu hooks so that we can alter the term/%term menu entry to point to us.
-      'hook menu' => 'delegator_term_view_menu',
-      'hook menu alter' => 'delegator_term_view_menu_alter',
+    // Menu hooks so that we can alter the term/%term menu entry to point to us.
+    'hook menu' => 'delegator_term_view_menu',
+    'hook menu alter' => 'delegator_term_view_menu_alter',
 
-      // This is task uses 'context' handlers and must implement these to give the
-      // handler data it needs.
-      'handler type' => 'context',
-      'get arguments' => 'delegator_term_view_get_arguments',
-      'get context placeholders' => 'delegator_term_view_get_contexts',
+    // Provide a setting to the primary settings UI for Panels
+    'admin settings' => 'delegator_term_view_admin_settings',
 
-      // Allow additional operations
-      'operations' => array(
-        array(
-          'title' => t('Task handlers'),
-          'href' => "admin/build/delegator/term_view",
-        ),
-        array(
-          'title' => t('Settings'),
-          'href' => "admin/build/delegator/term_view/settings",
-        ),
+    // This is task uses 'context' handlers and must implement these to give the
+    // handler data it needs.
+    'handler type' => 'context',
+    'get arguments' => 'delegator_term_view_get_arguments',
+    'get context placeholders' => 'delegator_term_view_get_contexts',
+
+    // Allow additional operations
+    'operations' => array(
+      array(
+        'title' => t('Task handlers'),
+        'href' => "admin/build/delegator/term_view",
+      ),
+      array(
+        'title' => t('Settings'),
+        'href' => "admin/build/delegator/term_view/settings",
       ),
     ),
   );
@@ -150,6 +151,11 @@ function delegator_term_view_get_contexts($task, $subtask_id) {
 function delegator_term_view_settings() {
   $task = delegator_get_task('term_view');
   delegator_set_trail($task);
+  $form = array();
+
+  // This passes thru because the setting can also appear on the main Panels
+  // settings form.
+  delegator_term_view_admin_settings($form);
   $form['delegator_term_view_type'] = array(
     '#type' => 'radios',
     '#title' => t('Allow multiple terms'),
@@ -159,4 +165,17 @@ function delegator_term_view_settings() {
   );
 
   return system_settings_form($form);
+}
+
+/**
+ * Provide a setting to the Panels administrative form.
+ */
+function delegator_term_view_admin_settings(&$form) {
+  $form['delegator_term_view_type'] = array(
+    '#type' => 'radios',
+    '#title' => t('Allow multiple terms on taxonomy/term/%term'),
+    '#options' => array('single' => t('Single term'), 'multiple' => t('Multiple terms')),
+    '#description' => t('By default, Drupal allows multiple terms as an argument by separating them with commas or plus signs. If you set this to single, that feature will be disabled.'),
+    '#default_value' => variable_get('delegator_term_view_type', 'multiple'),
+  );
 }

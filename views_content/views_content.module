@@ -15,18 +15,16 @@
 function views_content_menu() {
   $items = array();
 
-  $base = array(
-    'access arguments' => array('administer views content plugin'),
-    'file' => 'views_content.admin.inc',
-  );
-
-  $items['admin/panels/views'] = array(
-    'title' => 'Views panes',
-    'type' => MENU_NORMAL_ITEM,
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('views_content_admin_page'),
-    'description' => 'Configure Views to be used as panes within panel displays.',
-  ) + $base;
+  if (!module_exists('panels')) {
+    $items['admin/settings/content-views'] = array(
+      'title' => 'Views panes',
+      'access arguments' => array('administer views content plugin'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('views_content_admin_page'),
+      'description' => 'Configure Views to be used as CTools content.',
+      'type' => MENU_NORMAL_ITEM,
+    ) + $base;
+  }
 
   return $items;
 }
@@ -72,5 +70,24 @@ function views_content_views_api() {
   return array(
     'api' => 2,
     'path' => drupal_get_path('module', 'views_content') . '/plugins/views',
+  );
+}
+
+/**
+ * Page callback to provide the basic administration form.
+ */
+function views_content_admin_page() {
+  $form = array();
+  views_content_admin_form($form);
+
+  return system_settings_form($form);
+}
+
+function views_content_admin_form(&$form) {
+  $form['ctools_content_all_views'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Make all views available as panes'),
+    '#description' => t("If checked, all views will be made available as content panes to be added to content types. If not checked, only Views that have a 'Content pane' display will be available as content panes. Uncheck this if you want to be able to more carefully control what view content is available to users using the panels layout UI."),
+    '#default_value' => variable_get('ctools_content_all_views', TRUE),
   );
 }

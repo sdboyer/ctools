@@ -13,6 +13,7 @@
 function views_content_views_panes_ctools_content_types() {
   return array(
     'title' => t('View panes'),
+    'admin settings' => 'views_content_admin_form',
     'js' => array(drupal_get_path('module', 'ctools') . '/js/dependent.js'),
   );
 }
