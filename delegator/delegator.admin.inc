@@ -780,7 +780,7 @@ function delegator_admin_list_form_submit($form, &$form_state) {
       // @todo -- do we need to clear the handler weight here?
     }
     // Otherwise, check to see if it has moved and, if so, update the weight.
-    elseif ($info['weight'] != $form_state['task_handlers'][$id]->weight) {
+    elseif ($info['weight'] != isset($form_state['task_handlers']) && $form_state['task_handlers'][$id]->weight) {
       // Theoretically we could only do this for in code objects, but since our
       // load mechanism checks for all, this is less database work.
       delegator_update_task_handler_weight($form_state['task_handlers'][$id], $info['weight']);
@@ -893,6 +893,9 @@ function delegator_admin_list_form_action_clone($form, &$form_state, $id, $actio
 
   // Get the next weight from the form
   $handler->weight = delegator_admin_update_weights($form_state);
+
+  $handler->export_type = EXPORT_IN_DATABASE;
+  $handler->type = t('Normal');
 
   // Generate a unique name. Unlike most named objects, we don't let people choose
   // names for task handlers because they mostly don't make sense.

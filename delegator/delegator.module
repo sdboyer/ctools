@@ -263,8 +263,13 @@ function delegator_load_task_handlers($task, $subtask_id = NULL, $default_handle
   $defaults = isset($default_handlers) ? $default_handlers : delegator_get_default_task_handlers($task, $subtask_id);
   foreach ($defaults as $name => $default) {
     $result = delegator_compare_task_handlers($handlers, $defaults, $name);
+
     if ($result) {
       $handlers[$name] = $result;
+      // Ensure task and subtask are correct, because it's easy to change task
+      // names when editing a default and fail to do it on the associated handlers.
+      $result->task = $task['name'];
+      $result->subtask = $subtask_id;
     }
   }
 

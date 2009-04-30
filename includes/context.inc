@@ -160,8 +160,8 @@ class ctools_context_required {
     // Due to a bug, some contexts got recorded with an id of 0. This will
     // convert them to the correct ID allowing for some earlier panels
     // to continue to work.
-    if (!empty($context) && $context[strlen($context) - 1] == 0) {
-      $context[strlen($context) -1 ] = 1;
+    if (!empty($context) && $context[strlen($context) - 1] === '0') {\
+      $context[strlen($context) - 1] = 1;
     }
 
     if (empty($context) || empty($contexts[$context])) {
@@ -601,6 +601,10 @@ function ctools_context_keyword_substitute($string, $keywords, $contexts) {
  * are unique in the final list.
  */
 function ctools_context_id($context, $type = 'context') {
+  if (!$context['id']) {
+    $context['id'] = 1;
+  }
+
   return $type . '_' . $context['name'] . '_' . $context['id'];
 }
 
@@ -616,7 +620,6 @@ function ctools_context_id($context, $type = 'context') {
  */
 function ctools_context_next_id($objects, $name) {
   // Figure out which instance of this argument we're creating
-  $id = 0;
   if (!$objects) {
     return $id;
   }
