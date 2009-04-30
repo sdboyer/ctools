@@ -142,7 +142,13 @@ function delegator_page_menu(&$items, $task) {
     $load_arguments   = array($subtask_id, '%index');
 
     // Replace named placeholders with our own placeholder to load contexts.
-    foreach (explode('/', $subtask->path) as $position => $bit) {
+    $position = 0;
+    foreach (explode('/', $subtask->path) as $bit) {
+      // Remove things like double slashes completely.
+      if (!isset($bit) || $bit === '') {
+        continue;
+      }
+
       if ($bit[0] == '%' && $bit != '%') {
         // If an argument, swap it out with our argument loader and make sure
         // the argument gets passed through to the page callback.
@@ -153,6 +159,10 @@ function delegator_page_menu(&$items, $task) {
       else if ($bit[0] != '!') {
         $path[] = $bit;
       }
+
+      // Increment position. We do it like this to skip empty items that
+      // could happen from erroneous paths like: this///that
+      $position++;
     }
 
     $menu_path = implode('/', $path);
@@ -549,6 +559,10 @@ function delegator_page_form_basic_validate(&$form, &$form_state) {
   $found = FALSE;
   $error = FALSE;
   foreach (explode('/', $form_state['values']['path']) as $bit) {
+    if (!isset($bit) || $bit === '') {
+      continue;
+    }
+
     if ($bit[0] == '%') {
       if ($found) {
         form_error($form['path'], t('You cannot have a dynamic path element after an optional path element.'));
