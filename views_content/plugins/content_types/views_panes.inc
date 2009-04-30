@@ -199,7 +199,6 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
   $block = new stdClass();
   $block->module = 'views';
   $block->delta  = $view->name . $display;
-  $block->title = $view->get_title();
 
   if (($allow['link_to_view'] && !empty($conf['link_to_view'])) ||
       (!$allow['link_to_view'] && $view->display_handler->get_option('link_to_view'))) {
@@ -230,6 +229,11 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
   $stored_feeds = drupal_add_feed();
 
   $block->content = $view->preview();
+  if (empty($view->result) && !$view->display_handler->get_option('empty') && empty($view->style_plugin->definition['even empty'])) {
+    return;
+  }
+
+  $block->title = $view->get_title();
 
   if (empty($view->total_rows) || $view->total_rows <= $view->display_handler->get_option('items_per_page')) {
     unset($block->more);

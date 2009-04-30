@@ -195,8 +195,11 @@ function views_content_views_content_type_render($subtype, $conf, $panel_args, $
 
   $stored_feeds = drupal_add_feed();
   $block->content = $view->preview();
-
   $block->title = $view->get_title();
+
+  if (empty($view->result) && !$view->display_handler->get_option('empty') && empty($view->style_plugin->definition['even empty'])) {
+    return;
+  }
 
   if (!empty($conf['feed_icons'])) {
     $new_feeds = drupal_add_feed();

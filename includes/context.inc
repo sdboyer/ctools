@@ -157,6 +157,13 @@ class ctools_context_required {
       $contexts = array($contexts);
     }
 
+    // Due to a bug, some contexts got recorded with an id of 0. This will
+    // convert them to the correct ID allowing for some earlier panels
+    // to continue to work.
+    if (!empty($context) && $context[strlen($context) - 1] == 0) {
+      $context[strlen($context) -1 ] = 1;
+    }
+
     if (empty($context) || empty($contexts[$context])) {
       return FALSE;
     }
