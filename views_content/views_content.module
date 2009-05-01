@@ -23,7 +23,7 @@ function views_content_menu() {
       'page arguments' => array('views_content_admin_page'),
       'description' => 'Configure Views to be used as CTools content.',
       'type' => MENU_NORMAL_ITEM,
-    ) + $base;
+    );
   }
 
   return $items;
