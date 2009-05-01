@@ -191,7 +191,7 @@ function views_content_views_content_type_render($subtype, $conf, $panel_args, $
 
   // Only set use_pager if they differ, this way we can avoid overwriting the
   // pager type that Views uses.
-  if (!$view->display_handler->set_option('use_pager') || empty($conf['use_pager'])) {
+  if (!$view->display_handler->get_option('use_pager') || empty($conf['use_pager'])) {
     $view->display_handler->set_option('use_pager', $conf['use_pager']);
   }
   $view->display_handler->set_option('pager_element', $conf['pager_id']);
