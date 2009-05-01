@@ -40,6 +40,10 @@ function views_content_views_panes_content_type_content_types($plugin) {
     $views = views_get_all_views();
 
     foreach ($views as $view) {
+      if (!empty($view->disabled)) {
+        continue;
+      }
+
       $view->init_display();
 
       foreach ($view->display as $id => $display) {
