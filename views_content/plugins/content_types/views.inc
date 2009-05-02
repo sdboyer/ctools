@@ -59,7 +59,7 @@ function views_content_views_content_type_content_types($plugin) {
     $views = views_get_all_views();
 
     foreach ($views as $view) {
-      if (!empty($view->disabled)) {
+      if (empty($view->disabled)) {
         $types[$view->name] = _views_content_views_content_type($view);
       }
     }

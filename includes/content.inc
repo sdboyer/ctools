@@ -282,7 +282,7 @@ function ctools_content_render($type, $subtype, $conf, $keywords = array(), $arg
 
     if (!empty($content->title)) {
       // Perform substitutions
-      if (!empty($keywords) || !empty($contexts)) {
+      if (!empty($keywords) || !empty($context)) {
         $content->title = ctools_context_keyword_substitute($content->title, $keywords, $context);
       }
 

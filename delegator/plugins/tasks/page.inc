@@ -306,15 +306,17 @@ function delegator_page_execute($subtask_id) {
   $names = delegator_page_get_named_arguments($page->path);
   $bits = explode('/', $page->path);
 
-  foreach ($page->arguments as $name => $argument) {
-    // Optional arguments must be converted to contexts too, if they exist.
-    if ($bits[$names[$name]][0] == '!' && isset($args[$count])) {
-      $argument['keyword'] = $name;
-      ctools_include('context');
-      $context = ctools_context_get_context_from_argument($argument, $args[$count]);
-      $contexts[$context->id] = $context;
+  if ($page->arguments) {
+    foreach ($page->arguments as $name => $argument) {
+      // Optional arguments must be converted to contexts too, if they exist.
+      if ($bits[$names[$name]][0] == '!' && isset($args[$count])) {
+        $argument['keyword'] = $name;
+        ctools_include('context');
+        $context = ctools_context_get_context_from_argument($argument, $args[$count]);
+        $contexts[$context->id] = $context;
+      }
+      $count++;
     }
-    $count++;
   }
 
   if ($function = ctools_plugin_get_function($task, 'page callback')) {

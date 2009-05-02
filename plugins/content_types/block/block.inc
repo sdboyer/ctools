@@ -66,9 +66,13 @@ function ctools_block_content_type_content_types() {
 function ctools_block_content_type_render($subtype, $conf) {
   list($module, $delta) = _ctools_block_get_module_delta($subtype, $conf);
   $block = (object) module_invoke($module, 'block', 'view', $delta);
+
   if (empty($block)) {
     return;
   }
+
+  $block->module = $module;
+  $block->delta = $delta;
 
   if (isset($block->subject)) {
     $block->title = $block->subject;
