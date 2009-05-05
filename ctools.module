@@ -10,6 +10,71 @@
  * must be implemented in the module file.
  */
 
+define('CTOOLS_API_VERSION', '1.0');
+
+/**
+ * Test the CTools API version.
+ *
+ * This function can always be used to safely test if CTools has the minimum
+ * API version that your module can use. It can also try to protect you from
+ * running if the CTools API version is too new, but if you do that you need
+ * to be very quick about watching CTools API releases and release new versions
+ * of your software as soon as the new release is made, or people might end up
+ * updating CTools and having your module shut down without any recourse.
+ *
+ * It is recommended that every hook of your module that might use CTools or
+ * might lead to a use of CTools be guarded like this:
+ *
+ * @code
+ * if (!module_invoke('ctools', 'api_version', '1.0')) {
+ *   return;
+ * }
+ * @endcode
+ *
+ * Note that some hooks such as _menu() or _theme() must return an array().
+ *
+ * You can use it in your hook_requirements to report this error condition
+ * like this:
+ *
+ * @code
+ * define('MODULENAME_MINIMUM_CTOOLS_API_VERSION', '1.0');
+ * define('MODULENAME_MAXIMUM_CTOOLS_API_VERSION', '1.1');
+ *
+ * function MODULENAME_requirements($phase) {
+ *   $requirements = array();
+ *   if (!module_invoke('ctools', 'api_version', MODULENAME_MINIMUM_CTOOLS_API_VERSION, MODULENAME_MAXIMUM_CTOOLS_API_VERSION)) {
+ *      $requirements['MODULENAME_ctools'] = array(
+ *        'title' => $t('MODULENAME required Chaos Tool Suite (CTools) API Version'),
+ *        'value' => t('Between @a and @b', array('@a' => MODULENAME_MINIMUM_CTOOLS_API_VERSION, '@b' => MODULENAME_MAXIMUM_CTOOLS_API_VERSION)),
+ *        'severity' => REQUIREMENT_ERROR,
+ *      );
+ *   }
+ *   return $requirements;
+ * }
+ * @endcode
+ *
+ * Please note that the version is a string, not an floating point number.
+ * This will matter once CTools reaches version 1.10.
+ *
+ * A CTools API changes history will be kept in API.txt. Not every new
+ * version of CTools will necessarily update the API version.
+ * @param $minimum
+ *   The minimum version of CTools necessary for your software to run with it.
+ * @param $maximum
+ *   The maximum version of CTools allowed for your software to run with it.
+ */
+function ctools_api_version($minimum, $maximum = NULL) {
+  if (version_compare(CTOOLS_API_VERSION, $minimum, '<')) {
+    return FALSE;
+  }
+
+  if (isset($maximum) && version_compare(CTOOLS_API_VERSION, $maximum, '>')) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
 /**
  * Include ctools .inc files as necessary.
  */

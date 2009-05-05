@@ -1,0 +1,4 @@
+API.txt: $Id$
+
+API version 1.0:
+  Initial CTools API version.
