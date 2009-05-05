@@ -41,7 +41,8 @@ function ctools_context_create_node_add_form($empty, $data = NULL, $conf = FALSE
   }
 
   if ($conf) {
-    $data = $data['type'];
+    // Holdover from typo'd config.
+    $data = isset($data['types']) ? $data['types'] : $data['type'];
   }
 
   if (!empty($data)) {
@@ -55,7 +56,8 @@ function ctools_context_create_node_add_form($empty, $data = NULL, $conf = FALSE
       $node = array('uid' => $user->uid, 'name' => $user->name, 'type' => $type);
 
       ctools_include('form');
-      $form_id = $node->type . '_node_form';
+      module_load_include('inc', 'node', 'node.pages');
+      $form_id = $node['type'] . '_node_form';
 
       $form_state = array('want form' => TRUE, 'args' => array($node));
       $form = ctools_build_form($form_id, $form_state);
@@ -85,7 +87,11 @@ function ctools_context_node_add_form_settings_form($conf, $external = FALSE) {
     $options[$type] = $info->name;
   }
 
-  $form['types'] = array(
+  if (isset($conf['types']) && !isset($conf['type'])) {
+    $conf['type'] = $conf['types'];
+  }
+
+  $form['type'] = array(
     '#title' => t('Node type'),
     '#type' => 'select',
     '#options' => $options,
@@ -94,7 +100,7 @@ function ctools_context_node_add_form_settings_form($conf, $external = FALSE) {
   );
 
   if ($external) {
-    $form['types']['#description'] .= ' ' . t('Select external to require this from an external source (such as a containing panel page).');
+    $form['type']['#description'] .= ' ' . t('Select external to require this from an external source (such as a containing panel page).');
   }
 
   return $form;
