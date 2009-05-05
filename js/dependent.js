@@ -76,7 +76,7 @@ Drupal.CTools.dependent.autoAttach = function() {
       // Drupal.settings.CTools.dependent[id].values[bind_id] holds the possible values
 
       if (bind_id.substring(0, 6) == 'radio:') {
-        var trigger_id = "input[@name='" + bind_id.substring(6) + "']";
+        var trigger_id = "input[name='" + bind_id.substring(6) + "']";
       }
       else {
         var trigger_id = '#' + bind_id;
