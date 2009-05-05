@@ -28,7 +28,7 @@ Drupal.behaviors.zzGoLastDelegatorTaskList = function(context) {
     $dropdown = $(this).parent().siblings('.ctools-dropdown');
    
     $('.ctools-dropdown-container a', $dropdown).click(function() {
-      var val = $(this).attr('href').replace(/^.*[\/\\]/g, '');
+      var val = $(this).attr('href').replace(/^.*[\/\\](\?q=)?/g, '');
 
       // ignore empty
       if (!val) {
