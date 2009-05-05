@@ -154,7 +154,7 @@ function ctools_css_cache($css, $filter = TRUE) {
     file_check_directory($path, FILE_CREATE_DIRECTORY);
   }
 
-  // @todo Is this slow? DOes it matter if it is?
+  // @todo Is this slow? Does it matter if it is?
   $filename = $path . '/' . md5($css) . '.css';
 
   // This will do renames if the file already exists, ensuring we don't
@@ -528,3 +528,10 @@ function ctools_css_filter_default_allowed_values() {
   );
 }
 
+/**
+ * Delegated implementation of hook_flush_caches()
+ */
+function ctools_css_flush_caches() {
+  file_scan_directory(file_create_path('ctools/css'), '.*', array('.', '..', 'CVS'), 'file_delete', TRUE);
+  db_query("TRUNCATE {ctools_css_cache}");
+}

@@ -282,3 +282,11 @@ function ctools_preprocess_node(&$vars) {
     $vars['template_files'][] = 'node-panel-' . check_plain($vars['node']->panel_identifier);
   }
 }
+
+/**
+ * Ensure the CTools CSS cache is flushed whenever hook_flush_caches is invoked.
+ */
+function ctools_flush_caches() {
+  ctools_include('css');
+  ctools_css_flush_caches();
+}
