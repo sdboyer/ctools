@@ -41,7 +41,7 @@ function ctools_vocabulary_terms_content_type_render($subtype, $conf, $panel_arg
   $block->module  = 'node_type';
   $block->title = check_plain($vocab->name);
   $block->content = $output;
-  $block->delta   = $vocab->tid;
+  $block->delta   = $vocab->vid;
 
   return $block;
 }

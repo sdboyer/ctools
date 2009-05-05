@@ -35,7 +35,7 @@ function ctools_context_create_vocabulary($empty, $data = NULL, $conf = FALSE) {
     return $context;
   }
 
-  if ($conf) {
+  if ($conf && isset($data['vid'])) {
     $data = taxonomy_vocabulary_load($data['vid']);
   }
 
@@ -61,7 +61,7 @@ function ctools_context_vocabulary_settings_form($conf, $external = FALSE) {
     '#title' => t('Vocabulary'),
     '#type' => 'select',
     '#options' => $options,
-    '#default_value' => $conf['vids'],
+    '#default_value' => isset($conf['vids']) ? $conf['vids'] : array(),
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',
     '#description' => t('Select the vocabulary for this form.'),
