@@ -56,10 +56,16 @@ function ctools_context_create_node_add_form($empty, $data = NULL, $conf = FALSE
       $node = array('uid' => $user->uid, 'name' => $user->name, 'type' => $type);
 
       ctools_include('form');
-      module_load_include('inc', 'node', 'node.pages');
       $form_id = $node['type'] . '_node_form';
 
       $form_state = array('want form' => TRUE, 'args' => array($node));
+
+      $file = drupal_get_path('module', 'node') . '/node.pages.inc';
+      include_once './' . $file;
+      // This piece of information can let other modules know that more files
+      // need to be included if this form is loaded from cache:
+      $form_state['form_load_files'] = array($file);
+
       $form = ctools_build_form($form_id, $form_state);
       // In a form, $data is the object being edited.
       $context->data     = $type;
