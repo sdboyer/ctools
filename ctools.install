@@ -7,6 +7,37 @@
  */
 
 /**
+ * Use requirements to ensure that the CTools CSS cache directory can be
+ * created.
+ */
+function ctools_requirements($phase) {
+  $requirements = array();
+  if ($phase == 'runtime') {
+    $path = file_create_path('ctools/css');
+    if (!file_check_directory($path)) {
+      $path = file_directory_path() . '/ctools';
+      file_check_directory($path, FILE_CREATE_DIRECTORY);
+      $path .= '/css';
+      file_check_directory($path, FILE_CREATE_DIRECTORY);
+    }
+
+    $requirements['ctools_css_cache'] = array(
+      'title' => t('CTools CSS Cache'),
+      'severity' => REQUIREMENT_OK,
+      'value' => t('Exists'),
+    );
+
+    if (!file_check_directory($path)) {
+      $requirements['ctools_css_cache']['description'] = t('The CTools CSS cache directory could not be created due to a misconfigured files directory. Please ensure that the files directory is corretly configured and that the webserver has permission to create directories.');
+      $requirements['ctools_css_cache']['severity'] = REQUIREMENT_ERROR;
+      $requirements['ctools_css_cache']['value'] = t('Unable to create');
+    }
+  }
+
+  return $requirements;
+}
+
+/**
  * Implementation of hook_install()
  */
 function ctools_install() {

@@ -147,11 +147,16 @@ function ctools_css_cache($css, $filter = TRUE) {
 
   // Create the css/ within the files folder.
   $path = file_create_path('ctools/css');
-  if (!$path) {
+  if (!file_check_directory($path)) {
     $path = file_directory_path() . '/ctools';
     file_check_directory($path, FILE_CREATE_DIRECTORY);
     $path .= '/css';
     file_check_directory($path, FILE_CREATE_DIRECTORY);
+  }
+
+  if (!file_check_directory($path)) {
+    drupal_set_message(t('Unable to create CTools CSS cache directory. Check the permissions on your files directory.'), 'error');
+    return;
   }
 
   // @todo Is this slow? Does it matter if it is?
