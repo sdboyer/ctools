@@ -497,6 +497,10 @@ function delegator_admin_list_form(&$form_state) {
     'export' => 'delegator_admin_list_form_action_export',
   );
 
+  if ($function = ctools_plugin_get_function($task, 'task admin')) {
+    $function($form, $form_state);
+  }
+
   return $form;
 }
 

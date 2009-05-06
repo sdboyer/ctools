@@ -7,22 +7,25 @@
  */
 function delegator_user_view_delegator_tasks() {
   return array(
-    'user_view' => array(
-      // This is a 'page' task and will fall under the page admin UI
-      'task type' => 'page',
-      'title' => t('User view'),
-      'description' => t('The user view task allows you to control which modules serve requests made to user/%. By default, the core user module will show the user account page. The first task that matches the user will be used to display the user. If no task handlers exist, or if none of the existing task handlers are configured to handle the currently requested user, then the request falls back to the default Drupal user view mechanism.'),
-      'admin title' => 'User view', // translated by menu system
-      'admin description' => 'Overrides for the built in user handler, allowing customized user output.',
-      'admin path' => 'user/%user',
-      'hook menu' => 'delegator_user_view_menu',
-      'hook menu alter' => 'delegator_user_view_menu_alter',
-      // This is task uses 'context' handlers and must implement these to give the
-      // handler data it needs.
-      'handler type' => 'context', // handler type -- misnamed
-      'get arguments' => 'delegator_user_view_get_arguments',
-      'get context placeholders' => 'delegator_user_view_get_contexts',
-    ),
+    // This is a 'page' task and will fall under the page admin UI
+    'task type' => 'page',
+    'title' => t('User view'),
+    'description' => t('The user view task allows you to control which modules serve requests made to user/%. By default, the core user module will show the user account page. The first task that matches the user will be used to display the user. If no task handlers exist, or if none of the existing task handlers are configured to handle the currently requested user, then the request falls back to the default Drupal user view mechanism.'),
+    'admin title' => 'User view', // translated by menu system
+    'admin description' => 'Overrides for the built in user handler, allowing customized user output.',
+    'admin path' => 'user/%user',
+
+    // Callback to add items to the delegator task administration form:
+    'task admin' => 'delegator_term_view_task_admin',
+
+    'hook menu' => 'delegator_user_view_menu',
+    'hook menu alter' => 'delegator_user_view_menu_alter',
+
+    // This is task uses 'context' handlers and must implement these to give the
+    // handler data it needs.
+    'handler type' => 'context', // handler type -- misnamed
+    'get arguments' => 'delegator_user_view_get_arguments',
+    'get context placeholders' => 'delegator_user_view_get_contexts',
   );
 }
 
@@ -34,9 +37,21 @@ function delegator_user_view_delegator_tasks() {
  */
 function delegator_user_view_menu_alter(&$items, $task) {
   // Override the user view handler for our purpose.
-  $items['user/%user_uid_optional']['page callback'] = 'delegator_user_view';
-  $items['user/%user_uid_optional']['file path'] = $task['path'];
-  $items['user/%user_uid_optional']['file'] = $task['file'];
+  if ($items['user/%user_uid_optional']['page callback'] == 'user_view' || variable_get('delegator_override_anyway', FALSE)) {
+    $items['user/%user_uid_optional']['page callback'] = 'delegator_user_view';
+    $items['user/%user_uid_optional']['file path'] = $task['path'];
+    $items['user/%user_uid_optional']['file'] = $task['file'];
+  }
+}
+
+/**
+ * Warn if we are unable to override the taxonomy term page.
+ */
+function delegator_user_view_task_admin(&$form, &$form_state) {
+  $callback = db_result(db_query("SELECT page_callback FROM {menu_router} WHERE path = 'user/%'"));
+  if ($callback != 'delegator_user_view') {
+    drupal_set_message(t('Delegator module is unable to override user/%user because some other module already has overridden with %callback. Delegator will not be able to handle this page.', array('%callback' => $callback)), 'warning');
+  }
 }
 
 /**

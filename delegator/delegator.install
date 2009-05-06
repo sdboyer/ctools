@@ -187,6 +187,7 @@ function delegator_schema_1() {
  */
 function delegator_install() {
   drupal_install_schema('delegator');
+  db_query("UPDATE {system} SET weight = 99 WHERE name = 'delegator'");
 }
 
 /**
@@ -236,5 +237,11 @@ function delegator_update_6101() {
   db_drop_field($ret, 'delegator_pages', 'type');
   db_add_field($ret, 'delegator_pages', 'task', $task);
 
+  return $ret;
+}
+
+function delegator_update_6102() {
+  $ret = array();
+  $ret[] = update_sql("UPDATE {system} SET weight = 99 WHERE name = 'delegator'");
   return $ret;
 }

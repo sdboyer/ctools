@@ -16,26 +16,27 @@
  */
 function delegator_node_view_delegator_tasks() {
   return array(
-    'node_view' => array(
-      // This is a 'page' task and will fall under the page admin UI
-      'task type' => 'page',
+    // This is a 'page' task and will fall under the page admin UI
+    'task type' => 'page',
 
-      'title' => t('Node view'),
-      'description' => t('The node view task allows you to control what handler will handle the job of rendering a node view at the path <em>node/%node</em>. If no handler is set or matches the criteria, the default Drupal node renderer will be used.'),
-      'admin title' => 'Node view', // translated by menu system
-      'admin description' => 'Overrides for the built in node view handler at <em>node/%node</em>.',
-      'admin path' => 'node/%node',
+    'title' => t('Node view'),
+    'description' => t('The node view task allows you to control what handler will handle the job of rendering a node view at the path <em>node/%node</em>. If no handler is set or matches the criteria, the default Drupal node renderer will be used.'),
+    'admin title' => 'Node view', // translated by menu system
+    'admin description' => 'Overrides for the built in node view handler at <em>node/%node</em>.',
+    'admin path' => 'node/%node',
 
-      // Menu hooks so that we can alter the node/%node menu entry to point to us.
-      'hook menu' => 'delegator_node_view_menu',
-      'hook menu alter' => 'delegator_node_view_menu_alter',
+    // Callback to add items to the delegator task administration form:
+    'task admin' => 'delegator_node_view_task_admin',
 
-      // This is task uses 'context' handlers and must implement these to give the
-      // handler data it needs.
-      'handler type' => 'context',
-      'get arguments' => 'delegator_node_view_get_arguments',
-      'get context placeholders' => 'delegator_node_view_get_contexts',
-    ),
+    // Menu hooks so that we can alter the node/%node menu entry to point to us.
+    'hook menu' => 'delegator_node_view_menu',
+    'hook menu alter' => 'delegator_node_view_menu_alter',
+
+    // This is task uses 'context' handlers and must implement these to give the
+    // handler data it needs.
+    'handler type' => 'context',
+    'get arguments' => 'delegator_node_view_get_arguments',
+    'get context placeholders' => 'delegator_node_view_get_contexts',
   );
 }
 
@@ -47,11 +48,22 @@ function delegator_node_view_delegator_tasks() {
  */
 function delegator_node_view_menu_alter(&$items, $task) {
   // Override the node view handler for our purpose.
-  $items['node/%node']['page callback'] = 'delegator_node_view';
-  $items['node/%node']['file path'] = $task['path'];
-  $items['node/%node']['file'] = $task['file'];
-
+  if ($items['node/%node']['page callback'] == 'node_page_view' || variable_get('delegator_override_anyway', FALSE)) {
+    $items['node/%node']['page callback'] = 'delegator_node_view';
+    $items['node/%node']['file path'] = $task['path'];
+    $items['node/%node']['file'] = $task['file'];
+  }
   // @todo override node revision handler as well?
+}
+
+/**
+ * Warn if we are unable to override the taxonomy term page.
+ */
+function delegator_node_view_task_admin(&$form, &$form_state) {
+  $callback = db_result(db_query("SELECT page_callback FROM {menu_router} WHERE path = 'node/%'"));
+  if ($callback != 'delegator_node_view') {
+    drupal_set_message(t('Delegator module is unable to override node/%node because some other module already has overridden with %callback. Delegator will not be able to handle this page.', array('%callback' => $callback)), 'warning');
+  }
 }
 
 /**
