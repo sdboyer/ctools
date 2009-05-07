@@ -15,44 +15,46 @@
  * more information.
  */
 function delegator_term_view_delegator_tasks() {
-  return array(
-    // This is a 'page' task and will fall under the page admin UI
-    'task type' => 'page',
+  if (module_exists('taxonomy')) {
+    return array(
+      // This is a 'page' task and will fall under the page admin UI
+      'task type' => 'page',
 
-    'title' => t('Taxonomy term view'),
-    'description' => t('Control what handles the job of displaying a term at taxonomy/term/%term.'),
-    'admin title' => 'Taxonomy term view', // translated by menu system
-    'admin description' => 'Overrides for the built in taxonomy term handler at <em>taxonomy/term/%term</em>.',
-    'admin path' => 'taxonomy/term/%term',
+      'title' => t('Taxonomy term view'),
+      'description' => t('Control what handles the job of displaying a term at taxonomy/term/%term.'),
+      'admin title' => 'Taxonomy term view', // translated by menu system
+      'admin description' => 'Overrides for the built in taxonomy term handler at <em>taxonomy/term/%term</em>.',
+      'admin path' => 'taxonomy/term/%term',
 
-    // Menu hooks so that we can alter the term/%term menu entry to point to us.
-    'hook menu' => 'delegator_term_view_menu',
-    'hook menu alter' => 'delegator_term_view_menu_alter',
+      // Menu hooks so that we can alter the term/%term menu entry to point to us.
+      'hook menu' => 'delegator_term_view_menu',
+      'hook menu alter' => 'delegator_term_view_menu_alter',
 
-    // Provide a setting to the primary settings UI for Panels
-    'admin settings' => 'delegator_term_view_admin_settings',
+      // Provide a setting to the primary settings UI for Panels
+      'admin settings' => 'delegator_term_view_admin_settings',
 
-    // Callback to add items to the delegator task administration form:
-    'task admin' => 'delegator_term_view_task_admin',
+      // Callback to add items to the delegator task administration form:
+      'task admin' => 'delegator_term_view_task_admin',
 
-    // This is task uses 'context' handlers and must implement these to give the
-    // handler data it needs.
-    'handler type' => 'context',
-    'get arguments' => 'delegator_term_view_get_arguments',
-    'get context placeholders' => 'delegator_term_view_get_contexts',
+      // This is task uses 'context' handlers and must implement these to give the
+      // handler data it needs.
+      'handler type' => 'context',
+      'get arguments' => 'delegator_term_view_get_arguments',
+      'get context placeholders' => 'delegator_term_view_get_contexts',
 
-    // Allow additional operations
-    'operations' => array(
-      array(
-        'title' => t('Task handlers'),
-        'href' => "admin/build/delegator/term_view",
+      // Allow additional operations
+      'operations' => array(
+        array(
+          'title' => t('Task handlers'),
+          'href' => "admin/build/delegator/term_view",
+        ),
+        array(
+          'title' => t('Settings'),
+          'href' => "admin/build/delegator/term_view/settings",
+        ),
       ),
-      array(
-        'title' => t('Settings'),
-        'href' => "admin/build/delegator/term_view/settings",
-      ),
-    ),
-  );
+    );
+  }
 }
 
 /**
