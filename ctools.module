@@ -136,6 +136,57 @@ function _ctools_passthrough(&$items, $type = 'theme') {
   }
 }
 
+function ctools_theme_registry_alter(&$registry) {
+  if ($registry['menu_local_tasks']['function'] == 'theme_menu_local_tasks') {
+    $registry['menu_local_tasks'] = array(
+      'function' => 'ctools_theme_menu_local_tasks',
+      'path' => drupal_get_path('module', 'ctools') . '/includes',
+      'file' => 'menu.inc',
+    ) + $registry['menu_local_tasks'];
+  }
+
+  if ($registry['help']['function'] == 'theme_help') {
+    $registry['help'] = array(
+      'function' => 'ctools_menu_help',
+      'path' => drupal_get_path('module', 'ctools') . '/includes',
+      'file' => 'menu.inc',
+    ) + $registry['help'];
+  }
+
+  // Handle a special override for garland because it's cute and does its own
+  // thing with tabs and we can't ask users to edit a core theme for us.
+  if ($registry['menu_local_tasks']['function'] == 'phptemplate_menu_local_tasks' &&
+      $registry['menu_local_tasks']['theme paths'][1] == 'themes/garland') {
+    $registry['menu_local_tasks'] = array(
+      'function' => 'ctools_garland_menu_local_tasks',
+      'path' => drupal_get_path('module', 'ctools') . '/includes',
+      'file' => 'menu.inc',
+    ) + $registry['menu_local_tasks'];
+  }
+
+  if (isset($registry['page']['preprocess functions'][2]) &&
+      $registry['page']['preprocess functions'][2] == 'phptemplate_preprocess_page' &&
+      $registry['page']['theme paths'][1] == 'themes/garland') {
+    $registry['page']['preprocess functions'][2] = 'ctools_garland_preprocess_page';
+  }
+}
+
+
+/**
+ * Override or insert PHPTemplate variables into the templates.
+ *
+ * This needs to be in the .module file to ensure availability; we can't change the
+ * paths or it won't be able to find templates.
+ */
+function ctools_garland_preprocess_page(&$vars) {
+  $vars['tabs2'] = ctools_menu_secondary_local_tasks();
+
+  // Hook into color.module
+  if (module_exists('color')) {
+    _color_page_alter($vars);
+  }
+}
+
 /**
  * Implementation of hook_theme().
  */
