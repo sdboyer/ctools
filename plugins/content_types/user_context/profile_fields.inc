@@ -5,7 +5,7 @@
 /**
  * Callback function to supply a list of content types.
  */
-function panels_profile_fields_panels_content_types() {
+function ctools_profile_fields_ctools_content_types() {
   if (module_exists('profile') && !is_null(profile_categories())) {
     return array(
       'single' => TRUE,

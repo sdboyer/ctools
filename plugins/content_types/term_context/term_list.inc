@@ -4,7 +4,7 @@
 /**
  * Callback function to supply a list of content types.
  */
-function panels_term_list_panels_content_types() {
+function ctools_term_list_ctools_content_types() {
   return array(
     'single' => TRUE,
     'title' => t('List of related terms'),
@@ -21,7 +21,7 @@ function ctools_term_list_content_type_render($subtype, $conf, $panel_args, $con
   $block = new stdClass();
   $block->module = 'term-list';
 
-  $options = panels_admin_term_list_options();
+  $options = ctools_admin_term_list_options();
   if ($term) {
     $block->subject = $options[$conf['type']];
     $block->delta = $conf['type'];
@@ -66,7 +66,7 @@ function ctools_term_list_content_type_render($subtype, $conf, $panel_args, $con
   return $block;
 }
 
-function panels_admin_term_list_options() {
+function ctools_admin_term_list_options() {
   return array(
     'child' => t('Child terms'),
     'related' => t('Related terms'),
@@ -85,7 +85,7 @@ function ctools_term_list_content_type_edit_form(&$form, &$form_state) {
   $form['type'] = array(
     '#type' => 'radios',
     '#title' => t('Which terms'),
-    '#options' => panels_admin_term_list_options(),
+    '#options' => ctools_admin_term_list_options(),
     '#default_value' => $conf['type'],
     '#prefix' => '<div class="clear-block no-float">',
     '#suffix' => '</div>',
@@ -100,7 +100,7 @@ function ctools_term_list_content_type_edit_form(&$form, &$form_state) {
 }
 
 function ctools_term_list_content_type_admin_title($subtype, $conf, $context) {
-  $options = panels_admin_term_list_options();
+  $options = ctools_admin_term_list_options();
   return t('"@s" @type', array('@s' => $context->identifier, '@type' => drupal_strtolower($options[$conf['type']])));
 }
 

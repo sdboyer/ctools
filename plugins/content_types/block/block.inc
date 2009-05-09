@@ -25,7 +25,7 @@ function ctools_block_ctools_content_types() {
 /**
  * Return all block content types available.
  *
- * Modules wanting to make special adjustments the way that panels handles their blocks
+ * Modules wanting to make special adjustments the way that CTools handles their blocks
  * can implement an extension to the hook_block() family, where the function name is
  * of the form "$module . '_ctools_block_info'".
  */
@@ -170,7 +170,7 @@ function ctools_block_content_type_edit_form_submit(&$form, &$form_state) {
 //        $settings['info']['#type'] = 'value';
 //        $settings['info']['#value'] = $settings['info']['#default_value'];
 //      }
-//      panels_admin_fix_block_tree($settings);
+//      ctools_admin_fix_block_tree($settings);
 //      $form['block_settings'] = array(
 //        '#type' => 'fieldset',
 //        '#title' => t('Block settings'),
@@ -186,7 +186,7 @@ function ctools_block_content_type_edit_form_submit(&$form, &$form_state) {
 //  return $form;
 //}
 
-//function panels_admin_submit_block(&$form_values) {
+//function ctools_admin_submit_block(&$form_values) {
 //  if (!empty($form_values['block_settings'])) {
 //    module_invoke($form_values['module'], 'block', 'save', $form_values['delta'], $form_values['block_settings']);
 //  }
@@ -196,7 +196,7 @@ function ctools_block_content_type_edit_form_submit(&$form, &$form_state) {
 // * Because form api cannot collapse just part of a tree, and the block settings
 // * assume no tree, we have to collapse the tree ourselves.
 // */
-//function panels_admin_fix_block_tree(&$form, $key = NULL) {
+//function ctools_admin_fix_block_tree(&$form, $key = NULL) {
 //  if ($key) {
 //    if (!empty($form['#parents'])) {
 //      $form['#parents'] = array_merge(array('configuration', 'block_settings'), $form['#parents']);
@@ -211,7 +211,7 @@ function ctools_block_content_type_edit_form_submit(&$form, &$form_state) {
 //  }
 //
 //  foreach (element_children($form) as $key) {
-//    panels_admin_fix_block_tree($form[$key], $key);
+//    ctools_admin_fix_block_tree($form[$key], $key);
 //  }
 //}
 
@@ -268,7 +268,7 @@ function ctools_default_block_info($module, $delta, &$info) {
   }
 }
 
-// These are all on behalf of modules that don't implement panels but we that
+// These are all on behalf of modules that don't implement ctools but we that
 // we care about.
 function menu_ctools_block_info($module, $delta, &$info) {
   $info['icon'] = 'icon_core_block_menu.png';
@@ -291,7 +291,7 @@ function forum_ctools_block_info($module, $delta, &$info) {
 
     default:
       // safety net
-      panels_default_block_info($module, $delta, $info);
+      ctools_default_block_info($module, $delta, $info);
   }
 }
 

@@ -8,7 +8,7 @@
  */
 
 /**
- * Implementation of hook_panels_content_types()
+ * Implementation of hook_ctools_content_types()
  */
 function ctools_node_ctools_content_types() {
   return array(
