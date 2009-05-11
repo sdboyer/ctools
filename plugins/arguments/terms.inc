@@ -18,6 +18,10 @@ function ctools_terms_ctools_arguments() {
     'description' => t('Creates a group of taxonomy terms from a list of tids separated by a comma or a plus sign. In general the first term of the list will be used for panes.'),
     'context' => 'ctools_terms_context',
     'settings form' => 'ctools_terms_settings_form',
+    'placeholder form' => array(
+      '#type' => 'textfield',
+      '#description' => t('Enter a term ID or a list of term IDs separated by a + or a ,'),
+    ),
   );
   return $args;
 }
