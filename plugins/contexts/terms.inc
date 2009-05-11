@@ -58,7 +58,7 @@ function ctools_context_create_terms($empty, $data = NULL, $conf = FALSE) {
     }
     $context->data     = $data->term;
     $context->title    = $data->term->name;
-    $context->argument = implode($context->operator == 'or' ? '+' : ',', $context->tids);
+    $context->argument = implode($context->operator == 'or' ? '+' : ',', array_unique($context->tids));
     return $context;
   }
 }
@@ -78,7 +78,7 @@ function ctools_context_terms_convert($context, $type) {
       // We only run this query if this item was requested:
       if (!isset($context->names)) {
         if (empty($context->tids)) {
-          $context->names = 'xxx';
+          $context->names = '';
         }
         else {
           $result = db_query("SELECT tid, name FROM {term_data} WHERE tid IN (" . db_placeholders($context->tids) . ")", $context->tids);
