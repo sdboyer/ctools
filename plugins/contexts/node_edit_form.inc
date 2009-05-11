@@ -73,16 +73,7 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
   }
 }
 
-function ctools_context_node_edit_form_settings_form($conf, $external = FALSE) {
-  if ($external) {
-    $form['external'] = array(
-      '#type' => 'checkbox',
-      '#default_value' => $conf['external'],
-      '#title' => t('Require this context from an external source (such as a containing panel page).'),
-      '#description' => t('If selected, node selection (below) will be ignored.'),
-    );
-  }
-
+function ctools_context_node_edit_form_settings_form($conf) {
   $form['node'] = array(
     '#prefix' => '<div class="no-float">',
     '#suffix' => '</div>',
@@ -106,11 +97,6 @@ function ctools_context_node_edit_form_settings_form($conf, $external = FALSE) {
     '#value' => $conf['nid'],
   );
 
-  $form['external'] = array(
-    '#type' => 'value',
-    '#value' => $external,
-  );
-
   return $form;
 }
 
@@ -118,7 +104,7 @@ function ctools_context_node_edit_form_settings_form($conf, $external = FALSE) {
  * Validate a node.
  */
 function ctools_context_node_edit_form_settings_form_validate($form, &$form_values, &$form_state) {
-  if (empty($form_values['external']) && empty($form_values['nid']) && empty($form_values['node'])) {
+  if (empty(empty($form_values['nid']) && empty($form_values['node'])) {
     form_error($form['node'], t('You must select a node.'));
     return;
   }

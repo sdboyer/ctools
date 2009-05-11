@@ -47,11 +47,8 @@ function ctools_context_create_vocabulary($empty, $data = NULL, $conf = FALSE) {
   }
 }
 
-function ctools_context_vocabulary_settings_form($conf, $external = FALSE) {
+function ctools_context_vocabulary_settings_form($conf) {
   $options = array();
-  if ($external) {
-    $options[0] = t('External source');
-  }
 
   foreach (taxonomy_get_vocabularies() as $vid => $vocabulary) {
     $options[$vid] = $vocabulary->name;
@@ -66,9 +63,6 @@ function ctools_context_vocabulary_settings_form($conf, $external = FALSE) {
     '#suffix' => '</div>',
     '#description' => t('Select the vocabulary for this form.'),
   );
-  if ($external) {
-    $form['vid']['#description'] .= ' ' . t('Select external to require this from an external source (such as a containing panel page).');
-  }
 
   return $form;
 }

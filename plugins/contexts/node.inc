@@ -68,19 +68,10 @@ function ctools_context_create_node($empty, $data = NULL, $conf = FALSE) {
   }
 }
 
-function ctools_context_node_settings_form($conf, $external = FALSE) {
+function ctools_context_node_settings_form($conf) {
   if (empty($conf)) {
     $conf = array(
       'nid' => '',
-    );
-  }
-
-  if ($external) {
-    $form['external'] = array(
-      '#type' => 'checkbox',
-      '#default_value' => $conf['external'],
-      '#title' => t('Require this context from an external source (such as a containing panel page).'),
-      '#description' => t('If selected, node selection (below) will be ignored.'),
     );
   }
 
@@ -122,7 +113,7 @@ function ctools_context_node_settings_form($conf, $external = FALSE) {
  */
 function ctools_context_node_settings_form_validate($form, &$form_values, &$form_state) {
   // Validate the autocomplete
-  if (empty($form_values['external']) && empty($form_values['nid']) && empty($form_values['node'])) {
+  if (empty($form_values['nid']) && empty($form_values['node'])) {
     form_error($form['node'], t('You must select a node.'));
     return;
   }

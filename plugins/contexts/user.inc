@@ -53,7 +53,7 @@ function ctools_context_create_user($empty, $data = NULL, $conf = FALSE) {
   }
 }
 
-function ctools_context_user_settings_form($conf, $external = FALSE) {
+function ctools_context_user_settings_form($conf) {
   $form = array();
   return $form;
 }
