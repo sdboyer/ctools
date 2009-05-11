@@ -1,0 +1,4 @@
+ctools 6.x-1.0-dev
+==================
+
+#459716: content.theme.inc missing typo caused PHP error.
