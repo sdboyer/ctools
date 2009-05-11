@@ -104,7 +104,7 @@ function ctools_context_node_edit_form_settings_form($conf) {
  * Validate a node.
  */
 function ctools_context_node_edit_form_settings_form_validate($form, &$form_values, &$form_state) {
-  if (empty(empty($form_values['nid']) && empty($form_values['node'])) {
+  if (empty($form_values['nid']) && empty($form_values['node'])) {
     form_error($form['node'], t('You must select a node.'));
     return;
   }

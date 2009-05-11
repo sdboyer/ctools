@@ -65,6 +65,40 @@ function ctools_modal_add_js() {
   $done = TRUE;
 }
 
+function ctools_modal_add_plugin_js($plugins) {
+  $css = array();
+  $js = array(drupal_get_path('module', 'ctools') . '/js/dependent.js' => TRUE);
+  foreach ($plugins as $subtype) {
+    if (isset($subtype['js'])) {
+      foreach ($subtype['js'] as $file) {
+        if (file_exists($file)) {
+          $js[$file] = TRUE;
+        }
+        else if (file(exists($subtype['path'] . '/' . $file))) {
+          $js[$subtype['path'] . '/' . $file] = TRUE;
+        }
+      }
+    }
+    if (isset($subtype['css'])) {
+      foreach ($subtype['css'] as $file) {
+        if (file_exists($file)) {
+          $css[$file] = TRUE;
+        }
+        else if (file(exists($subtype['path'] . '/' . $file))) {
+          $css[$subtype['path'] . '/' . $file] = TRUE;
+        }
+      }
+    }
+  }
+
+  foreach (array_keys($js) as $file) {
+    drupal_add_js($file);
+  }
+  foreach (array_keys($css) as $file) {
+    drupal_add_css($file);
+  }
+}
+
 /**
  * Place HTML within the modal.
  *

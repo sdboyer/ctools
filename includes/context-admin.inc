@@ -194,6 +194,8 @@ function ctools_context_admin_includes() {
   ctools_include('ajax');
   ctools_include('object-cache');
   ctools_modal_add_js();
+  ctools_modal_add_plugin_js(ctools_get_contexts());
+  ctools_modal_add_plugin_js(ctools_get_relationships());
 }
 
 /**
@@ -324,7 +326,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
 
   // Give this item an id, which is really just the nth version
   // of this particular context.
-  $id = ctools_context_next_id($ref, $name) + 1;
+  $id = ctools_context_next_id($ref, $name);
 
   // Figure out the position for our new context.
   $position = empty($ref) ? 0 : max(array_keys($ref)) + 1;
