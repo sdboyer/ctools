@@ -74,6 +74,10 @@ function ctools_block_content_type_render($subtype, $conf) {
   $block->module = $module;
   $block->delta = $delta;
 
+  if ($module == 'block') {
+    $block->subject = db_result(db_query("SELECT title FROM {blocks} WHERE module = '%s' AND delta = '%s'", 'block', $delta));
+  }
+
   if (isset($block->subject)) {
     $block->title = $block->subject;
   }
