@@ -48,10 +48,11 @@
  * @endcode
  *
  * The CSS that was generated will be stored in the database, so even if the
- * file was removed the cached CSS will be used. It is your module's
- * responsibility to know when this CSS is outdated and needs to be
- * changed. This storage is non-volatile and will never be removed unless
- * you remove it:
+ * file was removed the cached CSS will be used. If the CSS cache is
+ * cleared you may be required to regenerate your CSS. This will normally
+ * only be cleared by an administrator operation, not during normal usage.
+ *
+ * You may remove your stored CSS this way:
  *
  * @code
  *   ctools_css_clear($id);
