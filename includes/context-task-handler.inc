@@ -49,17 +49,6 @@ function ctools_context_handler_render($task, $subtask_id, $contexts, $args, $pa
           return $info;
         }
 
-        $plugin = delegator_get_task_handler($handler->handler);
-
-        if (user_access('administer delegator')) {
-          // Provide a tab to edit this context:
-          ctools_include('menu');
-          ctools_menu_add_tab(array(
-            'title' => t('Edit @type', array('@type' => $plugin['title'])),
-            'href' => "admin/build/delegator/" . delegator_make_task_name($task['name'], $subtask_id) . "/$handler->handler/$handler->name",
-          ));
-        }
-
         if (isset($info['title'])) {
           drupal_set_title($info['title']);
         }
@@ -77,6 +66,22 @@ function ctools_context_handler_render($task, $subtask_id, $contexts, $args, $pa
   }
 
   return FALSE;
+}
+
+/**
+ * Called to execute actions that should happen before a handler is rendered.
+ */
+function ctools_context_handler_pre_render($handler, $contexts, $args) {
+  $plugin = delegator_get_task_handler($handler->handler);
+
+  if (user_access('administer delegator') && isset($handler->task)) {
+    // Provide a tab to edit this context:
+    ctools_include('menu');
+    ctools_menu_add_tab(array(
+      'title' => t('Edit @type', array('@type' => $plugin['title'])),
+      'href' => "admin/build/delegator/" . delegator_make_task_name($handler->task, $handler->subtask) . "/$handler->handler/$handler->name",
+    ));
+  }
 }
 
 /**
