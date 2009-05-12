@@ -197,7 +197,7 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
   $allow = $view->display_handler->get_option('allow');
 
   if ($allow['path_override'] && !empty($conf['path'])) {
-    $view->display_handler->set_option('path', $conf['path']);
+    $view->override_path = $conf['path'];
   }
 
   $block = new stdClass();

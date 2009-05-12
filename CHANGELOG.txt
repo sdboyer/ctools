@@ -5,3 +5,4 @@ ctools 6.x-1.0-dev
 #455732 by dereine: Restore code to pull the title from the blocks table for block types.
 #451928 by josh_k: Allow file uploads in the modal.
 #447920: Ensure there is a context selector for the "terms" argument and context converters so it can be used with Views.
+#458300: Panels not using proper method to override the path for the view.
