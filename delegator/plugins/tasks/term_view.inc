@@ -119,6 +119,17 @@ function delegator_term_view($terms, $depth = 0, $op = 'page') {
       return drupal_not_found();
     }
 
+    // Add a fake tab for 'View' so that edit tabs can be added.
+    if (user_access('administer delegator')) {
+      ctools_include('menu');
+      ctools_menu_add_tab(array(
+        'title' => t('View'),
+        'href' => $_GET['q'],
+        'type' => MENU_DEFAULT_LOCAL_TASK,
+        'weight' => -10,
+      ));
+    }
+
     $output = ctools_context_handler_render($task, '', $contexts, array($terms, $depth, $op));
     if ($output !== FALSE) {
       return $output;
