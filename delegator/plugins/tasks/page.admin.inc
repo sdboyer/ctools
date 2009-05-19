@@ -1462,7 +1462,7 @@ function delegator_page_export_subtask($name, $handlers = FALSE) {
 /**
  * Entry point to clone a page.
  */
-function delegator_page_clone_subtask(&$form_state, $task_name, $name) {
+function delegator_page_clone_subtask(&$form_state, $name) {
   // This ensures the task .inc file is loaded
   delegator_get_task('page');
   $page = delegator_page_load($name);
