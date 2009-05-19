@@ -292,6 +292,8 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
     $conf['path'] = $view->get_path();
   }
 
+  $form['arguments']['#tree'] = TRUE;
+
   foreach ($view->display_handler->get_argument_input() as $id => $argument) {
     if ($argument['type'] == 'user') {
       $form['arguments'][$id] = array(
@@ -385,7 +387,7 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
 function views_content_views_panes_content_type_edit_form_submit(&$form, &$form_state) {
   // Copy everything from our defaults.
   $keys = array('link_to_view', 'more_link', 'feed_icons', 'use_pager',
-    'pager_id', 'items_per_page', 'offset', 'path_override', 'path');
+    'pager_id', 'items_per_page', 'offset', 'path_override', 'path', 'arguments');
 
   foreach ($keys as $key) {
     if (isset($form_state['values'][$key])) {
