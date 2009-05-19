@@ -688,6 +688,10 @@ function ctools_get_arguments() {
  */
 function ctools_context_get_context_from_argument($argument, $arg, $empty = FALSE) {
   ctools_include('plugins');
+  if (empty($argument['name'])) {
+    return;
+  }
+
   if ($function = ctools_plugin_load_function('ctools', 'arguments', $argument['name'], 'context')) {
     if (!isset($argument['settings'])) {
       $argument['settings'] = array();

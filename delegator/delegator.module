@@ -699,6 +699,25 @@ function dp_arg_load($value, $subtask, $argument) {
 }
 
 /**
+ * Possibly provide a default value so that variable items can appear in visible menus.
+ */
+function dp_arg_to_arg($bit, $map, $index) {
+/*
+  Reference code.
+
+  $start = microtime();
+  $introspect = debug_backtrace();
+  dsm(microtime() - $start);
+  foreach ($introspect as $call) {
+    if ($call['function'] == '_menu_link_translate') {
+      dsm(array($map, $call['args']['0']));
+    }
+  }
+*/
+}
+
+
+/**
  * Get the render function for a handler.
  */
 function delegator_get_renderer($handler) {
