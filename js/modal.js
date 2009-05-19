@@ -40,7 +40,7 @@ Drupal.CTools.Modal.show = function() {
   $('span.modal-title', Drupal.CTools.Modal.modal).html(Drupal.t('Loading...'));
   Drupal.CTools.Modal.modal.modalContent({
     // @todo this should be elsewhere.
-    opacity: '.40', 
+    opacity: '.55', 
     background: '#fff'
   });
   $('#modalContent .modal-content').html(Drupal.theme('CToolsModalThrobber'));
