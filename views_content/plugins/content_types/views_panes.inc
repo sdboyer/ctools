@@ -151,7 +151,7 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
     switch ($argument['type']) {
       case 'context':
         $key = array_shift($context_keys);
-        if ($key) {
+        if (isset($context[$key])) {
           if (strpos($argument['context'], '.')) {
             list($context, $converter) = explode('.', $argument['context'], 2);
             $args[] = ctools_context_convert_context($contexts[$key], $converter);
