@@ -108,14 +108,15 @@ function ctools_plugin_api_include($owner, $api, $minimum_version, $current_vers
 
   $info = ctools_plugin_api_info($owner, $api, $minimum_version, $current_version);
   if (!isset($already_done[$owner][$api])) {
-    foreach ($info as $module => $info) {
-      if (!isset($info['file'])) {
-        $info['file'] = "$module.$api.inc";
+    foreach ($info as $module => $plugin_info) {
+      if (!isset($plugin_info['file'])) {
+        $plugin_info['file'] = "$module.$api.inc";
       }
-      if (file_exists("./$info[path]/$info[file]")) {
-        $info[$module]['included'] = TRUE;
-        require_once "./$info[path]/$info[file]";
+      if (file_exists("./$plugin_info[path]/$plugin_info[file]")) {
+        $plugin_info[$module]['included'] = TRUE;
+        require_once "./$plugin_info[path]/$plugin_info[file]";
       }
+      $info[$module] = $plugin_info;
     }
     $already_done[$owner][$api] = TRUE;
   }
