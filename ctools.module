@@ -313,6 +313,10 @@ function ctools_break_phrase($str) {
     return $object;
   }
 
+  if (empty($object->value)) {
+    $object->value = array();
+  }
+
   // Doubly ensure that all values are numeric only.
   foreach ($object->value as $id => $value) {
     $object->value[$id] = intval($value);
