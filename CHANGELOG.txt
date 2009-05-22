@@ -2,7 +2,11 @@ Current API VERSION: 1.0.1
 
 ctools 6.x-1.0-dev
 ==================
+#451078: Fix silly typo preventing contexts from getting to views. Again.
 
+
+ctools 6.x-1.0-beta3
+==================
 #459716: content.theme.inc missing typo caused PHP error.
 #455732 by dereine: Restore code to pull the title from the blocks table for block types.
 #451928 by josh_k: Allow file uploads in the modal.
