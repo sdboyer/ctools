@@ -28,9 +28,11 @@ function ctools_user_profile_content_type_render($subtype, $conf, $panel_args, $
   foreach (module_list() as $module) {
     if ($data = module_invoke($module, 'user', 'view', '', $account)) {
       foreach ($data as $category => $items) {
-        foreach ($items as $key => $item) {
-          $item['class'] = "$module-". $item['class'];
-          $fields[$category][$key] = $item;
+        if (is_array($items)) {
+          foreach ($items as $key => $item) {
+            $item['class'] = "$module-". $item['class'];
+            $fields[$category][$key] = $item;
+          }
         }
       }
     }
