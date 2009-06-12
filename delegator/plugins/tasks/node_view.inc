@@ -88,8 +88,17 @@ function delegator_node_view($node) {
     return $output;
   }
 
+  $function = 'node_page_view';
+  foreach (module_implements('delegator_override') as $module) {
+    $call = $module . '_delegator_override';
+    if ($rc = $call('node_view') && function_exists($rc)) {
+      $function = $rc;
+      break;
+    }
+  }
+
   // Otherwise, fall back.
-  return node_page_view($node);
+  return $function($node);
 }
 
 /**

@@ -170,7 +170,7 @@ function delegator_page_menu(&$items, $task) {
     $items[$menu_path] = delegator_page_menu_item($task, $subtask->menu, $access_arguments, $page_arguments, $load_arguments);
 
     // Add a parent menu item if one is configured.
-    if ($subtask->menu['type'] == 'default tab' && $subtask->menu['parent']['type'] != 'none') {
+    if (isset($subtask->menu['type']) && $subtask->menu['type'] == 'default tab' && $subtask->menu['parent']['type'] != 'none') {
       array_pop($path);
       $parent_path = implode('/', $path);
       $items[$parent_path] = delegator_page_menu_item($task, $subtask->menu['parent'], $access_arguments, $page_arguments, $load_arguments);
@@ -211,6 +211,10 @@ function delegator_page_menu_item($task, $menu, $access_arguments, $page_argumen
   }
   if (isset($menu['weight'])) {
     $item['weight'] = $menu['weight'];
+  }
+
+  if (empty($menu['type'])) {
+    $menu['type'] = 'none';
   }
 
   switch ($menu['type']) {

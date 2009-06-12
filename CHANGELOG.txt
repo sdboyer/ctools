@@ -3,7 +3,8 @@ Current API VERSION: 1.0.1
 ctools 6.x-1.0-dev
 ==================
 #451078: Fix silly typo preventing contexts from getting to views. Again.
-
+#457376: Text fields need array defaults. This only broke in pgsql.
+Add a hook to allow other modules to cooperate a bit more easily with node page overriding.
 
 ctools 6.x-1.0-beta3
 ==================

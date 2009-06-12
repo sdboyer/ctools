@@ -70,6 +70,7 @@ function delegator_schema_1() {
         'description' => 'Serialized configuration of the handler, if needed.',
         'not null' => TRUE,
         'serialize' => TRUE,
+        'object default' => array(),
       ),
     ),
     'primary key' => array('did'),
@@ -144,6 +145,7 @@ function delegator_schema_1() {
         'description' => 'Access configuration for this path.',
         'not null' => TRUE,
         'serialize' => TRUE,
+        'object default' => array(),
       ),
       'multiple' => array(
         'type' => 'int',
@@ -157,6 +159,7 @@ function delegator_schema_1() {
         'description' => 'Serialized configuration of Drupal menu visibility settings for this item.',
         'not null' => TRUE,
         'serialize' => TRUE,
+        'object default' => array(),
       ),
       'arguments' => array(
         'type' => 'text',
@@ -164,6 +167,7 @@ function delegator_schema_1() {
         'description' => 'Configuration of arguments for this menu item.',
         'not null' => TRUE,
         'serialize' => TRUE,
+        'object default' => array(),
       ),
       'conf' => array(
         'type' => 'text',
@@ -171,6 +175,7 @@ function delegator_schema_1() {
         'description' => 'Serialized configuration of the page, if needed.',
         'not null' => TRUE,
         'serialize' => TRUE,
+        'object default' => array(),
       ),
     ),
     'primary key' => array('pid'),
@@ -243,5 +248,14 @@ function delegator_update_6101() {
 function delegator_update_6102() {
   $ret = array();
   $ret[] = update_sql("UPDATE {system} SET weight = 99 WHERE name = 'delegator'");
+  return $ret;
+}
+
+function delegator_update_6103() {
+  $ret = array();
+  db_query("UPDATE {delegator_pages} SET menu = '%s' WHERE menu = '' OR menu IS NULL", 'a:0:{}');
+  db_query("UPDATE {delegator_pages} SET arguments = '%s' WHERE arguments = '' OR arguments IS NULL", 'a:0:{}');
+  db_query("UPDATE {delegator_pages} SET conf = '%s' WHERE conf = '' OR conf IS NULL", 'a:0:{}');
+
   return $ret;
 }
