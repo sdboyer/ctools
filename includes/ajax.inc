@@ -58,6 +58,11 @@
  * - settings
  *   - argument: An array of settings to add to Drupal.settings via $.extend
  *
+ * - data
+ *   - selector: The CSS selector. This can be any selector jquery uses in $().
+ *   - name: The name or key of the data attached to this selector.
+ *   - value: The value of the data. Not just limited to strings can be any format.
+ *
  * Commands are usually created with a couple of helper functions, so they
  * look like this:
  *
@@ -291,6 +296,28 @@ function ctools_ajax_command_settings($argument) {
   return array(
     'command' => 'settings',
     'argument' => $argument,
+  );
+}
+
+/**
+ * Create a data command for the AJAX responder.
+ *
+ * This will attach the name=value pair of data to the selector via
+ * jquery's data cache.
+ *
+ * @param $selector
+ *   The CSS selector. This can be any selector jquery uses in $().
+ * @param $name
+ *   The name or key: of the data attached to this selector.
+ * @param $value
+ *  The value of the data. Not just limited to strings can be any format.
+ */
+function ctools_ajax_command_data($selector, $name, $value) {
+  return array(
+    'command' => 'data',
+    'selector' => $selector,
+    'name' => $name,
+    'value' => $value,
   );
 }
 

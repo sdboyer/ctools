@@ -210,6 +210,10 @@ Drupal.CTools.AJAX.commands = {
     $.extend(Drupal.settings, data.argument);
   },
 
+  data: function(data) {
+    $(data.selector).data(data.name, data.value);
+  },
+  
   restripe: function(data) {
     // :even and :odd are reversed because jquery counts from 0 and
     // we count from 1, so we're out of sync.

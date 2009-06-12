@@ -6,6 +6,7 @@ ctools 6.x-1.0-dev
 #457376: Text fields need array defaults. This only broke in pgsql.
 Add a hook to allow other modules to cooperate a bit more easily with node page overriding.
 #472222: Prevent modules providing invalid user data from causing warnings in profile content.
+#478438 by nickl: Allow passing items to the data() element.
 
 ctools 6.x-1.0-beta3
 ==================
