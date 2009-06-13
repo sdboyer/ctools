@@ -130,6 +130,18 @@ function delegator_term_view($terms, $depth = 0, $op = 'page') {
       ));
     }
 
+    // Build breadcrumb based on first hierarchy of first term:
+    $term_args = taxonomy_terms_parse_string($terms);
+    $current->tid = $term_args['tids'][0];
+    $breadcrumb = array();
+    while ($parents = taxonomy_get_parents($current->tid)) {
+      $current = array_shift($parents);
+      $breadcrumb[] = l($current->name, 'taxonomy/term/'. $current->tid);
+    }
+    $breadcrumb[] = l(t('Home'), NULL);
+    $breadcrumb = array_reverse($breadcrumb);
+    drupal_set_breadcrumb($breadcrumb);
+
     $output = ctools_context_handler_render($task, '', $contexts, array($terms, $depth, $op));
     if ($output !== FALSE) {
       return $output;
