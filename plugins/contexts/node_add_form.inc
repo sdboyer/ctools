@@ -40,7 +40,7 @@ function ctools_context_create_node_add_form($empty, $data = NULL, $conf = FALSE
     return $context;
   }
 
-  if ($conf) {
+  if ($conf && (isset($data['types']) || isset($data['type']))) {
     // Holdover from typo'd config.
     $data = isset($data['types']) ? $data['types'] : $data['type'];
   }
@@ -88,16 +88,20 @@ function ctools_context_node_add_form_settings_form($conf) {
   foreach (node_get_types() as $type => $info) {
     $options[$type] = $info->name;
   }
+  asort($options);
 
   if (isset($conf['types']) && !isset($conf['type'])) {
     $conf['type'] = $conf['types'];
+  }
+  if (empty($conf)) {
+    $conf = array('type' => '');
   }
 
   $form['type'] = array(
     '#title' => t('Node type'),
     '#type' => 'select',
     '#options' => $options,
-    '#default_value' => $conf['types'],
+    '#default_value' => $conf['type'],
     '#description' => t('Select the node type for this form.'),
   );
 
