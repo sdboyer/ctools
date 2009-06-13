@@ -784,7 +784,7 @@ function delegator_admin_list_form_submit($form, &$form_state) {
       // @todo -- do we need to clear the handler weight here?
     }
     // Otherwise, check to see if it has moved and, if so, update the weight.
-    elseif ($info['weight'] != isset($form_state['task_handlers']) && $form_state['task_handlers'][$id]->weight) {
+    elseif (isset($form_state['task_handlers']) && $info['weight'] != $form_state['task_handlers'][$id]->weight) {
       // Theoretically we could only do this for in code objects, but since our
       // load mechanism checks for all, this is less database work.
       delegator_update_task_handler_weight($form_state['task_handlers'][$id], $info['weight']);
