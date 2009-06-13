@@ -10,6 +10,7 @@ Add a hook to allow other modules to cooperate a bit more easily with node page 
 #480252 Fix some PHP notices.
 #447064 by nickl: Improve requirements message when css cache directory cannot be created.
 #481928: Needed indexes on delegator handlers and pages tables.
+#484284 by crea: Add a node links content type to print just a node's links.
 
 ctools 6.x-1.0-beta3
 ==================
