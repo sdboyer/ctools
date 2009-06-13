@@ -28,7 +28,7 @@ function ctools_requirements($phase) {
     );
 
     if (!file_check_directory($path)) {
-      $requirements['ctools_css_cache']['description'] = t('The CTools CSS cache directory could not be created due to a misconfigured files directory. Please ensure that the files directory is corretly configured and that the webserver has permission to create directories.');
+      $requirements['ctools_css_cache']['description'] = t('The CTools CSS cache directory, %path could not be created due to a misconfigured files directory. Please ensure that the files directory is correctly configured and that the webserver has permission to create directories.', array('%path' => $path));
       $requirements['ctools_css_cache']['severity'] = REQUIREMENT_ERROR;
       $requirements['ctools_css_cache']['value'] = t('Unable to create');
     }
