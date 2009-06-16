@@ -183,7 +183,6 @@ function delegator_schema_1() {
     'unique keys' => array(
       'name' => array('name'),
     'indexes' => array('task' => array('task')),
-    ),
   );
 
   return $schema;
