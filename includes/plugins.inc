@@ -222,8 +222,17 @@ function ctools_plugin_load_includes($info, $file = NULL) {
   // Load all our plugins.
   $directories = ctools_plugin_get_directories($info);
   $file_list = array();
+  if (isset($info['extension'])) {
+    $extension = $info['extension'];
+  }
+  else if (isset($info['info file'])) {
+    $extension = 'info';
+  }
+  else {
+    $extension = 'inc';
+  }
   foreach ($directories as $module => $path) {
-    $file_list[$module] = drupal_system_listing("$file" . '.inc$', $path, 'name', 0);
+    $file_list[$module] = drupal_system_listing("$file." . $extension . '$', $path, 'name', 0);
   }
   $plugins = array();
 
@@ -231,12 +240,19 @@ function ctools_plugin_load_includes($info, $file = NULL) {
   // that should now be available.
   foreach (array_filter($file_list) as $module => $files) {
     foreach ($files as $file) {
-      require_once './' . $file->filename;
-      // .inc files have a special format for the hook identifier.
-      // For example, 'foo.inc' in the module 'mogul' using the plugin
-      // whose hook is named 'borg_type' should have a function named (deep breath)
-      // mogul_foo_borg_type()
-      $result = ctools_plugin_process($info, $module, $module . '_' . $file->name, dirname($file->filename), basename($file->filename), $file->name);
+      if (isset($info['info file'])) {
+        // Parse a .info file
+        $result = ctools_plugin_process_info($info, $module, $file);
+      }
+      else {
+        // Parse a hook.
+        require_once './' . $file->filename;
+        // .inc files have a special format for the hook identifier.
+        // For example, 'foo.inc' in the module 'mogul' using the plugin
+        // whose hook is named 'borg_type' should have a function named (deep breath)
+        // mogul_foo_borg_type()
+        $result = ctools_plugin_process($info, $module, $module . '_' . $file->name, dirname($file->filename), basename($file->filename), $file->name);
+      }
       if (is_array($result)) {
         $plugins = array_merge($plugins, $result);
       }
@@ -338,6 +354,14 @@ function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL,
     $result = array($base => $result);
   }
 
+  return _ctools_process_data($result, $info, $module, $path, $file);
+}
+
+/**
+ * Fill in default values and run hooks for data loaded for one or
+ * more plugins.
+ */
+function _ctools_process_data($result, $info, $module, $path, $file) {
   // Fill in defaults.
   foreach ($result as $name => $plugin) {
     $result[$name] += array(
@@ -363,6 +387,19 @@ function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL,
     }
   }
   return $result;
+}
+
+
+/**
+ * Process an info file for plugin information, rather than
+ * a hook.
+ */
+function ctools_plugin_process_info($info, $module, $file) {
+  $result = drupal_parse_info_file($file->filename);
+  if ($result) {
+    $result = array($file->name => $result);
+    return _ctools_process_data($result, $info, $module, dirname($file->filename), basename($file->filename));
+  }
 }
 
 /**

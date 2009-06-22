@@ -12,6 +12,7 @@ Add a hook to allow other modules to cooperate a bit more easily with node page 
 #481928: Needed indexes on delegator handlers and pages tables.
 #484284 by crea: Add a node links content type to print just a node's links.
 #485486 by nrambeck: term view override was not setting breadcrumb like taxonomy/term is supposed to.
+#498000: Allow .info files to create data for plugins.
 
 ctools 6.x-1.0-beta3
 ==================
