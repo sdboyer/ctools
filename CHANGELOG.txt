@@ -15,6 +15,7 @@ Add a hook to allow other modules to cooperate a bit more easily with node page 
 #498000: Allow .info files to create data for plugins.
 Fix a bug in plugins.inc where if two modules create a plugin of the same
 name, they would accidentally share data.
+#512048: by tom_o_t: Path fallback override callback had bad logic.
 
 ctools 6.x-1.0-beta3
 ==================

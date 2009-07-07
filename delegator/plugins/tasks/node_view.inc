@@ -91,7 +91,7 @@ function delegator_node_view($node) {
   $function = 'node_page_view';
   foreach (module_implements('delegator_override') as $module) {
     $call = $module . '_delegator_override';
-    if ($rc = $call('node_view') && function_exists($rc)) {
+    if (($rc = $call('node_view')) && function_exists($rc)) {
       $function = $rc;
       break;
     }
