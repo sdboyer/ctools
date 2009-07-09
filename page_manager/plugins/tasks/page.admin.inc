@@ -361,6 +361,13 @@ function page_manager_page_form_basic(&$form, &$form_state) {
     '#default_value' => $page->admin_title,
   );
 
+  $form['admin_description'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Administrative description'),
+    '#description' => t('A description of what this page is, does or is for, for administrative use.'),
+    '#default_value' => $page->admin_description,
+  );
+
   // path
   $form['path'] = array(
     '#type' => 'textfield',
@@ -517,6 +524,11 @@ function page_manager_page_form_basic_submit(&$form, &$form_state) {
   }
 
   $page->admin_title = $form_state['values']['admin_title'];
+  $cache->subtask['admin title'] = check_plain($form_state['values']['admin_title']);
+
+  $page->admin_description = $form_state['values']['admin_description'];
+  $cache->subtask['admin description'] = filter_xss_admin($form_state['values']['admin_description']);
+
   if ($page->path != $form_state['values']['path']) {
     $page->path = $form_state['values']['path'];
     $cache->path_changed = TRUE;

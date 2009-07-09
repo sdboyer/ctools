@@ -1432,9 +1432,9 @@ function page_manager_break_lock_submit(&$form, &$form_state) {
  */
 function page_manager_page_summary(&$form, &$form_state) {
   $page = $form_state['page'];
-  if (isset($form_state['subtask']['description'])) {
+  if (isset($form_state['subtask']['admin description'])) {
     $form['description'] = array(
-      '#value' => filter_xss_admin($form_state['subtask']['description']),
+      '#value' => '<div class="description">' . $form_state['subtask']['admin description'] . '</div>',
     );
   }
 }

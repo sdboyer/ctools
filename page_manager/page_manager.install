@@ -135,6 +135,12 @@ function page_manager_schema_1() {
         'length' => '255',
         'description' => 'Human readable title for this page subtask.',
       ),
+      'admin_description' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'Administrative description of this item.',
+        'object default' => '',
+      ),
       'path' => array(
         'type' => 'varchar',
         'length' => '255',

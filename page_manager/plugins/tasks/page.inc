@@ -209,7 +209,8 @@ function page_manager_page_build_subtask($task, $page) {
 
   $subtask = array(
     'name' => $page->name,
-    'admin title' => $page->admin_title,
+    'admin title' => check_plain($page->admin_title),
+    'admin description' => filter_xss_admin($page->admin_description),
     'admin path' => $page->path,
     'admin type' => t('Custom'),
     'subtask' => $page,
