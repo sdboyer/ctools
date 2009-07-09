@@ -66,7 +66,7 @@ function theme_page_manager_list_pages_form($form) {
   unset($form['form_id']);
   unset($form['form_build_id']);
   unset($form['form_token']);
-  return drupal_render($form);
+  return '<div class="clear-block">' . drupal_render($form) . '</div>';
 }
 
 /**

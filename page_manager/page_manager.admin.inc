@@ -56,7 +56,7 @@ function page_manager_list_page() {
   );
 
   $header[] = array('data' => t('Operations'), 'class' => 'page-manager-page-operations');
-  $output .= theme('table', $header, $pages['rows']);
+  $output .= theme('table', $header, $pages['rows'], array('id' => 'page-manager-list-pages'));
 
   drupal_add_css(drupal_get_path('module', 'page_manager') . '/css/page-manager.css');
   

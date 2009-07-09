@@ -10,6 +10,10 @@ body form#page-manager-list-pages-form {
   margin-bottom: 0;
 }
 
+#page-manager-list-pages {
+  width: 100%;
+}
+
 #edit-order-wrapper {
   clear: left; /* LTR */
 }
@@ -51,6 +55,7 @@ body form#page-manager-list-pages-form {
 #page-manager-edit .page-manager-edit-operations ul {
   margin-top: 0;
   margin-bottom: 0;
+  padding: 0;
 }
 
 #page-manager-edit .page-manager-edit-operations li {

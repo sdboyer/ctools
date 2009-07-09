@@ -198,7 +198,7 @@ function page_manager_install() {
   // If we're swapping over from delegator module, take away its tables.
   // Take THAT, delegator!
   if (db_table_exists('{delegator_pages}')) {
-    db_query("INSERT INTO {page_manager_pages} (SELECT pid, name, task, admin_title, path, access, menu, arguments, conf FROM {delegator_pages})");
+    db_query("INSERT INTO {page_manager_pages} (pid, name, task, admin_title, path, access, menu, arguments, conf) (SELECT pid, name, task, admin_title, path, access, menu, arguments, conf FROM {delegator_pages})");
     db_query("INSERT INTO {page_manager_handlers} (SELECT did, name, task, subtask, handler, weight, conf FROM {delegator_handlers})");
     db_query("INSERT INTO {page_manager_weights} (SELECT name, weight FROM {delegator_weights})");
  
@@ -221,6 +221,8 @@ function page_manager_install() {
         'css' => '',
         'contexts' => array(),
         'relationships' => array(),
+        'did' => NULL,
+        'css_cache' => NULL,
       );
 
       foreach($default_conf as $key => $default) {
@@ -240,9 +242,16 @@ function page_manager_install() {
     }
 
     $ret = array();
-    db_drop_table($ret, '{delegator_pages}');
-    db_drop_table($ret, '{delegator_handlers}');
-    db_drop_table($ret, '{delegator_weights}');
+    db_drop_table($ret, 'delegator_pages');
+    db_drop_table($ret, 'delegator_handlers');
+    db_drop_table($ret, 'delegator_weights');
+
+    // And take delegator's variables:
+    variable_set('page_manager_term_view_type', variable_get('delegator_term_view_type', 'multiple'));
+    variable_del('delegator_term_view_type');
+
+    variable_set('page_manager_override_anyway', variable_get('delegator_override_anyway', FALSE));
+    variable_del('delegator_override_anyway');
   }
   
   db_query("UPDATE {system} SET weight = 99 WHERE name = 'page_manager'");
