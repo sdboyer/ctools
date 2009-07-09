@@ -195,10 +195,11 @@ function page_manager_install() {
     db_query("INSERT INTO {page_manager_pages} (SELECT pid, name, task, admin_title, path, access, menu, arguments, conf FROM {delegator_pages})");
     db_query("INSERT INTO {page_manager_handlers} (SELECT * FROM {delegator_handlers})");
     db_query("INSERT INTO {page_manager_weights} (SELECT * FROM {delegator_weights})");
-
-    db_drop_table('{delegator_pages}');
-    db_drop_table('{delegator_handlers}');
-    db_drop_table('{delegator_weights}');
+ 
+    $ret = array();
+    db_drop_table($ret, '{delegator_pages}');
+    db_drop_table($ret, '{delegator_handlers}');
+    db_drop_table($ret, '{delegator_weights}');
   }
   
   db_query("UPDATE {system} SET weight = 99 WHERE name = 'page_manager'");

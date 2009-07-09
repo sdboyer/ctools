@@ -386,7 +386,7 @@ function page_manager_handler_add_to_page(&$page, $handler, $title = NULL) {
  */
 function page_manager_load_task_handler($task, $subtask_id, $name) {
   ctools_include('export');
-  $result = ctools_export_load_object('delegator_handlers', 'names', array($name));
+  $result = ctools_export_load_object('page_manager_handlers', 'names', array($name));
   $handlers = page_manager_get_default_task_handlers($task, $subtask_id);
   return page_manager_compare_task_handlers($result, $handlers, $name);
 }
@@ -404,7 +404,7 @@ function page_manager_load_task_handlers($task, $subtask_id = NULL, $default_han
     $conditions['subtask'] = $subtask_id;
   }
 
-  $handlers = ctools_export_load_object('delegator_handlers', 'conditions', $conditions);
+  $handlers = ctools_export_load_object('page_manager_handlers', 'conditions', $conditions);
   $defaults = isset($default_handlers) ? $default_handlers : page_manager_get_default_task_handlers($task, $subtask_id);
   foreach ($defaults as $name => $default) {
     $result = page_manager_compare_task_handlers($handlers, $defaults, $name);
@@ -427,7 +427,7 @@ function page_manager_load_task_handlers($task, $subtask_id = NULL, $default_han
       $placeholders[] = "'%s'";
     }
 
-    $result = db_query("SELECT name, weight FROM {delegator_weights} WHERE name IN (" . implode(', ', $placeholders) . ")", $names);
+    $result = db_query("SELECT name, weight FROM {page_manager_weights} WHERE name IN (" . implode(', ', $placeholders) . ")", $names);
     while ($weight = db_fetch_object($result)) {
       $handlers[$weight->name]->weight = $weight->weight;
     }
@@ -551,8 +551,8 @@ function page_manager_save_task_handler(&$handler) {
     $function($handler, $update);
   }
 
-  drupal_write_record('delegator_handlers', $handler, $update);
-  db_query("DELETE FROM {delegator_weights} WHERE name = '%s'", $handler->name);
+  drupal_write_record('page_manager_handlers', $handler, $update);
+  db_query("DELETE FROM {page_manager_weights} WHERE name = '%s'", $handler->name);
 
   // If this was previously a default handler, we may have to write task handlers.
   if (!$update) {
@@ -569,8 +569,8 @@ function page_manager_delete_task_handler($handler) {
   if ($function = ctools_plugin_load_function('page_manager', 'task_handlers', $handler->handler, 'delete')) {
     $function($handler);
   }
-  db_query("DELETE FROM {delegator_handlers} WHERE name = '%s'", $handler->name);
-  db_query("DELETE FROM {delegator_weights} WHERE name = '%s'", $handler->name);
+  db_query("DELETE FROM {page_manager_handlers} WHERE name = '%s'", $handler->name);
+  db_query("DELETE FROM {page_manager_weights} WHERE name = '%s'", $handler->name);
 }
 
 /**
@@ -587,7 +587,7 @@ function page_manager_export_task_handler($handler, $indent = '') {
     $append = $function($handler, $indent);
   }
 
-  $output = ctools_export_object('delegator_handlers', $handler, $indent);
+  $output = ctools_export_object('page_manager_handlers', $handler, $indent);
   $output .= $append;
 
   return $output;
@@ -638,8 +638,8 @@ function page_manager_new_task_handler($plugin) {
  * to the database just because they have their weight changed.
  */
 function page_manager_update_task_handler_weight($handler, $weight) {
-  db_query("DELETE FROM {delegator_weights} WHERE name = '%s'", $handler->name);
-  db_query("INSERT INTO {delegator_weights} (name, weight) VALUES ('%s', %d)", $handler->name, $weight);
+  db_query("DELETE FROM {page_manager_weights} WHERE name = '%s'", $handler->name);
+  db_query("INSERT INTO {page_manager_weights} (name, weight) VALUES ('%s', %d)", $handler->name, $weight);
 }
 
 
