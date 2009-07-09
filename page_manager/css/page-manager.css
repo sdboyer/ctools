@@ -1,0 +1,245 @@
+/* $Id$ */
+body form#page-manager-list-pages-form {
+  margin: 0 0 20px 0;
+}
+
+#page-manager-list-pages-form .form-item {
+  padding-right: 1em; /* LTR */
+  float: left; /* LTR */
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#edit-order-wrapper {
+  clear: left; /* LTR */
+}
+
+#edit-pages-apply,
+#edit-pages-reset {
+  margin-top: 1.65em;
+  float: left; /* LTR */
+}
+
+#page-manager-edit {
+  margin-top: 1em;
+}
+
+#page-manager-edit .page-manager-wrapper {
+  margin: 0;
+  padding: 0 0 0 149px;
+  color: #494949;
+}
+
+#page-manager-edit .page-manager-tabs {
+  border: 1px solid #aaa;
+}
+
+#page-manager-edit .page-manager-edit-operations {
+  float: left;
+  width: 150px;
+  margin-left: -150px;
+  margin-top: -1px;
+  height: 100%;
+  font-size: 90%;
+}
+
+#page-manager-edit .page-manager-edit-operations .inside {
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+}
+
+#page-manager-edit .page-manager-edit-operations ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#page-manager-edit .page-manager-edit-operations li {
+  list-style: none;
+  background: #F6F6F6;
+  border-top: 1px solid #aaa;
+  border-left: 1px solid #aaa;
+  border-right: 1px solid #aaa;
+  padding: 0 0 0 0;
+  margin: 0;
+  line-height: 2em;
+}
+
+#page-manager-edit .page-manager-edit-operations li.active,
+#page-manager-edit .page-manager-edit-operations li.active-group .page-manager-group-title {
+  background: #FFFFFF url(../images/arrow-active.png) no-repeat scroll right center;
+}
+
+#page-manager-edit .page-manager-edit-operations li.changed,
+#page-manager-edit .page-manager-edit-operations li.changed-group .page-manager-group-title {
+  background-color: #ffe;
+  font-weight: bold; 
+}
+
+/** provide a reset for non active stray paths */
+#page-manager-edit .page-manager-edit-operations li.active-group li.not-active .page-manager-group-title,
+#page-manager-edit .page-manager-edit-operations li.changed-group li.not-changed .page-manager-group-title {
+  background: #F6F6F6;
+}
+
+#page-manager-edit .page-manager-edit-operations li.active {
+  border-right: 1px solid white;
+}
+
+#page-manager-edit .page-manager-edit-operations li.active a,
+#page-manager-edit .page-manager-edit-operations li.active a:hover {
+  background: #FFFFFF url(../images/arrow-active.png) no-repeat scroll right center;
+  color: #000000;
+  font-weight: bold;
+}
+
+#page-manager-edit .page-manager-edit-operations li.operation-first {
+  border-top: none;
+}
+
+#page-manager-edit .page-manager-edit-operations li li.operation-first {
+  border-top: 1px solid #aaa;
+}
+
+#page-manager-edit .page-manager-edit-operations li a {
+  display: block;
+  padding: 0 0 0 .5em;
+  color: #494949;
+}
+
+#page-manager-edit .page-manager-edit-operations li a:hover {
+  background-color: #eee;
+  text-decoration: none;
+}
+
+#page-manager-edit .page-manager-edit-operations li .ctools-collapsible-handle:hover {
+  background-color: #eee;
+}
+
+#page-manager-edit .page-manager-edit-operations li li {
+  border-right: none;
+  border-left: none;
+  margin-left: 1em;
+}
+
+#page-manager-edit .page-manager-edit-operations li ul {
+/*  padding-bottom: .2em; */
+}
+
+#page-manager-edit .page-manager-group-title {
+  line-height: 2em;
+  font-weight: bold; 
+  padding: 0 0 0 .5em;
+}
+
+/* Change the position of the arrow on the dropdown to look nicer with our defaults. */
+#page-manager-edit .page-manager-edit-operations .ctools-toggle {
+  background-position: 0 9px;
+  width: 10px;
+}
+
+#page-manager-edit .page-manager-ajax-pad {
+  float: left;
+  width: 100%;
+  border-left: none;
+  height: 100%;
+  background: white;
+}
+
+/** A riser to force the ajax pad to a minimum height. **/
+#page-manager-edit .page-manager-ajax-pad .page-manager-riser {
+  width: 1px;
+  float: right;
+  height: 400px;
+}
+
+#page-manager-edit .page-manager-ajax-pad .page-manager-riser span {
+  display: none;
+}
+
+#page-manager-edit .page-manager-ajax-pad .content-title {
+  font-weight: bold;
+  font-size: 120%;
+  background-color: #fafafa;
+  border-bottom: 1px solid #aaa;
+  border-left: 1px solid #aaa;
+  margin-left: -1px;
+  padding: 2px 5px 2px 20px;
+}
+
+#page-manager-edit .actions {
+  padding: 0 0 0 20px;
+  height: 25px;
+}
+
+#page-manager-edit .primary-actions li {
+  border-top: 1px solid #aaa;
+}
+
+#page-manager-edit .secondary-actions {
+  border-bottom: 1px solid #aaa;
+}
+
+#page-manager-edit .actions .page-manager-group-title {
+  float: left;
+  padding-left: 0;
+}
+
+#page-manager-edit .actions ul {
+  float: right;
+  text-align: right;
+  padding: 0;
+  margin: 0;
+  border-right: 1px solid #aaa;
+}
+
+#page-manager-edit .actions li {
+  float: left;
+  background: none;
+  list-style: none;
+  border-left: 1px solid #aaa;
+  margin: 0;
+  padding: 0;
+  line-height: 200%;
+}
+
+#page-manager-edit .actions li a:hover {
+  background-color: #eee;
+  text-decoration: none;
+}
+
+#page-manager-edit .actions li a {
+  display: block;
+  padding: 0 .5em;
+  color:#0062A0;
+  background-color: #F6F6F6;
+}
+
+#page-manager-edit .page-manager-changed {
+  float: right;
+  float: right;
+  font-style: italic;
+  color: #f93;
+  padding-left: 1em;
+  padding-right: 22px;
+  background: url(../images/locked.png) no-repeat scroll right center;
+}
+
+#page-manager-edit .page-manager-ajax-pad .content-content {
+  padding: .5em 20px;
+}
+
+#page-manager-edit .page-manager-ajax-pad textarea {
+  width: 100%;
+}
+
+#page-manager-edit .changed-notification {
+  border: 1px solid #aaa;
+  background-color: #ffe;
+  color: #494949;
+  padding: 1em;
+  margin-top: 1em;
+}
+
+#page-manager-edit .ctools-locked {
+  margin-bottom: 2em;
+}

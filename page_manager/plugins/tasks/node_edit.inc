@@ -2,10 +2,10 @@
 // $Id$
 
 /**
- * Specialized implementation of hook_delegator_tasks(). See api-task.html for
+ * Specialized implementation of hook_page_manager_task_tasks(). See api-task.html for
  * more information.
  */
-function delegator_node_edit_delegator_tasks() {
+function page_manager_node_edit_page_manager_tasks() {
   return array(
     // This is a 'page' task and will fall under the page admin UI
     'task type' => 'page',
@@ -16,31 +16,31 @@ function delegator_node_edit_delegator_tasks() {
     'admin description' => 'Overrides for the built in node edit handler at <em>node/%node/edit</em>.',
     'admin path' => 'node/%node/edit',
 
-    // Callback to add items to the delegator task administration form:
-    'task admin' => 'delegator_node_edit_task_admin',
+    // Callback to add items to the page managertask administration form:
+    'task admin' => 'page_manager_node_edit_task_admin',
 
     // Menu hooks so that we can alter the node/%node menu entry to point to us.
-    'hook menu' => 'delegator_node_edit_menu',
-    'hook menu alter' => 'delegator_node_edit_menu_alter',
+    'hook menu' => 'page_manager_node_edit_menu',
+    'hook menu alter' => 'page_manager_node_edit_menu_alter',
 
     // This is task uses 'context' handlers and must implement these to give the
     // handler data it needs.
     'handler type' => 'context',
-    'get arguments' => 'delegator_node_edit_get_arguments',
-    'get context placeholders' => 'delegator_node_edit_get_contexts',
+    'get arguments' => 'page_manager_node_edit_get_arguments',
+    'get context placeholders' => 'page_manager_node_edit_get_contexts',
   );
 }
 
 /**
- * Callback defined by delegator_node_edit_delegator_tasks().
+ * Callback defined by page_manager_node_edit_page_manager_tasks().
  *
  * Alter the node edit input so that node edit comes to us rather than the
  * normal node edit process.
  */
-function delegator_node_edit_menu_alter(&$items, $task) {
+function page_manager_node_edit_menu_alter(&$items, $task) {
   // Override the node edit handler for our purpose.
-  if ($items['node/%node/edit']['page callback'] == 'node_page_edit' || variable_get('delegator_override_anyway', FALSE)) {
-    $items['node/%node/edit']['page callback'] = 'delegator_node_edit';
+  if ($items['node/%node/edit']['page callback'] == 'node_page_edit' || variable_get('page_manager_override_anyway', FALSE)) {
+    $items['node/%node/edit']['page callback'] = 'page_manager_node_edit';
     $items['node/%node/edit']['file path'] = $task['path'];
     $items['node/%node/edit']['file'] = $task['file'];
   }
@@ -52,7 +52,7 @@ function delegator_node_edit_menu_alter(&$items, $task) {
       continue;
     }
 
-    $items[$path]['page callback'] = 'delegator_node_add';
+    $items[$path]['page callback'] = 'page_manager_node_add';
     $items[$path]['file path'] = $task['path'];
     $items[$path]['file'] = $task['file'];
     // Why str_replace things back?
@@ -63,10 +63,10 @@ function delegator_node_edit_menu_alter(&$items, $task) {
 /**
  * Warn if we are unable to override the taxonomy term page.
  */
-function delegator_node_edit_task_admin(&$form, &$form_state) {
+function page_manager_node_edit_task_admin(&$form, &$form_state) {
   $callback = db_result(db_query("SELECT page_callback FROM {menu_router} WHERE path = 'node/%/edit'"));
-  if ($callback != 'delegator_node_edit') {
-    drupal_set_message(t('Delegator module is unable to override node/%node/edit because some other module already has overridden with %callback. Delegator will not be able to handle this page.', array('%callback' => $callback)), 'warning');
+  if ($callback != 'page_manager_node_edit') {
+    drupal_set_message(t('Page managermodule is unable to override node/%node/edit because some other module already has overridden with %callback. Page managerwill not be able to handle this page.', array('%callback' => $callback)), 'warning');
   }
 }
 
@@ -77,9 +77,9 @@ function delegator_node_edit_task_admin(&$form, &$form_state) {
  * to run with it. If no one does, it passes through to Drupal core's
  * node edit, which is node_page_edit().
  */
-function delegator_node_edit($node) {
+function page_manager_node_edit($node) {
   // Load my task plugin
-  $task = delegator_get_task('node_edit');
+  $task = page_manager_get_task('node_edit');
 
   // Load the node into a context.
   ctools_include('context');
@@ -102,13 +102,13 @@ function delegator_node_edit($node) {
 /**
  * Callback to handle the process of adding a node.
  *
- * This creates a basic $node and passes that off to delegator_node_edit().
+ * This creates a basic $node and passes that off to page_manager_node_edit().
  * It is modeled after Drupal's node_add() function.
  *
  * Unlike node_add() we do not need to check node_access because that was
  * already checked by the menu system.
  */
-function delegator_node_add($type) {
+function page_manager_node_add($type) {
   global $user;
 
   $types = node_get_types();
@@ -122,7 +122,7 @@ function delegator_node_add($type) {
   );
 
   drupal_set_title(t('Create @name', array('@name' => $types[$type]->name)));
-  return delegator_node_edit($node);
+  return page_manager_node_edit($node);
 }
 
 /**
@@ -131,7 +131,7 @@ function delegator_node_add($type) {
  * Since this is the node edit and there is no UI on the arguments, we
  * create dummy arguments that contain the needed data.
  */
-function delegator_node_edit_get_arguments($task, $subtask_id) {
+function page_manager_node_edit_get_arguments($task, $subtask_id) {
   return array(
     array(
       'keyword' => 'node',
@@ -146,7 +146,7 @@ function delegator_node_edit_get_arguments($task, $subtask_id) {
 /**
  * Callback to get context placeholders provided by this handler.
  */
-function delegator_node_edit_get_contexts($task, $subtask_id) {
-  return ctools_context_get_placeholders_from_argument(delegator_node_edit_get_arguments($task, $subtask_id));
+function page_manager_node_edit_get_contexts($task, $subtask_id) {
+  return ctools_context_get_placeholders_from_argument(page_manager_node_edit_get_arguments($task, $subtask_id));
 }
 

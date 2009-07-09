@@ -111,7 +111,7 @@ function ctools_ajax_image_button($image, $dest, $alt, $class = '') {
  *   to ctools-use-ajax.
  */
 function ctools_ajax_text_button($text, $dest, $alt, $class = '', $type = 'ctools-use-ajax') {
-  return l($text, $dest, array('html' => TRUE, 'attributes' => array('class' => "$type $class", 'title' => $alt, 'alt' => $alt)));
+  return l($text, $dest, array('html' => TRUE, 'attributes' => array('class' => "$type $class", 'title' => $alt)));
 }
 
 /**

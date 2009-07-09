@@ -1,5 +1,0 @@
-; $Id$
-name = Delegator
-description = Provides a UI and API to select which handlers will perform tasks.
-core = 6.x
-dependencies[] = ctools

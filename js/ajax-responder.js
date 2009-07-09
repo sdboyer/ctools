@@ -37,7 +37,7 @@ Drupal.CTools.AJAX.clickAJAXLink = function() {
   var object = $(this);
   $(this).addClass('ctools-ajaxing');
   try {
-    url.replace('/nojs/', '/ajax/');
+    url = url.replace('/nojs/', '/ajax/');
     $.ajax({
       type: "POST",
       url: url,
@@ -79,7 +79,7 @@ Drupal.CTools.AJAX.clickAJAXButton = function() {
   var object = $(this);
   try {
     if (url) {
-      url.replace('/nojs/', '/ajax/');
+      url = url.replace('/nojs/', '/ajax/');
       $.ajax({
         type: "POST",
         url: url,
@@ -98,7 +98,7 @@ Drupal.CTools.AJAX.clickAJAXButton = function() {
     else {
       var form = $(this).parents('form');
       url = $(form).attr('action');
-      url.replace('/nojs/', '/ajax/');
+      url = url.replace('/nojs/', '/ajax/');
       $(form).ajaxSubmit({
         type: "POST",
         url: url,

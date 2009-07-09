@@ -104,11 +104,17 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
 
   $result = db_query($query, $query_args);
 
+  $status = variable_get($export['status'], array());
   // Unpack the results of the query onto objects and cache them.
   while ($data = db_fetch_object($result)) {
     $object = _ctools_export_unpack_object($schema, $data, $export['object']);
+    $object->table = $table;
     $object->type = t('Normal');
     $object->export_type = EXPORT_IN_DATABASE;
+    // Determine if default object is enabled or disabled.
+    if (isset($status[$object->name])) {
+      $object->disabled = $status[$object->name];
+    }
 
     $cache[$table][$object->{$export['key']}] = $object;
     if ($type == 'conditions') {
@@ -119,7 +125,6 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
   // @todo Load subrecords.
 
   if ($defaults = _ctools_export_get_defaults($table, $export)) {
-    $status = variable_get($export['status'], array());
 
     foreach ($defaults as $object) {
       if ($type == 'conditions') {
@@ -152,6 +157,7 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
         $object->type = t('Default');
         $object->export_type = EXPORT_IN_CODE;
         $object->in_code_only = TRUE;
+        $object->table = $table;
 
         $cache[$table][$object->name] = $object;
         if ($type == 'conditions') {
@@ -425,9 +431,8 @@ function ctools_export_get_schema($table) {
 /**
  * Set the status of a default $object as a variable.
  *
- * The status, in this case, is whether or not it is 'disabled'
- * and is only valid for in-code objects that do not have a database
- * equivalent. This function does not check to make sure $object actually
+ * The status, in this case, is whether or not it is 'disabled'.
+ * This function does not check to make sure $object actually
  * exists.
  */
 function ctools_export_set_status($table, $name, $new_status = TRUE) {
@@ -435,6 +440,29 @@ function ctools_export_set_status($table, $name, $new_status = TRUE) {
   $status = variable_get($schema['export']['status'], array());
 
   $status[$name] = $new_status;
+  variable_set($schema['export']['status'], $status);
+}
+
+/**
+ * Set the status of a default $object as a variable.
+ *
+ * This is more efficient than ctools_export_set_status because it
+ * will actually unset the variable entirely if it's not necessary,
+ * this saving a bit of space.
+ */
+function ctools_export_set_object_status($object, $new_status = TRUE) {
+  $table = $object->table;
+  $schema = ctools_export_get_schema($table);
+  $status = variable_get($schema['export']['status'], array());
+
+  // Compare
+  if (!$new_status && $object->export_type & EXPORT_IN_DATABASE) {
+    unset($status[$object->name]);
+  }
+  else {
+    $status[$object->name] = $new_status;
+  }
+
   variable_set($schema['export']['status'], $status);
 }
 

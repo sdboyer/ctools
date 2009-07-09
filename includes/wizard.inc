@@ -196,94 +196,110 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     );
   }
 
-  // Ensure buttons stay on the bottom.
-  $form['buttons'] = array(
-    '#prefix' => '<div class="clear-block">',
-    '#suffix' => '</div>',
-    '#weight' => 1000,
-  );
-
-  if (!empty($form_info['show back']) && isset($form_state['previous'])) {
-    $form['buttons']['previous'] = array(
-      '#type' => 'submit',
-      '#value' => isset($form_info['back text']) ? $form_info['back text'] : t('Back'),
-      '#next' => $form_state['previous'],
-      '#wizard type' => 'next',
-      '#weight' => -2000,
-      // hardcode the submit so that it doesn't try to save data.
-      '#submit' => array('ctools_wizard_submit'),
+  if (empty($form_info['no buttons'])) {
+    // Ensure buttons stay on the bottom.
+    $form['buttons'] = array(
+      '#prefix' => '<div class="clear-block">',
+      '#suffix' => '</div>',
+      '#weight' => 1000,
     );
+
+    $button_attributes = array();
+    if (!empty($form_state['ajax']) && empty($form_state['modal'])) {
+      $button_attributes = array('class' => 'ctools-use-ajax');
+    }
+
+    if (!empty($form_info['show back']) && isset($form_state['previous'])) {
+      $form['buttons']['previous'] = array(
+        '#type' => 'submit',
+        '#value' => isset($form_info['back text']) ? $form_info['back text'] : t('Back'),
+        '#next' => $form_state['previous'],
+        '#wizard type' => 'next',
+        '#weight' => -2000,
+        // hardcode the submit so that it doesn't try to save data.
+        '#submit' => array('ctools_wizard_submit'),
+        '#attributes' => $button_attributes,
+      );
+
+      if (isset($form_info['no back validate']) || isset($info['no back validate'])) {
+        $form['buttons']['previous']['#validate'] = array();
+      }
+    }
+
+    // If there is a next form, place the next button.
+    if (isset($form_state['next'])) {
+      $form['buttons']['next'] = array(
+        '#type' => 'submit',
+        '#value' => isset($form_info['next text']) ? $form_info['next text'] : t('Continue'),
+        '#next' => $form_state['next'],
+        '#wizard type' => 'next',
+        '#weight' => -1000,
+        '#attributes' => $button_attributes,
+      );
+    }
+
+    // There are two ways the return button can appear. If this is not the
+    // end of the form list (i.e, there is a next) then it's "update and return"
+    // to be clear. If this is the end of the path and there is no next, we
+    // call it 'Finish'.
+
+    // Even if there is no direct return path (some forms may not want you
+    // leaving in the middle) the final button is always a Finish and it does
+    // whatever the return action is.
+    if (!empty($form_info['show return']) && !empty($form_state['next'])) {
+      $form['buttons']['return'] = array(
+        '#type' => 'submit',
+        '#value' => isset($form_info['return text']) ? $form_info['return text'] : t('Update and return'),
+        '#wizard type' => 'return',
+        '#attributes' => $button_attributes,
+      );
+    }
+    else if (empty($form_state['next'])) {
+      $form['buttons']['return'] = array(
+        '#type' => 'submit',
+        '#value' => isset($form_info['finish text']) ? $form_info['finish text'] : t('Finish'),
+        '#wizard type' => 'finish',
+        '#attributes' => $button_attributes,
+      );
+    }
+
+    // If we are allowed to cancel, place a cancel button.
+    if (isset($form_info['cancel path']) || !empty($form_info['show cancel'])) {
+      $form['buttons']['cancel'] = array(
+        '#type' => 'submit',
+        '#value' => isset($form_info['cancel text']) ? $form_info['cancel text'] : t('Cancel'),
+        '#wizard type' => 'cancel',
+        // hardcode the submit so that it doesn't try to save data.
+        '#submit' => array('ctools_wizard_submit'),
+        '#attributes' => $button_attributes,
+      );
+    }
+
+    // Set up optional validate handlers.
+    $form['#validate'] = array();
+    if (function_exists($info['form id'] . '_validate')) {
+      $form['#validate'][] = $info['form id'] . '_validate';
+    }
+    if (isset($info['validate']) && function_exists($info['validate'])) {
+      $form['#validate'][] = $info['validate'];
+    }
+
+    // Set up our submit handler after theirs. Since putting something here will
+    // skip Drupal's autodetect, we autodetect for it.
+
+    // We make sure ours is after theirs so that they get to change #next if
+    // the want to.
+    $form['#submit'] = array();
+    if (function_exists($info['form id'] . '_submit')) {
+      $form['#submit'][] = $info['form id'] . '_submit';
+    }
+    if (isset($info['submit']) && function_exists($info['submit'])) {
+      $form['#submit'][] = $info['submit'];
+    }
+    $form['#submit'][] = 'ctools_wizard_submit';
   }
 
-  // If there is a next form, place the next button.
-  if (isset($form_state['next'])) {
-    $form['buttons']['next'] = array(
-      '#type' => 'submit',
-      '#value' => isset($form_info['next text']) ? $form_info['next text'] : t('Continue'),
-      '#next' => $form_state['next'],
-      '#wizard type' => 'next',
-      '#weight' => -1000,
-    );
-  }
-
-  // There are two ways the return button can appear. If this is not the
-  // end of the form list (i.e, there is a next) then it's "update and return"
-  // to be clear. If this is the end of the path and there is no next, we
-  // call it 'Finish'.
-
-  // Even if there is no direct return path (some forms may not want you
-  // leaving in the middle) the final button is always a Finish and it does
-  // whatever the return action is.
-  if (!empty($form_info['show return']) && !empty($form_state['next'])) {
-    $form['buttons']['return'] = array(
-      '#type' => 'submit',
-      '#value' => isset($form_info['return text']) ? $form_info['return text'] : t('Update and return'),
-      '#wizard type' => 'return',
-    );
-  }
-  else if (empty($form_state['next'])) {
-    $form['buttons']['return'] = array(
-      '#type' => 'submit',
-      '#value' => isset($form_info['finish text']) ? $form_info['finish text'] : t('Finish'),
-      '#wizard type' => 'finish',
-    );
-  }
-
-  // If we are allowed to cancel, place a cancel button.
-  if (isset($form_info['cancel path']) || !empty($form_info['show cancel'])) {
-    $form['buttons']['cancel'] = array(
-      '#type' => 'submit',
-      '#value' => isset($form_info['cancel text']) ? $form_info['cancel text'] : t('Cancel'),
-      '#wizard type' => 'cancel',
-      // hardcode the submit so that it doesn't try to save data.
-      '#submit' => array('ctools_wizard_submit'),
-    );
-  }
-
-  // Set up optional validate handlers.
-  $form['#validate'] = array();
-  if (function_exists($info['form id'] . '_validate')) {
-    $form['#validate'][] = $info['form id'] . '_validate';
-  }
-  if (isset($info['validate']) && function_exists($info['validate'])) {
-    $form['#validate'][] = $info['validate'];
-  }
-
-  // Set up our submit handler after theirs. Since putting something here will
-  // skip Drupal's autodetect, we autodetect for it.
-
-  // We make sure ours is after theirs so that they get to change #next if
-  // the want to.
-  $form['#submit'] = array();
-  if (function_exists($info['form id'] . '_submit')) {
-    $form['#submit'][] = $info['form id'] . '_submit';
-  }
-  if (isset($info['submit']) && function_exists($info['submit'])) {
-    $form['#submit'][] = $info['submit'];
-  }
-  $form['#submit'][] = 'ctools_wizard_submit';
-
-  if (!empty($form_state['modal'])) {
+  if (!empty($form_state['ajax'])) {
     $form['#action'] = url(ctools_wizard_get_path($form_state['form_info'], $form_state['step']));
   }
 
@@ -307,7 +323,7 @@ function ctools_wizard_submit(&$form, &$form_state) {
     }
     else {
       if ($type == 'cancel' && isset($form_state['form_info']['cancel path'])) {
-        $form_state['redirect'] = $form_state['form_info']['return path'];
+        $form_state['redirect'] = $form_state['form_info']['cancel path'];
       }
       else if ($type == 'next') {
         $form_state['redirect'] = ctools_wizard_get_path($form_state['form_info'], $form_state['clicked_button']['#next']);

@@ -22,7 +22,7 @@
  *
  * @param $task
  *   The $task object in use.
- * @param $subtask_id
+ * @param $subtask
  *   The id of the subtask in use.
  * @param $contexts
  *   The context objects in use.
@@ -36,13 +36,13 @@
  *   Either the output or NULL if there was output, FALSE if no handler
  *   accepted the task. If $page is FALSE then the $info block is returned instead.
  */
-function ctools_context_handler_render($task, $subtask_id, $contexts, $args, $page = TRUE) {
+function ctools_context_handler_render($task, $subtask, $contexts, $args, $page = TRUE) {
   // Load the landlers, choosing only enabled handlers.
-  $handlers = delegator_load_sorted_handlers($task, $subtask_id, TRUE);
+  $handlers = page_manager_load_sorted_handlers($task, $subtask ? $subtask['name'] : '', TRUE);
 
   // Try each handler.
   foreach ($handlers as $handler) {
-    if ($function = delegator_get_renderer($handler)) {
+    if ($function = page_manager_get_renderer($handler)) {
       if ($info = $function($handler, $contexts, $args)) {
         // If we don't own the page, let the caller deal with rendering.
         if (!$page) {
@@ -72,14 +72,14 @@ function ctools_context_handler_render($task, $subtask_id, $contexts, $args, $pa
  * Called to execute actions that should happen before a handler is rendered.
  */
 function ctools_context_handler_pre_render($handler, $contexts, $args) {
-  $plugin = delegator_get_task_handler($handler->handler);
+  $plugin = page_manager_get_task_handler($handler->handler);
 
-  if (user_access('administer delegator') && isset($handler->task)) {
+  if (user_access('administer page manager') && isset($handler->task)) {
     // Provide a tab to edit this context:
     ctools_include('menu');
     ctools_menu_add_tab(array(
       'title' => t('Edit @type', array('@type' => $plugin['title'])),
-      'href' => "admin/build/delegator/" . delegator_make_task_name($handler->task, $handler->subtask) . "/$handler->handler/$handler->name",
+      'href' => "admin/build/pages/edit/" . page_manager_make_task_name($handler->task, $handler->subtask),
     ));
   }
 }
@@ -113,19 +113,19 @@ function ctools_context_handler_select($handler, $contexts) {
  *
  * @param $task
  *   The loaded task plugin.
- * @param $subtask_id
+ * @param $subtask
  *   The subtask id.
  * @param $handler
  *   The handler to be checked.
  */
-function ctools_context_handler_summary($task, $subtask_id, $handler) {
+function ctools_context_handler_summary($task, $subtask, $handler) {
   if (empty($handler->conf['access']['plugins'])) {
     return array();
   }
 
   ctools_include('context');
   $strings = array();
-  $contexts = ctools_context_handler_get_all_contexts($task, $subtask_id, $handler);
+  $contexts = ctools_context_handler_get_all_contexts($task, $subtask, $handler);
 
   foreach ($handler->conf['access']['plugins'] as $test) {
     $plugin = ctools_get_access_plugin($test['name']);
@@ -150,10 +150,10 @@ function ctools_context_handler_summary($task, $subtask_id, $handler) {
  * This creates the base array of contexts, loaded from arguments, suitable
  * for use in rendering.
  */
-function ctools_context_handler_get_task_contexts($task, $subtask_id, $args) {
+function ctools_context_handler_get_task_contexts($task, $subtask, $args) {
   $contexts = array();
 
-  $arguments = ctools_context_handler_get_task_arguments($task, $subtask_id);
+  $arguments = ctools_context_handler_get_task_arguments($task, $subtask);
   ctools_context_get_context_from_arguments($arguments, $contexts, $args);
 
   return $contexts;
@@ -178,10 +178,10 @@ function ctools_context_handler_get_handler_contexts($contexts, $handler) {
  * handler and loads them as a group. Since there is no data, this loads
  * the contexts as placeholders.
  */
-function ctools_context_handler_get_all_contexts($task, $subtask_id, $handler) {
-  $object = ctools_context_handler_get_task_object($task, $subtask_id, $handler);
+function ctools_context_handler_get_all_contexts($task, $subtask, $handler) {
+  $object = ctools_context_handler_get_task_object($task, $subtask, $handler);
   $contexts = ctools_context_load_contexts($object, TRUE);
-  ctools_context_handler_set_access_restrictions($task, $subtask_id, $handler, $contexts);
+  ctools_context_handler_set_access_restrictions($task, $subtask, $handler, $contexts);
   return $contexts;
 }
 
@@ -203,10 +203,10 @@ function ctools_context_handler_get_handler_object($handler) {
  * expects things in a certain, kind of clunky format. This one adds in
  * arguments from the task.
  */
-function ctools_context_handler_get_task_object($task, $subtask_id, $handler) {
+function ctools_context_handler_get_task_object($task, $subtask, $handler) {
   $object = new stdClass;
   $object->name = $handler->name;
-  $object->arguments = ctools_context_handler_get_task_arguments($task, $subtask_id);
+  $object->arguments = ctools_context_handler_get_task_arguments($task, $subtask);
   $object->contexts = isset($handler->conf['contexts']) ? $handler->conf['contexts'] : array();
   $object->relationships = isset($handler->conf['relationships']) ? $handler->conf['relationships'] : array();
 
@@ -216,9 +216,9 @@ function ctools_context_handler_get_task_object($task, $subtask_id, $handler) {
 /**
  * Get the arguments from a task that are used to load contexts.
  */
-function ctools_context_handler_get_task_arguments($task, $subtask_id) {
+function ctools_context_handler_get_task_arguments($task, $subtask) {
   if ($function = ctools_plugin_get_function($task, 'get arguments')) {
-    return $function($task, $subtask_id);
+    return $function($task, $subtask);
   }
 
   return array();
@@ -234,10 +234,10 @@ function ctools_context_handler_get_task_arguments($task, $subtask_id) {
  * to only 'story' and 'page' types, there is no need for content that
  * only applies to the 'poll' type to appear.
  */
-function ctools_context_handler_set_access_restrictions($task, $subtask_id, $handler, &$contexts) {
+function ctools_context_handler_set_access_restrictions($task, $subtask, $handler, &$contexts) {
   // First, for the task:
   if ($function = ctools_plugin_get_function($task, 'access restrictions')) {
-    $function($task, $subtask_id, $contexts);
+    $function($task, $subtask, $contexts);
   }
 
   // Then for the handler:
@@ -258,12 +258,12 @@ function ctools_context_handler_edit_criteria(&$form, &$form_state) {
   }
 
   ctools_include('context');
-  $form_state['module'] = 'delegator_task_handler';
+  $form_state['module'] = 'page_manager_task_handler';
   // Encode a bunch of info into the argument so we can get our cache later
   $form_state['callback argument'] = $form_state['task_name'] . '*' . $form_state['handler']->name;
   $form_state['access'] = $form_state['handler']->conf['access'];
   $form_state['no buttons'] = TRUE;
-  $form_state['contexts'] = ctools_context_handler_get_all_contexts($form_state['task'], $form_state['subtask_id'], $form_state['handler']);
+  $form_state['contexts'] = ctools_context_handler_get_all_contexts($form_state['task'], $form_state['subtask'], $form_state['handler']);
 
   ctools_include('context-access-admin');
   $form = array_merge($form, ctools_access_admin_form($form_state));
@@ -275,7 +275,7 @@ function ctools_context_handler_edit_criteria(&$form, &$form_state) {
 function ctools_context_handler_edit_criteria_submit(&$form, &$form_state) {
   $form_state['handler']->conf['access']['logic'] = $form_state['values']['logic'];
   if (!empty($form_state['handler']->conf['autogenerate_title'])) {
-    $strings = ctools_context_handler_summary($form_state['task'], $form_state['subtask_id'], $form_state['handler']);
+    $strings = ctools_context_handler_summary($form_state['task'], $form_state['subtask'], $form_state['handler']);
     if (!$strings) {
       $form_state['handler']->conf['title'] = t('Panel');
     }
@@ -295,11 +295,11 @@ function ctools_context_handler_edit_context(&$form, &$form_state) {
   $handler = $form_state['handler'];
   // Check our context object cache.
   if (!empty($_POST)) {
-    $cache = ctools_object_cache_get('context_object:delegator', $handler->name);
+    $cache = ctools_object_cache_get('context_object:page_manager', $handler->name);
   }
   else {
-    $cache = ctools_context_handler_get_task_object($form_state['task'], $form_state['subtask_id'], $form_state['handler']);
-    ctools_object_cache_set('context_object:delegator', $handler->name, $cache);
+    $cache = ctools_context_handler_get_task_object($form_state['task'], $form_state['subtask'], $form_state['handler']);
+    ctools_object_cache_set('context_object:page_manager', $handler->name, $cache);
   }
 
   $form['right'] = array(
@@ -312,11 +312,11 @@ function ctools_context_handler_edit_context(&$form, &$form_state) {
     '#suffix' => '</div></div>',
   );
 
-  ctools_context_add_context_form('delegator', $form, $form_state, $form['right']['contexts_table'], $cache);
-  ctools_context_add_relationship_form('delegator', $form, $form_state, $form['right']['relationships_table'], $cache);
+  ctools_context_add_context_form('page_manager', $form, $form_state, $form['right']['contexts_table'], $cache);
+  ctools_context_add_relationship_form('page_manager', $form, $form_state, $form['right']['relationships_table'], $cache);
 
   $form['left']['summary'] = array(
-    '#prefix' => '<div class="delegator-contexts">',
+    '#prefix' => '<div class="page-manager-contexts">',
     '#suffix' => '</div>',
     '#value' => theme('ctools_context_list', $cache, t('Summary of contexts')),
   );
@@ -333,6 +333,6 @@ function ctools_context_handler_edit_context(&$form, &$form_state) {
 function ctools_context_handler_edit_context_submit(&$form, &$form_state) {
   $form_state['handler']->conf['contexts'] = $form_state['context_object']->contexts;
   $form_state['handler']->conf['relationships'] = $form_state['context_object']->relationships;
-  ctools_object_cache_clear('context_object:delegator', $form_state['handler']->name);
+  ctools_object_cache_clear('context_object:page_manager', $form_state['handler']->name);
 }
 

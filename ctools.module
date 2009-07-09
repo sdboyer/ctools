@@ -345,3 +345,18 @@ function ctools_flush_caches() {
   ctools_include('css');
   ctools_css_flush_caches();
 }
+
+/**
+ * Check to see if the incoming menu item is js capable or not.
+ *
+ * This can be used as %ctools_js as part of a path in hook menu. CTools
+ * ajax functions will automatically change the phrase 'nojs' to 'ajax'
+ * when it attaches ajax to a link. This can be used to autodetect if
+ * that happened.
+ */
+function ctools_js_load($js) {
+  if ($js == 'ajax') {
+    return TRUE;
+  }
+  return 0;
+}
