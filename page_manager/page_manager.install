@@ -193,8 +193,8 @@ function page_manager_install() {
   // Take THAT, delegator!
   if (db_table_exists('{delegator_pages}')) {
     db_query("INSERT INTO {page_manager_pages} (SELECT pid, name, task, admin_title, path, access, menu, arguments, conf FROM {delegator_pages})");
-    db_query("INSERT INTO {page_manager_handlers} (SELECT * FROM {delegator_handlers})");
-    db_query("INSERT INTO {page_manager_weights} (SELECT * FROM {delegator_weights})");
+    db_query("INSERT INTO {page_manager_handlers} (SELECT did, name, task, subtask, handler, weight, conf FROM {delegator_handlers})");
+    db_query("INSERT INTO {page_manager_weights} (SELECT name, weight FROM {delegator_weights})");
  
     $ret = array();
     db_drop_table($ret, '{delegator_pages}');
