@@ -17,6 +17,13 @@ Fix a bug in plugins.inc where if two modules create a plugin of the same
 name, they would accidentally share data.
 #512048: by tom_o_t: Path fallback override callback had bad logic.
 
+IMPORTANT:
+Removed the delegator module entirely. There is now a page_manager module in 
+its place, with a vastly improved workflow and user interface. Activating it 
+should automatically update your data to the new module. However, PLEASE 
+PLEASE PLEASE back up your data before using it. Just enough changed to make
+this a bit of a concern.
+
 ctools 6.x-1.0-beta3
 ==================
 #459716: content.theme.inc missing typo caused PHP error.
