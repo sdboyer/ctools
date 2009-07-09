@@ -480,6 +480,8 @@ function page_manager_get_handler_operations(&$page) {
 
   $operations = array();
 
+  // If there is only one variant, let's not have it collapsible.
+  $collapsible = count($page->handler_info) != 1;
   foreach ($page->handler_info as $id => $info) {
     if ($info['changed'] & PAGE_MANAGER_CHANGED_DELETED) {
       continue;
@@ -491,7 +493,7 @@ function page_manager_get_handler_operations(&$page) {
       'type' => 'group',
       'class' => 'operations-handlers-' . $id,
       'title' => page_manager_get_handler_title($plugin, $handler, $page->task, $page->subtask_id),
-      'collapsible' => TRUE,
+      'collapsible' => $collapsible,
       'children' => array(),
     );
 
@@ -1141,7 +1143,7 @@ function page_manager_handler_add_form(&$form, $form_state, $features = array())
     }
   }
 
-  if (!isset($form_state['type']) && $form_state['type'] != 'add') {
+  if (!isset($form_state['type']) || $form_state['type'] != 'add') {
     $form['title'] = array(
       '#type' => 'textfield',
       '#title' => t('Title'),
