@@ -24,6 +24,8 @@ should automatically update your data to the new module. However, PLEASE
 PLEASE PLEASE back up your data before using it. Just enough changed to make
 this a bit of a concern.
 
+#514468 by hippich: Fix typos in content.menu.inc related to db_rewrite_sql() use.
+
 ctools 6.x-1.0-beta3
 ==================
 #459716: content.theme.inc missing typo caused PHP error.

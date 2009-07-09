@@ -248,3 +248,8 @@ body form#page-manager-list-pages-form {
 #page-manager-edit .ctools-locked {
   margin-bottom: 2em;
 }
+
+#page-manager-page-summary .title {
+  font-weight: bold;
+  font-size: 160%;
+}
