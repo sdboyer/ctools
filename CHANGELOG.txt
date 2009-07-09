@@ -25,6 +25,7 @@ PLEASE PLEASE back up your data before using it. Just enough changed to make
 this a bit of a concern.
 
 #514468 by hippich: Fix typos in content.menu.inc related to db_rewrite_sql() use.
+#508292 by rfay: Add user comparison access plugin.
 
 ctools 6.x-1.0-beta3
 ==================
