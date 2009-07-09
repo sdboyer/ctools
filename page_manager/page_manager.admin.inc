@@ -732,7 +732,7 @@ function _page_manager_get_operation_content($js, &$page, $active, $operation, $
       $form_state['handler'] = &$form_state['page']->handlers[$form_state['handler_id']];
     }
 
-    if ($active && $active[0] == 'handlers' && $active[1] == 'configure' && isset($form_state['page']->new_handler)) {
+    if ($active && $active[0] == 'actions' && $active[1] == 'configure' && isset($form_state['page']->new_handler)) {
       $form_state['handler_id'] = $form_state['page']->new_handler->name;
       $form_state['handler'] = &$form_state['page']->new_handler;
     }
@@ -753,7 +753,7 @@ function _page_manager_get_operation_content($js, &$page, $active, $operation, $
 
     $return = array(
       'title' => $title,
-      'content' => $output
+      'content' => $output,
     );
 
     // If the form wanted us to go somewhere else next, pass that along.
@@ -1008,7 +1008,7 @@ function page_manager_render_operations(&$page, $operations, $active_trail, $att
 function page_manager_save_page_form(&$form_state) {
   if (!empty($form_state['page']->changed)) {
     $form['markup'] = array(
-      '#value' => '<div class="changed-notification">' . t('You have unsaved changes to this page. You must select Save to write them to the database, or Cancel to discard these changes.') . '</div>',
+      '#value' => '<div class="changed-notification">' . t('You have unsaved changes to this page. You must select Save to write them to the database, or Cancel to discard these changes. Please note that if you have changed any form, you must submit that form before saving.') . '</div>',
     );
 
     // Always make sure we submit back to the proper age.
@@ -1111,7 +1111,7 @@ function page_manager_handler_add_finish(&$form_state) {
   // Set the new destination
   $plugin = page_manager_get_task_handler($handler->handler);
   $keys = array_keys($plugin['operations']);
-  $form_state['new trail'] = array('handlers', $name, reset($keys));
+  $form_state['new trail'] = array('handlers', $handler->name, reset($keys));
 
   // Pass through.
   page_manager_edit_page_finish($form_state);
@@ -1141,6 +1141,14 @@ function page_manager_handler_add_form(&$form, $form_state, $features = array())
     }
   }
 
+  if (!isset($form_state['type']) && $form_state['type'] != 'add') {
+    $form['title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Title'),
+      '#description' => t('Administrative title of this variant. If you leave blank it will be automatically assigned.'),
+    );
+  }
+  
   $form['handler'] = array(
     '#title' => t('Variant type'),
     '#type' => 'select',
@@ -1455,11 +1463,12 @@ function page_manager_page_summary(&$form, &$form_state) {
       foreach ($page->handler_info as $id => $info) {
         $handler = $page->handlers[$id];
         $plugin = page_manager_get_task_handler($handler->handler);
+
         $output .= '<div class="handler-summary">';
 
         $output .= '<div class="handler-title">';
         $output .= '<span class="label">' . t('Variant') . '</span>: ';
-        $output .= '<span class="value">' .
+        $output .= '<span class="item">';
         $output .= page_manager_get_handler_title($plugin, $handler, $page->task, $page->subtask_id);
         $output .= '</span>';
         $output .= '</div>';
@@ -1469,6 +1478,7 @@ function page_manager_page_summary(&$form, &$form_state) {
         $output .= '</div>';
 
         $output .= '</div>';
+
       }
     }
   }

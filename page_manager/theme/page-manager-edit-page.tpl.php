@@ -13,11 +13,11 @@
 <div id="page-manager-edit">
   <?php print $locked; ?>
   <div class="page-manager-wrapper">
-            <?php if (isset($operations['primary'])): ?>
-              <div class="primary-actions clear-block actions">
-                <?php print $operations['primary']; ?>
-              </div>
-            <?php endif; ?>
+    <?php if (isset($operations['primary'])): ?>
+      <div class="primary-actions clear-block actions">
+        <?php print $operations['primary']; ?>
+      </div>
+    <?php endif; ?>
     <div class="page-manager-tabs clear-block">
       <div class="page-manager-edit-operations">
         <div class="inside">
