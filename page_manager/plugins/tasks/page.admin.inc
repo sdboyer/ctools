@@ -297,6 +297,9 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
  */
 function page_manager_page_add_subtask_finish(&$form_state) {
   $page = &$form_state['page'];
+  // Update the cache with changes.
+  page_manager_set_page_cache($form_state['page']);
+
   // Redirect to the new page's task handler editor.
   $form_state['redirect'] = 'admin/build/pages/edit/' . $page->task_name;
   return;

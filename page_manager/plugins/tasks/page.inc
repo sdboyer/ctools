@@ -138,9 +138,10 @@ function page_manager_page_build_subtask($task, $page) {
     'form' => 'page_manager_page_form_basic',
   );
 
-  if (!page_manager_page_get_named_arguments($page->path)) {
+  $arguments = page_manager_page_get_named_arguments($page->path);
+  if ($arguments) {
     $settings['argument'] = array(
-      'title' => t('Argument contexts'),
+      'title' => t('Arguments'),
       'description' => t('Set up contexts for the arguments on this page.'),
       'form' => 'page_manager_page_form_argument',
     );

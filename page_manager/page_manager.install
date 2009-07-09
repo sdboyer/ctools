@@ -196,6 +196,43 @@ function page_manager_install() {
     db_query("INSERT INTO {page_manager_handlers} (SELECT did, name, task, subtask, handler, weight, conf FROM {delegator_handlers})");
     db_query("INSERT INTO {page_manager_weights} (SELECT name, weight FROM {delegator_weights})");
  
+    // Update all of the 'panel_page' type pages appropriately:
+    $result = db_query("SELECT * FROM {page_manager_pages} WHERE task = 'panel_page'");
+    while ($page = db_fetch_object($result)) {
+      $page->conf = unserialize($page->conf);
+      $handler = new stdClass();
+      $handler->name = 'page_' . $page->name . '_panel_context';
+      $handler->task = 'page';
+      $handler->subtask = $page->name;
+      $handler->handler = 'panel_context';
+      $handler->weight = 0;
+      $handler->conf = array();
+
+      $default_conf = array(
+        'title' => t('Panel'),
+        'no_blocks' => FALSE,
+        'css_id' => '',
+        'css' => '',
+        'contexts' => array(),
+        'relationships' => array(),
+      );
+
+      foreach($default_conf as $key => $default) {
+        if (isset($page->conf[$key])) {
+          $handler->conf[$key] = $page->conf[$key];
+          unset($page->conf[$key]);
+        }
+        else {
+          $handler->conf[$key] = $default;
+        }
+      }
+
+      $handler->conf = serialize($handler->conf);
+      $page->conf = serialize($page->conf);
+      db_query("UPDATE {page_manager_pages} SET conf = '%s', task = 'page' WHERE pid = %d", $page->conf, $page->pid);
+      db_query("INSERT INTO {page_manager_handlers} (name, task, subtask, handler, weight, conf) VALUES ('%s', '%s', '%s', '%s', %d, '%s')", $handler->name, $handler->task, $handler->subtask, $handler->handler, $handler->weight, $handler->conf);
+    }
+
     $ret = array();
     db_drop_table($ret, '{delegator_pages}');
     db_drop_table($ret, '{delegator_handlers}');
