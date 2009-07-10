@@ -10,13 +10,12 @@ function page_manager_user_view_page_manager_tasks() {
     // This is a 'page' task and will fall under the page admin UI
     'task type' => 'page',
     'title' => t('User profile template'),
-    'description' => t('The user view task allows you to control which modules serve requests made to user/%. By default, the core user module will show the user account page. The first task that matches the user will be used to display the user. If no task handlers exist, or if none of the existing task handlers are configured to handle the currently requested user, then the request falls back to the default Drupal user view mechanism.'),
-    'admin title' => 'User view', // translated by menu system
-    'admin description' => 'Overrides for the built in user handler, allowing customized user output.',
+    'admin title' => t('User profile template'),
+    'admin description' => t('When enabled, this overrides the default Drupal behavior for displaying user profiles at <em>user/%user</em>. If you add variants, you may use selection criteria such as roles or user access to provide different views of user profiles. If no variant is selected, the default Drupal user view will be used. Please note that if you are using pathauto, aliases may make a node to be somewhere else, but as far as Drupal is concerned, they are still at user/%user.'),
     'admin path' => 'user/%user',
 
     // Callback to add items to the page managertask administration form:
-    'task admin' => 'page_manager_term_view_task_admin',
+    'task admin' => 'page_manager_user_view_task_admin',
 
     'hook menu' => 'page_manager_user_view_menu',
     'hook menu alter' => 'page_manager_user_view_menu_alter',
@@ -26,6 +25,10 @@ function page_manager_user_view_page_manager_tasks() {
     'handler type' => 'context', // handler type -- misnamed
     'get arguments' => 'page_manager_user_view_get_arguments',
     'get context placeholders' => 'page_manager_user_view_get_contexts',
+
+    // Allow this to be enabled or disabled:
+    'disabled' => variable_get('page_manager_user_view_disabled', TRUE),
+    'enable callback' => 'page_manager_user_view_enable',
   );
 }
 
@@ -36,6 +39,10 @@ function page_manager_user_view_page_manager_tasks() {
  * normal user view process.
  */
 function page_manager_user_view_menu_alter(&$items, $task) {
+  if (variable_get('page_manager_user_view_disabled', TRUE)) {
+    return;
+  }
+
   // Override the user view handler for our purpose.
   if ($items['user/%user_uid_optional']['page callback'] == 'user_view' || variable_get('page_manager_override_anyway', FALSE)) {
     $items['user/%user_uid_optional']['page callback'] = 'page_manager_user_view';
@@ -105,3 +112,9 @@ function page_manager_user_view_get_contexts($task, $subtask_id) {
   return ctools_context_get_placeholders_from_argument(page_manager_user_view_get_arguments($task, $subtask_id));
 }
 
+/**
+ * Callback to enable/disable the page from the UI.
+ */
+function page_manager_user_view_enable($cache, $status) {
+  variable_set('page_manager_user_view_disabled', $status);
+}

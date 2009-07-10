@@ -20,10 +20,9 @@ function page_manager_term_view_page_manager_tasks() {
       // This is a 'page' task and will fall under the page admin UI
       'task type' => 'page',
 
-      'title' => t('Taxonomy term view'),
-      'description' => t('Control what handles the job of displaying a term at taxonomy/term/%term.'),
-      'admin title' => 'Taxonomy term view', // translated by menu system
-      'admin description' => 'Overrides for the built in taxonomy term handler at <em>taxonomy/term/%term</em>.',
+      'title' => t('Taxonomy term template'),
+      'admin title' => t('Taxonomy term template'),
+      'admin description' => t('When enabled, this overrides the default Drupal behavior for displaying taxonomy terms at <em>taxonomy/term/%term</em>. If you add variants, you may use selection criteria such as vocabulary or user access to provide different displays of the taxonomy term and associated nodes. If no variant is selected, the default Drupal taxonomy term display will be used. This page only affects items actually displayed ad taxonomy/term/%term. Some taxonomy terms, such as forums, have their displays moved elsewhere. Also please note that if you are using pathauto, aliases may make a taxonomy terms appear somewhere else, but as far as Drupal is concerned, they are still at taxonomy/term/%term.'),
       'admin path' => 'taxonomy/term/%term',
 
       // Menu hooks so that we can alter the term/%term menu entry to point to us.
@@ -51,6 +50,10 @@ function page_manager_term_view_page_manager_tasks() {
         // This lets it automatically add relevant information for task handlers.
         'handlers' => array('type' => 'handlers'),
       ),
+
+      // Allow this to be enabled or disabled:
+      'disabled' => variable_get('page_manager_term_view_disabled', TRUE),
+      'enable callback' => 'page_manager_term_view_enable',
     );
   }
 }
@@ -62,6 +65,10 @@ function page_manager_term_view_page_manager_tasks() {
  * normal term view process.
  */
 function page_manager_term_view_menu_alter(&$items, $task) {
+  if (variable_get('page_manager_term_view_disabled', TRUE)) {
+    return;
+  }
+
   // Override the term view handler for our purpose, but only if someone else
   // has not already done so.
   if ($items['taxonomy/term/%']['page callback'] == 'taxonomy_term_page' || variable_get('page_manager_override_anyway', FALSE)) {
@@ -204,3 +211,9 @@ function page_manager_term_view_admin_settings(&$form) {
   );
 }
 
+/**
+ * Callback to enable/disable the page from the UI.
+ */
+function page_manager_term_view_enable($cache, $status) {
+  variable_set('page_manager_term_view_disabled', $status);
+}

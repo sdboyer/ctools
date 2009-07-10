@@ -1371,60 +1371,6 @@ function page_manager_page_new_page_cache(&$page, &$cache) {
 }
 
 /**
- * Form to enable a page.
- */
-function page_manager_page_form_enable(&$form, &$form_state) {
-  $form['markup'] = array(
-    '#value' => t('Enabling this page will immediately make it available in your system (there is no need to wait for a save.)'),
-  );
-}
-
-/**
- * Enable the page after it has been confirmed.
- */
-function page_manager_page_form_enable_submit(&$form, &$form_state) {
-  $page = $form_state['page']->subtask['subtask'];
-  ctools_include('export');
-  ctools_export_set_object_status($page, FALSE);
-  menu_rebuild();
-  $form_state['new trail'] = array('actions', 'disable');
-
-  $page->disabled = FALSE;
-  // We don't want to cause this to cache if it wasn't already. If it was 
-  // cached, however, we want to update the enabled state.
-  if (empty($form_state['page']->changed)) {
-    $form_state['do not cache'] = TRUE;
-  }
-}
-
-/**
- * Form to disable a page.
- */
-function page_manager_page_form_disable(&$form, &$form_state) {
-  $form['markup'] = array(
-    '#value' => t('Disabling this page will immediately make it unavailable in your system (there is no need to wait for a save.)'),
-  );
-}
-
-/**
- * Disable the page after it has been confirmed.
- */
-function page_manager_page_form_disable_submit(&$form, &$form_state) {
-  $page = &$form_state['page']->subtask['subtask'];
-  ctools_include('export');
-  ctools_export_set_object_status($page, TRUE);
-  menu_rebuild();
-  $form_state['new trail'] = array('actions', 'enable');
-
-  $page->disabled = TRUE;
-  // We don't want to cause this to cache if it wasn't already. If it was 
-  // cached, however, we want to update the enabled state.
-  if (empty($form_state['page']->changed)) {
-    $form_state['do not cache'] = TRUE;
-  }
-}
-
-/**
  * Entry point to export a page.
  */
 function page_manager_page_form_delete(&$form, &$form_state) {

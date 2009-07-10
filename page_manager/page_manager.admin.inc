@@ -417,6 +417,32 @@ function page_manager_get_operations($page, $operations = NULL) {
     }
   }
 
+  if (!empty($page->subtask['enable callback']) && !empty($page->subtask['disabled']) && empty($result['actions']['children']['enable'])) {
+    $result['actions']['children']['enable'] = array(
+      'title' => t('Enable'),
+      'description' => t('Activate this page so that it will be in use in your system.'),
+      'form' => 'page_manager_enable_form',
+      'ajax' => FALSE,
+      'silent' => TRUE,
+      'form info' => array(
+        'finish text' => t('Enable'),
+      ),
+    );
+  }
+
+  if (!empty($page->subtask['enable callback']) && empty($page->subtask['disabled']) && empty($result['actions']['children']['disable'])) {
+    $result['actions']['children']['disable'] = array(
+      'title' => t('Disable'),
+      'description' => t('De-activate this page. The data will remain but the page will not be in use on your system.'),
+      'form' => 'page_manager_disable_form',
+      'ajax' => FALSE,
+      'silent' => TRUE,
+      'form info' => array(
+        'finish text' => t('Disable'),
+      ),
+    );
+  }
+
   $result['actions']['children']['add'] = array(
     'title' => t('Add variant'),
     'description' => t('Add a new variant to this page.'),
@@ -1463,6 +1489,60 @@ function page_manager_break_lock_submit(&$form, &$form_state) {
 }
 
 /**
+ * Form to enable a page.
+ */
+function page_manager_enable_form(&$form, &$form_state) {
+  $form['markup'] = array(
+    '#value' => t('Enabling this page will immediately make it available in your system (there is no need to wait for a save.)'),
+  );
+}
+
+/**
+ * Enable the page after it has been confirmed.
+ */
+function page_manager_enable_form_submit(&$form, &$form_state) {
+  $page = &$form_state['page'];
+  if ($function = ctools_plugin_get_function($page->subtask, 'enable callback')) {
+    $result = $function($page, FALSE);
+    menu_rebuild();
+  }
+  $form_state['new trail'] = array('actions', 'disable');
+
+  // We don't want to cause this to cache if it wasn't already. If it was 
+  // cached, however, we want to update the enabled state.
+  if (empty($form_state['page']->changed)) {
+    $form_state['do not cache'] = TRUE;
+  }
+}
+
+/**
+ * Form to disable a page.
+ */
+function page_manager_disable_form(&$form, &$form_state) {
+  $form['markup'] = array(
+    '#value' => t('Disabling this page will immediately make it unavailable in your system (there is no need to wait for a save.)'),
+  );
+}
+
+/**
+ * Disable the page after it has been confirmed.
+ */
+function page_manager_disable_form_submit(&$form, &$form_state) {
+  $page = &$form_state['page'];
+  if ($function = ctools_plugin_get_function($page->subtask, 'enable callback')) {
+    $result = $function($page, TRUE);
+      menu_rebuild();
+    $form_state['new trail'] = array('actions', 'enable');
+
+    // We don't want to cause this to cache if it wasn't already. If it was 
+    // cached, however, we want to update the enabled state.
+    if (empty($form_state['page']->changed)) {
+      $form_state['do not cache'] = TRUE;
+    }
+  }
+}
+
+/**
  * Print the summary information for a page.
  */
 function page_manager_page_summary(&$form, &$form_state) {
@@ -1495,6 +1575,9 @@ function page_manager_page_summary(&$form, &$form_state) {
 
     }
   }
+  else {
+    $output .= '<p>' . t('This page has no variants and thus no output of its own.') . '</p>';
+  }
 
   $form['markup'] = array(
     '#value' => $output,
@@ -1517,6 +1600,12 @@ function page_manager_enable_page($disable, $js, $page) {
     if ($function = ctools_plugin_get_function($page->subtask, 'enable callback')) {
       $result = $function($page, $disable);
       menu_rebuild();
+
+      // We want to re-cache this if it's changed so that status is properly
+      // updated on the changed form.
+      if (!empty($cache->changed)) {
+        page_manager_set_page_cache($cache);
+      }
     }
   }
 

@@ -10,10 +10,9 @@ function page_manager_node_edit_page_manager_tasks() {
     // This is a 'page' task and will fall under the page admin UI
     'task type' => 'page',
 
-    'title' => t('Node edit'),
-    'description' => t('The node edit task allows you to control what handler will handle the job of editing a node at the path <em>node/%node/edit</em>. It also handles the node add page at node/add/%type. If no handler is set or matches the criteria, the default Drupal node renderer will be used. Please note that some modules sufficiently customize their node add and edit procedure that this may not successfully override adding or editing of all types.'),
-    'admin title' => 'Node edit', // translated by menu system
-    'admin description' => 'Overrides for the built in node edit handler at <em>node/%node/edit</em>.',
+    'title' => t('Node add/edit form'),
+    'admin title' => t('Node add/edit form'),
+    'admin description' => t('When enabled, this overrides the default Drupal behavior for adding or edit nodes at <em>node/%node/edit</em> and <em>node/add/%node_type</em>. If you add variants, you may use selection criteria such as node type or language or user access to provide different edit forms for nodes. If no variant is selected, the default Drupal node edit will be used.'),
     'admin path' => 'node/%node/edit',
 
     // Callback to add items to the page managertask administration form:
@@ -28,6 +27,10 @@ function page_manager_node_edit_page_manager_tasks() {
     'handler type' => 'context',
     'get arguments' => 'page_manager_node_edit_get_arguments',
     'get context placeholders' => 'page_manager_node_edit_get_contexts',
+
+    // Allow this to be enabled or disabled:
+    'disabled' => variable_get('page_manager_node_edit_disabled', TRUE),
+    'enable callback' => 'page_manager_node_edit_enable',
   );
 }
 
@@ -38,6 +41,10 @@ function page_manager_node_edit_page_manager_tasks() {
  * normal node edit process.
  */
 function page_manager_node_edit_menu_alter(&$items, $task) {
+  if (variable_get('page_manager_node_edit_disabled', TRUE)) {
+    return;
+  }
+
   // Override the node edit handler for our purpose.
   if ($items['node/%node/edit']['page callback'] == 'node_page_edit' || variable_get('page_manager_override_anyway', FALSE)) {
     $items['node/%node/edit']['page callback'] = 'page_manager_node_edit';
@@ -150,3 +157,9 @@ function page_manager_node_edit_get_contexts($task, $subtask_id) {
   return ctools_context_get_placeholders_from_argument(page_manager_node_edit_get_arguments($task, $subtask_id));
 }
 
+/**
+ * Callback to enable/disable the page from the UI.
+ */
+function page_manager_node_edit_enable($cache, $status) {
+  variable_set('page_manager_node_edit_disabled', $status);
+}

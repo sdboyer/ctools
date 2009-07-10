@@ -184,29 +184,6 @@ function page_manager_page_build_subtask($task, $page) {
     );
   }
 
-  if (!empty($page->disabled)) {
-    $operations['actions']['children']['enable'] = array(
-      'title' => t('Enable'),
-      'description' => t('Activate this page so that it will be in use in your system.'),
-      'form' => 'page_manager_page_form_enable',
-      'ajax' => FALSE,
-      'form info' => array(
-        'finish text' => t('Enable'),
-      ),
-    );
-  }
-  else {
-    $operations['actions']['children']['disable'] = array(
-      'title' => t('Disable'),
-      'description' => t('De-activate this page. The data will remain but the page will not be in use on your system.'),
-      'form' => 'page_manager_page_form_disable',
-      'ajax' => FALSE,
-      'form info' => array(
-        'finish text' => t('Disable'),
-      ),
-    );
-  }
-
   $subtask = array(
     'name' => $page->name,
     'admin title' => check_plain($page->admin_title),
@@ -630,15 +607,10 @@ function page_manager_page_admin_summary($task, $subtask) {
 /**
  * Callback to enable/disable the page from the UI.
  */
-function page_manager_page_enable($cache, $status) {
+function page_manager_page_enable(&$cache, $status) {
   $page = &$cache->subtask['subtask'];
   ctools_include('export');
   ctools_export_set_object_status($page, $status);
 
   $page->disabled = FALSE;
-  // We don't want to cause this to cache if it wasn't already. If it was 
-  // cached, however, we want to update the enabled state.
-  if (!empty($cache->changed)) {
-    page_manager_set_page_cache($cache);
-  }
 }

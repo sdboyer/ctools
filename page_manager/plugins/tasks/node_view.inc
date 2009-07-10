@@ -20,9 +20,9 @@ function page_manager_node_view_page_manager_tasks() {
     'task type' => 'page',
 
     'title' => t('Node template'),
-    'description' => t('The node view task allows you to control what handler will handle the job of rendering a node view at the path <em>node/%node</em>. If no handler is set or matches the criteria, the default Drupal node renderer will be used.'),
-    'admin title' => 'Node view', // translated by menu system
-    'admin description' => 'Overrides for the built in node view handler at <em>node/%node</em>.',
+
+    'admin title' => t('Node template'), 
+    'admin description' => t('When enabled, this overrides the default Drupal behavior for displaying nodes at <em>node/%node</em>. If you add variants, you may use selection criteria such as node type or language or user access to provide different views of nodes. If no variant is selected, the default Drupal node view will be used. This page only affects nodes viewed as pages, it will not affect nodes viewed in lists or at other locations. Also please note that if you are using pathauto, aliases may make a node to be somewhere else, but as far as Drupal is concerned, they are still at node/%node.'),
     'admin path' => 'node/%node',
 
     // Callback to add items to the page managertask administration form:
@@ -37,6 +37,10 @@ function page_manager_node_view_page_manager_tasks() {
     'handler type' => 'context',
     'get arguments' => 'page_manager_node_view_get_arguments',
     'get context placeholders' => 'page_manager_node_view_get_contexts',
+
+    // Allow this to be enabled or disabled:
+    'disabled' => variable_get('page_manager_node_view_disabled', TRUE),
+    'enable callback' => 'page_manager_node_view_enable',
   );
 }
 
@@ -47,6 +51,10 @@ function page_manager_node_view_page_manager_tasks() {
  * normal node view process.
  */
 function page_manager_node_view_menu_alter(&$items, $task) {
+  if (variable_get('page_manager_node_view_disabled', TRUE)) {
+    return;
+  }
+
   // Override the node view handler for our purpose.
   if ($items['node/%node']['page callback'] == 'node_page_view' || variable_get('page_manager_override_anyway', FALSE)) {
     $items['node/%node']['page callback'] = 'page_manager_node_view';
@@ -62,7 +70,7 @@ function page_manager_node_view_menu_alter(&$items, $task) {
 function page_manager_node_view_task_admin(&$form, &$form_state) {
   $callback = db_result(db_query("SELECT page_callback FROM {menu_router} WHERE path = 'node/%'"));
   if ($callback != 'page_manager_node_view') {
-    drupal_set_message(t('Page managermodule is unable to override node/%node because some other module already has overridden with %callback. Page managerwill not be able to handle this page.', array('%callback' => $callback)), 'warning');
+    drupal_set_message(t('Page manager module is unable to override node/%node because some other module already has overridden with %callback. Page managerwill not be able to handle this page.', array('%callback' => $callback)), 'warning');
   }
 }
 
@@ -126,3 +134,9 @@ function page_manager_node_view_get_contexts($task, $subtask_id) {
   return ctools_context_get_placeholders_from_argument(page_manager_node_view_get_arguments($task, $subtask_id));
 }
 
+/**
+ * Callback to enable/disable the page from the UI.
+ */
+function page_manager_node_view_enable($cache, $status) {
+  variable_set('page_manager_node_view_disabled', $status);
+}
