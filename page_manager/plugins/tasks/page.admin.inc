@@ -374,6 +374,7 @@ function page_manager_page_form_basic(&$form, &$form_state) {
     '#title' => t('Path'),
     '#description' => t('The URL path to get to this page. You may create named placeholders for variable parts of the path by using %name for required elements and !name for optional elements. For example: "node/%node/foo", "forum/%forum" or "dashboard/!input". These named placeholders can be turned into contexts on the arguments form.'),
     '#default_value' => $page->path,
+    '#field_prefix' => url(NULL, array('absolute' => TRUE)) . (variable_get('clean_url', 0) ? '' : '?q='),
   );
 
   if (!isset($page->pid) && !empty($form_state['creating'])) {
@@ -456,6 +457,7 @@ function page_manager_page_form_basic_validate(&$form, &$form_state) {
     }
   }
 
+  // Check to see if something that isn't a page manager page is using the path.
   $path = implode('/', $path);
   $result = db_query("SELECT * FROM {menu_router} WHERE path = '%s'", $path);
   while ($router = db_fetch_object($result)) {
@@ -464,8 +466,14 @@ function page_manager_page_form_basic_validate(&$form, &$form_state) {
     }
   }
 
-  // Ensure the path is not already an alias
-  // @todo
+  // Ensure the path is not already an alias to something else.
+  if (strpos($path, '%') === FALSE) {
+    $result = db_query("SELECT src, dst FROM {url_alias} WHERE dst = '%s'", $path);
+    if ($alias = db_fetch_object($result)) {
+      form_error($form['path'], t('That path is currently assigned to be an alias for @alias. This system cannot override existing aliases.', array('@alias' => $alias->src)));
+    }
+  }
+
 
   // Ensure path is properly formed.
   $args = page_manager_page_get_named_arguments($form_state['values']['path']);
