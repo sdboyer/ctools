@@ -1402,7 +1402,7 @@ function page_manager_handler_summary(&$form, &$form_state) {
   $plugin = page_manager_get_task_handler($handler->handler);
 
   $form['markup'] = array(
-    '#value' => page_manager_get_handler_summary($plugin, $handler, $page->task, $page->subtask_id),
+    '#value' => page_manager_get_handler_summary($plugin, $handler, $page->task, $page->subtask),
   );
 }
 
@@ -1453,35 +1453,21 @@ function page_manager_page_summary(&$form, &$form_state) {
     $output .= '<div class="description">' . $form_state['subtask']['admin description'] . '</div>';
   }
 
-  if (isset($form_state['subtask']['admin path'])) {
-    $path = $form_state['subtask']['admin path'];
-    if (strpos('%', $path) === FALSE) {
-      $path = l($path, $path);
-    }
+  $output .= page_manager_get_page_summary($page->task, $page->subtask);
 
-    $output .= '<div class="path"><span class="label">' . t('Path') . ':</span> <span class="value">' . $path . '</span></div>';
-
-    if (!empty($page->handlers)) {
-      foreach ($page->handler_info as $id => $info) {
-        $handler = $page->handlers[$id];
-        $plugin = page_manager_get_task_handler($handler->handler);
-
-        $output .= '<div class="handler-summary">';
-
-        $output .= '<div class="handler-title">';
-        $output .= '<span class="label">' . t('Variant') . '</span>: ';
-        $output .= '<span class="item">';
-        $output .= page_manager_get_handler_title($plugin, $handler, $page->task, $page->subtask_id);
-        $output .= '</span>';
-        $output .= '</div>';
-        
-        $output .= '<div class="handler-summary">';
-        $output .= page_manager_get_handler_summary($plugin, $handler, $page->task, $page->subtask_id);
-        $output .= '</div>';
-
-        $output .= '</div>';
-
+  if (!empty($page->handlers)) {
+    foreach ($page->handler_info as $id => $info) {
+      if ($info['changed'] & PAGE_MANAGER_CHANGED_DELETED) {
+        continue;
       }
+
+      $handler = $page->handlers[$id];
+      $plugin = page_manager_get_task_handler($handler->handler);
+
+      $output .= '<div class="handler-summary">';
+      $output .= page_manager_get_handler_summary($plugin, $handler, $page->task, $page->subtask);
+      $output .= '</div>';
+
     }
   }
 

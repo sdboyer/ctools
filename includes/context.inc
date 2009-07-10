@@ -1279,6 +1279,24 @@ function ctools_access_summary($plugin, $contexts, $test) {
 }
 
 /**
+ * Get a summary of a group of access plugin's settings.
+ */
+function ctools_access_group_summary($access, $contexts) {
+  if (empty($access['plugins'])) {
+    return;
+  }
+
+  $descriptions = array();
+  foreach ($access['plugins'] as $id => $test) {
+    $plugin = ctools_get_access_plugin($test['name']);
+    $descriptions[] = ctools_access_summary($plugin, $contexts, $test);
+  }
+
+  $separator = $access['logic'] == 'AND' ? t(', and ') : t(', or ');
+  return implode($separator, $descriptions);
+}
+
+/**
  * Determine if the current user has access via  plugin.
  *
  * @param $settings

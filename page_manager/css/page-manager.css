@@ -253,3 +253,41 @@ body form#page-manager-list-pages-form {
   font-weight: bold;
   font-size: 160%;
 }
+
+#page-manager-page-summary .handler-summary {
+}
+
+#page-manager-page-summary .page-summary-operation {
+  text-align: right;
+}
+
+#page-manager-page-summary .page-summary-label {
+  width: 10em;
+  font-weight: bold;
+}
+
+
+.handler-summary dl {
+  margin: 0;
+}
+
+.handler-summary dt {
+  margin: 0;
+  padding: 0;
+}
+
+.handler-summary dd {
+  margin: 0;
+}
+
+.handler-summary ol {
+  margin: 0;
+}
+
+.handler-summary .handler-title {
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  background: #fafafa;
+  padding: 3px;
+  margin-top: .5em;
+}

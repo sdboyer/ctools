@@ -211,6 +211,7 @@ function page_manager_page_build_subtask($task, $page) {
     'name' => $page->name,
     'admin title' => check_plain($page->admin_title),
     'admin description' => filter_xss_admin($page->admin_description),
+    'admin summary' => 'page_manager_page_admin_summary',
     'admin path' => $page->path,
     'admin type' => t('Custom'),
     'subtask' => $page,
@@ -539,4 +540,81 @@ function _pm_arg_load($value, $subtask, $argument) {
 
   // convert false equivalents to false.
   return $context ? $context : FALSE;
+}
+
+/**
+ * Provide a nice administrative summary of the page so an admin can see at a
+ * glance what this page does and how it is configured.
+ */
+function page_manager_page_admin_summary($task, $subtask) {
+  $task_name = page_manager_make_task_name($task['name'], $subtask['name']);
+  $page = $subtask['subtask'];
+  $output = '';
+
+  $rows = array();
+  $path = $page->path;
+  if (strpos('%', $path) === FALSE) {
+    $path = l('/' . $path, $path);
+  }
+
+  $link = l(t('Edit'), page_manager_edit_url($task_name, array('settings', 'basic')));
+  $rows[] = array(
+    array('class' => t('page-summary-label'), 'data' => t('Path')),
+    array('class' => t('page-summary-data'), 'data' => $path),
+    array('class' => t('page-summary-operation'), 'data' => $link),
+  );
+
+  if (empty($access['plugins'])) {
+    $access['plugins'] = array();
+  }
+
+  $contexts = page_manager_page_get_contexts($task, $subtask);
+  $access = ctools_access_group_summary($page->access, $contexts);
+  if ($access) {
+    $access = t('Accessible only if @conditions.', array('@conditions' => $access));
+  }
+  else {
+    $access = t('This page is publicly accessible.');
+  }
+
+  $link = l(t('Edit'), page_manager_edit_url($task_name, array('settings', 'access')));
+
+  $rows[] = array(
+    array('class' => t('page-summary-label'), 'data' => t('Access')),
+    array('class' => t('page-summary-data'), 'data' => $access),
+    array('class' => t('page-summary-operation'), 'data' => $link),
+  );
+
+  $menu_options = array(
+    'none' => t('No menu entry.'),
+    'normal' => t('Normal menu entry.'),
+    'tab' => t('Menu tab.'),
+    'default tab' => t('Default menu tab.'),
+  );
+
+  $menu = $menu_options[$page->menu['type']];
+  if ($page->menu['type'] != 'none') {
+    $menu .= ' ' . t('Title: %title.', array('%title' => $page->menu['title']));
+    switch ($page->menu['type']) {
+      case 'default tab':
+        $menu .= ' ' . t('Parent title: %title.', array('%title' => $page->menu['parent']['title']));
+        break;
+      case 'normal':
+        if (module_exists('menu')) {
+          $menus = menu_get_menus();
+          $menu .= ' ' . t('Menu block: %title.', array('%title' => $menus[$page->menu['name']]));
+        }
+        break;
+    }
+  }
+
+  $link = l(t('Edit'), page_manager_edit_url($task_name, array('settings', 'menu')));
+  $rows[] = array(
+    array('class' => t('page-summary-label'), 'data' => t('Menu')),
+    array('class' => t('page-summary-data'), 'data' => $menu),
+    array('class' => t('page-summary-operation'), 'data' => $link),
+  );
+
+  $output .= theme('table', array(), $rows, array('id' => 'page-manager-page-summary'));
+  return $output;
 }

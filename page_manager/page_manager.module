@@ -768,9 +768,18 @@ function page_manager_get_handler_title($plugin, $handler, $task, $subtask_id) {
 /**
  * Get the admin summary (additional info) for a given handler.
  */
-function page_manager_get_handler_summary($plugin, $handler, $task, $subtask_id) {
+function page_manager_get_handler_summary($plugin, $handler, $task, $subtask) {
   if ($function = ctools_plugin_get_function($plugin, 'admin summary')) {
-    return $function($handler, $task, $subtask_id);
+    return $function($handler, $task, $subtask);
+  }
+}
+
+/**
+ * Get the admin summary (additional info) for a given page.
+ */
+function page_manager_get_page_summary($task, $subtask) {
+  if ($function = ctools_plugin_get_function($subtask, 'admin summary')) {
+    return $function($task, $subtask);
   }
 }
 
@@ -882,3 +891,17 @@ function page_manager_task_handler_ctools_access_set($argument, $access) {
   page_manager_set_page_cache($page);
 }
 
+/**
+ * Form a URL to edit a given page given the trail.
+ */
+function page_manager_edit_url($task_name, $trail = array()) {
+  if (!is_array($trail)) {
+    $trail = array($trail);
+  }
+
+  if (empty($trail) || $trail == array('summary')) {
+    return "admin/build/pages/edit/$task_name";
+  }
+  
+  return 'admin/build/pages/nojs/operation/' . $task_name . '/' . implode('/', $trail);
+}
