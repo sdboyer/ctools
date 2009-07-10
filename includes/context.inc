@@ -293,15 +293,7 @@ function _ctools_context_selector($contexts, $required, $default, $num = 0) {
 
   $form = array();
 
-  if ($count == 1) {
-    $keys = array_keys($filtered);
-    return array(
-      '#type' => 'value',
-      '#value' => $keys[0],
-    );
-  }
-
-  if ($count > 1) {
+  if ($count >= 1) {
     // If there's more than one to choose from, create a select widget.
     foreach ($filtered as $cid => $context) {
       $options[$cid] = $context->get_identifier();
@@ -317,7 +309,6 @@ function _ctools_context_selector($contexts, $required, $default, $num = 0) {
       '#type' => 'select',
       '#options' => $options,
       '#title' => $title,
-      '#description' => t('Multiple contexts are valid for this; one must be chosen.'),
       '#default_value' => $default,
     );
   }
@@ -1239,8 +1230,11 @@ function ctools_get_relevant_access_plugins($contexts) {
   $all_plugins = ctools_get_access_plugins();
   $plugins = array();
   foreach ($all_plugins as $id => $plugin) {
-    if (!empty($plugin['required context']) && !ctools_context_filter($contexts, $plugin['required context'])) {
-      continue;
+    if (!empty($plugin['required context'])) {
+      $count = is_array($plugin['required context']) ? count($plugin['required context']) : 1;
+      if (count(ctools_context_filter($contexts, $plugin['required context'])) < $count) {
+        continue;
+      }
     }
     $plugins[$id] = $plugin;
   }

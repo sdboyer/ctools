@@ -217,7 +217,7 @@ function ctools_access_admin_render_table($access, $fragment, $contexts) {
   );
 
   if (empty($rows)) {
-    $rows[] = array(array('data' => t('No criteria selected, access will automatically be granted.'), 'colspan' => count($header)));
+    $rows[] = array(array('data' => t('No criteria selected, this test will pass.'), 'colspan' => count($header)));
   }
 
   ctools_modal_add_js();

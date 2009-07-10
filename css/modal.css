@@ -85,8 +85,9 @@ div.ctools-modal-content .modal-form .no-float label  {
   width: auto;
 }
 
-div.ctools-modal-content .modal-form fieldset,
-div.ctools-modal-content .modal-form .form-checkboxes {
+div.ctools-modal-content fieldset,
+div.ctools-modal-content .form-radios,
+div.ctools-modal-content .form-checkboxes {
   clear: left;
 }
 
