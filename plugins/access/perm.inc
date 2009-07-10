@@ -11,7 +11,7 @@
  */
 function ctools_perm_ctools_access() {
   $args['perm'] = array(
-    'title' => t("User: Permission string"),
+    'title' => t("User: permission"),
     'description' => t('Control access by permission string.'),
     'callback' => 'ctools_perm_ctools_access_check',
     'default' => array('perm' => 'access content'),
@@ -67,6 +67,6 @@ function ctools_perm_ctools_acesss_summary($conf, $context) {
     return t('Error, unset permission');
   }
 
-  return t('@identifier must have "@perm"', array('@identifier' => $context->identifier, '@perm' => $conf['perm']));
+  return t('@identifier has "@perm"', array('@identifier' => $context->identifier, '@perm' => $conf['perm']));
 }
 

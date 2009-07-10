@@ -11,7 +11,7 @@
  */
 function ctools_node_type_ctools_access() {
   $args['node_type'] = array(
-    'title' => t("Node: Type"),
+    'title' => t("Node: type"),
     'description' => t('Control access by node_type.'),
     'callback' => 'ctools_node_type_ctools_access_check',
     'default' => array('type' => array()),
@@ -95,9 +95,9 @@ function ctools_node_type_ctools_acesss_summary($conf, $context) {
   }
 
   if (empty($names)) {
-    return t('@identifier can be any node type', array('@identifier' => $context->identifier));
+    return t('@identifier is any node type', array('@identifier' => $context->identifier));
   }
 
-  return format_plural(count($names), '@identifier can be type "@types"', '@identifier can be types "@types"', array('@types' => implode(', ', $names), '@identifier' => $context->identifier));
+  return format_plural(count($names), '@identifier is type "@types"', '@identifier type is one of "@types"', array('@types' => implode(', ', $names), '@identifier' => $context->identifier));
 }
 

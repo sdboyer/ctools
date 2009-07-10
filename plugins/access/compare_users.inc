@@ -11,7 +11,7 @@
  */
 function ctools_compare_users_ctools_access() {
   $args['compare_users'] = array(
-    'title' => t("User: Compare"),
+    'title' => t("User: compare"),
     'description' => t('Compare two users (logged-in user and user being viewed, for example)'),
     'callback' => 'ctools_compare_users_access_check',
     'default' => array(
@@ -67,7 +67,7 @@ function ctools_compare_users_access_check($conf, $context) {
  * Describe an instance of this plugin.
  */
 function ctools_compare_users_ctools_access_summary($conf, $context) {
-  $comparison = !empty($conf['equality']) ? "=" : '!=';
+  $comparison = !empty($conf['equality']) ? "is" : 'is not';
 
-  return t('access if @id1 @comp @id2', array('@comp' => $comparison, '@id1' => $context[0]->identifier, '@id2' => $context[1]->identifier));
+  return t('@id1 @comp @id2', array('@comp' => $comparison, '@id1' => $context[0]->identifier, '@id2' => $context[1]->identifier));
 }

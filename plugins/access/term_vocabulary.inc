@@ -11,7 +11,7 @@
  */
 function ctools_term_vocabulary_ctools_access() {
   $args['term_vocabulary'] = array(
-    'title' => t("Taxonomy: Vocabulary"),
+    'title' => t("Taxonomy: vocabulary"),
     'description' => t('Control access by term vocabulary.'),
     'callback' => 'ctools_term_vocabulary_ctools_access_check',
     'default' => array('vids' => array()),
@@ -82,9 +82,9 @@ function ctools_term_vocabulary_ctools_acesss_summary($conf, $context) {
   }
 
   if (empty($names)) {
-    return t('@identifier can be any vocabulary', array('@identifier' => $context->identifier));
+    return t('@identifier is any vocabulary', array('@identifier' => $context->identifier));
   }
 
-  return format_plural(count($names), '@identifier can be vocabulary "@vids"', '@identifier can be vocabulary "@vids"', array('@vids' => implode(', ', $names), '@identifier' => $context->identifier));
+  return format_plural(count($names), '@identifier vocabulary is "@vids"', '@identifier vocabulary is one of "@vids"', array('@vids' => implode(', ', $names), '@identifier' => $context->identifier));
 }
 
