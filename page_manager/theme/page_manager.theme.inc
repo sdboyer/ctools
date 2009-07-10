@@ -115,7 +115,7 @@ function theme_page_manager_lock($page) {
   $account  = user_load($page->locked->uid);
   $name     = theme('username', $account);
   $lock_age = format_interval(time() - $page->locked->updated);
-  $break    = url('admin/build/pages/nojs/operation/' . $page->task_name . '/actions/break-lock/');
+  $break    = url(page_manager_edit_url($page->task_name, array('actions', 'break-lock')));
 
   ctools_add_css('ctools');
   $output = '<div class="ctools-locked">';

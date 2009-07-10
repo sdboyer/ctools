@@ -79,7 +79,7 @@ function ctools_context_handler_pre_render($handler, $contexts, $args) {
     ctools_include('menu');
     ctools_menu_add_tab(array(
       'title' => t('Edit @type', array('@type' => $plugin['title'])),
-      'href' => "admin/build/pages/edit/" . page_manager_make_task_name($handler->task, $handler->subtask),
+      'href' => page_manager_edit_url(page_manager_make_task_name($handler->task, $handler->subtask)),
     ));
   }
 }

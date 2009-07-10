@@ -247,7 +247,7 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
       if ($step == 'basic') {
         page_manager_save_page_cache($page);
         // Redirect to the new page's task handler editor.
-        drupal_goto('admin/build/pages/edit/' . $page->task_name);
+        drupal_goto(page_manager_edit_url($page->task_name));
       }
     }
   }
@@ -301,7 +301,7 @@ function page_manager_page_add_subtask_finish(&$form_state) {
   page_manager_set_page_cache($form_state['page']);
 
   // Redirect to the new page's task handler editor.
-  $form_state['redirect'] = 'admin/build/pages/edit/' . $page->task_name;
+  $form_state['redirect'] = page_manager_edit_url($page->task_name);
   return;
 }
 
@@ -1181,7 +1181,7 @@ function page_manager_page_import_subtask_validate(&$form, &$form_state) {
   $form_state['cache'] = page_manager_get_page_cache($task_name);
 
   if ($form_state['cache']->locked) {
-    form_error($form['name'], t('That page name is in use and locked by another user. You must <a href="!break">break the lock</a> on that page before proceeding, or choose a different name.', array('!break' => url("admin/build/pages/nojs/operation/$task_name/actions/break-lock"))));
+    form_error($form['name'], t('That page name is in use and locked by another user. You must <a href="!break">break the lock</a> on that page before proceeding, or choose a different name.', array('!break' => url(page_manager_edit_url($task_name, array('actions', 'break-lock'))))));
     return;
   }
 
@@ -1216,7 +1216,7 @@ function page_manager_page_import_subtask_submit($form, &$form_state) {
   page_manager_page_new_page_cache($page, $cache);
   page_manager_set_page_cache($cache);
 
-  $form_state['redirect'] = 'admin/build/pages/edit/' . $task_name;
+  $form_state['redirect'] = page_manager_edit_url($task_name);
 }
 
 /**
@@ -1316,7 +1316,7 @@ function page_manager_page_form_clone_submit(&$form, &$form_state) {
   page_manager_page_new_page_cache($page, $cache);
   page_manager_set_page_cache($cache);
 
-  $form_state['redirect'] = 'admin/build/pages/edit/' . $task_name;
+  $form_state['redirect'] = page_manager_edit_url($task_name);
 }
 
 /**

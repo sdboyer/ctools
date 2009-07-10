@@ -103,7 +103,7 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
     $operations = array(
       array(
         'title' => t('Edit'),
-        'href' => "admin/build/pages/edit/$task_name",
+        'href' => page_manager_edit_url($task_name),
       ),
       /*
       array(
@@ -667,7 +667,7 @@ function _page_manager_get_operation_content($js, &$page, $active, $operation, $
       'next callback' => 'page_manager_edit_page_next',
       'finish callback' => 'page_manager_edit_page_finish',
       // Items specific to the 'edit' routines that will get moved over:
-      'path' => "admin/build/pages/nojs/operation/$page->task_name/" . implode('/', $active) . "/%step",
+      'path' => page_manager_edit_url($page->task_name, $active) . "/%step",
     );
 
     // If $operation['form'] is simply a string, then it is the function
@@ -810,7 +810,7 @@ function page_manager_edit_page_finish(&$form_state) {
   }
 
   if (isset($form_state['new trail']) && empty($form_state['ajax'])) {
-    $form_state['redirect'] = 'admin/build/pages/nojs/operation/' . $form_state['page']->task_name . '/' . implode('/', $form_state['new trail']);
+    $form_state['redirect'] = page_manager_edit_url($form_state['page']->task_name, $form_state['new trail']);
   }
 }
 
