@@ -592,20 +592,25 @@ function page_manager_page_admin_summary($task, $subtask) {
     'default tab' => t('Default menu tab.'),
   );
 
-  $menu = $menu_options[$page->menu['type']];
-  if ($page->menu['type'] != 'none') {
-    $menu .= ' ' . t('Title: %title.', array('%title' => $page->menu['title']));
-    switch ($page->menu['type']) {
-      case 'default tab':
-        $menu .= ' ' . t('Parent title: %title.', array('%title' => $page->menu['parent']['title']));
-        break;
-      case 'normal':
-        if (module_exists('menu')) {
-          $menus = menu_get_menus();
-          $menu .= ' ' . t('Menu block: %title.', array('%title' => $menus[$page->menu['name']]));
-        }
-        break;
+  if (!empty($page->menu)) {
+    $menu = $menu_options[$page->menu['type']];
+    if ($page->menu['type'] != 'none') {
+      $menu .= ' ' . t('Title: %title.', array('%title' => $page->menu['title']));
+      switch ($page->menu['type']) {
+        case 'default tab':
+          $menu .= ' ' . t('Parent title: %title.', array('%title' => $page->menu['parent']['title']));
+          break;
+        case 'normal':
+          if (module_exists('menu')) {
+            $menus = menu_get_menus();
+            $menu .= ' ' . t('Menu block: %title.', array('%title' => $menus[$page->menu['name']]));
+          }
+          break;
+      }
     }
+  }
+  else {
+    $menu = t('No menu entry');
   }
 
   $link = l(t('Edit'), page_manager_edit_url($task_name, array('settings', 'menu')));
