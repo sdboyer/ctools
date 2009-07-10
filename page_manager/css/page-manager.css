@@ -28,6 +28,10 @@ body form#page-manager-list-pages-form {
   margin-top: 1em;
 }
 
+#page-manager-list-pages tr.page-manager-disabled {
+  color: #999;
+}
+
 #page-manager-edit .page-manager-wrapper {
   margin: 0;
   padding: 0 0 0 149px;

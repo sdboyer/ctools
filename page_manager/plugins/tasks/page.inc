@@ -223,6 +223,9 @@ function page_manager_page_build_subtask($task, $page) {
     'single task' => empty($page->multiple),
     'row class' => empty($page->disabled) ? 'page-manager-enabled' : 'page-manager-disabled',
     'storage' => $page->type,
+    'disabled' => !empty($page->disabled),
+    // This works for both enable AND disable
+    'enable callback' => 'page_manager_page_enable',
   );
 
   // default handlers may appear from a default subtask.
@@ -622,4 +625,20 @@ function page_manager_page_admin_summary($task, $subtask) {
 
   $output .= theme('table', array(), $rows, array('id' => 'page-manager-page-summary'));
   return $output;
+}
+
+/**
+ * Callback to enable/disable the page from the UI.
+ */
+function page_manager_page_enable($cache, $status) {
+  $page = &$cache->subtask['subtask'];
+  ctools_include('export');
+  ctools_export_set_object_status($page, $status);
+
+  $page->disabled = FALSE;
+  // We don't want to cause this to cache if it wasn't already. If it was 
+  // cached, however, we want to update the enabled state.
+  if (!empty($cache->changed)) {
+    page_manager_set_page_cache($cache);
+  }
 }

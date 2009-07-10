@@ -86,6 +86,10 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
       $class .= ' ' . $task['row class'];
     }
 
+    if (!empty($task['disabled'])) {
+      $class .= ' page-manager-disabled';
+    }
+
     $row = array('data' => array(), 'class' => $class);
 
     $type = isset($task['admin type']) ? $task['admin type'] : t('System');
@@ -105,20 +109,26 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
         'title' => t('Edit'),
         'href' => page_manager_edit_url($task_name),
       ),
-      /*
-      array(
-        'title' => t('Delete'),
-        'href' => "admin/build/pages/delete/$task_name",
-      ),
-      array(
-        'title' => t('Export'),
-        'href' => "admin/build/pages/export/$task_name",
-      ),
-      */
     );
+
+    if (!empty($task['enable callback'])) {
+      if (!empty($task['disabled'])) {
+        $operations[] = array(
+          'title' => t('Enable'),
+          'href' => 'admin/build/pages/nojs/enable/' . $task_name,
+        );
+      }
+      else {
+        $operations[] = array(
+          'title' => t('Disable'),
+          'href' => 'admin/build/pages/nojs/disable/' . $task_name,
+        );
+      }
+    }
 
     $row['data']['operations'] = array('data' => theme('links', $operations), 'class' => 'page-manager-page-operations');
     
+    $pages['disabled'][$task_name] = !empty($task['disabled']);
     $pages['rows'][$task_name] = $row;
   }
 }
@@ -150,17 +160,25 @@ function page_manager_list_pages_form(&$form_state) {
     '#default_value' => 'all',
   );
 
+  $form['disabled'] = array(
+    '#type' => 'select',
+    '#title' => t('Enabled'),
+    '#options' => $all + array('0' => t('Enabled'), '1' => t('Disabled')),
+    '#default_value' => 'all',
+  );
+
   $form['order'] = array(
     '#type' => 'select',
     '#title' => t('Sort by'),
     '#options' => array(
+      'disabled' => t('Enabled, title'),
       'title' => t('Title'),
       'name' => t('Name'),
       'path' => t('Path'),
       'type' => t('Type'),
       'storage' => t('Storage'),
     ),
-    '#default_value' => 'title',
+    '#default_value' => 'disabled',
   );
 
   $form['sort'] = array(
@@ -213,8 +231,15 @@ function page_manager_list_pages_form_submit(&$form, &$form_state) {
       continue;
     }
 
+    if ($form_state['values']['disabled'] != 'all' && $form_state['values']['disabled'] != $form_state['pages']['disabled'][$name]) {
+      continue;
+    }
+
     // Set up sorting
     switch ($form_state['values']['order']) {
+      case 'disabled':
+        $sorts[$name] = !$form_state['pages']['disabled'][$name] . $data['data']['title']['data'];
+        break;
       case 'title':
         $sorts[$name] = $data['data']['title']['data'];
         break;
@@ -1474,4 +1499,27 @@ function page_manager_page_summary(&$form, &$form_state) {
   $form['markup'] = array(
     '#value' => $output,
   );
+}
+
+/**
+ * Menu callback to enable or disable a page
+ */
+function page_manager_enable_page($disable, $js, $page) {
+  if ($page->locked) {
+    if ($disable) {
+      drupal_set_message(t('Unable to disable due to lock.'));
+    }
+    else {
+      drupal_set_message(t('Unable to enable due to lock.'));
+    }
+  }
+  else {
+    if ($function = ctools_plugin_get_function($page->subtask, 'enable callback')) {
+      $result = $function($page, $disable);
+      menu_rebuild();
+    }
+  }
+
+  // For now $js is not actually in use on this.
+  drupal_goto('admin/build/pages');
 }

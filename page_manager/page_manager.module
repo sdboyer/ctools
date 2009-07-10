@@ -88,6 +88,18 @@ function page_manager_menu() {
     'type' => MENU_CALLBACK,
   ) + $base;
 
+  $items['admin/build/pages/%ctools_js/enable/%page_manager_cache'] = array(
+    'page callback' => 'page_manager_enable_page',
+    'page arguments' => array(FALSE, 3, 5),
+    'type' => MENU_CALLBACK,
+  ) + $base;
+
+  $items['admin/build/pages/%ctools_js/disable/%page_manager_cache'] = array(
+    'page callback' => 'page_manager_enable_page',
+    'page arguments' => array(TRUE, 3, 5),
+    'type' => MENU_CALLBACK,
+  ) + $base;
+
   $tasks = page_manager_get_tasks();
 
   // Provide menu items for each task.
