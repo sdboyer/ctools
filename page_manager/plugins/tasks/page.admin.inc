@@ -699,6 +699,11 @@ function page_manager_page_form_access(&$form, &$form_state) {
     $form_state['contexts'] = ctools_context_get_placeholders_from_argument($arguments);
   }
 
+  $form['markup'] = array(
+    '#value' => '<div class="description">' .
+    t('Access rules are used to test if the page is accessible and any menu items associated with it are visible.') .
+    '</div>',
+  );
   ctools_include('context-access-admin');
   $form = array_merge($form, ctools_access_admin_form($form_state));
 }

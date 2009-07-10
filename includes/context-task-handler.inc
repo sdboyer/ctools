@@ -266,6 +266,11 @@ function ctools_context_handler_edit_criteria(&$form, &$form_state) {
   $form_state['contexts'] = ctools_context_handler_get_all_contexts($form_state['task'], $form_state['subtask'], $form_state['handler']);
 
   ctools_include('context-access-admin');
+  $form['markup'] = array(
+    '#value' => '<div class="description">' .
+    t('If there is more than one variant on a page, when the page is visited each variant is given an opportunity to be displayed. Starting from the first variant in the least, each one tests to see if its selection rules will pass. If it does, that variant is using. If it does not, it passes to the next one.') .
+    '</div>',
+  );
   $form = array_merge($form, ctools_access_admin_form($form_state));
 }
 
