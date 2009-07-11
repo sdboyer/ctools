@@ -96,7 +96,7 @@ Drupal.CTools.AJAX.clickAJAXButton = function() {
       });
     }
     else {
-      var form = $(this).parents('form');
+      var form = this.form;
       url = $(form).attr('action');
       url = url.replace('/nojs/', '/ajax/');
       $(form).ajaxSubmit({
@@ -116,7 +116,7 @@ Drupal.CTools.AJAX.clickAJAXButton = function() {
     }
   }
   catch (err) {
-    alert("An error occurred while attempting to process " + url); 
+    alert("An error occurred while attempting to process " + url);
     $(this).removeClass('ctools-ajaxing');
     return false;
   }

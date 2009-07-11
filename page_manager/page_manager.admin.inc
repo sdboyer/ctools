@@ -12,40 +12,59 @@
 /**
  * Output a list of pages that are managed.
  */
-function page_manager_list_page() {
-  $output = '';
+function page_manager_list_page($js = NULL) {
+  // Prevent this page from showing up when random other links fail.
+  if ($js && $js != 'ajax' && $js != 'nojs') {
+    return drupal_not_found();
+  }
+
+  // TRUE if 'ajax', FALSE if otherwise.
+
+  $js = $js == 'ajax';
+
   $tasks = page_manager_get_tasks_by_type('page');
   $pages = array();
 
   page_manager_get_pages($tasks, $pages);
 
+  $input = $_POST;
+
   // Respond to a reset command by clearing session and doing a drupal goto
   // back to the base URL.
-  if (isset($_GET['op']) && $_GET['op'] == t('Reset')) {
+  if (isset($input['op']) && $input['op'] == t('Reset')) {
     unset($_SESSION['page_manager']['#admin']);
-    drupal_goto($_GET['q']);
+    if (!$js) {
+      return drupal_goto($_GET['q']);
+    }
+    // clear everything but form id, form build id and form token:
+    $keys = array_keys($input);
+    foreach ($keys as $id) {
+      if ($id != 'form_id' && $id != 'form_build_id' && $id != 'form_token') {
+        unset($input[$id]);
+      }
+    }
+    $replace_form = TRUE;
   }
-  if (count($_GET) <= 1) {
+  if (count($input) <= 1) {
     if (isset($_SESSION['page_manager']['#admin']) && is_array($_SESSION['page_manager']['#admin'])) {
-      $_GET += $_SESSION['page_manager']['#admin'];
+      $input  = $_SESSION['page_manager']['#admin'];
     }
   }
   else {
-    $_SESSION['page_manager']['#admin'] = $_GET;
+    $_SESSION['page_manager']['#admin'] = $input;
     unset($_SESSION['page_manager']['#admin']['q']);
   }
 
   $form_state = array(
     'pages' => &$pages,
-    'input' => $_GET,
-    'method' => 'get',
+    'input' => $input,
     'rerender' => TRUE,
     'no_redirect' => TRUE,
   );
 
   // This form will sort and filter the pages.
   ctools_include('form');
-  $output .= ctools_build_form('page_manager_list_pages_form', $form_state);
+  $form = ctools_build_form('page_manager_list_pages_form', $form_state);
 
   $header = array(
     array('data' => t('Type'), 'class' => 'page-manager-page-type'),
@@ -56,11 +75,21 @@ function page_manager_list_page() {
   );
 
   $header[] = array('data' => t('Operations'), 'class' => 'page-manager-page-operations');
-  $output .= theme('table', $header, $pages['rows'], array('id' => 'page-manager-list-pages'));
+  $table = theme('table', $header, $pages['rows'], array('id' => 'page-manager-list-pages'));
 
   drupal_add_css(drupal_get_path('module', 'page_manager') . '/css/page-manager.css');
   
-  return $output;
+  if (!$js) {
+    return $form . $table;
+  }
+  
+  ctools_include('ajax');
+  $commands = array();
+  $commands[] = ctools_ajax_command_replace('#page-manager-list-pages', $table);
+  if (!empty($replace_form)) {
+    $commands[] = ctools_ajax_command_replace('#page-manager-list-pages-form', $form);
+  }
+  ctools_ajax_render($commands);
 }
 
 /**
@@ -158,6 +187,7 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
  * Provide a form for sorting and filtering the list of pages.
  */
 function page_manager_list_pages_form(&$form_state) {
+  $form['#action'] = url('admin/build/pages/nojs/', array('absolute' => TRUE));
   if (!variable_get('clean_url', FALSE)) {
     $form['q'] = array(
       '#type' => 'hidden',
@@ -186,6 +216,11 @@ function page_manager_list_pages_form(&$form_state) {
     '#title' => t('Enabled'),
     '#options' => $all + array('0' => t('Enabled'), '1' => t('Disabled')),
     '#default_value' => 'all',
+  );
+  
+  $form['search'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search'),
   );
 
   $form['order'] = array(
@@ -217,16 +252,19 @@ function page_manager_list_pages_form(&$form_state) {
     '#type' => 'submit',
     '#id' => 'edit-pages-apply',
     '#value' => t('Apply'),
+    '#attributes' => array('class' => 'ctools-use-ajax'),
   );
 
-  if (!empty($_SESSION['page_manager']['#admin'])) {
-    $form['reset'] = array(
-      '#type' => 'submit',
-      '#id' => 'edit-pages-reset',
-      '#value' => t('Reset'),
-    );
-  }
+  $form['reset'] = array(
+    '#type' => 'submit',
+    '#id' => 'edit-pages-reset',
+    '#value' => t('Reset'),
+    '#attributes' => array('class' => 'ctools-use-ajax'),
+  );
 
+  ctools_add_js('ajax-responder');
+  drupal_add_js('misc/jquery.form.js');
+  drupal_add_js(drupal_get_path('module', 'page_manager') . '/js/page-list.js');
   $form['#theme'] = array('page_manager_list_pages_form');
   return $form;
 }
@@ -256,6 +294,12 @@ function page_manager_list_pages_form_submit(&$form, &$form_state) {
       continue;
     }
 
+    if ($form_state['values']['search'] &&
+        strpos($data['data']['name']['data'], $form_state['values']['search']) === FALSE &&
+        strpos($data['data']['path']['data'], $form_state['values']['search']) === FALSE &&
+        strpos($data['data']['title']['data'], $form_state['values']['search']) === FALSE) {
+          continue;
+    }
     // Set up sorting
     switch ($form_state['values']['order']) {
       case 'disabled':

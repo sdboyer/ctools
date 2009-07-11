@@ -63,9 +63,11 @@ function template_preprocess_page_manager_edit_page(&$vars) {
  */
 function theme_page_manager_list_pages_form($form) {
   // Don't render these:
+/*
   unset($form['form_id']);
   unset($form['form_build_id']);
   unset($form['form_token']);
+*/
   return '<div class="clear-block">' . drupal_render($form) . '</div>';
 }
 
