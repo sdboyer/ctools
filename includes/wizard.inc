@@ -126,7 +126,9 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
 
     if (empty($form_state['ajax'])) {
       // redirect, if one is set.
-      return drupal_redirect_form(array(), $form_state['redirect']);
+      if ($form_state['redirect']) {
+        return drupal_redirect_form(array(), $form_state['redirect']);
+      }
     }
     else if (isset($form_state['ajax next'])) {
       // Clear a few items off the form state so we don't double post:
@@ -137,6 +139,7 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
       unset($form_state['next']);
       return ctools_wizard_multistep_form($form_info, $next, $form_state);
     }
+
     // If the callbacks wanted to do something besides go to the next form,
     // it needs to have set $form_state['commands'] with something that can
     // be rendered.

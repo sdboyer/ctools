@@ -857,7 +857,6 @@ function _page_manager_get_operation_content($js, &$page, $active, $operation, $
 
     $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
     $title = empty($form_state['title']) ? $operation['title'] : $form_state['title'];
-
     $titles[] = $title;
     $title = implode(' &raquo ', array_filter($titles));
     if (isset($form_state['js settings'])) {
@@ -874,6 +873,12 @@ function _page_manager_get_operation_content($js, &$page, $active, $operation, $
       'content' => $output,
     );
 
+    // Append any extra content, used for the preview which is submitted then
+    // rendered.
+    if (isset($form_state['content'])) {
+      $return['content'] .= $form_state['content'];
+    }
+    
     // If the form wanted us to go somewhere else next, pass that along.
     if (isset($form_state['new trail'])) {
       $return['new trail'] = $form_state['new trail'];

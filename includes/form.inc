@@ -105,7 +105,6 @@ function ctools_build_form($form_id, &$form_state) {
     if (!empty($form_state['executed']) && empty($form_state['rerender'])) {
       return;
     }
-
     if ($cacheable && !empty($form['#cache']) && empty($form['#no_cache'])) {
       // Caching is done past drupal_process_form so #process callbacks can
       // set #cache. By not sending the form state, we avoid storing
