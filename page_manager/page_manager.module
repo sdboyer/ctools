@@ -277,7 +277,7 @@ function page_manager_clear_page_cache($name) {
 function page_manager_save_page_cache($cache) {
   // Save the subtask:
   if ($function = ctools_plugin_get_function($cache->task, 'save subtask callback')) {
-    $function($cache->subtask);
+    $function($cache->subtask, $cache);
   }
 
   // Iterate through handlers and save/delete/update as necessary.

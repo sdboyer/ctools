@@ -24,6 +24,7 @@ function page_manager_term_view_page_manager_tasks() {
       'admin title' => t('Taxonomy term template'),
       'admin description' => t('When enabled, this overrides the default Drupal behavior for displaying taxonomy terms at <em>taxonomy/term/%term</em>. If you add variants, you may use selection criteria such as vocabulary or user access to provide different displays of the taxonomy term and associated nodes. If no variant is selected, the default Drupal taxonomy term display will be used. This page only affects items actually displayed ad taxonomy/term/%term. Some taxonomy terms, such as forums, have their displays moved elsewhere. Also please note that if you are using pathauto, aliases may make a taxonomy terms appear somewhere else, but as far as Drupal is concerned, they are still at taxonomy/term/%term.'),
       'admin path' => 'taxonomy/term/%term',
+      'admin summary' => 'page_manager_term_view_admin_summary',
 
       // Menu hooks so that we can alter the term/%term menu entry to point to us.
       'hook menu' => 'page_manager_term_view_menu',
@@ -31,6 +32,8 @@ function page_manager_term_view_page_manager_tasks() {
 
       // Provide a setting to the primary settings UI for Panels
       'admin settings' => 'page_manager_term_view_admin_settings',
+      // Even though we don't have subtasks, this allows us to save our settings.
+      'save subtask callback' => 'page_manager_term_view_save',
 
       // Callback to add items to the page managertask administration form:
       'task admin' => 'page_manager_term_view_task_admin',
@@ -54,6 +57,21 @@ function page_manager_term_view_page_manager_tasks() {
       // Allow this to be enabled or disabled:
       'disabled' => variable_get('page_manager_term_view_disabled', TRUE),
       'enable callback' => 'page_manager_term_view_enable',
+
+      'operations' => array(
+        'settings' => array(
+          'type' => 'group',
+          'class' => 'operations-settings',
+          'title' => t('Settings'),
+          'children' => array(
+            'basic' => array(
+              'title' => t('Basic'),
+              'description' => t('Edit name, path and other basic settings for the page.'),
+              'form' => 'page_manager_term_view_settings',
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -169,34 +187,53 @@ function page_manager_term_view_get_contexts($task, $subtask_id) {
 /**
  * Settings page for this item.
  */
-function page_manager_term_view_settings() {
-  $task = page_manager_get_task('term_view');
-  $form = array();
-
+function page_manager_term_view_settings(&$form, &$form_state) {
   // This passes thru because the setting can also appear on the main Panels
-  // settings form.
-  page_manager_term_view_admin_settings($form);
-  $form['page_manager_term_view_type'] = array(
-    '#type' => 'radios',
-    '#title' => t('Allow multiple terms'),
-    '#options' => array('single' => t('Single term'), 'multiple' => t('Multiple terms')),
-    '#description' => t('By default, Drupal allows multiple terms as an argument by separating them with commas or plus signs. If you set this to single, that feature will be disabled.'),
-    '#default_value' => variable_get('page_manager_term_view_type', 'multiple'),
-  );
+  // settings form. If $settings is an array it will just pick up the default.
+  $settings = isset($form_state->update_values) ? $form_state->update_values : array();
+  page_manager_term_view_admin_settings($form, $settings);
+}
 
-  return system_settings_form($form);
+/**
+ * Copy form values into the page cache.
+ */
+function page_manager_term_view_settings_submit(&$form, &$form_state) {
+  $form_state['page']->update_values = $form_state['values'];
+}
+
+/**
+ * Save when the page cache is saved.
+ */
+function page_manager_term_view_save($subtask, $cache) {
+  if (isset($cache->update_values)) {
+    variable_set('page_manager_term_view_type', $cache->update_values['page_manager_term_view_type']);    
+    variable_set('page_manager_taxonomy_breadcrumb', $cache->update_values['page_manager_taxonomy_breadcrumb']);    
+  }
 }
 
 /**
  * Provide a setting to the Panels administrative form.
  */
-function page_manager_term_view_admin_settings(&$form) {
+function page_manager_term_view_admin_settings(&$form, $settings = array()) {
+  if (empty($settings)) {
+    $settings = array(
+      'page_manager_term_view_type' => variable_get('page_manager_term_view_type', 'multiple'),
+      'page_manager_taxonomy_breadcrumb' => variable_get('page_manager_taxonomy_breadcrumb', TRUE),
+    );
+  }
+
   $form['page_manager_term_view_type'] = array(
     '#type' => 'radios',
     '#title' => t('Allow multiple terms on taxonomy/term/%term'),
     '#options' => array('single' => t('Single term'), 'multiple' => t('Multiple terms')),
     '#description' => t('By default, Drupal allows multiple terms as an argument by separating them with commas or plus signs. If you set this to single, that feature will be disabled.'),
-    '#default_value' => variable_get('page_manager_term_view_type', 'multiple'),
+    '#default_value' => $settings['page_manager_term_view_type'],
+  );
+  $form['page_manager_taxonomy_breadcrumb'] = array(
+    '#title' => t('Inject hierarchy of first term into breadcrumb trail'),
+    '#type' => 'checkbox',
+    '#default_value' => $settings['page_manager_taxonomy_breadcrumb'],
+    '#description' => t('If checked, taxonomy term parents will appear in the breadcrumb trail.'),
   );
 }
 
@@ -205,4 +242,61 @@ function page_manager_term_view_admin_settings(&$form) {
  */
 function page_manager_term_view_enable($cache, $status) {
   variable_set('page_manager_term_view_disabled', $status);
+}
+
+/**
+ * Provide a nice administrative summary of the page so an admin can see at a
+ * glance what this page does and how it is configured.
+ */
+function page_manager_term_view_admin_summary($task, $subtask) {
+  $task_name = page_manager_make_task_name($task['name'], $subtask['name']);
+
+  $rows[] = array(
+    array('class' => t('page-summary-label'), 'data' => t('Path')),
+    array('class' => t('page-summary-data'), 'data' => 'taxonomy/term/%term'),
+    array('class' => t('page-summary-operation'), 'data' => ''),
+  );
+
+  $rows[] = array(
+    array('class' => t('page-summary-label'), 'data' => t('Access')),
+    array('class' => t('page-summary-data'), 'data' => t('This page is publicly accessible.')),
+    array('class' => t('page-summary-operation'), 'data' => ''),
+  );
+
+  $menu = t('No menu entry');
+
+  $rows[] = array(
+    array('class' => t('page-summary-label'), 'data' => t('Menu')),
+    array('class' => t('page-summary-data'), 'data' => $menu),
+    array('class' => t('page-summary-operation'), 'data' => ''),
+  );
+
+  if (variable_get('page_manager_term_view_type', 'multiple') == 'multiple') {
+    $message = t('Multiple terms may be used, separated by , or +.');
+  }
+  else {
+    $message = t('Only a single term may be used.');
+  }
+
+  $rows[] = array(
+    array('class' => t('page-summary-label'), 'data' => t('%term')),
+    array('class' => t('page-summary-data'), 'data' => $message),
+    array('class' => t('page-summary-operation'), 'data' => ''),
+  );
+
+  if (variable_get('page_manager_taxonomy_breadcrumb', TRUE)) {
+    $message = t('Breadcrumb trail will contain taxonomy term hierarchy');
+  }
+  else {
+    $message = t('Breadcrumb trail will not contain taxonomy term hiearchy.');
+  }
+
+  $rows[] = array(
+    array('class' => t('page-summary-label'), 'data' => t('Breadcrumb')),
+    array('class' => t('page-summary-data'), 'data' => $message),
+    array('class' => t('page-summary-operation'), 'data' => ''),
+  );
+
+  $output = theme('table', array(), $rows, array('id' => 'page-manager-page-summary'));
+  return $output;
 }
