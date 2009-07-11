@@ -377,6 +377,36 @@ function page_manager_page_form_basic(&$form, &$form_state) {
     '#field_prefix' => url(NULL, array('absolute' => TRUE)) . (variable_get('clean_url', 0) ? '' : '?q='),
   );
 
+  $frontpage = variable_get('site_frontpage', 'node');
+
+  $path = array();
+  foreach (explode('/', $page->path) as $bit) {
+    if ($bit[0] != '!') {
+      $path[] = $bit;
+    }
+  }
+  
+  $path = implode('/', $path);
+
+  if (empty($path) || $path != $frontpage) {
+    $form['frontpage'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => !empty($page->make_frontpage),
+      '#title' => t('Make this your site home page.'),
+      '#description' => t('If this box is checked this page will become the site home page. Only paths that have no placeholders can be used as the site home page. The current site home page is set to %homepage.', array('%homepage' => '/' . $frontpage)),
+    );
+  }
+  else if ($path == $frontpage) {
+    $form['frontpage_markup'] = array(
+      '#value' => '<b>' . t('This page is currently set to be your site home page.') . '</b>',
+    );
+
+    $form['frontpage'] = array(
+      '#type' => 'value',
+      '#value' => TRUE,
+    );
+  }
+
   if (!isset($page->pid) && !empty($form_state['creating'])) {
     $features['default'] = array(
       'access' => t('Access control'),
@@ -473,7 +503,11 @@ function page_manager_page_form_basic_validate(&$form, &$form_state) {
       form_error($form['path'], t('That path is currently assigned to be an alias for @alias. This system cannot override existing aliases.', array('@alias' => $alias->src)));
     }
   }
-
+  else {
+    if (!empty($form_state['values']['frontpage'])) {
+      form_error($form['path'], t('You cannot make this page your site home page if it uses % placeholders.'));
+    }
+  }
 
   // Ensure path is properly formed.
   $args = page_manager_page_get_named_arguments($form_state['values']['path']);
@@ -541,6 +575,8 @@ function page_manager_page_form_basic_submit(&$form, &$form_state) {
     $page->path = $form_state['values']['path'];
     $cache->path_changed = TRUE;
   }
+
+  $page->make_frontpage = !empty($form_state['values']['frontpage']);
 }
 
 /**

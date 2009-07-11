@@ -218,6 +218,7 @@ function page_manager_get_page_cache($task_name) {
     }
     else {
       $cache->subtask = $cache->task;
+      $cache->subtask['name'] = '';
     }
 
     $cache->handlers = page_manager_load_sorted_handlers($cache->task, $cache->subtask_id);
@@ -876,7 +877,12 @@ function page_manager_page_ctools_access_set($argument, $access) {
 function page_manager_task_handler_ctools_access_get($argument) {
   list($task_name, $name) = explode('*', $argument);
   $page = page_manager_get_page_cache($task_name);
-  $handler = &$page->handlers[$name];
+  if (empty($name)) {
+    $handler = &$page->new_handler;
+  }
+  else {
+    $handler = &$page->handlers[$name];
+  }
 
   if (!isset($handler->conf['access'])) {
     $handler->conf['access'] = array();

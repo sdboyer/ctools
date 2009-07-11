@@ -71,7 +71,7 @@ function page_manager_term_view_menu_alter(&$items, $task) {
 
   // Override the term view handler for our purpose, but only if someone else
   // has not already done so.
-  if ($items['taxonomy/term/%']['page callback'] == 'taxonomy_term_page' || variable_get('page_manager_override_anyway', FALSE)) {
+  if (isset($items['taxonomy/term/%']) && $items['taxonomy/term/%']['page callback'] == 'taxonomy_term_page' || variable_get('page_manager_override_anyway', FALSE)) {
     $items['taxonomy/term/%']['page callback'] = 'page_manager_term_view';
     $items['taxonomy/term/%']['file path'] = $task['path'];
     $items['taxonomy/term/%']['file'] = $task['file'];
@@ -106,6 +106,7 @@ function page_manager_term_view($terms, $depth = 0, $op = 'page') {
     ctools_include('context');
     ctools_include('context-task-handler');
     $contexts = ctools_context_handler_get_task_contexts($task, '', array($terms, $depth));
+
     if (empty($contexts)) {
       return drupal_not_found();
     }
@@ -120,18 +121,6 @@ function page_manager_term_view($terms, $depth = 0, $op = 'page') {
         'weight' => -10,
       ));
     }
-
-    // Build breadcrumb based on first hierarchy of first term:
-    $term_args = taxonomy_terms_parse_string($terms);
-    $current->tid = $term_args['tids'][0];
-    $breadcrumb = array();
-    while ($parents = taxonomy_get_parents($current->tid)) {
-      $current = array_shift($parents);
-      $breadcrumb[] = l($current->name, 'taxonomy/term/'. $current->tid);
-    }
-    $breadcrumb[] = l(t('Home'), NULL);
-    $breadcrumb = array_reverse($breadcrumb);
-    drupal_set_breadcrumb($breadcrumb);
 
     $output = ctools_context_handler_render($task, '', $contexts, array($terms, $depth, $op));
     if ($output !== FALSE) {
@@ -157,7 +146,7 @@ function page_manager_term_view_get_arguments($task, $subtask_id) {
       'identifier' => variable_get('page_manager_term_view_type', 'multiple') == 'multiple' ? t('Term(s) being viewed') : t('Term being viewed'),
       'id' => 1,
       'name' => variable_get('page_manager_term_view_type', 'multiple') == 'multiple' ? 'terms' : 'term',
-      'settings' => array('input_form' => 'tid'),
+      'settings' => array('input_form' => 'tid', 'breadcrumb' => variable_get('page_manager_taxonomy_breadcrumb', TRUE)),
       'default' => '404',
     ),
     array(

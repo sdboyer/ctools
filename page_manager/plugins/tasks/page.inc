@@ -116,6 +116,22 @@ function page_manager_page_save_subtask($subtask) {
   $page->arguments = $args;
   // Create a real object from the cache
   page_manager_page_save($page);
+
+  // Check to see if we should make this the site frontpage.
+  if (!empty($page->make_frontpage)) {
+    $path = array();
+    foreach (explode('/', $page->path) as $bit) {
+      if ($bit[0] != '!') {
+        $path[] = $bit;
+      }
+    }
+    
+    $path = implode('/', $path);
+    $front = variable_get('site_frontpage', 'node');
+    if ($path != $front) {
+      variable_set('site_frontpage', $path);
+    }
+  }
 }
 
 /**
@@ -275,7 +291,9 @@ function page_manager_page_execute($subtask_id) {
         $argument['keyword'] = $name;
         ctools_include('context');
         $context = ctools_context_get_context_from_argument($argument, $args[$count]);
-        $contexts[$context->id] = $context;
+        if ($context) {
+          $contexts[$context->id] = $context;
+        }
       }
       $count++;
     }
@@ -532,12 +550,36 @@ function page_manager_page_admin_summary($task, $subtask) {
   $output = '';
 
   $rows = array();
-  $path = $page->path;
-  if (strpos('%', $path) === FALSE) {
-    $path = l('/' . $path, $path);
+  $path = array();
+  foreach (explode('/', $page->path) as $bit) {
+    if ($bit[0] != '!') {
+      $path[] = $bit;
+    }
   }
+  
+  $path = implode('/', $path);
+  $front = variable_get('site_frontpage', 'node');
 
   $link = l(t('Edit'), page_manager_edit_url($task_name, array('settings', 'basic')));
+  $message = '';
+  if ($path == $front) {
+    $message = t('This is your site home page.');
+  }
+  else if (!empty($page->make_frontpage)) {
+    $message = t('This page is set to become your site home page.');
+  }
+
+  if ($message) {
+    $rows[] = array(
+      array('class' => t('page-summary-data'), 'data' => $message, 'colspan' => 2),
+      array('class' => t('page-summary-operation'), 'data' => $link),
+    );
+  }
+
+  if (strpos('%', $path) === FALSE) {
+    $path = l('/' . $page->path, $path);
+  }
+
   $rows[] = array(
     array('class' => t('page-summary-label'), 'data' => t('Path')),
     array('class' => t('page-summary-data'), 'data' => $path),

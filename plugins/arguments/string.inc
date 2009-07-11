@@ -34,12 +34,8 @@ function ctools_string_context($arg = NULL, $conf = NULL, $empty = FALSE) {
     return ctools_context_create_empty('string');
   }
 
-  $string = ctools_break_phrase($arg);
-  if (empty($string->value) || !empty($string->invalid_input)) {
-    return FALSE;
-  }
-
-  $context = ctools_context_create('string', $string);
+  $context = ctools_context_create('string', $arg);
   $context->original_argument = $arg;
+
   return $context;
 }

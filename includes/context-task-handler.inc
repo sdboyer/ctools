@@ -49,6 +49,14 @@ function ctools_context_handler_render($task, $subtask, $contexts, $args, $page 
           return $info;
         }
 
+        foreach (ctools_context_handler_get_task_arguments($task, $subtask) as $id => $argument) {
+          $plugin = ctools_get_argument($argument['name']);
+          $cid = ctools_context_id($argument, 'argument');
+          if (!empty($contexts[$cid]) && ($function = ctools_plugin_get_function($plugin, 'breadcrumb'))) {
+            $function($argument['settings'], $contexts[$cid]);
+          }
+        }
+
         if (isset($info['title'])) {
           drupal_set_title($info['title']);
         }

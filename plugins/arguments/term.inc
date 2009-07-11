@@ -17,9 +17,10 @@ function ctools_term_ctools_arguments() {
     'keyword' => 'term',
     'description' => t('Creates a single taxonomy term from a taxonomy ID or taxonomy term name.'),
     'context' => 'ctools_term_context',
-    'default' => array('input_form' => 'tid'),
+    'default' => array('input_form' => 'tid', 'breadcrumb' => TRUE),
     'settings form' => 'ctools_term_settings_form',
     'placeholder form' => 'ctools_term_ctools_argument_placeholder',
+    'breadcrumb' => 'ctools_term_breadcrumb',
   );
   return $args;
 }
@@ -85,6 +86,13 @@ function ctools_term_settings_form(&$form, &$form_state, $conf) {
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',
   );
+
+  $form['settings']['breadcrumb'] = array(
+    '#title' => t('Inject hierarchy into breadcrumb trail'),
+    '#type' => 'checkbox',
+    '#default_value' => !empty($conf['breadcrumb']),
+    '#description' => t('If checked, taxonomy term parents will appear in the breadcrumb trail.'),
+  );
 }
 
 /**
@@ -104,4 +112,22 @@ function ctools_term_ctools_argument_placeholder($conf) {
         '#description' => t('Enter a taxonomy term name.'),
       );
   }
+}
+
+/**
+ * Inject the breadcrumb trail if necessary.
+ */
+function ctools_term_breadcrumb($conf, $context) {
+  if (empty($conf['breadcrumb'])) {
+    return;
+  }
+
+  $breadcrumb = array();
+  while ($parents = taxonomy_get_parents($context->tid)) {
+    $current = array_shift($parents);
+    $breadcrumb[] = l($current->name, 'taxonomy/term/' . $context->tid);
+  }
+  
+  $breadcrumb = array_merge(drupal_get_breadcrumb(), array_reverse($breadcrumb));
+  drupal_set_breadcrumb($breadcrumb);
 }

@@ -43,7 +43,7 @@ function ctools_context_create_string($empty, $data = NULL, $conf = FALSE) {
     return $context;
   }
 
-  if (!empty($data) && is_object($data)) {
+  if ($data !== FALSE ) {
     $context->data = $data;
     return $context;
   }

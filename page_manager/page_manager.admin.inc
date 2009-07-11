@@ -104,6 +104,27 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
     $pages['storages'][$storage] = $storage;
     $row['data']['storage'] = array('data' => $storage, 'class' => 'page-manager-page-storage');
 
+  /*
+    if (empty($task['disabled'])) {
+      $path = array();
+      foreach (explode('/', $task['admin path']) as $bit) {
+        if ($bit[0] == '%') {
+          $path[] = '%';
+        }
+        else if ($bit[0] != '!') {
+          $path[] = $bit;
+        }
+      }
+      $path = implode('/', $path);
+      $item = menu_get_item($path);
+      if (empty($item)) {
+        dsm($path);
+      }
+      else {
+        dsm($item);
+      }
+    }
+  */
     $operations = array(
       array(
         'title' => t('Edit'),
