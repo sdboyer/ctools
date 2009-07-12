@@ -1436,7 +1436,7 @@ function page_manager_page_form_delete(&$form, &$form_state) {
     unset($form['buttons']);
     $form['delete'] = array(
       '#type' => 'submit',
-      '#value' => t('Delete'),
+      '#value' => $page->type == t('Overridden') ? t('Revert') : t('Delete'),
     );
   }
 }
@@ -1445,7 +1445,14 @@ function page_manager_page_form_delete(&$form, &$form_state) {
  * Submit handler to delete a view.
  */
 function page_manager_page_form_delete_submit(&$form, &$form_state) {
-  page_manager_page_delete($form_state['page']->subtask['subtask']);
-  drupal_set_message(t('The page has been deleted.'));
-  $form_state['redirect'] = 'admin/build/pages';
+  $page = $form_state['page']->subtask['subtask'];
+  page_manager_page_delete($page);
+  if ($page->type != t('Overridden')) {
+    $form_state['redirect'] = 'admin/build/pages';
+    drupal_set_message(t('The page has been deleted.'));
+  }
+  else {
+    $form_state['redirect'] = page_manager_edit_url($form_state['page']->task_name, array('summary'));
+    drupal_set_message(t('The page has been reverted.'));
+  }
 }

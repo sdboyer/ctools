@@ -27,6 +27,7 @@ this a bit of a concern.
 #514468 by hippich: Fix typos in content.menu.inc related to db_rewrite_sql() use.
 #508292 by rfay: Add user comparison access plugin.
 API version bumped to 1.1.0 to reflect the death of delegator.
+by sdboyer: Bulk Export module created to replace Panels bulk export.
 
 ctools 6.x-1.0-beta3
 ==================

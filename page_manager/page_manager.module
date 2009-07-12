@@ -948,6 +948,9 @@ function page_manager_menu_link_alter(&$item, $menu) {
   }
 }
 
+/**
+ * Callback to list handlers available for export.
+ */
 function page_manager_page_manager_handlers_list() {
   $list = $types = array();
   $tasks = page_manager_get_tasks();
@@ -966,6 +969,9 @@ function page_manager_page_manager_handlers_list() {
   return $list;
 }
 
+/**
+ * Callback to list pages available for export.
+ */
 function page_manager_page_manager_pages_list() {
   $list = array();
 
@@ -976,6 +982,9 @@ function page_manager_page_manager_pages_list() {
   return $list;
 }
 
+/**
+ * Callback to bulk export page manager pages.
+ */
 function page_manager_page_manager_pages_to_hook_code($names = array(), $name = 'foo') {
   $schema = ctools_export_get_schema('page_manager_pages');
   $export = $schema['export'];

@@ -554,26 +554,50 @@ function ctools_export_new_object($table, $set_defaults = TRUE) {
   return $object;
 }
 
-function ctools_export_to_hook_code($table, $names = array(), $name = 'foo') {
+/**
+ * Convert a group of objects to code based upon input and return this as a larger
+ * export.
+ */
+function ctools_export_to_hook_code(&$code, $table, $names = array(), $name = 'foo') {
   $schema = ctools_export_get_schema($table);
   $export = $schema['export'];
   // Use the schema-specified function for generating hook code, if one exists
   if (function_exists($export['to hook code callback'])) {
-    return $export['to hook code callback']($names, $name);
+    $output = $export['to hook code callback']($names, $name);
   }
   // Otherwise, the following code generates basic hook code
-  $objects = ctools_export_load_object($table, 'names', array_values($names));
-  if ($objects) {
-    $code = "/**\n";
-    $code .= " * Implementation of hook_{$export['default hook']}()\n";
-    $code .= " */\n";
-    $code .= "function " . $name . "_{$export['default hook']}() {\n";
-    foreach ($objects as $object) {
-      $code .= $export['export callback']($object, '  '); // if this function does not exist, better to error out than fail silently
-      $code .= "  \${$export['identifier']}s['" . check_plain($object->$export['key']) . "'] = \${$export['identifier']};\n\n";
+  else {
+    $objects = ctools_export_load_object($table, 'names', $names);
+    if ($objects) {
+      $output = "/**\n";
+      $output .= " * Implementation of hook_{$export['default hook']}()\n";
+      $output .= " */\n";
+      $output .= "function " . $name . "_{$export['default hook']}() {\n";
+      foreach ($objects as $object) {
+        $output .= $export['export callback']($object, '  '); // if this function does not exist, better to error out than fail silently
+        $output .= "  \${$export['identifier']}s['" . check_plain($object->$export['key']) . "'] = \${$export['identifier']};\n\n";
+      }
+      $output .= " return \${$export['identifier']}s;\n";
+      $output .= "}\n";
     }
-    $code .= " return \${$export['identifier']}s;\n";
-    $code .= "}\n";
-    return $code;
+  }
+
+  if (!empty($output)) {
+    if (isset($export['api'])) {
+      if (isset($code[$export['api']['owner']][$export['api']['api']]['version'])) {
+        $code[$export['api']['owner']][$export['api']['api']]['version'] = max($code[$export['api']['owner']][$export['api']['api']]['version'], $export['api']['minimum_version']);
+      }
+      else {
+        $code[$export['api']['owner']][$export['api']['api']]['version'] = $export['api']['minimum_version'];
+        $code[$export['api']['owner']][$export['api']['api']]['code'] = '';
+      }
+      $code[$export['api']['owner']][$export['api']['api']]['code'] .= $output;
+    }
+    else {
+      if (empty($code['general'])) {
+        $code['general'] = '';
+      }
+      $code['general'] .= $output;
+    }
   }
 }

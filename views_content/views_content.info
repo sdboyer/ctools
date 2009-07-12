@@ -5,3 +5,4 @@ package = "Views"
 dependencies[] = ctools
 dependencies[] = views
 core = 6.x
+package = Chaos tool suite

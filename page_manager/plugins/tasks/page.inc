@@ -216,7 +216,7 @@ function page_manager_page_build_subtask($task, $page) {
     ),
     'single task' => empty($page->multiple),
     'row class' => empty($page->disabled) ? 'page-manager-enabled' : 'page-manager-disabled',
-    'storage' => $page->type,
+    'storage' => $page->type == t('Default') ? t('In code') : $page->type,
     'disabled' => !empty($page->disabled),
     // This works for both enable AND disable
     'enable callback' => 'page_manager_page_enable',
@@ -442,6 +442,7 @@ function page_manager_page_delete($page) {
     }
   }
   db_query("DELETE FROM {page_manager_pages} WHERE name = '%s'", $page->name);
+  menu_rebuild();
 }
 
 /**
