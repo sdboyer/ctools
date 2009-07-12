@@ -1,0 +1,5 @@
+; $Id$
+name = Bulk Export
+description = Performs bulk exporting of data objects known about by Chaos Tools.
+core = 6.x
+dependencies[] = ctools

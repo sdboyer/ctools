@@ -21,6 +21,7 @@ function page_manager_page_page_manager_tasks() {
   return array(
     'title' => t('Custom pages'),
     'description' => t('Administrator created pages that have a URL path, access control and entries in the Drupal menu system.'),
+    'non-exportable' => TRUE,
     'subtasks' => TRUE,
     'subtask callback' => 'page_manager_page_subtask',
     'subtasks callback' => 'page_manager_page_subtasks',
@@ -125,7 +126,7 @@ function page_manager_page_save_subtask($subtask) {
         $path[] = $bit;
       }
     }
-    
+
     $path = implode('/', $path);
     $front = variable_get('site_frontpage', 'node');
     if ($path != $front) {
@@ -145,7 +146,7 @@ function page_manager_page_build_subtask($task, $page) {
     'title' => t('Settings'),
     'children' => array(),
   );
-  
+
   $settings = &$operations['settings']['children'];
 
   $settings['basic'] = array(
@@ -556,7 +557,7 @@ function page_manager_page_admin_summary($task, $subtask) {
       $path[] = $bit;
     }
   }
-  
+
   $path = implode('/', $path);
   $front = variable_get('site_frontpage', 'node');
 

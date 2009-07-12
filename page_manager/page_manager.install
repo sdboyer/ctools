@@ -24,6 +24,8 @@ function page_manager_schema_1() {
   $schema['page_manager_handlers'] = array(
     'export' => array(
       'identifier' => 'handler',
+      'bulk export' => TRUE,
+      'export callback' => 'page_manager_export_task_handler',
       'api' => array(
         'owner' => 'page_manager',
         'api' => 'pages_default',
@@ -105,6 +107,8 @@ function page_manager_schema_1() {
     'description' => 'Contains page subtasks for implementing pages with arbitrary tasks.',
     'export' => array(
       'identifier' => 'page',
+      'bulk export' => TRUE,
+      'export callback' => 'page_manager_page_export',
       'api' => array(
         'owner' => 'page_manager',
         'api' => 'pages_default',
@@ -201,7 +205,7 @@ function page_manager_install() {
     db_query("INSERT INTO {page_manager_pages} (pid, name, task, admin_title, path, access, menu, arguments, conf) (SELECT pid, name, task, admin_title, path, access, menu, arguments, conf FROM {delegator_pages})");
     db_query("INSERT INTO {page_manager_handlers} (SELECT did, name, task, subtask, handler, weight, conf FROM {delegator_handlers})");
     db_query("INSERT INTO {page_manager_weights} (SELECT name, weight FROM {delegator_weights})");
- 
+
     // Update all of the 'panel_page' type pages appropriately:
     $result = db_query("SELECT * FROM {page_manager_pages} WHERE task = 'panel_page'");
     while ($page = db_fetch_object($result)) {
@@ -253,7 +257,7 @@ function page_manager_install() {
     variable_set('page_manager_override_anyway', variable_get('delegator_override_anyway', FALSE));
     variable_del('delegator_override_anyway');
   }
-  
+
   db_query("UPDATE {system} SET weight = 99 WHERE name = 'page_manager'");
 }
 

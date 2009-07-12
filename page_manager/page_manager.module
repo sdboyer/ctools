@@ -160,7 +160,7 @@ function page_manager_theme() {
     ) + $base,
     'page_manager_handler_rearrange' => array(
       'arguments' => array('form' => NULL),
-    ) + $base,  
+    ) + $base,
     'page_manager_edit_page' => array(
       'template' => 'page-manager-edit-page',
       'arguments' => array('page' => NULL, 'save' => NULL, 'operations' => array(), 'content' => array()),
@@ -204,7 +204,7 @@ function page_manager_get_page_cache($task_name) {
     $cache = new stdClass();
     $cache->task_name = $task_name;
     list($cache->task_id, $cache->subtask_id) = page_manager_get_task_id($cache->task_name);
-    
+
     $cache->task = page_manager_get_task($cache->task_id);
     if (empty($cache->task)) {
       return FALSE;
@@ -920,7 +920,7 @@ function page_manager_edit_url($task_name, $trail = array()) {
   if (empty($trail) || $trail == array('summary')) {
     return "admin/build/pages/edit/$task_name";
   }
-  
+
   return 'admin/build/pages/nojs/operation/' . $task_name . '/' . implode('/', $trail);
 }
 
@@ -945,5 +945,53 @@ function page_manager_menu_link_alter(&$item, $menu) {
         $item['plid'] = $mlid;
       }
     }
+  }
+}
+
+function page_manager_page_manager_handlers_list() {
+  $list = $types = array();
+  $tasks = page_manager_get_tasks();
+  foreach ($tasks as $type => $info) {
+    if (empty($info['non-exportable'])) {
+      $types[] = $type;
+    }
+  }
+
+  $handlers = ctools_export_load_object('page_manager_handlers');
+  foreach ($handlers as $handler) {
+    if (in_array($handler->task, $types)) {
+      $list[$handler->name] = "$handler->task: {$handler->conf['title']} ($handler->name)";
+    }
+  }
+  return $list;
+}
+
+function page_manager_page_manager_pages_list() {
+  $list = array();
+
+  $pages = ctools_export_load_object('page_manager_pages', 'all');
+  foreach ($pages as $page) {
+    $list[$page->name] = "$page->admin_title ($page->name)";
+  }
+  return $list;
+}
+
+function page_manager_page_manager_pages_to_hook_code($names = array(), $name = 'foo') {
+  $schema = ctools_export_get_schema('page_manager_pages');
+  $export = $schema['export'];
+  $objects = ctools_export_load_object('page_manager_pages', 'names', array_values($names));
+  if ($objects) {
+    $code = "/**\n";
+    $code .= " * Implementation of hook_{$export['default hook']}()\n";
+    $code .= " */\n";
+    $code .= "function " . $name . "_{$export['default hook']}() {\n";
+    foreach ($objects as $object) {
+      // Have to implement our own because this export func sig requires it
+      $code .= $export['export callback']($object, TRUE, '  ');
+      $code .= "  \${$export['identifier']}s['" . check_plain($object->$export['key']) . "'] = \${$export['identifier']};\n\n";
+    }
+    $code .= " return \${$export['identifier']}s;\n";
+    $code .= "}\n";
+    return $code;
   }
 }

@@ -423,9 +423,45 @@ function ctools_export_get_schema($table) {
     'default hook' => 'default_' . $table,
     'can disable' => TRUE,
     'identifier' => $table,
+    'bulk export' => TRUE,
+    'export callback' => "$schema[module]_export_{$table}",
+    'list callback' => "$schema[module]_{$table}_list",
+    'to hook code callback' => "$schema[module]_{$table}_to_hook_code",
   );
 
   return $schema;
+}
+
+/**
+ * Gets the schemas for all tables with ctools object metdata.
+ */
+function ctools_export_get_schemas($for_export = FALSE) {
+  static $export_tables;
+  if (is_null($export_tables)) {
+    $export_tables = array();
+    $schemas = drupal_get_schema();
+    foreach ($schemas as $table => $schema) {
+      if (!isset($schema['export'])) {
+        unset($schemas[$table]);
+        continue;
+      }
+      $export_tables[$table] = ctools_export_get_schema($table);
+    }
+  }
+  return $for_export ? array_filter($export_tables, '_ctools_export_filter_export_tables') : $export_tables;
+}
+
+function _ctools_export_filter_export_tables($export) {
+  return empty($export['bulk export']);
+}
+
+function ctools_export_get_schemas_by_module($modules = array(), $for_export = FALSE) {
+  $export_tables = array();
+  $list = ctools_export_get_schemas($for_export);
+  foreach ($list as $table => $schema) {
+    $export_tables[$schema['module']][$table] = $schema;
+  }
+  return empty($modules) ? $export_tables : array_keys($export_tables, $modules);
 }
 
 /**
@@ -516,4 +552,28 @@ function ctools_export_new_object($table, $set_defaults = TRUE) {
     $object->type = t('Local');
   }
   return $object;
+}
+
+function ctools_export_to_hook_code($table, $names = array(), $name = 'foo') {
+  $schema = ctools_export_get_schema($table);
+  $export = $schema['export'];
+  // Use the schema-specified function for generating hook code, if one exists
+  if (function_exists($export['to hook code callback'])) {
+    return $export['to hook code callback']($names, $name);
+  }
+  // Otherwise, the following code generates basic hook code
+  $objects = ctools_export_load_object($table, 'names', array_values($names));
+  if ($objects) {
+    $code = "/**\n";
+    $code .= " * Implementation of hook_{$export['default hook']}()\n";
+    $code .= " */\n";
+    $code .= "function " . $name . "_{$export['default hook']}() {\n";
+    foreach ($objects as $object) {
+      $code .= $export['export callback']($object, '  '); // if this function does not exist, better to error out than fail silently
+      $code .= "  \${$export['identifier']}s['" . check_plain($object->$export['key']) . "'] = \${$export['identifier']};\n\n";
+    }
+    $code .= " return \${$export['identifier']}s;\n";
+    $code .= "}\n";
+    return $code;
+  }
 }
