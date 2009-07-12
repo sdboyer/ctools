@@ -6,6 +6,7 @@
  */
 
 Drupal.behaviors.PageManagerList = function() {
+  var timeoutID = 0;
   $('form#page-manager-list-pages-form select:not(.pm-processed)')
     .addClass('pm-processed')
     .change(function() {
@@ -32,7 +33,13 @@ Drupal.behaviors.PageManagerList = function() {
         case 27: // esc
           return false;
         default:
-          $('#edit-pages-apply').click();
+          if (!$('#edit-pages-apply').hasClass('ctools-ajaxing')) {
+            if ((timeoutID)) {
+              clearTimeout(timeoutID);
+            }
+
+            timeoutID = setTimeout(function() { $('#edit-pages-apply').click(); }, 300);
+        }
       }
     });
 }
