@@ -49,6 +49,18 @@ function ctools_context_handler_render($task, $subtask, $contexts, $args, $page 
           return $info;
         }
 
+        /*
+        // Only do this if something hasn't already changed the active menu, 
+        // such as a book.
+        if (menu_get_active_menu_name() == 'navigation') {
+          $item = menu_get_item();
+          $mlink = db_fetch_object(db_query("SELECT * FROM {menu_links} WHERE link_path = '%s'", $item['href']));
+        
+          if ($mlink && isset($mlink->menu_name)) {
+            menu_set_active_menu_name($mlink->menu_name);
+          }
+        }
+        */
         foreach (ctools_context_handler_get_task_arguments($task, $subtask) as $id => $argument) {
           $plugin = ctools_get_argument($argument['name']);
           $cid = ctools_context_id($argument, 'argument');

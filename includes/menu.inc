@@ -212,6 +212,16 @@ function ctools_menu_tree_page_data($item, $menu_name = 'navigation') {
   return $tree[$cid];
 }
 
+function ctools_menu_set_trail_parent($path) {
+  $current = menu_get_active_trail();
+  $keep = array_pop($current);
+  
+  $trail = ctools_get_menu_trail($path);
+  $trail[] = $keep;
+
+  menu_set_active_trail($trail);
+}
+
 /**
  * An alternative to theme_menu_local_tasks to add flexibility to tabs.
  *

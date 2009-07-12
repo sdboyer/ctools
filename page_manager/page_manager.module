@@ -923,3 +923,27 @@ function page_manager_edit_url($task_name, $trail = array()) {
   
   return 'admin/build/pages/nojs/operation/' . $task_name . '/' . implode('/', $trail);
 }
+
+/**
+ * Watch menu links during the menu rebuild, and re-parent things if we need to.
+ */
+function page_manager_menu_link_alter(&$item, $menu) {
+  static $mlids = array();
+  // Keep an array of mlids as links are saved that we can use later.
+  if (isset($item['mlid'])) {
+    $mlids[$item['path']] = $item['mlid'];
+  }
+
+  if (isset($item['parent_path'])) {
+    if (isset($mlids[$item['parent_path']])) {
+      $item['plid'] = $mlids[$item['parent_path']];
+    }
+    else {
+      // Since we didn't already see an mlid, let's check the database for one.
+      $mlid = db_result(db_query("SELECT mlid FROM {menu_links} WHERE router_path = '%s'", $item['parent_path']));
+      if ($mlid) {
+        $item['plid'] = $mlid;
+      }
+    }
+  }
+}

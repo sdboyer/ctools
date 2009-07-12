@@ -380,9 +380,11 @@ function page_manager_page_form_basic(&$form, &$form_state) {
   $frontpage = variable_get('site_frontpage', 'node');
 
   $path = array();
-  foreach (explode('/', $page->path) as $bit) {
-    if ($bit[0] != '!') {
-      $path[] = $bit;
+  if ($page->path) {
+    foreach (explode('/', $page->path) as $bit) {
+      if ($bit[0] != '!') {
+        $path[] = $bit;
+      }
     }
   }
   
