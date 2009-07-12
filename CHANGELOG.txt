@@ -1,6 +1,6 @@
-Current API VERSION: 1.0.1
+Current API VERSION: 1.1.0. See API.txt for more information.
 
-ctools 6.x-1.0-dev
+ctools 6.x-1.0-beta4
 ==================
 #451078: Fix silly typo preventing contexts from getting to views. Again.
 #457376: Text fields need array defaults. This only broke in pgsql.
