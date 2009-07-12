@@ -114,7 +114,7 @@ function page_manager_page_save_subtask($subtask) {
       );
     }
   }
-  $page->arguments = $args;
+  page_manager_page_recalculate_arguments($page);
   // Create a real object from the cache
   page_manager_page_save($page);
 
@@ -657,4 +657,27 @@ function page_manager_page_enable(&$cache, $status) {
   ctools_export_set_object_status($page, $status);
 
   $page->disabled = FALSE;
+}
+
+/**
+ * Recalculate the arguments when something like the path changes.
+ */
+function page_manager_page_recalculate_arguments(&$page) {
+  // Ensure $page->arguments contains only real arguments:
+  $arguments = page_manager_page_get_named_arguments($page->path);
+  $args = array();
+  foreach ($arguments as $keyword => $position) {
+    if (isset($page->arguments[$keyword])) {
+      $args[$keyword] = $page->arguments[$keyword];
+    }
+    else {
+      $args[$keyword] = array(
+        'id' => '',
+        'identifier' => '',
+        'argument' => '',
+        'settings' => array(),
+      );
+    }
+  }
+  $page->arguments = $args;
 }

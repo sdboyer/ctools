@@ -1,5 +1,10 @@
 Current API VERSION: 1.1.0. See API.txt for more information.
 
+ctools 6.x-1.0-dev
+==================
+
+#510968: Arguments needed to be recalulculated when path changed in page task.
+
 ctools 6.x-1.0-beta4
 ==================
 #451078: Fix silly typo preventing contexts from getting to views. Again.

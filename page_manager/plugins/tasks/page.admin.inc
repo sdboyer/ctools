@@ -575,6 +575,7 @@ function page_manager_page_form_basic_submit(&$form, &$form_state) {
 
   if ($page->path != $form_state['values']['path']) {
     $page->path = $form_state['values']['path'];
+    page_manager_page_recalculate_arguments(&$page);
     $cache->path_changed = TRUE;
   }
 
