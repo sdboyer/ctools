@@ -119,7 +119,7 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
       $class .= ' page-manager-disabled';
     }
 
-    $row = array('data' => array(), 'class' => $class);
+    $row = array('data' => array(), 'class' => $class, 'title' => strip_tags($task['admin description']));
 
     $type = isset($task['admin type']) ? $task['admin type'] : t('System');
     $pages['types'][$type] = $type;
