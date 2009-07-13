@@ -123,9 +123,10 @@ function ctools_term_breadcrumb($conf, $context) {
   }
 
   $breadcrumb = array();
-  while ($parents = taxonomy_get_parents($context->tid)) {
+  $current->tid = $context->data->tid;
+  while ($parents = taxonomy_get_parents($current->tid)) {
     $current = array_shift($parents);
-    $breadcrumb[] = l($current->name, 'taxonomy/term/' . $context->tid);
+    $breadcrumb[] = l($current->name, 'taxonomy/term/' . $current->tid);
   }
   
   $breadcrumb = array_merge(drupal_get_breadcrumb(), array_reverse($breadcrumb));
