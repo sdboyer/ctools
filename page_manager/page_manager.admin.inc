@@ -885,11 +885,9 @@ function _page_manager_get_operation_content($js, &$page, $active, $operation, $
     }
   }
   else {
-    $output = '<pre>' . check_plain(var_export($active, 1)) . '</pre>';
-    $output .= '<pre>' . check_plain(var_export($operation, 1)) . '</pre>';
     $return = array(
-      'title' => t('Test data'),
-      'content' => t('If this were finished, you would see useful output here. It is not, so you do not.') . $output
+      'title' => t('Error'),
+      'content' => t('This operation trail does not exist.'),
     );
   }
 
@@ -1214,8 +1212,7 @@ function page_manager_handler_add_submit(&$form, &$form_state) {
   }
   else {
     // It has no forms at all. Add the variant and go to its first operation.
-    $keys = array_keys($plugin['operations']);
-    $form_state['new trail'] = array('handlers', $name, reset($keys));
+    page_manager_handler_add_finish($form_state);
   }
 }
 

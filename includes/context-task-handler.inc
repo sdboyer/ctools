@@ -299,15 +299,6 @@ function ctools_context_handler_edit_criteria(&$form, &$form_state) {
  */
 function ctools_context_handler_edit_criteria_submit(&$form, &$form_state) {
   $form_state['handler']->conf['access']['logic'] = $form_state['values']['logic'];
-  if (!empty($form_state['handler']->conf['autogenerate_title'])) {
-    $strings = ctools_context_handler_summary($form_state['task'], $form_state['subtask'], $form_state['handler']);
-    if (!$strings) {
-      $form_state['handler']->conf['title'] = t('Panel');
-    }
-    else {
-      $form_state['handler']->conf['title'] = t('Panel: !criteria', array('!criteria' => implode(', ', $strings)));
-    }
-  }
 }
 
 /**
