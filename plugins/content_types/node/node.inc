@@ -86,6 +86,10 @@ function ctools_node_content_type_render($subtype, $conf, $panel_args) {
     $node->panel_identifier = $conf['identifier'];
   }
 
+  if (!isset($node->build_mode)) {
+    $node->build_mode = NODE_BUILD_NORMAL;
+  }
+
   $block->content = node_view($node, $conf['teaser'], FALSE, $conf['links']);
   return $block;
 }

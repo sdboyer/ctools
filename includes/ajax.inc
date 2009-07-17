@@ -363,3 +363,48 @@ function ctools_ajax_render_error($error = '') {
   ctools_ajax_render($commands);
 }
 
+/**
+ * Associate a URL to a form element with a hidden form.
+ *
+ * This is a helper function to easily associate a URL with a form element
+ * which can be used for different ajax functionality. 
+ * 
+ * You would call this function on a form element in the form function like this:
+ *
+ * @code
+ *   $form['example'] = array(
+ *     '#title' => t('Example'),
+ *     '#type' => 'select',
+ *     '#options' => array(1 => 'One', 2 => 'Two', 3 => 'Three'),
+ *     '#default_value' => 1,
+ *   );
+ *   ctools_ajax_associate_url_to_element($form, $form['example'], 'example/ajax/urlpath');
+ * @endcode
+ * 
+ * The AJAX request will POST the value of the form element in the "ctools_changed" parameter.
+ *
+ * @param &$form
+ *   Reference to the form element. This is required to have the #id and #attribute
+ *   elements populated and to create the hidden form element for each select.
+ * @param &$form_element
+ *   The form element we are going to take action on.
+ * @param $dest
+ *   The URL to associate the form element to.
+ * @param $type
+ *   A type to use, in case a different behavior should be attached. Defaults
+ *   to ctools-use-ajax.
+ */
+function ctools_ajax_associate_url_to_element(&$form, &$form_element, $dest, $type = 'ctools-use-ajax') {
+  drupal_add_js('misc/jquery.form.js', 'core');
+  if (!isset($form_element['#id'])) {
+    //Create a unique ID to associate $form_element and hidden elements since we dont have an ID
+    $form_element['#id'] = uniqid('ctools-ajax-url-');
+  }
+  
+  //Add hidden form element to hold base URL
+  $form[$form_element['#id'] . '-url'] = array(
+    '#type' => 'hidden',
+    '#value' => $dest,
+    '#attributes' => array('class' =>  $form_element['#id'] . '-url'),
+  );
+}

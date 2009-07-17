@@ -124,6 +124,54 @@ Drupal.CTools.AJAX.clickAJAXButton = function() {
 };
 
 /**
+ * Generic replacement for change handler to execute ajax method.
+ */
+Drupal.CTools.AJAX.changeAJAX = function () {
+  if ($(this).hasClass('ctools-ajaxing')) {
+    return false;
+  }
+  
+  var url = Drupal.CTools.AJAX.findURL(this);
+  $(this).addClass('ctools-ajaxing');
+  var object = $(this);
+  var form_id = $(object).parents('form').get(0).id;
+  try {
+    if (url) {
+      url = url.replace('/nojs/', '/ajax/');
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: {'ctools_changed' : $(this).val()},
+        global: true,
+        success: Drupal.CTools.AJAX.respond,
+        error: function() { 
+          alert("An error occurred while attempting to process " + url); 
+        },
+        complete: function() {
+          object.removeClass('ctools-ajaxing');
+          if ($(object).hasClass('ctools-ajax-submit-onchange')) {
+            $('form#' + form_id).submit();
+          }
+        },
+        dataType: 'json'
+      });
+    }
+    else {
+      if ($(object).hasClass('ctools-ajax-submit-onchange')) {
+    	  $('form#' + form_id).submit();
+      }
+      return false;
+    }
+  }
+  catch (err) {
+    alert("An error occurred while attempting to process " + url); 
+    $(this).removeClass('ctools-ajaxing');
+    return false;
+  }
+  return false;
+};
+
+/**
  * Find a URL for an AJAX button.
  *
  * The URL for this gadget will be composed of the values of items by
@@ -238,7 +286,13 @@ Drupal.behaviors.CToolsAJAX = function(context) {
     .click(Drupal.CTools.AJAX.clickAJAXLink);
 
   // Bind buttons
-  $('input.ctools-use-ajax:not(.ctools-use-ajax-processed)', context)
+  $('input.ctools-use-ajax:not(.ctools-use-ajax-processed):button', context)
     .addClass('ctools-use-ajax-processed')
     .click(Drupal.CTools.AJAX.clickAJAXButton);
+
+  // Bind select
+  $('select, input:text, input:radio, input:checkbox', context)
+     .filter('.ctools-use-ajax-onchange:not(.ctools-use-ajax-processed)')
+     .addClass('ctools-use-ajax-processed')
+     .change(Drupal.CTools.AJAX.changeAJAX);
 };
