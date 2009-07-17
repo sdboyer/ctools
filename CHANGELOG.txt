@@ -13,7 +13,8 @@ ctools 6.x-1.0-dev
 #451928 by populist: Fix file upload from modals.
 #522836 by andrewlevine: Add form_clean_id() to ctools_rebuild_form() to prevent extraneous -1s from appearing.
 #518254: Accidentally inverted truth value on compare users.
-#464252 by andrewlevine: Helper to make onchange requests for select boxes.
+#464252 by andrewlevine: Helper to make onchange AJAX requests for select boxes.
+#490672 by dereine: Title overrides not working for system block using custom block.
 
 ctools 6.x-1.0-beta4
 ==================

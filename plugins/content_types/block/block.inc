@@ -74,7 +74,7 @@ function ctools_block_content_type_render($subtype, $conf) {
   $block->module = $module;
   $block->delta = $delta;
 
-  if ($module == 'block') {
+  if ($module == 'block' && empty($conf['override_title'])) {
     $block->subject = db_result(db_query("SELECT title FROM {blocks} WHERE module = '%s' AND delta = '%s'", 'block', $delta));
   }
 
