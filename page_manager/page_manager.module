@@ -322,6 +322,8 @@ function page_manager_save_page_cache($cache) {
  * Menu callback to load a page manager cache object for menu callbacks.
  */
 function page_manager_cache_load($task_name) {
+  // load context plugin as there may be contexts cached here.
+  ctools_include('context');
   return page_manager_get_page_cache($task_name);
 }
 
