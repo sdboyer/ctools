@@ -549,6 +549,29 @@ function page_manager_page_admin_summary($task, $subtask) {
   $output = '';
 
   $rows = array();
+
+  $rows[] = array(
+    array('class' => t('page-summary-label'), 'data' => t('Storage')),
+    array('class' => t('page-summary-data'), 'data' => $subtask['storage']),
+    array('class' => t('page-summary-operation'), 'data' => ''),
+  );
+
+  if (!empty($page->disabled)) {
+    $link = l(t('Enable'), page_manager_edit_url($task_name, array('handlers', $page->name, 'actions', 'enable')));
+    $text = t('Disabled');
+  }
+  else {
+    $link = l(t('Disable'), page_manager_edit_url($task_name, array('handlers', $page->name, 'actions', 'disable')));
+    $text = t('Enabled');
+  }
+
+  $rows[] = array(
+    array('class' => t('page-summary-label'), 'data' => t('Status')),
+    array('class' => t('page-summary-data'), 'data' => $text),
+    array('class' => t('page-summary-operation'), 'data' => $link),
+  );
+
+
   $path = array();
   foreach (explode('/', $page->path) as $bit) {
     if ($bit[0] != '!') {

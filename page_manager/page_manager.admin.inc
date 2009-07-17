@@ -1295,7 +1295,7 @@ function page_manager_handler_add_form(&$form, $form_state, $features = array())
   $form['features'] = array(
     '#type' => 'checkboxes',
     '#validated' => TRUE,
-    '#title' => t('Features'),
+    '#title' => t('Optional features'),
     '#options' => array(),
     '#description' => t('Check any optional features you need to be presented with forms for configuring them. If you do not check them here you will still be able to utilize these features once the new page is created. If you are not sure, leave these unchecked.'),
     '#tree' => TRUE,
@@ -1661,6 +1661,15 @@ function page_manager_page_summary(&$form, &$form_state) {
     $output .= '<p>' . t('This page has no variants and thus no output of its own.') . '</p>';
   }
 
+  $links = array(
+    array(
+      'title' => ' &raquo; ' . t('Add a new variant'),
+      'href' => page_manager_edit_url($page->task_name, array('actions', 'add')),
+      'html' => TRUE,
+    ),
+  );
+
+  $output .= '<div class="links">' . theme('links', $links) . '</div>';
   $form['markup'] = array(
     '#value' => $output,
   );
