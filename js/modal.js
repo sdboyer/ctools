@@ -156,11 +156,12 @@ Drupal.CTools.Modal.submitAjaxForm = function() {
     // If the form requires uploads, use an iframe instead and add data to
     // the submit to support this and use the proper response.
     if ($(this).attr('enctype') == 'multipart/form-data') {
-      ajaxOptions = {
+      $(this).append('<input type="hidden" name="ctools_multipart" value="1">');
+      ajaxIframeOptions = {
         success: Drupal.CTools.AJAX.iFrameJsonRespond,
         iframe: true,
-        data: {'ctools_multipart': '1'}
-      } + ajaxOptions;
+      };
+      ajaxOptions = jQuery.extend(ajaxOptions, ajaxIframeOptions);
     }
 
     $(this).ajaxSubmit(ajaxOptions);

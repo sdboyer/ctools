@@ -10,6 +10,7 @@ ctools 6.x-1.0-dev
 #498066 by mikl: Fix class names in advanced help.
 #504286 by Darren Oh: Set proper primary key on ctools_object_cache
 #514432 by markus_petrux: Node title field available as a pane.
+#451928 by populist: Fix file upload from modals.
 
 ctools 6.x-1.0-beta4
 ==================
