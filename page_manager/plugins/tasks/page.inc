@@ -34,14 +34,11 @@ function page_manager_page_page_manager_tasks() {
     'hook theme' => 'page_manager_page_theme',
     // page only items
     'task type' => 'page',
-    'operations' => array(
+    'page operations' => array(
       array(
-        'title' => t('Import'),
-        'href' => 'admin/build/pages/import',
-      ),
-      array(
-        'title' => t('Add custom page'),
+        'title' => ' &raquo; ' . t('Create a new page'),
         'href' => 'admin/build/pages/add',
+        'html' => TRUE,
       ),
     ),
     'columns' => array(

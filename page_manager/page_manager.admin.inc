@@ -23,7 +23,7 @@ function page_manager_list_page($js = NULL) {
   $js = $js == 'ajax';
 
   $tasks = page_manager_get_tasks_by_type('page');
-  $pages = array();
+  $pages = array('operations' => array());
 
   page_manager_get_pages($tasks, $pages);
 
@@ -76,6 +76,7 @@ function page_manager_list_page($js = NULL) {
 
   $header[] = array('data' => t('Operations'), 'class' => 'page-manager-page-operations');
   $table = theme('table', $header, $pages['rows'], array('id' => 'page-manager-list-pages'));
+  $table .= '<div id="page-manager-links" class="links">' . theme('links', $pages['operations']) . '</div>';
 
   drupal_add_css(drupal_get_path('module', 'page_manager') . '/css/page-manager.css');
   
@@ -97,6 +98,10 @@ function page_manager_list_page($js = NULL) {
  */
 function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
   foreach ($tasks as $id => $task) {
+    if (empty($task_id) && !empty($task['page operations'])) {
+      $pages['operations'] = array_merge($pages['operations'], $task['page operations']);
+    }
+
     // If a type has subtasks, add its subtasks in its own table.
     if (!empty($task['subtasks'])) {
       page_manager_get_pages(page_manager_get_task_subtasks($task), $pages, $task['name']);
