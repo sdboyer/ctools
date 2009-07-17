@@ -57,10 +57,10 @@ function ctools_compare_users_access_check($conf, $context) {
   $account1 = $context[0]->data;
   $account2 = $context[1]->data;
 
-  // xor returns true if the two bools are the same, and false if they are not.
+  // xor returns false if the two bools are the same, and true if they are not.
   // i.e, if we asked for equality and they are equal, return true.
   // If we asked for inequality and they are equal, return false.
-  return ($account1->uid == $account2->uid) xor !empty($conf['equality']);
+  return ($account1->uid == $account2->uid) xor empty($conf['equality']);
 }
 
 /**
