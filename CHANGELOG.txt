@@ -8,6 +8,7 @@ ctools 6.x-1.0-dev
 #132557: Allow alter hook for rendered data: hook_ctools_render_alter()
 #520128: Context object may not be available when loading page cache.
 #498066 by mikl: Fix class names in advanced help.
+#504286 by Darren Oh: Set proper primary key on ctools_object_cache
 
 ctools 6.x-1.0-beta4
 ==================

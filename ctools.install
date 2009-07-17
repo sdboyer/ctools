@@ -141,10 +141,8 @@ function ctools_schema_1() {
         'serialize' => TRUE,
       ),
     ),
-    'indexes' => array(
-      'sid_obj_name' => array('sid', 'obj', 'name'),
-      'updated' => array('updated'),
-    ),
+    'primary key' => array('sid', 'obj', 'name'),
+    'indexes' => array('updated' => array('updated')),
   );
   return $schema;
 }
@@ -189,5 +187,15 @@ function ctools_update_6003() {
     drupal_install_modules(array('views_content'));
   }
 
+  return $ret;
+}
+
+/**
+ * Add primary key to the ctools_object_cache table.
+ */
+function ctools_update_6004() {
+  $ret = array();
+  db_add_primary_key($ret, 'ctools_object_cache', array('sid', 'obj', 'name'));
+  db_drop_index($ret, 'ctools_object_cache', 'sid_obj_name');
   return $ret;
 }
