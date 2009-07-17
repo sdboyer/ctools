@@ -161,7 +161,7 @@ Drupal.CTools.Modal.submitAjaxForm = function() {
         success: Drupal.CTools.AJAX.iFrameJsonRespond,
         iframe: true,
       };
-      ajaxOptions = jQuery.extend(ajaxOptions, ajaxIframeOptions);
+      ajaxOptions = $.extend(ajaxOptions, ajaxIframeOptions);
     }
 
     $(this).ajaxSubmit(ajaxOptions);
