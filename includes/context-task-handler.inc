@@ -226,7 +226,7 @@ function ctools_context_handler_get_handler_object($handler) {
  */
 function ctools_context_handler_get_task_object($task, $subtask, $handler) {
   $object = new stdClass;
-  $object->name = $handler->name;
+  $object->name = !empty($handler->name) ? $handler->name : NULL;
   $object->arguments = ctools_context_handler_get_task_arguments($task, $subtask);
   $object->contexts = isset($handler->conf['contexts']) ? $handler->conf['contexts'] : array();
   $object->relationships = isset($handler->conf['relationships']) ? $handler->conf['relationships'] : array();

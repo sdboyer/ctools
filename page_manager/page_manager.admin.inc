@@ -948,7 +948,7 @@ function page_manager_edit_page_next(&$form_state) {
  * All we do here is clear the cache.
  */
 function page_manager_edit_page_cancel(&$form_state) {
-  return;
+  $page = $form_state['page'];
 }
 
 /**
@@ -1132,7 +1132,7 @@ function page_manager_save_page_form(&$form_state) {
       '#value' => '<div class="changed-notification">' . t('You have unsaved changes to this page. You must select Save to write them to the database, or Cancel to discard these changes. Please note that if you have changed any form, you must submit that form before saving.') . '</div>',
     );
 
-    // Always make sure we submit back to the proper age.
+    // Always make sure we submit back to the proper page.
     $form['#action'] = url('admin/build/pages/edit/' . $form_state['page']->task_name);
     $form['save'] = array(
       '#type' => 'submit',
@@ -1162,6 +1162,10 @@ function page_manager_save_page_form_submit(&$form, &$form_state) {
 function page_manager_save_page_form_cancel(&$form, &$form_state) {
   drupal_set_message(t('All pending changes have been discarded, and the page is now unlocked.'));
   page_manager_clear_page_cache($form_state['page']->task_name);
+
+  if (!empty($form_state['page']->new)) {
+    $form_state['redirect'] = 'admin/build/pages';
+  }
 }
 
 // --------------------------------------------------------------------------
@@ -1230,8 +1234,15 @@ function page_manager_handler_add_finish(&$form_state) {
 
   // Set the new destination
   $plugin = page_manager_get_task_handler($handler->handler);
-  $keys = array_keys($plugin['operations']);
-  $form_state['new trail'] = array('handlers', $handler->name, reset($keys));
+  if (!empty($plugin['add finish'])) {
+    $location = $plugin['add finish'];
+  }
+  else {
+    $keys = array_keys($plugin['operations']);
+    $location = reset($keys);
+  }
+
+  $form_state['new trail'] = array('handlers', $handler->name, $location);
 
   // Pass through.
   page_manager_edit_page_finish($form_state);
@@ -1551,7 +1562,6 @@ function page_manager_break_lock_submit(&$form, &$form_state) {
   $form_state['page']->locked = FALSE;
   ctools_object_cache_clear_all('page_manager_page', $page->task_name);
   $form_state['do not cache'] = TRUE;
-  $form_state['new trail'] = array('summary');
   drupal_set_message(t('The lock has been cleared and all changes discarded. You may now make changes to this page.'));
 }
 

@@ -182,7 +182,6 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
       'argument' => t('Argument settings'),
       'access' => t('Access control'),
       'menu' => t('Menu settings'),
-      'multiple' => t('Task handlers'),
     ),
     'forms' => array(
       'basic' => array(
@@ -196,9 +195,6 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
       ),
       'argument' => array(
         'form id' => 'page_manager_page_form_argument',
-      ),
-      'multiple' => array(
-        'form id' => 'page_manager_page_argument_form_multiple',
       ),
     ),
   );
@@ -280,6 +276,7 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
     $keys = array_keys($page->handlers);
     $key = array_shift($keys);
     $form_state['handler'] = &$page->handlers[$key];
+    $form_state['handler_id'] = $key;
   }
 
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
@@ -298,10 +295,18 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
 function page_manager_page_add_subtask_finish(&$form_state) {
   $page = &$form_state['page'];
   // Update the cache with changes.
-  page_manager_set_page_cache($form_state['page']);
+  page_manager_set_page_cache($page);
+
+  $handler = $form_state['handler'];
+  $handler_plugin = page_manager_get_task_handler($handler->handler);
 
   // Redirect to the new page's task handler editor.
-  $form_state['redirect'] = page_manager_edit_url($page->task_name);
+  if (isset($handler_plugin['add finish'])) {
+    $form_state['redirect'] = page_manager_edit_url($page->task_name, array('handlers', $handler->name, $handler_plugin['add finish']));
+  }
+  else {
+    $form_state['redirect'] = page_manager_edit_url($page->task_name);
+  }
   return;
 }
 
