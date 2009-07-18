@@ -17,7 +17,7 @@ function ctools_node_type_ctools_access() {
     'default' => array('type' => array()),
     'settings form' => 'ctools_node_type_ctools_access_settings',
     'settings form submit' => 'ctools_node_type_ctools_access_settings_submit',
-    'summary' => 'ctools_node_type_ctools_acesss_summary',
+    'summary' => 'ctools_node_type_ctools_access_summary',
     'required context' => new ctools_context_required(t('Node'), 'node'),
     'restrictions' => 'ctools_node_type_ctools_access_restrictions',
   );
@@ -83,7 +83,7 @@ function ctools_node_type_ctools_access_restrictions($conf, &$context) {
 /**
  * Provide a summary description based upon the checked node_types.
  */
-function ctools_node_type_ctools_acesss_summary($conf, $context) {
+function ctools_node_type_ctools_access_summary($conf, $context) {
   if (!isset($conf['type'])) {
     $conf['type'] = array();
   }
