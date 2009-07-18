@@ -15,6 +15,7 @@ ctools 6.x-1.0-dev
 #518254: Accidentally inverted truth value on compare users.
 #464252 by andrewlevine: Helper to make onchange AJAX requests for select boxes.
 #490672 by dereine: Title overrides not working for system block using custom block.
+#520402: Disabled some concept code for later use that apparently conflicts with admin_menu.
 
 ctools 6.x-1.0-beta4
 ==================

@@ -930,6 +930,8 @@ function page_manager_edit_url($task_name, $trail = array()) {
  * Watch menu links during the menu rebuild, and re-parent things if we need to.
  */
 function page_manager_menu_link_alter(&$item, $menu) {
+  return;
+/** -- disabled, concept code --
   static $mlids = array();
   // Keep an array of mlids as links are saved that we can use later.
   if (isset($item['mlid'])) {
@@ -948,6 +950,7 @@ function page_manager_menu_link_alter(&$item, $menu) {
       }
     }
   }
+ */
 }
 
 /**
