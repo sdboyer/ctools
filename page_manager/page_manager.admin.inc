@@ -1490,13 +1490,17 @@ function page_manager_handler_clone(&$form, &$form_state) {
  * Clone an existing task handler into a new handler.
  */
 function page_manager_handler_clone_submit($form, &$form_state) {
-  $handler = $form_state['handler'];
+  $export = page_manager_export_task_handler($form_state['handler']);
+  ob_start();
+  eval($export);
+  ob_end_clean();
+
   page_manager_handler_add_to_page($form_state['page'], $handler, $form_state['values']['title']);
 
   $plugin = page_manager_get_task_handler($handler->handler);
   // It has no forms at all. Add the variant and go to its first operation.
   $keys = array_keys($plugin['operations']);
-  $form_state['new trail'] = array('handlers', $name, reset($keys));
+  $form_state['new trail'] = array('handlers', $handler->name, reset($keys));
 }
 
 /**

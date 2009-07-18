@@ -356,7 +356,7 @@ function page_manager_handler_get_name($task_name, $handlers, $handler) {
  * This is used by both import and clone, since clone just exports the
  * handler and immediately imports it.
  */
-function page_manager_handler_add_to_page(&$page, $handler, $title = NULL) {
+function page_manager_handler_add_to_page(&$page, &$handler, $title = NULL) {
   $last = end($page->handler_info);
   $handler->weight = $last ? $last['weight'] + 1 : 0;
   $handler->task = $page->task_id;
