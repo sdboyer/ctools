@@ -46,8 +46,8 @@ function ctools_node_title_content_type_render($subtype, $conf, $panel_args, $co
  * Returns an edit form for custom type settings.
  */
 function ctools_node_title_content_type_edit_form(&$form, &$form_state) {
-  // provide a blank form so we have a place to have context setting.
   $conf = $form_state['conf'];
+
   $form['link'] = array(
     '#title' => t('Link to node'),
     '#type' => 'checkbox',
