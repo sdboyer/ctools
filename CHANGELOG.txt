@@ -20,6 +20,7 @@ ctools 6.x-1.0-dev
 #477334 by dkruglyak: Remove forced lowercase on CSS processing.
 #484340: Allow keyword substitution in custom content.
 #458300: Option to inherit panel path on views panes not being properly honored.
+#493620: Add a PHP Code option to access control.
 
 ctools 6.x-1.0-beta4
 ==================
