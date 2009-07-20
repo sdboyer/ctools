@@ -17,6 +17,7 @@ ctools 6.x-1.0-dev
 #490672 by dereine: Title overrides not working for system block using custom block.
 #520402: Disabled some concept code for later use that apparently conflicts with admin_menu.
 #523712: Fix call-time pass by reference typo.
+#477334 by dkruglyak: Remove forced lowercase on CSS processing.
 
 ctools 6.x-1.0-beta4
 ==================

@@ -70,7 +70,7 @@ function page_manager_node_view_menu_alter(&$items, $task) {
 function page_manager_node_view_task_admin(&$form, &$form_state) {
   $callback = db_result(db_query("SELECT page_callback FROM {menu_router} WHERE path = 'node/%'"));
   if ($callback != 'page_manager_node_view') {
-    drupal_set_message(t('Page manager module is unable to override node/%node because some other module already has overridden with %callback. Page managerwill not be able to handle this page.', array('%callback' => $callback)), 'warning');
+    drupal_set_message(t('Page manager module is unable to override node/%node because some other module already has overridden with %callback. Page manager will not be able to handle this page.', array('%callback' => $callback)), 'warning');
   }
 }
 

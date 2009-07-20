@@ -297,7 +297,7 @@ function ctools_css_disassemble($css) {
       }
 
       // Disassemble the declaration, check it and tuck it into an array.
-      $disassembled_css[$selector_str] = _ctools_css_disassemble_declaration(strtolower($declaration));
+      $disassembled_css[$selector_str] = _ctools_css_disassemble_declaration($declaration);
     }
   }
   return $disassembled_css;
@@ -310,7 +310,7 @@ function _ctools_css_disassemble_selector($selector_str) {
   // pass. Note that this handles 0, 1, or more valid selectors gracefully.
   foreach ($selectors as $key => $selector) {
     // Replace un-needed characters and do a little cleanup.
-    $selector = preg_replace("/[\n|\t|\\|\s]+/", ' ', strtolower(trim($selector)));
+    $selector = preg_replace("/[\n|\t|\\|\s]+/", ' ', trim($selector));
     // Make sure this is still a real selector after cleanup.
     if (!empty($selector)) {
       $selectors[$key] = $selector;
@@ -339,7 +339,7 @@ function _ctools_css_disassemble_declaration($declaration) {
         continue;
       }
       // Clean up the current property-value pair.
-      $propval_pair = preg_replace("/[\n|\t|\\|\s]+/", ' ', strtolower(trim($propval_pair)));
+      $propval_pair = preg_replace("/[\n|\t|\\|\s]+/", ' ', trim($propval_pair));
       // Explode the remaining fragements some more, but clean them up first.
       list($property, $value) = explode(':', $propval_pair);
       // If the property survived, toss it onto the stack.
