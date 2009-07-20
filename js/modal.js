@@ -193,7 +193,7 @@ Drupal.behaviors.CToolsModal = function(context) {
     .click(Drupal.CTools.Modal.clickAjaxLink);
 
   // Bind buttons
-  $('input.ctools-use-modal:not(.ctools-use-modal-processed)', context)
+  $('input.ctools-use-modal:not(.ctools-use-modal-processed), button.ctools-use-modal:not(.ctools-use-modal-processed)', context)
     .addClass('ctools-use-modal-processed')
     .click(Drupal.CTools.Modal.clickAjaxButton);
 
@@ -205,7 +205,7 @@ Drupal.behaviors.CToolsModal = function(context) {
     // add click handlers so that we can tell which button was clicked,
     // because the AJAX submit does not set the values properly.
 
-    $('input[type="submit"]:not(.ctools-use-modal-processed)', context)
+    $('input[type="submit"]:not(.ctools-use-modal-processed), button:not(.ctools-use-modal-processed)', context)
       .addClass('ctools-use-modal-processed')
       .click(function() {
         // Make sure it knows our button.

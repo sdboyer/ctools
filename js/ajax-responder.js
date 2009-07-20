@@ -286,7 +286,7 @@ Drupal.behaviors.CToolsAJAX = function(context) {
     .click(Drupal.CTools.AJAX.clickAJAXLink);
 
   // Bind buttons
-  $('input.ctools-use-ajax:not(.ctools-use-ajax-processed):button', context)
+  $('input.ctools-use-ajax:not(.ctools-use-ajax-processed):button, button.ctools-use-ajax:not(.ctools-use-ajax-processed):button', context)
     .addClass('ctools-use-ajax-processed')
     .click(Drupal.CTools.AJAX.clickAJAXButton);
 

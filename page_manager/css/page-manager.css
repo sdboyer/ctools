@@ -28,6 +28,14 @@ body form#page-manager-list-pages-form {
   margin-top: 1em;
 }
 
+#page-manager-edit table {
+  width: 100%;
+}
+
+#page-manager-edit table tr.even {
+  background-color: #fafafa;
+}
+
 #page-manager-list-pages tr.page-manager-disabled {
   color: #999;
 }
@@ -60,6 +68,7 @@ body form#page-manager-list-pages-form {
   margin-top: 0;
   margin-bottom: 0;
   padding: 0;
+  margin-left: 0;
 }
 
 #page-manager-edit .page-manager-edit-operations li {
