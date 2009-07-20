@@ -24,10 +24,11 @@ function ctools_custom_ctools_content_types() {
     // that.
     'top level' => TRUE,
     'category' => t('Custom'),
-    'defaults' => array('title' => '', 'body' => '', 'format' => FILTER_FORMAT_DEFAULT),
+    'defaults' => array('title' => '', 'body' => '', 'format' => FILTER_FORMAT_DEFAULT, 'substitute' => TRUE),
     // render callback is automatically deduced:
     // 'render callback' => 'ctools_custom_content_type_render',
     'js' => array('misc/autocomplete.js', 'misc/textarea.js', 'misc/collapse.js'),
+    'all contexts' => TRUE,
   );
 }
 
@@ -35,7 +36,7 @@ function ctools_custom_ctools_content_types() {
  * Output function for the 'custom' content type. Outputs a custom
  * based on the module and delta supplied in the configuration.
  */
-function ctools_custom_content_type_render($subtype, $conf) {
+function ctools_custom_content_type_render($subtype, $conf, $args, $contexts) {
   static $delta = 0;
 
   $block          = new stdClass();
@@ -43,6 +44,10 @@ function ctools_custom_content_type_render($subtype, $conf) {
   $block->title   = filter_xss_admin($conf['title']);
   $block->content = check_markup($conf['body'], $conf['format'], FALSE);
 
+  // Add keyword substitutions if we were configured to do so.
+  if (!empty($contexts) && !empty($conf['substitute'])) {
+    $block->content = ctools_context_keyword_substitute($block->content, array(), $contexts);
+  }
   return $block;
 }
 
@@ -89,13 +94,40 @@ function ctools_custom_content_type_edit_form(&$form, &$form_state) {
     '#default_value' => $conf['title'],
     '#title' => t('Title'),
   );
-  $form['body'] = array(
+  $form['body_field']['body'] = array(
     '#title' => t('Body'),
     '#type' => 'textarea',
     '#default_value' => $conf['body'],
   );
   $parents[] = 'format';
-  $form['format'] = filter_form($conf['format'], 1, $parents);
+  $form['body_field']['format'] = filter_form($conf['format'], 1, $parents);
+
+  if (!empty($form_state['contexts'])) {
+    $form['substitute'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Use context keywords'),
+      '#description' => t('If checked, context keywords will be substituted in this content.'),
+      '#default_value' => !empty($conf['substitute']),
+    );
+    $form['contexts'] = array(
+      '#title' => t('Substitutions'),
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+
+    $rows = array();
+    foreach ($form_state['contexts'] as $context) {
+      foreach (ctools_context_get_converters('%' . check_plain($context->keyword) . ':', $context) as $keyword => $title) {
+        $rows[] = array(
+          check_plain($keyword),
+          t('@identifier: @title', array('@title' => $title, '@identifier' => $context->identifier)),
+        );
+      }
+    }
+    $header = array(t('Keyword'), t('Value'));
+    $form['contexts']['context'] = array('#value' => theme('table', $header, $rows));   
+  }
 
   return $form;
 }

@@ -18,6 +18,7 @@ ctools 6.x-1.0-dev
 #520402: Disabled some concept code for later use that apparently conflicts with admin_menu.
 #523712: Fix call-time pass by reference typo.
 #477334 by dkruglyak: Remove forced lowercase on CSS processing.
+#484340: Allow keyword substitution in custom content.
 
 ctools 6.x-1.0-beta4
 ==================
