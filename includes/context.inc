@@ -456,7 +456,7 @@ function ctools_context_convert_context($context, $converter) {
   }
 
   foreach (module_implements('ctools_context_converter_alter') as $module) {
-    $function = $module . '_ctools_context_convert_list';
+    $function = $module . '_ctools_context_converter_alter';
     $function($context, $converter, $value);
   }
 
