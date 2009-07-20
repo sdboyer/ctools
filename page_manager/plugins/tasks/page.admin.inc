@@ -347,9 +347,16 @@ function page_manager_page_form_basic(&$form, &$form_state) {
   $page = &$form_state['page']->subtask['subtask'];
   $task = $form_state['task'];
 
+  $form['admin_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Administrative title'),
+    '#description' => t('The name of this page. This will appear in the administrative interface to easily identify it.'),
+    '#default_value' => $page->admin_title,
+  );
+
   $form['name'] = array(
     '#type' => 'textfield',
-    '#title' => t('Name'),
+    '#title' => t('Machine name'),
     '#description' => t('The machine readable name of this page. It must be unique, and it must contain only alphanumeric characters and underscores. Once created, you will not be able to change this value!'),
     '#default_value' => $page->name,
   );
@@ -358,13 +365,6 @@ function page_manager_page_form_basic(&$form, &$form_state) {
     $form['name']['#disabled'] = TRUE;
     $form['name']['#value'] = $page->name;
   }
-
-  $form['admin_title'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Administrative title'),
-    '#description' => t('The name of this page. This will appear in the administrative interface to easily identify it.'),
-    '#default_value' => $page->admin_title,
-  );
 
   $form['admin_description'] = array(
     '#type' => 'textarea',
