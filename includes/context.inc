@@ -560,7 +560,7 @@ function ctools_context_keyword_substitute($string, $keywords, $contexts) {
 
   // Look for context matches we we only have to convert known matches.
   $matches = array();
-  if (preg_match_all('/%([a-zA-Z%:]+)/us', $string, $matches)) {
+  if (preg_match_all('/%([a-zA-Z0-9%:]+)/us', $string, $matches)) {
     foreach ($matches[1] as $keyword) {
       // Ignore anything it finds with %%.
       if ($keyword[0] == '%') {
