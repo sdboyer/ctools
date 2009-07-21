@@ -166,6 +166,7 @@ function ctools_context_node_convert_list() {
     'nid' => t('Node ID'),
     'title' => t('Node title'),
     'uid' => t('Author UID'),
+    'type' => t('Node type'),
   );
 }
 
@@ -180,5 +181,7 @@ function ctools_context_node_convert($context, $type) {
       return $context->data->title;
     case 'uid':
       return $context->data->uid;
+    case 'type':
+      return $context->data->type;
   }
 }

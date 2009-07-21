@@ -22,6 +22,7 @@ ctools 6.x-1.0-dev
 #458300: Option to inherit panel path on views panes not being properly honored.
 #493620: Add a PHP Code option to access control.
 #516222: Use "DELETE FROM" instead of "TRUNCATE" which is not supported by SQLite.
+#444456: Add Node: Node type as a context converter for substitutions and views arguments.
 
 ctools 6.x-1.0-beta4
 ==================
