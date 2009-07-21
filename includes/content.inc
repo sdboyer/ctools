@@ -612,7 +612,7 @@ function ctools_content_get_available_types($contexts = NULL, $has_content = FAL
 
       // Check to see if the content type can be used in this context.
       if (!empty($subtype['required context'])) {
-        if (!ctools_context_filter($contexts, $subtype['required context'])) {
+        if (!ctools_context_match_requirements($contexts, $subtype['required context'])) {
           continue;
         }
       }
