@@ -18,7 +18,10 @@ html.js div.ctools-dropdown div.ctools-dropdown-container ul li {
   display: block;
   /* prevent excess right margin in IE */
   margin-right: 0;
+  margin-left: 0;
   padding-right: 0;
+  padding-left: 0;
+  background-image: none; /* prevent list backgrounds from mucking things up */
 }
 
 .ctools-dropdown-no-js .ctools-dropdown-link,
