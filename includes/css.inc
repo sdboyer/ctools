@@ -539,5 +539,5 @@ function ctools_css_filter_default_allowed_values() {
  */
 function ctools_css_flush_caches() {
   file_scan_directory(file_create_path('ctools/css'), '.*', array('.', '..', 'CVS'), 'file_delete', TRUE);
-  db_query("TRUNCATE {ctools_css_cache}");
+  db_query("DELETE FROM {ctools_css_cache}");
 }

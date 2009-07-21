@@ -21,6 +21,7 @@ ctools 6.x-1.0-dev
 #484340: Allow keyword substitution in custom content.
 #458300: Option to inherit panel path on views panes not being properly honored.
 #493620: Add a PHP Code option to access control.
+#516222: Use "DELETE FROM" instead of "TRUNCATE" which is not supported by SQLite.
 
 ctools 6.x-1.0-beta4
 ==================
