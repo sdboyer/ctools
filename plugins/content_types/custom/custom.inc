@@ -75,7 +75,7 @@ function ctools_custom_content_type_admin_info($subtype, $conf) {
   // so that we get the printed php, not the eval'ed php.
   $php_filter = FALSE;
   foreach (filter_list_format($conf['format']) as $filter) {
-    if ($filter->name == 'PHP evaluator') { // TODO stupid way to check
+    if ($filter->module == 'php') { 
       $php_filter = TRUE;
     }
   }
