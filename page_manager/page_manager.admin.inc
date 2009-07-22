@@ -76,12 +76,13 @@ function page_manager_list_page($js = NULL) {
 
   $header[] = array('data' => t('Operations'), 'class' => 'page-manager-page-operations');
   $table = theme('table', $header, $pages['rows'], array('id' => 'page-manager-list-pages'));
-  $table .= '<div id="page-manager-links" class="links">' . theme('links', $pages['operations']) . '</div>';
+
+  $operations = '<div id="page-manager-links" class="links">' . theme('links', $pages['operations']) . '</div>';
 
   drupal_add_css(drupal_get_path('module', 'page_manager') . '/css/page-manager.css');
   
   if (!$js) {
-    return $form . $table;
+    return $form . $table . $operations;
   }
   
   ctools_include('ajax');
