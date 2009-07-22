@@ -24,6 +24,7 @@ ctools 6.x-1.0-dev
 #516222: Use "DELETE FROM" instead of "TRUNCATE" which is not supported by SQLite.
 #444456: Add Node: Node type as a context converter for substitutions and views arguments.
 #516504: Make sure optional contexts are truly and completely optional.
+#528022 by tha_sun: Change wording of "Add variant" to "Create variant" to avoid confusion with the "Add variant" tab.
 
 ctools 6.x-1.0-beta4
 ==================

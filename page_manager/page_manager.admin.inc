@@ -521,7 +521,7 @@ function page_manager_get_operations($page, $operations = NULL) {
     'ajax' => FALSE,
     'silent' => TRUE, // prevents a message about updating and prevents this item from showing as changed.
     'form info' => array(
-      'finish text' => t('Add variant'),
+      'finish text' => t('Create variant'),
     ),
   );
 
@@ -554,7 +554,7 @@ function page_manager_get_operations($page, $operations = NULL) {
         'cancel callback' => 'page_manager_handler_add_cancel',
         'show trail' => TRUE,
         'show back' => TRUE,
-        'finish text' => t('Add variant'),
+        'finish text' => t('Create variant'),
       ),
       'form' => array(
         'forms' => $plugin['forms'],
@@ -1217,7 +1217,7 @@ function page_manager_handler_add_submit(&$form, &$form_state) {
   $form_state['no_rerender'] = TRUE;
   if (!empty($cache->forms)) {
     // Tell the form to go to the config page.
-    drupal_set_message(t('Before this variant can be added, it must be configured. When you are finished, click "Add variant" to add this to your page.'));
+    drupal_set_message(t('Before this variant can be added, it must be configured. When you are finished, click "Create variant" to add this to your page.'));
     $form_state['new trail'] = array('actions', 'configure');
   }
   else {
