@@ -129,6 +129,13 @@ body form#page-manager-list-pages-form {
   text-decoration: none;
 }
 
+#page-manager-edit .ctools-collapsible-container { 
+  display: inline-block;  
+  position: relative;  
+  *float: left;  
+  width: 100%; 
+}
+
 #page-manager-edit .page-manager-edit-operations li .ctools-collapsible-handle:hover {
   background-color: #eee;
 }
