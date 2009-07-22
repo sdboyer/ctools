@@ -77,10 +77,20 @@ function ctools_custom_content_type_admin_info($subtype, $conf) {
   foreach (filter_list_format($conf['format']) as $filter) {
     if ($filter->module == 'php') { 
       $php_filter = TRUE;
+      break;
     }
   }
-  // If a php filter is active, pass 1 to use core's most restrictive filter.
-  $block->content = check_markup($conf['body'], $php_filter ? 1 : $conf['format']);
+  // If a php filter is active, just print the source, but only if the current
+  // user has access to the actual filter.
+  if ($php_filter) {
+    if (!filter_access($conf['format'])) {
+      return NULL;
+    }
+    $block->content = '<pre>'. check_plain($conf['body']) .'</pre>';
+  }
+  else {
+    $block->content = check_markup($conf['body'], $conf['format']);
+  }
   return $block;
 }
 
