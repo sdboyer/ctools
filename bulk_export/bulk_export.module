@@ -97,9 +97,9 @@ function bulk_export_export() {
       // Add hook_ctools_plugin_api at the top of the module code, if there is any.
       if ($api_code) {
         $api =  "/**\n";
-        $api .= " * Implementation of hook_ctools_plugin_api(\$module, \$api).\n";
+        $api .= " * Implementation of hook_ctools_plugin_api().\n";
         $api .= " */\n";
-        $api .= "function $form_state[module]_ctools_plugin_api() {\n";
+        $api .= "function $form_state[module]_ctools_plugin_api(\$module, \$api) {\n";
         $api .= $api_code;
         $api .= "}\n";
         $module_code = $api . $module_code;
