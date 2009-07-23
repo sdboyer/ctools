@@ -25,6 +25,7 @@ ctools 6.x-1.0-dev
 #444456: Add Node: Node type as a context converter for substitutions and views arguments.
 #516504: Make sure optional contexts are truly and completely optional.
 #528022 by tha_sun: Change wording of "Add variant" to "Create variant" to avoid confusion with the "Add variant" tab.
+#528066: Required context (used by Mini Panels) accidentally had "weight" when not needed.
 
 ctools 6.x-1.0-beta4
 ==================

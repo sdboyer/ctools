@@ -60,7 +60,7 @@ function ctools_context_info($type = NULL) {
         'context function' => 'ctools_get_context',
         'form id' => 'ctools_edit_requiredcontext_form',
         'key' => 'requiredcontexts',
-        'sortable' => TRUE,
+        'sortable' => FALSE,
       ),
     );
   }
