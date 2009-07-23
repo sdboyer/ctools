@@ -1,6 +1,6 @@
 Current API VERSION: 1.1.0. See API.txt for more information.
 
-ctools 6.x-1.0-dev
+ctools 6.x-1.0-rc1
 ==================
 
 #510968: Arguments needed to be recalulculated when path changed in page task.
