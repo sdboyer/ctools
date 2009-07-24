@@ -474,7 +474,7 @@ function page_manager_page_export($page, $with_handlers = FALSE, $indent = '') {
 }
 
 /**
- * Get a list of named arguments in a page managerpage path.
+ * Get a list of named arguments in a page manager path.
  *
  * @param $path
  *   A normal Drupal path.
@@ -500,8 +500,9 @@ function page_manager_page_get_named_arguments($path) {
 /**
  * Load a context from an argument for a given page task.
  *
- * This is used as a menu callback to translate arguments and that is why it is
- * here in the .module file.
+ * Helper function for pm_arg_load(), which is in page_manager.module because
+ * drupal's menu system does not allow loader functions to reside in separate
+ * files.
  *
  * @param $value
  *   The incoming argument value.
