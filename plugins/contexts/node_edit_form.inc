@@ -77,7 +77,7 @@ function ctools_context_node_edit_form_settings_form($conf) {
   $form['node'] = array(
     '#prefix' => '<div class="no-float">',
     '#suffix' => '</div>',
-    '#title' => t('Enter the title or NID of a post'),
+    '#title' => t('Enter the title or NID of a node'),
     '#type' => 'textfield',
     '#maxlength' => 512,
     '#autocomplete_path' => 'ctools/autocomplete/node',

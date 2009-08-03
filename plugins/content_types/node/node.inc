@@ -103,7 +103,7 @@ function ctools_node_content_type_edit_form(&$form, &$form_state) {
   if ($form_state['op'] == 'add') {
     $form['nid'] = array(
       '#prefix' => '<div class="no-float">',
-      '#title' => t('Enter the title or NID of a post'),
+      '#title' => t('Enter the title or NID of a node'),
       '#description' => t('To use a NID from the URL, you may use %0, %1, ..., %N to get URL arguments. Or use @0, @1, @2, ..., @N to use arguments passed into the panel.'),
       '#type' => 'textfield',
       '#maxlength' => 512,

@@ -4,6 +4,7 @@ ctools 6.x-1.0-dev
 ==================
 
 #534570: Fix _ and - not recognized in for context keywords.
+#535744 by Senpai: Rename "post" to "node" in various nid selectors.
 
 ctools 6.x-1.0-rc1
 ==================
