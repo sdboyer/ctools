@@ -156,8 +156,10 @@ function theme_ctools_context_list($object, $header = '') {
       $desc = check_plain($argument['identifier']);
       if (isset($argument['keyword'])) {
         $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $argument['keyword']));
-        foreach (ctools_context_get_converters('%' . $argument['keyword'] . ':', $contexts[ctools_context_id($argument, 'argument')]) as $keyword => $title) {
-          $desc .= '<br/>' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
+        if (isset($contexts[ctools_context_id($argument, 'argument')])) {
+          foreach (ctools_context_get_converters('%' . $argument['keyword'] . ':', $contexts[ctools_context_id($argument, 'argument')]) as $keyword => $title) {
+            $desc .= '<br/>' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
+          }
         }
         $desc .= '</div>';
       }

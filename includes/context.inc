@@ -327,7 +327,7 @@ function _ctools_context_selector($contexts, $required, $default, $num = 0) {
  * be a context requirement object or an array of them. When contexts
  * are required, items that do not have enough contexts should not
  * appear. This tests an item to see if it has enough contexts
- * to actually appear. 
+ * to actually appear.
  *
  * @param $contexts
  *   A keyed array of all available contexts.
@@ -601,7 +601,7 @@ function ctools_context_keyword_substitute($string, $keywords, $contexts) {
 
   // Look for context matches we we only have to convert known matches.
   $matches = array();
-  if (preg_match_all('/%([a-zA-Z0-9%:]+)/us', $string, $matches)) {
+  if (preg_match_all('/%([a-zA-Z0-9%:_-]+)/us', $string, $matches)) {
     foreach ($matches[1] as $keyword) {
       // Ignore anything it finds with %%.
       if ($keyword[0] == '%') {

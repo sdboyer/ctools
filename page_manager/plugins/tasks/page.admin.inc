@@ -206,7 +206,7 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
     }
 
     $form_info['path'] = "admin/build/pages/add/$task_name/%step";
-   
+
     $handler_plugin = page_manager_get_task_handler($page->handler);
 
     $form_info['forms'] += $handler_plugin['forms'];
@@ -214,13 +214,13 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
     if (isset($page->forms)) {
       foreach ($page->forms as $id) {
         if (isset($form_info['add order'][$id])) {
-          $form_info['order'][$id] = $form_info['add order'][$id];        
+          $form_info['order'][$id] = $form_info['add order'][$id];
         }
         else if (isset($handler_plugin['add features'][$id])) {
-          $form_info['order'][$id] = $handler_plugin['add features'][$id];        
+          $form_info['order'][$id] = $handler_plugin['add features'][$id];
         }
         else if (isset($handler_plugin['required forms'][$id])) {
-          $form_info['order'][$id] = $handler_plugin['required forms'][$id];        
+          $form_info['order'][$id] = $handler_plugin['required forms'][$id];
         }
       }
     }
@@ -392,7 +392,7 @@ function page_manager_page_form_basic(&$form, &$form_state) {
       }
     }
   }
-  
+
   $path = implode('/', $path);
 
   if (empty($path) || $path != $frontpage) {
@@ -1232,7 +1232,7 @@ function page_manager_page_import_subtask_validate(&$form, &$form_state) {
   $task_name = page_manager_make_task_name('page', $form_state['values']['name']);
   $form_state['cache'] = page_manager_get_page_cache($task_name);
 
-  if ($form_state['cache']->locked) {
+  if ($form_state['cache'] && $form_state['cache']->locked) {
     form_error($form['name'], t('That page name is in use and locked by another user. You must <a href="!break">break the lock</a> on that page before proceeding, or choose a different name.', array('!break' => url(page_manager_edit_url($task_name, array('actions', 'break-lock'))))));
     return;
   }
@@ -1245,7 +1245,6 @@ function page_manager_page_import_subtask_validate(&$form, &$form_state) {
     $page->name = NULL;
   }
 
-  // 
   $form_state['page'] = new stdClass();
   $form_state['page']->subtask['subtask'] = $page;
   page_manager_page_form_basic_validate($form, $form_state);
@@ -1387,7 +1386,7 @@ function page_manager_page_form_clone_submit(&$form, &$form_state) {
 function page_manager_page_new_page_cache(&$page, &$cache) {
   // Does a page already exist? If so, we are overwriting it so
   // take its pid.
-  if (!empty($cache->subtask) && !empty($cache->subtask['subtask'])) {
+  if (!empty($cache->subtask) && !empty($cache->subtask['subtask']) && !empty($cache->subtask['subtask']->pid)) {
     $page->pid = $cache->subtask['subtask']->pid;
   }
   else {
@@ -1401,7 +1400,7 @@ function page_manager_page_new_page_cache(&$page, &$cache) {
   $page->export_type = EXPORT_IN_DATABASE;
   $page->type = t('Normal');
   $cache->subtask = page_manager_page_build_subtask($cache->task, $page);
-  
+
   if (isset($cache->handlers)) {
     foreach($cache->handlers as $id => $handler) {
       $cache->handler_info[$id]['changed'] = PAGE_MANAGER_CHANGED_DELETED;
