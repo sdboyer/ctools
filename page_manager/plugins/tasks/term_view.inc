@@ -94,15 +94,12 @@ function page_manager_term_view_menu_alter(&$items, $task) {
     $items['taxonomy/term/%']['file path'] = $task['path'];
     $items['taxonomy/term/%']['file'] = $task['file'];
   }
-}
-
-/**
- * Warn if we are unable to override the taxonomy term page.
- */
-function page_manager_term_view_task_admin(&$form, &$form_state) {
-  $callback = db_result(db_query("SELECT page_callback FROM {menu_router} WHERE path = 'taxonomy/term/%'"));
-  if ($callback != 'page_manager_term_view') {
-    drupal_set_message(t('Page managermodule is unable to override taxonomy/term/% because some other module already has overridden with %callback. Page managerwill not be able to handle this page.', array('%callback' => $callback)), 'warning');
+  else {
+    // automatically disable this task if it cannot be enabled.
+    variable_set('page_manager_term_view_disabled', TRUE);
+    if (!empty($GLOBALS['page_manager_enabling_term_view'])) {
+      drupal_set_message(t('Page manager module is unable to enable taxonomy/term/%term because some other module already has overridden with %callback.', array('%callback' => $items['taxonomy/term/%']['page callback'])), 'error');
+    }
   }
 }
 
@@ -206,8 +203,8 @@ function page_manager_term_view_settings_submit(&$form, &$form_state) {
  */
 function page_manager_term_view_save($subtask, $cache) {
   if (isset($cache->update_values)) {
-    variable_set('page_manager_term_view_type', $cache->update_values['page_manager_term_view_type']);    
-    variable_set('page_manager_taxonomy_breadcrumb', $cache->update_values['page_manager_taxonomy_breadcrumb']);    
+    variable_set('page_manager_term_view_type', $cache->update_values['page_manager_term_view_type']);
+    variable_set('page_manager_taxonomy_breadcrumb', $cache->update_values['page_manager_taxonomy_breadcrumb']);
   }
 }
 
@@ -242,6 +239,12 @@ function page_manager_term_view_admin_settings(&$form, $settings = array()) {
  */
 function page_manager_term_view_enable($cache, $status) {
   variable_set('page_manager_term_view_disabled', $status);
+
+  // Set a global flag so that the menu routine knows it needs
+  // to set a message if enabling cannot be done.
+  if (!$status) {
+    $GLOBALS['page_manager_enabling_term_view'] = TRUE;
+  }
 }
 
 /**

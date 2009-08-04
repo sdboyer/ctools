@@ -15,9 +15,6 @@ function page_manager_node_edit_page_manager_tasks() {
     'admin description' => t('When enabled, this overrides the default Drupal behavior for adding or edit nodes at <em>node/%node/edit</em> and <em>node/add/%node_type</em>. If you add variants, you may use selection criteria such as node type or language or user access to provide different edit forms for nodes. If no variant is selected, the default Drupal node edit will be used.'),
     'admin path' => 'node/%node/edit',
 
-    // Callback to add items to the page managertask administration form:
-    'task admin' => 'page_manager_node_edit_task_admin',
-
     // Menu hooks so that we can alter the node/%node menu entry to point to us.
     'hook menu' => 'page_manager_node_edit_menu',
     'hook menu alter' => 'page_manager_node_edit_menu_alter',
@@ -45,17 +42,28 @@ function page_manager_node_edit_menu_alter(&$items, $task) {
     return;
   }
 
+  $callback = $items['node/%node/edit']['page callback'];
   // Override the node edit handler for our purpose.
-  if ($items['node/%node/edit']['page callback'] == 'node_page_edit' || variable_get('page_manager_override_anyway', FALSE)) {
+  if ($callback == 'node_page_edit' || variable_get('page_manager_override_anyway', FALSE)) {
     $items['node/%node/edit']['page callback'] = 'page_manager_node_edit';
     $items['node/%node/edit']['file path'] = $task['path'];
     $items['node/%node/edit']['file'] = $task['file'];
+  }
+  else {
+    variable_set('page_manager_node_edit_disabled', TRUE);
+    if (!empty($GLOBALS['page_manager_enabling_node_edit'])) {
+      drupal_set_message(t('Page manager module is unable to enable node/%node/edit because some other module already has overridden with %callback.', array('%callback' => $callback)), 'warning');
+    }
+    return;
   }
 
   // Also catch node/add handling:
   foreach (node_get_types('types', NULL, TRUE) as $type) {
     $path = 'node/add/' . str_replace('_', '-', $type->type);
     if ($items[$path]['page callback'] != 'node_add') {
+      if (!empty($GLOBALS['page_manager_enabling_node_edit'])) {
+        drupal_set_message(t('Page manager module is unable to override @path because some other module already has overridden with %callback. Node edit will be enabled but that edit path will not be overridden.', array('@path' => $path, '%callback' => $items[$path]['page callback'])), 'warning');
+      }
       continue;
     }
 
@@ -64,16 +72,6 @@ function page_manager_node_edit_menu_alter(&$items, $task) {
     $items[$path]['file'] = $task['file'];
     // Why str_replace things back?
     $items[$path]['page arguments'] = array($type->type);
-  }
-}
-
-/**
- * Warn if we are unable to override the taxonomy term page.
- */
-function page_manager_node_edit_task_admin(&$form, &$form_state) {
-  $callback = db_result(db_query("SELECT page_callback FROM {menu_router} WHERE path = 'node/%/edit'"));
-  if ($callback != 'page_manager_node_edit') {
-    drupal_set_message(t('Page managermodule is unable to override node/%node/edit because some other module already has overridden with %callback. Page managerwill not be able to handle this page.', array('%callback' => $callback)), 'warning');
   }
 }
 
@@ -162,4 +160,9 @@ function page_manager_node_edit_get_contexts($task, $subtask_id) {
  */
 function page_manager_node_edit_enable($cache, $status) {
   variable_set('page_manager_node_edit_disabled', $status);
+  // Set a global flag so that the menu routine knows it needs
+  // to set a message if enabling cannot be done.
+  if (!$status) {
+    $GLOBALS['page_manager_enabling_node_edit'] = TRUE;
+  }
 }

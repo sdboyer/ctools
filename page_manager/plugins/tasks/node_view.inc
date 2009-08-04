@@ -21,12 +21,9 @@ function page_manager_node_view_page_manager_tasks() {
 
     'title' => t('Node template'),
 
-    'admin title' => t('Node template'), 
+    'admin title' => t('Node template'),
     'admin description' => t('When enabled, this overrides the default Drupal behavior for displaying nodes at <em>node/%node</em>. If you add variants, you may use selection criteria such as node type or language or user access to provide different views of nodes. If no variant is selected, the default Drupal node view will be used. This page only affects nodes viewed as pages, it will not affect nodes viewed in lists or at other locations. Also please note that if you are using pathauto, aliases may make a node to be somewhere else, but as far as Drupal is concerned, they are still at node/%node.'),
     'admin path' => 'node/%node',
-
-    // Callback to add items to the page managertask administration form:
-    'task admin' => 'page_manager_node_view_task_admin',
 
     // Menu hooks so that we can alter the node/%node menu entry to point to us.
     'hook menu' => 'page_manager_node_view_menu',
@@ -56,22 +53,21 @@ function page_manager_node_view_menu_alter(&$items, $task) {
   }
 
   // Override the node view handler for our purpose.
-  if ($items['node/%node']['page callback'] == 'node_page_view' || variable_get('page_manager_override_anyway', FALSE)) {
+  $callback = $items['node/%node']['page callback'];
+  if ($callback == 'node_page_view' || variable_get('page_manager_override_anyway', FALSE)) {
     $items['node/%node']['page callback'] = 'page_manager_node_view';
     $items['node/%node']['file path'] = $task['path'];
     $items['node/%node']['file'] = $task['file'];
   }
-  // @todo override node revision handler as well?
-}
-
-/**
- * Warn if we are unable to override the taxonomy term page.
- */
-function page_manager_node_view_task_admin(&$form, &$form_state) {
-  $callback = db_result(db_query("SELECT page_callback FROM {menu_router} WHERE path = 'node/%'"));
-  if ($callback != 'page_manager_node_view') {
-    drupal_set_message(t('Page manager module is unable to override node/%node because some other module already has overridden with %callback. Page manager will not be able to handle this page.', array('%callback' => $callback)), 'warning');
+  else {
+    // automatically disable this task if it cannot be enabled.
+    variable_set('page_manager_node_view_disabled', TRUE);
+    if (!empty($GLOBALS['page_manager_enabling_node_view'])) {
+      drupal_set_message(t('Page manager module is unable to enable node/%node because some other module already has overridden with %callback.', array('%callback' => $callback)), 'error');
+    }
   }
+
+  // @todo override node revision handler as well?
 }
 
 /**
@@ -139,4 +135,10 @@ function page_manager_node_view_get_contexts($task, $subtask_id) {
  */
 function page_manager_node_view_enable($cache, $status) {
   variable_set('page_manager_node_view_disabled', $status);
+
+  // Set a global flag so that the menu routine knows it needs
+  // to set a message if enabling cannot be done.
+  if (!$status) {
+    $GLOBALS['page_manager_enabling_node_view'] = TRUE;
+  }
 }

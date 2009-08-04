@@ -49,15 +49,12 @@ function page_manager_user_view_menu_alter(&$items, $task) {
     $items['user/%user_uid_optional']['file path'] = $task['path'];
     $items['user/%user_uid_optional']['file'] = $task['file'];
   }
-}
-
-/**
- * Warn if we are unable to override the taxonomy term page.
- */
-function page_manager_user_view_task_admin(&$form, &$form_state) {
-  $callback = db_result(db_query("SELECT page_callback FROM {menu_router} WHERE path = 'user/%'"));
-  if ($callback != 'page_manager_user_view') {
-    drupal_set_message(t('Page managermodule is unable to override user/%user because some other module already has overridden with %callback. Page managerwill not be able to handle this page.', array('%callback' => $callback)), 'warning');
+  else {
+    // automatically disable this task if it cannot be enabled.
+    variable_set('page_manager_user_view_disabled', TRUE);
+    if (!empty($GLOBALS['page_manager_enabling_user_view'])) {
+      drupal_set_message(t('Page manager module is unable to enable user/%user because some other module already has overridden with %callback.', array('%callback' => $items['user/%user_uid_optional']['page callback'])), 'error');
+    }
   }
 }
 
@@ -117,4 +114,10 @@ function page_manager_user_view_get_contexts($task, $subtask_id) {
  */
 function page_manager_user_view_enable($cache, $status) {
   variable_set('page_manager_user_view_disabled', $status);
+
+  // Set a global flag so that the menu routine knows it needs
+  // to set a message if enabling cannot be done.
+  if (!$status) {
+    $GLOBALS['page_manager_enabling_user_view'] = TRUE;
+  }
 }
