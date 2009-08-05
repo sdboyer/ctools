@@ -164,6 +164,7 @@ function ctools_context_node_settings_form_submit($form, &$form_values, &$form_s
 function ctools_context_node_convert_list() {
   return array(
     'nid' => t('Node ID'),
+    'vid' => t('Node revision ID'),
     'title' => t('Node title'),
     'uid' => t('Author UID'),
     'type' => t('Node type'),
@@ -177,6 +178,8 @@ function ctools_context_node_convert($context, $type) {
   switch ($type) {
     case 'nid':
       return $context->data->nid;
+    case 'vid':
+      return $context->data->vid;
     case 'title':
       return $context->data->title;
     case 'uid':
