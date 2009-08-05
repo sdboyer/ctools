@@ -64,7 +64,7 @@ function ctools_node_links_render_links($node, $conf) {
   }
 
   $links = module_invoke_all('link', 'node', $node, $conf['teaser']);
-  drupal_alter('link', $node, $links);
+  drupal_alter('link', $links, $node);
   return theme('links', $links);
 }
 
