@@ -5,7 +5,7 @@
  * Callback function to supply a list of content types.
  */
 function ctools_user_picture_ctools_content_types() {
-  $items['user_picture'] = array(
+  return array(
     'single' => TRUE,
     'title' => t('User picture'),
     'icon' => 'icon_user.png',
