@@ -90,7 +90,7 @@ body form#page-manager-list-pages-form {
 #page-manager-edit .page-manager-edit-operations li.changed,
 #page-manager-edit .page-manager-edit-operations li.changed-group .page-manager-group-title {
   background-color: #ffe;
-  font-weight: bold; 
+  font-weight: bold;
 }
 
 /** provide a reset for non active stray paths */
@@ -129,11 +129,11 @@ body form#page-manager-list-pages-form {
   text-decoration: none;
 }
 
-#page-manager-edit .ctools-collapsible-container { 
-  display: inline-block;  
-  position: relative;  
-  *float: left;  
-  width: 100%; 
+#page-manager-edit .ctools-collapsible-container {
+  display: inline-block;
+  position: relative;
+  *float: left;
+  width: 100%;
 }
 
 #page-manager-edit .page-manager-edit-operations li .ctools-collapsible-handle:hover {
@@ -152,7 +152,7 @@ body form#page-manager-list-pages-form {
 
 #page-manager-edit .page-manager-group-title {
   line-height: 2em;
-  font-weight: bold; 
+  font-weight: bold;
   padding: 0 0 0 .5em;
 }
 
@@ -193,7 +193,7 @@ body form#page-manager-list-pages-form {
 
 #page-manager-edit .actions {
   padding: 0 0 0 20px;
-  height: 25px;
+  height: 26px;
 }
 
 #page-manager-edit .primary-actions li {
@@ -202,6 +202,10 @@ body form#page-manager-list-pages-form {
 
 #page-manager-edit .secondary-actions {
   border-bottom: 1px solid #aaa;
+}
+
+#page-manager-edit .handler-actions {
+  float: right;
 }
 
 #page-manager-edit .actions .page-manager-group-title {
@@ -224,7 +228,7 @@ body form#page-manager-list-pages-form {
   border-left: 1px solid #aaa;
   margin: 0;
   padding: 0;
-  line-height: 200%;
+  line-height: 25px;
 }
 
 #page-manager-edit .actions li a:hover {
@@ -308,6 +312,20 @@ body form#page-manager-list-pages-form {
   border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
   background: #fafafa;
-  padding: 3px;
+  padding: 0 0 0 5px;
   margin-top: .5em;
+  line-height: 29px;
+  height: 30px;
 }
+
+.handler-summary .handler-title .title-label {
+  font-weight: bold;
+  font-size: 120%;
+}
+
+#page-manager-edit .handler-actions ul,
+#page-manager-edit .handler-actions li {
+  line-height: 30px;
+  height: 30px;
+}
+

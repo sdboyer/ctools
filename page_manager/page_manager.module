@@ -783,9 +783,9 @@ function page_manager_get_handler_title($plugin, $handler, $task, $subtask_id) {
 /**
  * Get the admin summary (additional info) for a given handler.
  */
-function page_manager_get_handler_summary($plugin, $handler, $task, $subtask) {
+function page_manager_get_handler_summary($plugin, $handler, $page, $title = TRUE) {
   if ($function = ctools_plugin_get_function($plugin, 'admin summary')) {
-    return $function($handler, $task, $subtask);
+    return $function($handler, $page->task, $page->subtask, $page, $title);
   }
 }
 
