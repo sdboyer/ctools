@@ -7,6 +7,7 @@ ctools 6.x-1.0-dev
 #535744 by Senpai: Rename "post" to "node" in various nid selectors.
 Make sure that tasks that will not override existing overrides refuse to enable and provide an error message saying why.
 #540750 by manuee: User picture was not available despite having a .inc file.
+#537184 by stephthegeek: CSS tweaks to fix heights on operations.
 
 ctools 6.x-1.0-rc1
 ==================

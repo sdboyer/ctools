@@ -51,7 +51,7 @@ body form#page-manager-list-pages-form {
 }
 
 #page-manager-edit .page-manager-edit-operations {
-  float: left;
+  float: left; /* LTR */
   width: 150px;
   margin-left: -150px;
   margin-top: -1px;
@@ -132,7 +132,7 @@ body form#page-manager-list-pages-form {
 #page-manager-edit .ctools-collapsible-container {
   display: inline-block;
   position: relative;
-  *float: left;
+  *float: left; /* LTR */
   width: 100%;
 }
 
@@ -147,7 +147,6 @@ body form#page-manager-list-pages-form {
 }
 
 #page-manager-edit .page-manager-edit-operations li ul {
-/*  padding-bottom: .2em; */
 }
 
 #page-manager-edit .page-manager-group-title {
@@ -163,7 +162,7 @@ body form#page-manager-list-pages-form {
 }
 
 #page-manager-edit .page-manager-ajax-pad {
-  float: left;
+  float: left; /* LTR */
   width: 100%;
   border-left: none;
   height: 100%;
@@ -173,7 +172,7 @@ body form#page-manager-list-pages-form {
 /** A riser to force the ajax pad to a minimum height. **/
 #page-manager-edit .page-manager-ajax-pad .page-manager-riser {
   width: 1px;
-  float: right;
+  float: right; /* LTR */
   height: 400px;
 }
 
@@ -193,7 +192,6 @@ body form#page-manager-list-pages-form {
 
 #page-manager-edit .actions {
   padding: 0 0 0 20px;
-  height: 26px;
 }
 
 #page-manager-edit .primary-actions li {
@@ -205,30 +203,29 @@ body form#page-manager-list-pages-form {
 }
 
 #page-manager-edit .handler-actions {
-  float: right;
+  float: right; /* LTR */
 }
 
 #page-manager-edit .actions .page-manager-group-title {
-  float: left;
+  float: left; /* LTR */
   padding-left: 0;
 }
 
 #page-manager-edit .actions ul {
-  float: right;
-  text-align: right;
+  float: right; /* LTR */
+  text-align: right; /* LTR */
   padding: 0;
   margin: 0;
   border-right: 1px solid #aaa;
 }
 
 #page-manager-edit .actions li {
-  float: left;
+  float: left; /* LTR */
   background: none;
   list-style: none;
   border-left: 1px solid #aaa;
   margin: 0;
   padding: 0;
-  line-height: 25px;
 }
 
 #page-manager-edit .actions li a:hover {
@@ -238,14 +235,13 @@ body form#page-manager-list-pages-form {
 
 #page-manager-edit .actions li a {
   display: block;
-  padding: 0 .5em;
+  padding: 0.2em 0.5em;
   color:#0062A0;
   background-color: #F6F6F6;
 }
 
 #page-manager-edit .page-manager-changed {
-  float: right;
-  float: right;
+  float: right; /* LTR */
   font-style: italic;
   color: #f93;
   padding-left: 1em;
@@ -314,18 +310,11 @@ body form#page-manager-list-pages-form {
   background: #fafafa;
   padding: 0 0 0 5px;
   margin-top: .5em;
-  line-height: 29px;
-  height: 30px;
 }
 
 .handler-summary .handler-title .title-label {
   font-weight: bold;
   font-size: 120%;
-}
-
-#page-manager-edit .handler-actions ul,
-#page-manager-edit .handler-actions li {
-  line-height: 30px;
-  height: 30px;
+  line-height: 1.75em;
 }
 
