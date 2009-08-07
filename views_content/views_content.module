@@ -50,9 +50,12 @@ function views_ctools_block_info($module, $delta, &$info) {
     }
   }
 
-  // We remove any non 'special' blocks so they don't show up repeatedly.
   if (substr($delta, 0, 1) != '-') {
-    $info = NULL;
+    // Right now, 'special' blocks are all exposed forms. Let's
+    // call those widgets.
+    $info['category'] = t('Widgets');
+    $info['icon'] = 'icon_views_block_legacy.png';
+    $info['path'] = drupal_get_path('module', 'views_content');
   }
   else {
     $info['category'] = t('Views');
