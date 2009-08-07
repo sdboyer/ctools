@@ -599,8 +599,11 @@ function page_manager_page_admin_summary($task, $subtask) {
     );
   }
 
-  if (strpos('%', $path) === FALSE) {
+  if (strpos($path, '%') === FALSE) {
     $path = l('/' . $page->path, $path);
+  }
+  else {
+    $path = '/' . $page->path;
   }
 
   $rows[] = array(

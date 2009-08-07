@@ -9,6 +9,7 @@ Make sure that tasks that will not override existing overrides refuse to enable 
 #540750 by manuee: User picture was not available despite having a .inc file.
 #537184 by stephthegeek: CSS tweaks to fix heights on operations.
 #471024: Stop preventing exposed-view-in-block blocks from showing up as content panes.
+#483170: Link paths in page list if they have sensible destinations.
 
 ctools 6.x-1.0-rc1
 ==================

@@ -125,6 +125,21 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
       $class .= ' page-manager-disabled';
     }
 
+    $path = array();
+    foreach (explode('/', $task['admin path']) as $bit) {
+      if ($bit[0] != '!') {
+        $path[] = $bit;
+      }
+    }
+
+    $path = implode('/', $path);
+    if (empty($task['disabled']) && strpos($path, '%') === FALSE) {
+      $visible_path = l('/' . $task['admin path'], $path);
+    }
+    else {
+      $visible_path = '/' . $task['admin path'];
+    }
+
     $row = array('data' => array(), 'class' => $class, 'title' => strip_tags($task['admin description']));
 
     $type = isset($task['admin type']) ? $task['admin type'] : t('System');
@@ -133,24 +148,15 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
 
     $row['data']['name'] = array('data' => $task_name, 'class' => 'page-manager-page-name');
     $row['data']['title'] = array('data' => $task['admin title'], 'class' => 'page-manager-page-title');
-    $row['data']['path'] = array('data' => '/' . $task['admin path'], 'class' => 'page-manager-page-path');
+    $row['data']['path'] = array('data' => $visible_path, 'class' => 'page-manager-page-path');
 
     $storage = isset($task['storage']) ? $task['storage'] : t('In code');
     $pages['storages'][$storage] = $storage;
     $row['data']['storage'] = array('data' => $storage, 'class' => 'page-manager-page-storage');
 
-  /*
+
+/*
     if (empty($task['disabled'])) {
-      $path = array();
-      foreach (explode('/', $task['admin path']) as $bit) {
-        if ($bit[0] == '%') {
-          $path[] = '%';
-        }
-        else if ($bit[0] != '!') {
-          $path[] = $bit;
-        }
-      }
-      $path = implode('/', $path);
       $item = menu_get_item($path);
       if (empty($item)) {
         dsm($path);
@@ -159,7 +165,7 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
         dsm($item);
       }
     }
-  */
+*/
     $operations = array(
       array(
         'title' => t('Edit'),
