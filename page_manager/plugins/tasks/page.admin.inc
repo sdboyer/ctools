@@ -64,6 +64,7 @@ function page_manager_page_menu(&$items, $task) {
 
     // Replace named placeholders with our own placeholder to load contexts.
     $position = 0;
+
     foreach (explode('/', $subtask->path) as $bit) {
       // Remove things like double slashes completely.
       if (!isset($bit) || $bit === '') {
@@ -71,9 +72,23 @@ function page_manager_page_menu(&$items, $task) {
       }
 
       if ($bit[0] == '%' && $bit != '%') {
+        $placeholder = '%pm_arg';
+
+        // Chop off that %.
+        $name = substr($bit, 1);
+
+        // Check to see if the argument plugin wants to use a different
+        // placholder. This will allow to_args.
+        if (!empty($subtask->arguments[$name])) {
+          ctools_include('context');
+          $plugin = ctools_get_argument($subtask->arguments[$name]['name']);
+          if (isset($plugin['path placeholder'])) {
+            $placeholder = $plugin['path placeholder'];
+          }
+        }
         // If an argument, swap it out with our argument loader and make sure
         // the argument gets passed through to the page callback.
-        $path[]             = '%pm_arg';
+        $path[]             = $placeholder;
         $page_arguments[]   = $position;
         $access_arguments[] = $position;
       }
@@ -597,6 +612,7 @@ function page_manager_page_form_menu(&$form, &$form_state) {
     '#suffix' => '</div>',
     '#tree' => TRUE,
   );
+
   $menu = $form_state['page']->subtask['subtask']->menu;
   if (empty($menu)) {
     $menu = array(
@@ -725,6 +741,41 @@ function page_manager_page_form_menu(&$form, &$form_state) {
     '#dependency' => array('radio:menu[type]' => array('default tab'), 'radio:menu[parent][type]' => array('tab')),
     '#dependency_count' => 2,
   );
+}
+
+/**
+ * Validate handler for the menu form for add/edit page task.
+ */
+function page_manager_page_form_menu_validate(&$form, &$form_state) {
+  // If setting a 'normal' menu entry, make sure that any placeholders
+  // support the to_arg stuff.
+
+  if ($form_state['values']['menu']['type'] == 'normal') {
+    $page = $form_state['page']->subtask['subtask'];
+
+    foreach (explode('/', $page->path) as $bit) {
+      if (!isset($bit) || $bit === '') {
+        continue;
+      }
+
+      if ($bit[0] == '%') {
+        // Chop off that %.
+        $name = substr($bit, 1);
+
+        // Check to see if the argument plugin allows to arg:
+        if (!empty($page->arguments[$name])) {
+          ctools_include('context');
+          $plugin = ctools_get_argument($page->arguments[$name]['name']);
+          if (!empty($plugin['path placeholder to_arg'])) {
+            continue;
+          }
+        }
+
+        form_error($form['menu']['type'], t('Paths with non optional placeholders cannot be used as normal menu items unless the selected argument handler provides a default argument to use for the menu item.'));
+        return;
+      }
+    }
+  }
 }
 
 /**

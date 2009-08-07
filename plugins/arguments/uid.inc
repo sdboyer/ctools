@@ -11,7 +11,7 @@
  * Implementation of specially named hook_ctools_arguments().
  */
 function ctools_uid_ctools_arguments() {
-  $args['uid'] = array(
+  return array(
     'title' => t("User ID"),
     // keyword to use for %substitution
     'keyword' => 'user',
@@ -21,8 +21,10 @@ function ctools_uid_ctools_arguments() {
       '#type' => 'textfield',
       '#description' => t('Enter the user ID of a user for this argument'),
     ),
+    'default' => array('to_arg' => TRUE),
+    'path placeholder' => '%pm_uid_arg', // This is in pagemanager.
+    'path placeholder to_arg' => TRUE,
   );
-  return $args;
 }
 
 /**
@@ -50,4 +52,3 @@ function ctools_argument_uid_context($arg = NULL, $conf = NULL, $empty = FALSE) 
 
   return ctools_context_create('user', $account);
 }
-

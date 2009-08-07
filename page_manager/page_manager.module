@@ -834,12 +834,31 @@ function page_manager_get_renderer($handler) {
 
 
 /**
- * Page managerfor arg load function because menu system will not load extra
+ * Page manager arg load function because menu system will not load extra
  * files for these; they must be in a .module.
  */
 function pm_arg_load($value, $subtask, $argument) {
   page_manager_get_task('page');
   return _pm_arg_load($value, $subtask, $argument);
+}
+
+/**
+ * Special menu _load() function for the user:uid argument.
+ *
+ * This is just the normal page manager argument. It only exists so that
+ * the to_arg can exist.
+ */
+function pm_uid_arg_load($value, $subtask, $argument) {
+  page_manager_get_task('page');
+  return _pm_arg_load($value, $subtask, $argument);
+}
+
+/**
+ * to_arg function for the user:uid argument to provide the arg for the
+ * current global user.
+ */
+function pm_uid_arg_to_arg($arg) {
+  return user_uid_optional_to_arg($arg);
 }
 
 /**
