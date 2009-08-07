@@ -1223,7 +1223,7 @@ function page_manager_handler_add_submit(&$form, &$form_state) {
   $form_state['no_rerender'] = TRUE;
   if (!empty($cache->forms)) {
     // Tell the form to go to the config page.
-    drupal_set_message(t('Before this variant can be added, it must be configured. When you are finished, click "Create variant" to add this to your page.'));
+    drupal_set_message(t('Before this variant can be added, it must be configured. When you are finished, click "Create variant" at the end of this wizard to add this to your page.'));
     $form_state['new trail'] = array('actions', 'configure');
   }
   else {
