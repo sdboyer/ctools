@@ -11,6 +11,7 @@ Make sure that tasks that will not override existing overrides refuse to enable 
 #471024: Stop preventing exposed-view-in-block blocks from showing up as content panes.
 #483170: Link paths in page list if they have sensible destinations.
 #406284: Allow items with the user uid argument to be used as a normal menu item.
+#534504: Selection rules were not being saved when set up via during variant add.
 
 ctools 6.x-1.0-rc1
 ==================

@@ -924,7 +924,12 @@ function page_manager_task_handler_ctools_access_get($argument) {
 function page_manager_task_handler_ctools_access_set($argument, $access) {
   list($task_name, $name) = explode('*', $argument);
   $page = page_manager_get_page_cache($task_name);
-  $handler = &$page->handlers[$name];
+  if (empty($name)) {
+    $handler = &$page->new_handler;
+  }
+  else {
+    $handler = &$page->handlers[$name];
+  }
 
   $handler->conf['access'] = $access;
   page_manager_set_page_cache($page);
