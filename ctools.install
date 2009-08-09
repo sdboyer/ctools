@@ -115,16 +115,19 @@ function ctools_schema_1() {
       'sid' => array(
         'type' => 'varchar',
         'length' => '64',
+        'not null' => TRUE,
         'description' => t('The session ID this cache object belongs to.'),
       ),
       'name' => array(
         'type' => 'varchar',
         'length' => '32',
+        'not null' => TRUE,
         'description' => t('The name of the object this cache is attached to.'),
       ),
       'obj' => array(
         'type' => 'varchar',
         'length' => '32',
+        'not null' => TRUE,
         'description' => t('The type of the object this cache is attached to; this essentially represents the owner so that several sub-systems can use this cache.'),
       ),
       'updated' => array(
