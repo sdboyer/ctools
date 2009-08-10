@@ -138,6 +138,12 @@ function ctools_build_form($form_id, &$form_state) {
   }
   // If we haven't redirected to a new location by now, we want to
   // render whatever form array is currently in hand.
+  // Do not render certain items if requested not to:
+  if (!empty($form_state['drop tokens'])) {
+    unset($form['form_id']);
+    unset($form['form_build_id']);
+    unset($form['form_token']);
+  }
   return drupal_render_form($form_id, $form);
 }
 
@@ -162,8 +168,8 @@ function ctools_rebuild_form($form_id, &$form_state, $args, $form_build_id = NUL
   }
   $form['#build_id'] = $form_build_id;
   // Flush form ID element cache because we may be rebuilding
-  // a form in a way that Drupal's FAPI isn't used to which 
-  // causes unnecessary form ID changes. 
+  // a form in a way that Drupal's FAPI isn't used to which
+  // causes unnecessary form ID changes.
   form_clean_id(NULL, TRUE);
   drupal_prepare_form($form_id, $form, $form_state);
 
