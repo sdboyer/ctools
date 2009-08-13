@@ -199,6 +199,11 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
  * Provide a form for sorting and filtering the list of pages.
  */
 function page_manager_list_pages_form(&$form_state) {
+  // This forces the form to *always* treat as submitted which is
+  // necessary to make it work.
+  if (empty($_POST)) {
+    $form["#programmed"] = TRUE;
+  }
   $form['#action'] = url('admin/build/pages/nojs/', array('absolute' => TRUE));
   if (!variable_get('clean_url', FALSE)) {
     $form['q'] = array(

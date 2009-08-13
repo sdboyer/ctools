@@ -136,6 +136,14 @@ function ctools_build_form($form_id, &$form_state) {
   if (!empty($form_state['want form'])) {
     return $form;
   }
+
+  // Do not render certain items if requested not to:
+  if (!empty($form_state['drop tokens'])) {
+    unset($form['#id']);
+    unset($form['#build_id']);
+    unset($form['#token']);
+    unset($form['form_token']);
+  }
   // If we haven't redirected to a new location by now, we want to
   // render whatever form array is currently in hand.
   // Do not render certain items if requested not to:

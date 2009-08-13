@@ -14,7 +14,7 @@ function ctools_profile_fields_ctools_content_types() {
       'description' => t('Contents of a single profile category.'),
       'required context' => new ctools_context_required(t('User'), 'user'),
       'category' => t('User'),
-      'defaults' => array('title' => '', 'category' => '', 'empty' => ''),
+      'defaults' => array('category' => '', 'empty' => ''),
       'hook theme' => 'ctools_profile_fields_content_type_theme',
     );
   }
