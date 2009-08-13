@@ -1,4 +1,4 @@
-Current API VERSION: 1.1.0. See API.txt for more information.
+Current API VERSION: 1.1.1. See API.txt for more information.
 
 ctools 6.x-1.0-dev
 ==================
@@ -13,6 +13,7 @@ Make sure that tasks that will not override existing overrides refuse to enable 
 #406284: Allow items with the user uid argument to be used as a normal menu item.
 #534504: Selection rules were not being saved when set up via during variant add.
 #528392 by markus_petrux: Explicit NOT NULL settings in schema during install.
+#348323 by neclimdul: Allow plugins to have classes and auto build parent chains.
 
 ctools 6.x-1.0-rc1
 ==================

@@ -2,6 +2,9 @@ API.txt: $Id$
 
 This file contains a log of changes to the API.
 
+API version 1.1.1:
+  Introduce ctools_plugin_get_class() and ctools_plugin_load_class()
+
 API version 1.1.0:
   delegator module destroyed, replaced by page manager. All 'task' and 'task_handler' plugins 
   now owned by page_manager. Update plugin hooks accordingly. The filename for defaults

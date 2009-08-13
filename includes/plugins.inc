@@ -369,6 +369,8 @@ function _ctools_process_data($result, $info, $module, $path, $file) {
       'name' => $name,
       'path' => $path,
       'file' => $file,
+      'plugin module' => $info['module'],
+      'plugin type' => $info['type'],
     );
 
     // Fill in plugin specific defaults, if they exist.
@@ -491,3 +493,75 @@ function ctools_plugin_load_function($module, $type, $id, $function_name) {
   return ctools_plugin_get_function($plugin, $function_name);
 }
 
+/**
+ * Get a class from a plugin, if it exists. If the plugin is not already
+ * loaded, try ctools_plugin_load_class() instead.
+ *
+ * @param $plugin
+ *   The loaded plugin type.
+ * @param $class_name
+ *   The identifier of the class. For example, 'handler'.
+ *
+ * @return
+ *   The actual name of the class to call, or NULL if the class does not exist.
+ */
+function ctools_plugin_get_class($plugin, $class_name) {
+  // If cached the .inc file may not have been loaded. require_once is quite safe
+  // and fast so it's okay to keep calling it.
+  if (isset($plugin['file'])) {
+    require_once './' . $plugin['path'] . '/' . $plugin['file'];
+  }
+
+  if (!isset($plugin[$class_name])) {
+    return;
+  }
+
+  if (is_array($plugin[$class_name]) && isset($plugin[$class_name]['class'])) {
+    if (isset($plugin[$class_name]['parent'])) {
+      // Make sure parents are included.
+      ctools_plugin_load_class($plugin['plugin module'], $plugin['plugin type'], $plugin[$class_name]['parent'], $class_name);
+    }
+    $class = $plugin[$class_name]['class'];
+    if (isset($plugin[$class_name]['file'])) {
+      $file = $plugin[$class_name]['file'];
+      if (isset($plugin[$class_name]['path'])) {
+        $file = $plugin[$class_name]['path'] . '/' . $file;
+      }
+      require_once './' . $file;
+    }
+  }
+  else {
+    $class = $plugin[$class_name];
+  }
+  
+  // If we didn't explicitly include a file above, try autoloading a file
+  // based on the class' name.
+  if (!isset($file) && file_exists($plugin['path'] . "/$class.inc")) {
+    require_once $plugin['path'] . "/$class.inc";
+  }
+
+  if (class_exists($class)) {
+    return $class;
+  }
+}
+
+/**
+ * Load a plugin and get a class name from it, returning success only if the
+ * class exists.
+ *
+ * @param $module
+ *   The module that owns the plugin type.
+ * @param $type
+ *   The type of plugin.
+ * @param $id
+ *   The id of the specific plugin to load.
+ * @param $class_name
+ *   The identifier of the class. For example, 'handler'.
+ *
+ * @return
+ *   The actual name of the class to call, or NULL if the class does not exist.
+ */
+function ctools_plugin_load_class($module, $type, $id, $class_name) {
+  $plugin = ctools_get_plugins($module, $type, $id);
+  return ctools_plugin_get_class($plugin, $class_name);
+}
