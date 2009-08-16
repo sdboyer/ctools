@@ -213,7 +213,7 @@ function ctools_access_admin_render_table($access, $fragment, $contexts) {
   $header = array(
     array('data' => t('Title'), 'class' => 'ctools-access-title'),
     array('data' => t('Description'), 'class' => 'ctools-access-description'),
-    array('data' => t(''), 'class' => 'ctools-access-operations', 'align' => 'right'),
+    array('data' => '', 'class' => 'ctools-access-operations', 'align' => 'right'),
   );
 
   if (empty($rows)) {

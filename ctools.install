@@ -72,29 +72,29 @@ function ctools_schema_2() {
   // DO NOT MODIFY THIS TABLE -- this definition is used to create the table.
   // Changes to this table must be made in schema_3 or higher.
   $schema['ctools_css_cache'] = array(
-    'description' => t('A special cache used to store CSS that must be non-volatile.'),
+    'description' => 'A special cache used to store CSS that must be non-volatile.',
     'fields' => array(
       'cid' => array(
         'type' => 'varchar',
         'length' => '128',
-        'description' => t('The CSS ID this cache object belongs to.'),
+        'description' => 'The CSS ID this cache object belongs to.',
         'not null' => TRUE,
       ),
       'filename' => array(
         'type' => 'varchar',
         'length' => '255',
-        'description' => t('The filename this CSS is stored in.'),
+        'description' => 'The filename this CSS is stored in.',
       ),
       'css' => array(
         'type' => 'text',
         'size' => 'big',
-        'description' => t('CSS being stored.'),
+        'description' => 'CSS being stored.',
         'serialize' => TRUE,
       ),
       'filter' => array(
          'type' => 'int',
          'size' => 'tiny',
-         'description' => t('Whether or not this CSS needs to be filtered.'),
+         'description' => 'Whether or not this CSS needs to be filtered.',
        ),
     ),
     'primary key' => array('cid'),
@@ -116,31 +116,31 @@ function ctools_schema_1() {
         'type' => 'varchar',
         'length' => '64',
         'not null' => TRUE,
-        'description' => t('The session ID this cache object belongs to.'),
+        'description' => 'The session ID this cache object belongs to.',
       ),
       'name' => array(
         'type' => 'varchar',
         'length' => '32',
         'not null' => TRUE,
-        'description' => t('The name of the object this cache is attached to.'),
+        'description' => 'The name of the object this cache is attached to.',
       ),
       'obj' => array(
         'type' => 'varchar',
         'length' => '32',
         'not null' => TRUE,
-        'description' => t('The type of the object this cache is attached to; this essentially represents the owner so that several sub-systems can use this cache.'),
+        'description' => 'The type of the object this cache is attached to; this essentially represents the owner so that several sub-systems can use this cache.',
       ),
       'updated' => array(
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
-        'description' => t('The time this cache was created or updated.'),
+        'description' => 'The time this cache was created or updated.',
       ),
       'data' => array(
         'type' => 'text',
         'size' => 'big',
-        'description' => t('Serialized data being stored.'),
+        'description' => 'Serialized data being stored.',
         'serialize' => TRUE,
       ),
     ),
