@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "POT-Creation-Date: 2009-08-15 12:16+0200\n"
-"PO-Revision-Date: 2009-08-15 12:33+0100\n"
-"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2009-08-16 11:19+0100\n"
+"Last-Translator: Jérémy Chatard <jchatard@breek.fr>\n"
 "Language-Team: French <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -33,11 +33,11 @@ msgstr "Vues"
 
 #: views_content.module:92
 msgid "Make all views available as panes"
-msgstr ""
+msgstr "Rend toutes les vues disponibles en panneaux"
 
 #: views_content.module:93
 msgid "If checked, all views will be made available as content panes to be added to content types. If not checked, only Views that have a 'Content pane' display will be available as content panes. Uncheck this if you want to be able to more carefully control what view content is available to users using the panels layout UI."
-msgstr ""
+msgstr "Si sélectionné, toutes les vues seront disponibles sous forme de content pane pour être ajoutées aux types de contenu. Si non sélectionné, seules les vues qui disposent d'un affichage Content pane seront disponible en tant que content panes. Désélectionnez ceci si vous souhaitez contrôler plus finement quelles vues sont diponibles l'interface des panels pour les utilisateurs."
 
 #: views_content.module:20
 msgid "Views panes"
@@ -45,7 +45,7 @@ msgstr ""
 
 #: views_content.module:24
 msgid "Configure Views to be used as CTools content."
-msgstr ""
+msgstr "Configurer des vues pour être utilisées comme contenu avec CTools."
 
 #: views_content.info:0
 msgid "Views content panes"
@@ -53,7 +53,7 @@ msgstr ""
 
 #: views_content.info:0
 msgid "Allows Views content to be used in Panels, Dashboard and other modules which use the CTools Content API."
-msgstr ""
+msgstr "Permet au contenu des vues d'être utilisé dans les panels, le Dashboard et d'autres modules qui utilisent l'API de contenu de CTools."
 
 #: views_content.info:0
 msgid "Chaos tool suite"
@@ -77,7 +77,7 @@ msgstr "Affichage"
 
 #: plugins/content_types/views.inc:236
 msgid "Choose which display of this view you wish to use."
-msgstr ""
+msgstr "Choisissez quel affichage de la vue vous souhaitez utiliser."
 
 #: plugins/content_types/views.inc:266
 #: plugins/content_types/views_panes.inc:277
@@ -98,11 +98,11 @@ msgstr "Si cette option est sélectionnée, le titre sera un lien vers la vue."
 
 #: plugins/content_types/views.inc:301
 msgid "Provide a \"more\" link that links to the view"
-msgstr ""
+msgstr "Fournit un lien \"plus\" qui renvoit vers la vue"
 
 #: plugins/content_types/views.inc:302
 msgid "This is independent of any more link that may be provided by the view itself; if you see two more links, turn this one off. Views will only provide a more link if using the \"block\" type, however, so if using embed, use this one."
-msgstr ""
+msgstr "Ceci est indépendant de tout lien fournit par la vue elle-même ; si vous voyez deux lien \"plus\", désactivez celui-ci. Views ne fournira un lien plus que si vous utilisez l'affichage \"block\", donc si vous en disposez pas utilisez celui-ci."
 
 #: plugins/content_types/views.inc:308
 #: plugins/content_types/views_panes.inc:330
@@ -130,7 +130,7 @@ msgstr "Nombre de posts"
 
 #: plugins/content_types/views.inc:339
 msgid "Select the number of posts to display, or 0 to display all results."
-msgstr ""
+msgstr "Sélectionnez le nombre d'éléments à afficher, ou 0 pour afficher tous les résultats."
 
 #: plugins/content_types/views.inc:345
 #: plugins/content_types/views_panes.inc:371
@@ -139,7 +139,7 @@ msgstr "Décalage"
 
 #: plugins/content_types/views.inc:347
 msgid "Offset in the node list or 0 to start at 1st item."
-msgstr ""
+msgstr "Décalage dans la liste de noeuds ou 0 pour commencer avec le 1er élément."
 
 #: plugins/content_types/views.inc:352
 msgid "Send arguments"
@@ -147,7 +147,7 @@ msgstr "Envoyer l'argument"
 
 #: plugins/content_types/views.inc:354
 msgid "Select this to send all arguments from the panel directly to the view. If checked, the panel arguments will come after any context arguments above and precede any additional arguments passed in through the Arguments field below."
-msgstr ""
+msgstr "Sélectionnez ceci pour envoyer tous les arguments du panel directement à la vue. Si sélectionné, les arguments du panel arriveront après les contextes ci-dessous et précèderont n'importe quel argument supplémentaire défini dans le champ argument ci-dessous."
 
 #: plugins/content_types/views.inc:360
 msgid "Arguments"
@@ -155,7 +155,7 @@ msgstr "Arguments"
 
 #: plugins/content_types/views.inc:362
 msgid "Additional arguments to send to the view as if they were part of the URL in the form of arg1/arg2/arg3. You may use %0, %1, ..., %N to grab arguments from the URL. Or use @0, @1, @2, ..., @N to use arguments passed into the panel."
-msgstr ""
+msgstr "Arguments supplémentaires à envoyer à la vue comme si ceux-ci faisaient partie de l'URL, sous la forme arg1/arg2/arg3. Vous pouvez utiliser %0, %1, ..., %N pour récupérer les arguments depuis l'URL. Ou utiliser @0, @1, @2, ..., @N pour utiliser les arguments passés dans le panel."
 
 #: plugins/content_types/views.inc:368
 msgid "Override URL"
@@ -163,7 +163,7 @@ msgstr "Surcharger l'URL"
 
 #: plugins/content_types/views.inc:370
 msgid "If this is set, override the View URL; this can sometimes be useful to set to the panel URL"
-msgstr ""
+msgstr "Si ceci est défini, surcharge l'URL de la vue ; ce qui peut être pratique pour la définir à l'URL de la vue"
 
 #: plugins/content_types/views.inc:402;422
 #: plugins/content_types/views_panes.inc:410;413
@@ -188,11 +188,11 @@ msgstr "Par défaut"
 
 #: plugins/content_types/views.inc:450
 msgid "Argument @arg using context @context converted into @converter"
-msgstr ""
+msgstr "L'argument @arg utilisant le contexte @context a été converti en @converter"
 
 #: plugins/content_types/views.inc:458
 msgid "@count items displayed."
-msgstr ""
+msgstr "@count éléments affichés."
 
 #: plugins/content_types/views.inc:460
 msgid "With pager."
@@ -245,11 +245,11 @@ msgstr "Nombre d'éléments"
 
 #: plugins/content_types/views_panes.inc:364
 msgid "Select the number of items to display, or 0 to display all results."
-msgstr ""
+msgstr "Sélectionnez le nombre d'éléments à afficher, ou 0 pour afficher tous les résultats."
 
 #: plugins/content_types/views_panes.inc:373
 msgid "Enter the number of items to skip; enter 0 to skip no items."
-msgstr ""
+msgstr "Saisissez le nombre d'éléments à sauter ; entrez 0 pour ne sauter aucun élément."
 
 #: plugins/content_types/views_panes.inc:380
 msgid "Override path"
@@ -257,7 +257,7 @@ msgstr "Surcharger le chemin"
 
 #: plugins/content_types/views_panes.inc:382
 msgid "If this is set, override the View URL path; this can sometimes be useful to set to the panel URL."
-msgstr ""
+msgstr "Si ceci est défini, surcharge le chemin de la Vue ; ceci peut être pratique pour la définir à l'URL du panel."
 
 #: plugins/views/views_content.views.inc:16
 msgid "Content pane"
@@ -265,11 +265,11 @@ msgstr ""
 
 #: plugins/views/views_content.views.inc:17
 msgid "Is available as content for a panel or dashboard display."
-msgstr ""
+msgstr "Est disponible comme contenu pour un panel ou affichage de type dashboard."
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:56
 msgid "Pane settings"
-msgstr ""
+msgstr "Paramètres du pane"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:61
 msgid "Use view name"
@@ -316,8 +316,9 @@ msgid "Edit"
 msgstr "Modifier"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:128;142
+#, fuzzy
 msgid "Allow settings"
-msgstr ""
+msgstr "Permettre les paramètres"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:129
 msgid "None"
@@ -329,11 +330,11 @@ msgstr "Tous / Toutes"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:129
 msgid "Some"
-msgstr ""
+msgstr "Plusieurs"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:144
 msgid "Checked settings will be available in the panel pane config dialog for modification by the panels user. Unchecked settings will not be available and will only use the settings in this display."
-msgstr ""
+msgstr "Les paramètres sélectionnés seront disponibles dans la fenêtre de configuration du pane pour être modifié par l'utilisateur. Les paramètres non sélectionnés ne seront pas disponibles et n'utiliseront que les paramètres de cet affichage."
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:149
 msgid "Items per page"
@@ -361,7 +362,7 @@ msgstr "Titre pour l'administration"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:171
 msgid "This is the title that will appear for this view pane in the add content dialog. If left blank, the view name will be used."
-msgstr ""
+msgstr "Ceci est le titre qui va apparaître pour le pane de cette vue dans la fenêtre d'ajout de contenu. Si vide, le nom de la vue sera utilisé."
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:176;186
 msgid "Administrative description"
@@ -369,35 +370,37 @@ msgstr "Description pour l'administration"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:181
 msgid "This is text that will be displayed when the user mouses over the pane in the add content dialog. If blank the view description will be used."
-msgstr ""
+msgstr "Ceci est le texte qui va apparaître quand l'utilisateur va placer sa souris au-dessus du pane dans la fenêtre d'ajout de contenu. Si vide, la description de la vue sera utilisée."
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:193
 msgid "This is category the pane will appear in on the add content dialog."
-msgstr ""
+msgstr "Ceci est la catégorie dans laquelle apparaîtra le pane dans la fenêtre d'ajout de contenu."
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:196
 msgid "Weight"
 msgstr "Poids"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:199
+#, fuzzy
 msgid "This is the default weight of the category. Note that if the weight of a category is defined in multiple places, only the first one Panels sees will get that definition, so if the weight does not appear to be working, check other places that the weight might be set."
-msgstr ""
+msgstr "Ceci est le poids par défaut de la catégorie. Notez que si le poids de la catégorie est défini à plusieurs endroits, seul le premier est visible par Panels, donc si le poids ne semble pas fonctionner, vérifiez dans les autres endroits où le poids pourrait avoir été défini."
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:204
 msgid "Link pane title to view"
-msgstr ""
+msgstr "Lier le titre du pane à la vue"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:214
 msgid "Inherit path from panel display"
-msgstr ""
+msgstr "Hérite le chemin de l'affichage du panel"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:220
+#, fuzzy
 msgid "If yes, all links generated by Views, such as more links, summary links, and exposed input links will go to the panels display path, not the view, if the display has a path."
-msgstr ""
+msgstr "Si oui, tous les liens générés par Views, tel que les liens plus, les liens de résumé, et les liens de saisies exposés vont aller dans l'affichage des chemins des panels, pas la vue, si l'affichage a un chemin."
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:225
 msgid "Choose the data source for view arguments"
-msgstr ""
+msgstr "Choisissez la source de données des arguments de la vue"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:242
 msgid "No argument"
@@ -405,7 +408,7 @@ msgstr "Aucun argument"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:243
 msgid "Argument wildcard"
-msgstr ""
+msgstr "Caractères de remplacement de l'arguement"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:244
 msgid "From context"
@@ -413,19 +416,20 @@ msgstr "Depuis le contexte"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:245
 msgid "From panel argument"
-msgstr ""
+msgstr "Depuis l'argument du panel"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:246
 msgid "Fixed"
-msgstr ""
+msgstr "Fixe"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:247
+#, fuzzy
 msgid "Input on pane config"
-msgstr ""
+msgstr "Saisie sur la configuration du pane"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:250
 msgid "@arg source"
-msgstr ""
+msgstr "source de @arg"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:256
 msgid "Required context"
@@ -433,15 +437,15 @@ msgstr "Conexte requis"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:257
 msgid "If \"From context\" is selected, which context to require."
-msgstr ""
+msgstr "Si \"Depuis le contexte\" est sélectionné, quel contexte nécessiter."
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:266
 msgid "Panel argument"
-msgstr ""
+msgstr "Argument du panel"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:267
 msgid "If \"From panel argument\" is selected, which panel argument to use."
-msgstr ""
+msgstr "Si \"Depuis l'argument du panel\" est sélectionné, quel argument du panel utiliser."
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:269
 msgid "First"
@@ -469,17 +473,18 @@ msgstr "Sixième"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:276
 msgid "Fixed argument"
-msgstr ""
+msgstr "Argument fixe"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:277
 msgid "If \"Fixed\" is selected, what to use as an argument."
-msgstr ""
+msgstr "Si \"Fixe\" est sélectionné, quoi utiliser comme argument."
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:285
 msgid "Label"
 msgstr "Étiquette"
 
 #: plugins/views/views_content_plugin_display_panel_pane.inc:286
+#, fuzzy
 msgid "If this argument is presented to the panels user, what label to apply to it."
-msgstr ""
+msgstr "Si cet argument est présenté aux panels des utilisateurs, quel intitulé doit y être appliqué."
 
