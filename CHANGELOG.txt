@@ -16,6 +16,7 @@ Make sure that tasks that will not override existing overrides refuse to enable 
 #348323 by neclimdul: Allow plugins to have classes and auto build parent chains.
 #478542 by nickl: Add "attr" command to ajax framework.
 #495240 by mikl: Blob handling for pgsql.
+#531936: Cache handling on contexts was spotty and could cause random errors.
 
 ctools 6.x-1.0-rc1
 ==================

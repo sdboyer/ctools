@@ -73,6 +73,56 @@ function ctools_context_info($type = NULL) {
 }
 
 /**
+ * Get the cache for the context object.
+ *
+ * This can pass through to a module provided cache if it exists, or
+ * the default cache will be used.
+ */
+function ctools_context_cache_get($fragment, $key) {
+  // Separate the fragment into 'module' and 'argument'
+  if (strpos($fragment, '-') === FALSE) {
+    $module = $fragment;
+    $argument = NULL;
+  }
+  else {
+    list($module, $argument) = explode('-', $fragment, 2);
+  }
+
+  $function = $module . '_context_cache_get';
+  if (function_exists($function)) {
+    return $function($argument, $key);
+  }
+  else {
+    return ctools_object_cache_get("context_object:$module", $key);
+  }
+}
+
+/**
+ * Get the cache for the context object.
+ *
+ * This can pass through to a module provided cache if it exists, or
+ * the default cache will be used.
+ */
+function ctools_context_cache_set($fragment, $key, $object) {
+  // Separate the fragment into 'module' and 'argument'
+  if (strpos($fragment, '-') === FALSE) {
+    $module = $fragment;
+    $argument = NULL;
+  }
+  else {
+    list($module, $argument) = explode('-', $fragment, 2);
+  }
+
+  $function = $module . '_context_cache_set';
+  if (function_exists($function)) {
+    return $function($argument, $key, $object);
+  }
+  else {
+    return ctools_object_cache_set("context_object:$module", $key, $object);
+  }
+}
+
+/**
  * Get the data belonging to a particular context.
  */
 function ctools_context_data($type, $name) {
@@ -308,7 +358,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
   }
 
   // Load stored object from cache.
-  if (!($object = ctools_object_cache_get("context_object:$module", $object_name))) {
+  if (!($object = ctools_context_cache_get($module, $object_name))) {
     ctools_ajax_render_error(t('Invalid object name.'));
   }
 
@@ -359,7 +409,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
 
   if (empty($output)) {
     // successful submit
-    ctools_object_cache_set("context_object:$module", $object_name, $object);
+    ctools_context_cache_set($module, $object_name, $object);
 
     $arg_form_state = array();
 
@@ -432,7 +482,7 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
   }
 
   // Load stored object from cache.
-  if (!($object = ctools_object_cache_get("context_object:$module", $object_name))) {
+  if (!($object = ctools_context_cache_get($module, $object_name))) {
     ctools_ajax_render_error(t('Invalid object name.'));
   }
 
@@ -477,7 +527,7 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
 
   if (empty($output)) {
     // successful submit
-    ctools_object_cache_set("context_object:$module", $object_name, $object);
+    ctools_context_cache_set($module, $object_name, $object);
 
     $output = array();
     $output[] = ctools_modal_command_dismiss();
@@ -870,7 +920,7 @@ function ctools_context_ajax_item_delete($module = NULL, $type = NULL, $object_n
   }
 
   // Load stored object from cache.
-  if (!($object = ctools_object_cache_get("context_object:$module", $object_name))) {
+  if (!($object = ctools_context_cache_get($module, $object_name))) {
     ctools_ajax_render_error(t('Invalid object name.'));
   }
 
@@ -886,7 +936,7 @@ function ctools_context_ajax_item_delete($module = NULL, $type = NULL, $object_n
   }
 
   unset($ref[$position]);
-  ctools_object_cache_set("context_object:$module", $object_name, $object);
+  ctools_context_cache_set($module, $object_name, $object);
 
   $output   = array();
   $output[] = ctools_ajax_command_replace('#' . $type . '-row-' . $position, '');

@@ -310,13 +310,14 @@ function ctools_context_handler_edit_context(&$form, &$form_state) {
   ctools_context_admin_includes();
 
   $handler = $form_state['handler'];
-  // Check our context object cache.
-  if (!empty($_POST)) {
-    $cache = ctools_object_cache_get('context_object:page_manager', $handler->name);
+  $page = $form_state['page'];
+  $cache_name = $handler->name ? $handler->name : 'temp';
+  if (isset($page->context_cache[$cache_name])) {
+    $cache = $page->context_cache[$cache_name];
   }
   else {
     $cache = ctools_context_handler_get_task_object($form_state['task'], $form_state['subtask'], $form_state['handler']);
-    ctools_object_cache_set('context_object:page_manager', $handler->name, $cache);
+    $form_state['page']->context_cache[$cache_name] = $cache;
   }
 
   $form['right'] = array(
@@ -329,8 +330,9 @@ function ctools_context_handler_edit_context(&$form, &$form_state) {
     '#suffix' => '</div></div>',
   );
 
-  ctools_context_add_context_form('page_manager', $form, $form_state, $form['right']['contexts_table'], $cache);
-  ctools_context_add_relationship_form('page_manager', $form, $form_state, $form['right']['relationships_table'], $cache);
+  $module = 'page_manager-' . $page->task_name;
+  ctools_context_add_context_form($module, $form, $form_state, $form['right']['contexts_table'], $cache);
+  ctools_context_add_relationship_form($module, $form, $form_state, $form['right']['relationships_table'], $cache);
 
   $form['left']['summary'] = array(
     '#prefix' => '<div class="page-manager-contexts">',
@@ -348,8 +350,15 @@ function ctools_context_handler_edit_context(&$form, &$form_state) {
  * Process submission of the context edit form.
  */
 function ctools_context_handler_edit_context_submit(&$form, &$form_state) {
-  $form_state['handler']->conf['contexts'] = $form_state['context_object']->contexts;
-  $form_state['handler']->conf['relationships'] = $form_state['context_object']->relationships;
-  ctools_object_cache_clear('context_object:page_manager', $form_state['handler']->name);
+  $handler = &$form_state['handler'];
+
+  $cache_name = $handler->name ? $handler->name : 'temp';
+
+  $handler->conf['contexts'] = $form_state['context_object']->contexts;
+  $handler->conf['relationships'] = $form_state['context_object']->relationships;
+  if (isset($form_state['page']->context_cache[$cache_name])) {
+    unset($form_state['page']->context_cache[$cache_name]);
+  }
+  dsm($form_state['page']);
 }
 
