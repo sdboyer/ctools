@@ -55,6 +55,11 @@
  *   - selector: The CSS selector to add CSS to.
  *   - argument: An array of 'key': 'value' CSS selectors to set.
  *
+ * - attr
+ *   - selector: The CSS selector. This can be any selector jquery uses in $().
+ *   - name: The name or key of the data attached to this selector.
+ *   - value: The value of the data.
+ *
  * - settings
  *   - argument: An array of settings to add to Drupal.settings via $.extend
  *
@@ -321,6 +326,25 @@ function ctools_ajax_command_data($selector, $name, $value) {
   );
 }
 
+ /**
+  * Set a single property to a value, on all matched elements.
+  *
+  * @param $selector
+  *   The CSS selector. This can be any selector jquery uses in $().
+  * @param $name
+  *   The name or key: of the data attached to this selector.
+  * @param $value
+  *  The value of the data.
+  */
+ function ctools_ajax_command_attr($selector, $name, $value) {
+   return array(
+     'command' => 'attr',
+     'selector' => $selector,
+     'name' => $name,
+     'value' => $value,
+   );
+ }
+ 
 /**
  * Force a table to be restriped.
  *
