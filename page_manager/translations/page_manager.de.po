@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: panels 5.x\n"
 "POT-Creation-Date: 2009-08-16 20:47+0200\n"
-"PO-Revision-Date: 2009-08-16 22:07+0100\n"
+"PO-Revision-Date: 2009-08-17 08:13+0100\n"
 "Last-Translator: Alexander Haß\n"
 "Language-Team: Alexander Hass\n"
 "MIME-Version: 1.0\n"
@@ -352,11 +352,11 @@ msgstr "Überschreiben einer vorhanden Seite zulassen"
 
 #: page_manager/plugins/tasks/page.admin.inc:1247
 msgid "If the name you selected already exists in the database, this page will be allowed to overwrite the existing page."
-msgstr "Sollte der ausgewähle Namen in der Datenbank schon vorhanden sein, wird diese Seite das Überschreiben der vorhanden Seite zulassen."
+msgstr "Sollte der ausgewähle Namen in der Datenbank schon vorhanden sein, kann die vorhandene Seite überschrieben werden."
 
 #: page_manager/plugins/tasks/page.admin.inc:1252
 msgid "Paste page code here"
-msgstr "Seite-Code hier einfügen"
+msgstr "Seiten-Code hier einfügen"
 
 #: page_manager/plugins/tasks/page.admin.inc:1258
 msgid "Import"
