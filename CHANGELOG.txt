@@ -15,6 +15,7 @@ Make sure that tasks that will not override existing overrides refuse to enable 
 #528392 by markus_petrux: Explicit NOT NULL settings in schema during install.
 #348323 by neclimdul: Allow plugins to have classes and auto build parent chains.
 #478542 by nickl: Add "attr" command to ajax framework.
+#495240 by mikl: Blob handling for pgsql.
 
 ctools 6.x-1.0-rc1
 ==================
