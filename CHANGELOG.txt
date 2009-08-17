@@ -17,6 +17,7 @@ Make sure that tasks that will not override existing overrides refuse to enable 
 #478542 by nickl: Add "attr" command to ajax framework.
 #495240 by mikl: Blob handling for pgsql.
 #531936: Cache handling on contexts was spotty and could cause random errors.
+#545540 by Roger López: Add 5 page elements as available panes for using Panels as your primary page layout: breadcrumb, page title, messages, tabs and help box.
 
 ctools 6.x-1.0-rc1
 ==================

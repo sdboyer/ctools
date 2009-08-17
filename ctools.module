@@ -360,3 +360,60 @@ function ctools_js_load($js) {
   }
   return 0;
 }
+
+/**
+ * A theme preprocess function to allow content type plugins to use page
+ * template variables which are not yet available when the content type is
+ * rendered.
+ */
+function ctools_preprocess_page(&$variables) {
+  $tokens = ctools_set_page_token();
+  if (!empty($tokens)) {
+    foreach ($tokens as $token => $key) {
+      list($type, $argument) = $key;
+      switch ($type) {
+        case 'variable':
+          $tokens[$token] = isset($variables[$argument]) ? $variables[$argument] : '';
+          break;
+        case 'callback':
+          if (is_string($argument) && function_exists($argument)) {
+            $tokens[$token] = $argument();
+          }
+          if (is_array($argument) && function_exists($argument[0])) {
+            $tokens[$token] = call_user_func_array($argument);
+          }
+          break;
+      }
+      $variables['content'] = strtr($variables['content'], $tokens);
+    }
+  }
+}
+
+/**
+ * Set a token/value pair to be replaced later in the request, specifically in
+ * ctools_preprocess_page().
+ *
+ * @param $token
+ *   The token to be replaced later, during page rendering.  This should
+ *    ideally be a string inside of an HTML comment, so that if there is
+ *    no replacement, the token will not render on the page.
+ * @param $type
+ *   The type of the token. Can be either 'variable', which will pull data
+ *   directly from the page variables
+ * @param $argument
+ *   If $type == 'variable' then argument should be the key to fetch from
+ *   the $variables. If $type == 'callback' then it should either be the
+ *   callback, or an array that will be sent to call_user_func_array().
+ *
+ * @return
+ *   A array of token/variable names to be replaced.
+ */
+function ctools_set_page_token($token = NULL, $type = NULL, $argument = NULL) {
+  static $tokens = array();
+
+  if (isset($token)) {
+    $tokens[$token] = array($type, $argument);
+  }
+
+  return $tokens;
+}
