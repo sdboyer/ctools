@@ -21,7 +21,7 @@ function ctools_node_ctools_content_types() {
       'leave_node_title' => FALSE,
       'identifier' => '',
     ),
-    'title' => t('Add a node'),
+    'title' => t('Existing node'),
     'icon' => 'icon_node.png',
     'description' => t('Add a node from your site as content.'),
     'category' => t('Custom'),
@@ -100,6 +100,13 @@ function ctools_node_content_type_render($subtype, $conf, $panel_args) {
 function ctools_node_content_type_edit_form(&$form, &$form_state) {
   $conf = $form_state['conf'];
 
+  $form['leave_node_title'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => !empty($conf['leave_node_title']),
+    '#title' => t('Leave node title'),
+    '#description' => t('Advanced: if checked, do not touch the node title; this can cause the node title to appear twice unless your theme is aware of this.'),
+  );
+
   if ($form_state['op'] == 'add') {
     $form['nid'] = array(
       '#prefix' => '<div class="no-float">',
@@ -120,31 +127,22 @@ function ctools_node_content_type_edit_form(&$form, &$form_state) {
   }
 
   $form['teaser'] = array(
-    '#title' => t('Teaser'),
+    '#title' => t('Show only node teaser'),
     '#type' => 'checkbox',
     '#default_value' => $conf['teaser'],
-    '#description' => t('Check here to show only the node teaser'),
   );
 
   $form['links'] = array(
     '#type' => 'checkbox',
     '#default_value' => $conf['links'],
-    '#title' => t('Display links'),
-    '#description' => t('Check here to display the links with the post.'),
-  );
-
-  $form['leave_node_title'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => !empty($conf['leave_node_title']),
-    '#title' => t('Leave node title'),
-    '#description' => t('Advanced: if checked, do not touch the node title; this can cause the node title to appear twice unless your theme is aware of this.'),
+    '#title' => t('Include node links for "add comment", "read more" etc.'),
   );
 
   $form['identifier'] = array(
     '#type' => 'textfield',
     '#default_value' => !empty($conf['identifier']) ? $conf['identifier'] : '',
-    '#title' => t('Identifier'),
-    '#description' => t('Whatever is placed here will appear in $node->panel_identifier in the node template to make it easier to theme a node or part of a node as necessary. This identifier will automatically be added as a node template suggestion: node-panel-IDENTIFIER.tpl.php'),
+    '#title' => t('Template identifier'),
+    '#description' => t('This identifier will be added as a template suggestion to display this node: node-panel-IDENTIFIER.tpl.php. Please see the Drupal theming guide for information about template suggestions.'),
   );
 
 }

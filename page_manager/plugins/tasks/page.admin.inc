@@ -415,7 +415,7 @@ function page_manager_page_form_basic(&$form, &$form_state) {
       '#type' => 'checkbox',
       '#default_value' => !empty($page->make_frontpage),
       '#title' => t('Make this your site home page.'),
-      '#description' => t('If this box is checked this page will become the site home page. Only paths that have no placeholders can be used as the site home page. The current site home page is set to %homepage.', array('%homepage' => '/' . $frontpage)),
+      '#description' => t('To set this panel as your home page you must create a unique path name with no % placeholders in the path. The current site home page is set to %homepage.', array('%homepage' => '/' . $frontpage)),
     );
   }
   else if ($path == $frontpage) {
