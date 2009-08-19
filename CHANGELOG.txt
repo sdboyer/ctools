@@ -20,6 +20,7 @@ Make sure that tasks that will not override existing overrides refuse to enable 
 #545540 by Roger López: Add 5 page elements as available panes for using Panels as your primary page layout: breadcrumb, page title, messages, tabs and help box.
 #537776 by rfay: CTools Plugin Example module to help guide people in making plugins.
 #552020: Show the administrative description on page manager edit forms.
+#549380 by Nick Lewis: DX improvements to the multistep wizard.
 
 ctools 6.x-1.0-rc1
 ==================

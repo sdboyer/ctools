@@ -48,7 +48,7 @@ Here is a full list of every item that can be in the form info array:
 
 <dl>
 <dt>id</dt>
-<dd>An id for wizard. This will primarily be used for things like trail theming.</dd>
+<dd>An id for wizard. This is used like a hook to automatically name <b>callbacks</b>, as well as a form step's form building function. It is also used in trail theming.</dd>
 <dt>path</dt>
 <dd>The path to use when redirecting between forms. <strong>%step</strong> will be replaced with the key for the form.</dd>
 <dt>return path</dt>
@@ -80,20 +80,32 @@ Here is a full list of every item that can be in the form info array:
 <dt>ajax render</dt>
 <dd>A callback to display the rendered form via ajax. This is not required if using the modal tool, but is required otherwise since ajax by itself does not know how to render the results. Params: &$form_state, $output.</dd>
 <dt>finish callback</dt>
-<dd>The function to call when a form is complete and the finish button has been clicked. This function should finalize all data. Params: &$form_state.</dd>
+<dd>
+The function to call when a form is complete and the finish button has been clicked. This function should finalize all data. Params: &$form_state. 
+Defaults to $form_info['id']._finish if function exists.
+</dd>
 <dt>cancel callback</dt>
-<dd>The function to call when a form is canceled by the user. This function should clean up any data that is cached. Params: &$form_state.</dd>
+<dd>
+The function to call when a form is canceled by the user. This function should clean up any data that is cached. Params: &$form_state. 
+Defaults to $form_info['id']._cancel if function exists.</dd>
 <dt>return callback</dt>
-<dd>The function to call when a form is complete and the return button has been clicked. This is often the same as the finish callback. Params: &$form_state.</dd>
+<dd>
+The function to call when a form is complete and the return button has been clicked. This is often the same as the finish callback. Params: &$form_state. 
+Defaults to $form_info['id']._return if function exists.</dd>
 <dt>next callback</dt>
-<dd>The function to call when the next button has been clicked. This function should take the submitted data and cache it for later use by the finish callback. Params: &$form_state.</dd>
+<dd>
+The function to call when the next button has been clicked. This function should take the submitted data and cache it for later use by the finish callback. Params: &$form_state. 
+Defaults to $form_info['id']._next if function exists.</dd>
 <dt>order</dt>
-<dd>An array of forms, keyed by the step, which represents the default order the forms will be displayed in. Note that submit callbacks can override the order so that branching logic can be used.</dd>
+<dd>An optional array of forms, keyed by the step, which represents the default order the forms will be displayed in. If not set, the forms array will control the order. Note that submit callbacks can override the order so that branching logic can be used.</dd>
 <dt>forms</dt>
-<dd>An array of form info arrays, keyed by step, describing every form available to the wizard. Each array contains:
+<dd>An array of form info arrays, keyed by step, describing every form available to the wizard. If order array isn't set, the wizard will use this to set the default order. Each array contains:
   <dl>
   <dt>form id</dt>
-  <dd>The id of the form, as used in the Drupal form system. This is also the name of the function that represents the form builder.</dd>
+  <dd>
+    The id of the form, as used in the Drupal form system. This is also the name of the function that represents the form builder. 
+    Defaults to $form_info['id']._.$step._form.
+  </dd>
   <dt>include</dt>
   <dd>The name of a file to include which contains the code for this form. This makes it easy to include the form wizard in another file or set of files. This must be the full path of the file, so be sure to use drupal_get_path() when setting this. This can also be an array of files if multiple files need to be included.</dd>
   <dt>title</dt>

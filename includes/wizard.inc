@@ -47,11 +47,20 @@
  *   whatever information the form(s) involved left for it.
  */
 function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
+  // allow order array to be optional
+  if (empty($form_info['order'])) {
+    foreach($form_info['forms'] as $step_id => $params) {
+      $form_info['order'][$step_id] = $params['title'];
+    }
+  }
+  
   if (!isset($step)) {
     $keys = array_keys($form_info['order']);
     $step = array_shift($keys);
   }
 
+  ctools_wizard_defaults($form_info);
+  
   $form_state['step'] = $step;
   $form_state['form_info'] = $form_info;
 
@@ -215,7 +224,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     if (!empty($form_info['show back']) && isset($form_state['previous'])) {
       $form['buttons']['previous'] = array(
         '#type' => 'submit',
-        '#value' => isset($form_info['back text']) ? $form_info['back text'] : t('Back'),
+        '#value' => $form_info['back text'],
         '#next' => $form_state['previous'],
         '#wizard type' => 'next',
         '#weight' => -2000,
@@ -233,7 +242,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     if (isset($form_state['next'])) {
       $form['buttons']['next'] = array(
         '#type' => 'submit',
-        '#value' => isset($form_info['next text']) ? $form_info['next text'] : t('Continue'),
+        '#value' => $form_info['next text'],
         '#next' => $form_state['next'],
         '#wizard type' => 'next',
         '#weight' => -1000,
@@ -252,7 +261,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     if (!empty($form_info['show return']) && !empty($form_state['next'])) {
       $form['buttons']['return'] = array(
         '#type' => 'submit',
-        '#value' => isset($form_info['return text']) ? $form_info['return text'] : t('Update and return'),
+        '#value' =>  $form_info['return text'],
         '#wizard type' => 'return',
         '#attributes' => $button_attributes,
       );
@@ -260,7 +269,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     else if (empty($form_state['next'])) {
       $form['buttons']['return'] = array(
         '#type' => 'submit',
-        '#value' => isset($form_info['finish text']) ? $form_info['finish text'] : t('Finish'),
+        '#value' => $form_info['finish text'],
         '#wizard type' => 'finish',
         '#attributes' => $button_attributes,
       );
@@ -270,7 +279,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     if (isset($form_info['cancel path']) || !empty($form_info['show cancel'])) {
       $form['buttons']['cancel'] = array(
         '#type' => 'submit',
-        '#value' => isset($form_info['cancel text']) ? $form_info['cancel text'] : t('Cancel'),
+        '#value' => $form_info['cancel text'],
         '#wizard type' => 'cancel',
         // hardcode the submit so that it doesn't try to save data.
         '#submit' => array('ctools_wizard_submit'),
@@ -343,4 +352,52 @@ function ctools_wizard_submit(&$form, &$form_state) {
  */
 function ctools_wizard_get_path($form_info, $step) {
   return str_replace('%step', $step, $form_info['path']);
+}
+
+/**
+ * Set default parameters and callbacks if none are given.
+ * Callbacks follows pattern:
+ * $form_info['id']_$hook 
+ * $form_info['id']_$form_info['forms'][$step_key]_$hook 
+ */
+function ctools_wizard_defaults(&$form_info) {
+  $hook = $form_info['id'];
+  $defaults = array(
+    'show trail' => FALSE,
+    'show back' => FALSE,
+    'show cancel' => FALSE,
+    'show return' => FALSE,  
+    'next text' => t('Continue'),
+    'back text' => t('Back'),
+    'return text' => t('Update and return'),
+    'finish text' => t('Finish'),
+    'cancel text' => t('Cancel'),
+  );
+  $form_info =  $form_info + $defaults;
+  // set form callbacks if they aren't defined
+  foreach($form_info['forms'] as $step => $params) {
+    if (!$params['form id']) {
+       $form_callback = $hook . '_' . $step . '_form';
+       $form_info['forms'][$step]['form id'] = $form_callback;
+    }
+  }
+
+  // set button callbacks
+  $callbacks = array(
+    'back callback' => '_back', 
+    'next callback' => '_next', 
+    'return callback' => '_return',
+    'cancel callback' => '_cancel',
+    'finish callback' => '_finish',
+  );
+  
+  foreach($callbacks as $key => $callback) {
+    // never overwrite if explicity defined
+    if (!$form_info[$key]) {
+      $wizard_callback = $hook . $callback; 
+      if (function_exists($wizard_callback))  {
+        $form_info[$key] = $wizard_callback;  
+      }
+    }
+  }
 }
