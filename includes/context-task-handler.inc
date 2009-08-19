@@ -359,6 +359,5 @@ function ctools_context_handler_edit_context_submit(&$form, &$form_state) {
   if (isset($form_state['page']->context_cache[$cache_name])) {
     unset($form_state['page']->context_cache[$cache_name]);
   }
-  dsm($form_state['page']);
 }
 
