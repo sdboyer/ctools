@@ -18,6 +18,10 @@ function page_manager_list_page($js = NULL) {
     return drupal_not_found();
   }
 
+  if (module_exists('advanced_help')) {
+    drupal_set_message(theme('advanced_help_topic', 'page_manager', 'getting-started', t('See the getting started guide for more information.')));
+  }
+
   // TRUE if 'ajax', FALSE if otherwise.
 
   $js = $js == 'ajax';
