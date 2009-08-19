@@ -5,7 +5,7 @@
  * Template for the page manager page editor.
  *
  * Variables available:
- * - 
+ * -
  *
  * For javascript purposes the id must not change.
  */
@@ -39,6 +39,11 @@
           </div>
 
           <div class="content-content">
+            <?php if (!empty($content['description'])): ?>
+              <div class="description">
+                <?php print $content['description']; ?>
+              </div>
+              <?php endif; ?>
             <?php print $content['content']; ?>
           </div>
         </div>

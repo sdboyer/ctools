@@ -885,9 +885,11 @@ function _page_manager_get_operation_content($js, &$page, $active, $operation, $
       $output = $messages . $output;
     }
 
+    $description = isset($operation['admin description']) ? $operation['admin description'] : (isset($operation['description']) ? $operation['description'] : '');
     $return = array(
       'title' => $title,
       'content' => $output,
+      'description' => $description,
     );
 
     // Append any extra content, used for the preview which is submitted then
@@ -1648,9 +1650,11 @@ function page_manager_page_summary(&$form, &$form_state) {
 
   $output = '';
 
+/*
   if (isset($form_state['subtask']['admin title'])) {
     $form_state['title'] = $form_state['subtask']['admin title'];
   }
+*/
 
   if (isset($form_state['subtask']['admin description'])) {
     $output .= '<div class="description">' . $form_state['subtask']['admin description'] . '</div>';

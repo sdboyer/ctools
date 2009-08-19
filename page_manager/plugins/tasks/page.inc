@@ -164,6 +164,7 @@ function page_manager_page_build_subtask($task, $page) {
   $settings['access'] = array(
     'title' => t('Access'),
     'description' => t('Control what users can access this page.'),
+    'admin description' => t('Access rules are used to test if the page is accessible and any menu items associated with it are visible.'),
     'form' => 'page_manager_page_form_access',
   );
 
