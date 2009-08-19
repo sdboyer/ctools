@@ -512,6 +512,7 @@ function ctools_content_form($op, $form_info, &$form_state, $plugin, $subtype_na
   );
 
   $form_info += array(
+    'id' => 'ctools_content_form',
     'show back' => TRUE,
   );
 

@@ -53,14 +53,14 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
       $form_info['order'][$step_id] = $params['title'];
     }
   }
-  
+
   if (!isset($step)) {
     $keys = array_keys($form_info['order']);
     $step = array_shift($keys);
   }
 
   ctools_wizard_defaults($form_info);
-  
+
   $form_state['step'] = $step;
   $form_state['form_info'] = $form_info;
 
@@ -357,8 +357,8 @@ function ctools_wizard_get_path($form_info, $step) {
 /**
  * Set default parameters and callbacks if none are given.
  * Callbacks follows pattern:
- * $form_info['id']_$hook 
- * $form_info['id']_$form_info['forms'][$step_key]_$hook 
+ * $form_info['id']_$hook
+ * $form_info['id']_$form_info['forms'][$step_key]_$hook
  */
 function ctools_wizard_defaults(&$form_info) {
   $hook = $form_info['id'];
@@ -366,7 +366,7 @@ function ctools_wizard_defaults(&$form_info) {
     'show trail' => FALSE,
     'show back' => FALSE,
     'show cancel' => FALSE,
-    'show return' => FALSE,  
+    'show return' => FALSE,
     'next text' => t('Continue'),
     'back text' => t('Back'),
     'return text' => t('Update and return'),
@@ -384,19 +384,19 @@ function ctools_wizard_defaults(&$form_info) {
 
   // set button callbacks
   $callbacks = array(
-    'back callback' => '_back', 
-    'next callback' => '_next', 
+    'back callback' => '_back',
+    'next callback' => '_next',
     'return callback' => '_return',
     'cancel callback' => '_cancel',
     'finish callback' => '_finish',
   );
-  
+
   foreach($callbacks as $key => $callback) {
     // never overwrite if explicity defined
-    if (!$form_info[$key]) {
-      $wizard_callback = $hook . $callback; 
+    if (empty($form_info[$key])) {
+      $wizard_callback = $hook . $callback;
       if (function_exists($wizard_callback))  {
-        $form_info[$key] = $wizard_callback;  
+        $form_info[$key] = $wizard_callback;
       }
     }
   }
