@@ -384,8 +384,8 @@ function ctools_preprocess_page(&$variables) {
           }
           break;
       }
-      $variables['content'] = strtr($variables['content'], $tokens);
     }
+    $variables['content'] = strtr($variables['content'], $tokens);
   }
 }
 
@@ -416,4 +416,31 @@ function ctools_set_page_token($token = NULL, $type = NULL, $argument = NULL) {
   }
 
   return $tokens;
+}
+
+/**
+ * Easily set a token from the page variables.
+ *
+ * This function can be used like this:
+ * $token = ctools_set_variable_token('tabs');
+ *
+ * $token will then be a simple replacement for the 'tabs' about of the
+ * variables available in the page template.
+ */
+function ctools_set_variable_token($token) {
+  $string = '<!-- ctools-page-' . $token . ' -->';
+  ctools_set_page_token($string, 'variable', $token);
+  return $string;
+}
+
+/**
+ * Easily set a token from the page variables.
+ *
+ * This function can be used like this:
+ * $token = ctools_set_variable_token('id', 'mymodule_myfunction');
+ */
+function ctools_set_callback_token($token, $callback) {
+  $string = '<!-- ctools-page-' . $token . ' -->';
+  ctools_set_page_token($string, 'callback', $callback);
+  return $string;
 }
