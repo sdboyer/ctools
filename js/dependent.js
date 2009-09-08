@@ -7,14 +7,14 @@
  *
  * To your $form item definition add:
  * - '#process' => array('CTools_process_dependency'),
- * - Add '#dependency' => array('id-of-form-item' => array(list, of, values, that, 
+ * - Add '#dependency' => array('id-of-form-item' => array(list, of, values, that,
      make, this, item, show),
  *
  * Special considerations:
  * - radios are harder. Because Drupal doesn't give radio groups individual ids,
- *   use 'radio:name-of-radio' 
+ *   use 'radio:name-of-radio'
  *
- * - Checkboxes don't have their own id, so you need to add one in a div 
+ * - Checkboxes don't have their own id, so you need to add one in a div
  *   around the checkboxes via #prefix and #suffix. You actually need to add TWO
  *   divs because it's the parent that gets hidden. Also be sure to retain the
  *   'expand_checkboxes' in the #process array, because the CTools process will
@@ -57,13 +57,13 @@ Drupal.CTools.dependent.autoAttach = function() {
   // Iterate through all relationships
   for (id in Drupal.settings.CTools.dependent) {
 
-    // Drupal.CTools.dependent.activeBindings[id] is a boolean, 
+    // Drupal.CTools.dependent.activeBindings[id] is a boolean,
     // whether the binding is active or not.  Defaults to no.
     Drupal.CTools.dependent.activeBindings[id] = 0;
     // Iterate through all possible values
     for(bind_id in Drupal.settings.CTools.dependent[id].values) {
       // This creates a backward relationship.  The bind_id is the ID
-      // of the element which needs to change in order for the id to hide or become shown.  
+      // of the element which needs to change in order for the id to hide or become shown.
       // The id is the ID of the item which will be conditionally hidden or shown.
       // Here we're setting the bindings for the bind
       // id to be an empty array if it doesn't already have bindings to it
@@ -108,7 +108,7 @@ Drupal.CTools.dependent.autoAttach = function() {
 
           for (i in Drupal.CTools.dependent.bindings[bind_id]) {
             var id = Drupal.CTools.dependent.bindings[bind_id][i];
-            
+
             // Fix numerous errors
             if (typeof id != 'string') {
               continue;
@@ -142,8 +142,10 @@ Drupal.CTools.dependent.autoAttach = function() {
               object.show(0);
             }
             else {
-              // Otherwise hide
-              object.hide(0);
+              // Otherwise hide. Use css rather than hide() because hide()
+              // does not work if the item is already hidden, for example,
+              // in a collapsed fieldset.
+              object.css('display', 'none');
             }
           }
         }
