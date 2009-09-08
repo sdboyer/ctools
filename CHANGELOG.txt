@@ -4,6 +4,7 @@ ctools 6.x-1.x-dev
 
 Fix problem with ctools_set_page_token()
 Add a couple of support functions for ctools_set_page_token that are meant to be used by themes.
+#554678: User profile view required administer users for no apparent reason.
 
 ctools 6.x-1.0
 ==============
