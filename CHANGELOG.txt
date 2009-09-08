@@ -6,6 +6,7 @@ Fix problem with ctools_set_page_token()
 Add a couple of support functions for ctools_set_page_token that are meant to be used by themes.
 #563916 by Damien Tournoud: ajax before() operation not using behaviors correctly.
 #553112: dependent.js failed to set proper initial state if inside an already hidden element.
+#569508 by markus_petrux: Update user_profile content type.
 
 ctools 6.x-1.0
 ==============
