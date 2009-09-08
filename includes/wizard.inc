@@ -343,6 +343,9 @@ function ctools_wizard_submit(&$form, &$form_state) {
       else if (isset($form_state['form_info']['return path'])) {
         $form_state['redirect'] = $form_state['form_info']['return path'];
       }
+      else if ($type == 'finish' && isset($form_state['form_info']['cancel path'])) {
+        $form_state['redirect'] = $form_state['form_info']['cancel path'];
+      }
     }
   }
 }
