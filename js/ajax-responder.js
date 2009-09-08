@@ -44,8 +44,8 @@ Drupal.CTools.AJAX.clickAJAXLink = function() {
       data: '',
       global: true,
       success: Drupal.CTools.AJAX.respond,
-      error: function() { 
-        alert("An error occurred while attempting to process " + url); 
+      error: function() {
+        alert("An error occurred while attempting to process " + url);
       },
       complete: function() {
         object.removeClass('ctools-ajaxing');
@@ -54,7 +54,7 @@ Drupal.CTools.AJAX.clickAJAXLink = function() {
     });
   }
   catch (err) {
-    alert("An error occurred while attempting to process " + url); 
+    alert("An error occurred while attempting to process " + url);
     $(this).removeClass('ctools-ajaxing');
     return false;
   }
@@ -86,8 +86,8 @@ Drupal.CTools.AJAX.clickAJAXButton = function() {
         data: '',
         global: true,
         success: Drupal.CTools.AJAX.respond,
-        error: function() { 
-          alert("An error occurred while attempting to process " + url); 
+        error: function() {
+          alert("An error occurred while attempting to process " + url);
         },
         complete: function() {
           object.removeClass('ctools-ajaxing');
@@ -105,8 +105,8 @@ Drupal.CTools.AJAX.clickAJAXButton = function() {
         data: '',
         global: true,
         success: Drupal.CTools.AJAX.respond,
-        error: function() { 
-          alert("An error occurred while attempting to process " + url); 
+        error: function() {
+          alert("An error occurred while attempting to process " + url);
         },
         complete: function() {
           object.removeClass('ctools-ajaxing');
@@ -130,7 +130,7 @@ Drupal.CTools.AJAX.changeAJAX = function () {
   if ($(this).hasClass('ctools-ajaxing')) {
     return false;
   }
-  
+
   var url = Drupal.CTools.AJAX.findURL(this);
   $(this).addClass('ctools-ajaxing');
   var object = $(this);
@@ -144,8 +144,8 @@ Drupal.CTools.AJAX.changeAJAX = function () {
         data: {'ctools_changed' : $(this).val()},
         global: true,
         success: Drupal.CTools.AJAX.respond,
-        error: function() { 
-          alert("An error occurred while attempting to process " + url); 
+        error: function() {
+          alert("An error occurred while attempting to process " + url);
         },
         complete: function() {
           object.removeClass('ctools-ajaxing');
@@ -164,7 +164,7 @@ Drupal.CTools.AJAX.changeAJAX = function () {
     }
   }
   catch (err) {
-    alert("An error occurred while attempting to process " + url); 
+    alert("An error occurred while attempting to process " + url);
     $(this).removeClass('ctools-ajaxing');
     return false;
   }
@@ -183,11 +183,11 @@ Drupal.CTools.AJAX.findURL = function(item) {
   var url = '';
   var url_class = '.' + $(item).attr('id') + '-url';
   $(url_class).each(
-    function() { 
-      if (url && $(this).val()) { 
-        url += '/'; 
+    function() {
+      if (url && $(this).val()) {
+        url += '/';
       }
-      url += $(this).val(); 
+      url += $(this).val();
     });
   return url;
 };
@@ -206,7 +206,7 @@ Drupal.CTools.AJAX.commands = {
   replace: function(data) {
     $(data.selector).replaceWith(data.data);
     Drupal.attachBehaviors($(data.selector));
-  }, 
+  },
 
   after: function(data) {
     var object = $(data.data);
@@ -215,14 +215,15 @@ Drupal.CTools.AJAX.commands = {
   },
 
   before: function(data) {
-    var html = $(data.selector).before(data.data);
-    Drupal.attachBehaviors(html);
+    var object = $(data.data);
+    $(data.selector).before(object);
+    Drupal.attachBehaviors(object);
   },
 
   html: function(data) {
     $(data.selector).html(data.data);
     Drupal.attachBehaviors($(data.selector));
-  }, 
+  },
 
   remove: function(data) {
     $(data.selector).remove();
@@ -239,7 +240,7 @@ Drupal.CTools.AJAX.commands = {
 
   alert: function(data) {
     alert(data.text, data.title);
-  }, 
+  },
 
   css: function(data) {
 /*
@@ -252,7 +253,7 @@ Drupal.CTools.AJAX.commands = {
     }
 */
     $(data.selector).css(data.argument);
-  }, 
+  },
 
   settings: function(data) {
     $.extend(Drupal.settings, data.argument);
@@ -261,11 +262,11 @@ Drupal.CTools.AJAX.commands = {
   data: function(data) {
     $(data.selector).data(data.name, data.value);
   },
-  
+
   attr: function(data) {
     $(data.selector).attr(data.name, data.value);
   },
-  
+
   restripe: function(data) {
     // :even and :odd are reversed because jquery counts from 0 and
     // we count from 1, so we're out of sync.

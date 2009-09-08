@@ -75,7 +75,7 @@ function ctools_custom_content_type_admin_info($subtype, $conf) {
   // so that we get the printed php, not the eval'ed php.
   $php_filter = FALSE;
   foreach (filter_list_format($conf['format']) as $filter) {
-    if ($filter->module == 'php') { 
+    if ($filter->module == 'php') {
       $php_filter = TRUE;
       break;
     }
@@ -136,7 +136,7 @@ function ctools_custom_content_type_edit_form(&$form, &$form_state) {
       }
     }
     $header = array(t('Keyword'), t('Value'));
-    $form['contexts']['context'] = array('#value' => theme('table', $header, $rows));   
+    $form['contexts']['context'] = array('#value' => theme('table', $header, $rows));
   }
 
   return $form;
