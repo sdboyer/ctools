@@ -18,7 +18,10 @@ function ctools_string_ctools_contexts() {
     'keyword' => 'string',
     'no ui' => TRUE,
     'context name' => 'string',
-    'convert list' => array('raw' => t('Raw string')),
+    'convert list' => array(
+      'raw' => t('Raw string'),
+      'html_safe' => t('HTML-safe string'),
+    ),
     'convert' => 'ctools_context_string_convert',
     'placeholder form' => array(
       '#type' => 'textfield',
@@ -53,5 +56,11 @@ function ctools_context_create_string($empty, $data = NULL, $conf = FALSE) {
  * Convert a context into a string.
  */
 function ctools_context_string_convert($context, $type) {
-  return $context->data;
+  switch ($type) {
+    case 'raw':
+      return $context->data;
+    case 'html_safe':
+      return check_plain($context->data);
+  }
 }
+
