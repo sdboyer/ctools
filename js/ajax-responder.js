@@ -37,7 +37,7 @@ Drupal.CTools.AJAX.clickAJAXLink = function() {
   var object = $(this);
   $(this).addClass('ctools-ajaxing');
   try {
-    url = url.replace('/nojs/', '/ajax/');
+    url = url.replace(/nojs/g, 'ajax');
     $.ajax({
       type: "POST",
       url: url,
