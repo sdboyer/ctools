@@ -445,7 +445,12 @@ function ctools_plugin_get_function($plugin, $function_name) {
   // If cached the .inc file may not have been loaded. require_once is quite safe
   // and fast so it's okay to keep calling it.
   if (isset($plugin['file'])) {
-    require_once './' . $plugin['path'] . '/' . $plugin['file'];
+    // Plugins that are loaded from info files have the info file as
+    // $plugin['file'].  Don't try to run those.
+    $info = ctools_plugin_get_info($plugin['plugin module'], $plugin['plugin type']);
+    if (empty($info['info file'])) {
+      require_once './' . $plugin['path'] . '/' . $plugin['file'];
+    }
   }
 
   if (!isset($plugin[$function_name])) {
@@ -509,7 +514,12 @@ function ctools_plugin_get_class($plugin, $class_name) {
   // If cached the .inc file may not have been loaded. require_once is quite safe
   // and fast so it's okay to keep calling it.
   if (isset($plugin['file'])) {
-    require_once './' . $plugin['path'] . '/' . $plugin['file'];
+    // Plugins that are loaded from info files have the info file as
+    // $plugin['file'].  Don't try to run those.
+    $info = ctools_plugin_get_info($plugin['plugin module'], $plugin['plugin type']);
+    if (empty($info['info file'])) {
+      require_once './' . $plugin['path'] . '/' . $plugin['file'];
+    }
   }
 
   if (!isset($plugin[$class_name])) {
