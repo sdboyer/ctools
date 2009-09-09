@@ -223,3 +223,33 @@ function delegator_page_form_basic_submit(&$form, &$form_state) {
 </pre>
 
 No database operations were made during this _submit, and that's a very important distinction about this system.
+
+<h3>Proper handling of back button</h3>
+When using <strong>'show back' => TRUE</strong> the cached data should be assigned to the <em>#default_value</em> form property. Otherwise when the user goes back to the previous step the forms default values instead of his (cached) input is used.
+
+<pre>
+/**
+ * Form builder function for wizard.
+ */
+function wizardid_step2_form(&$form, &$form_state) {
+  $form_state['my data'] = my_module_get_cache($form_state['cache name']);
+  $form['example'] = array(
+    '#type' => 'radios',
+    '#title' => t('Title'),
+    '#default_value' => $form_state['my data']->example ? $form_state['my data']->example : default,
+    '#options' => array(
+      'default' => t('Default'),
+      'setting1' => t('Setting1'),
+    ),
+  );
+}
+
+/**
+ * Submit handler to prepare needed values for storing in cache.
+ */
+function wizardid_step2_form_submit($form, &$form_state) {
+  $form_state['my data']->example = $form_state['values']['example'];
+}
+</pre>
+
+The data is stored in the <em>my data</em> object on submitting. If the user goes back to this step the cached <em>my data</em> is used as the default form value. The function <em>my_module_get_cache()</em> is like the cache functions explained above.
