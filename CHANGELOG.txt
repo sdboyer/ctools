@@ -11,6 +11,7 @@ Add a couple of support functions for ctools_set_page_token that are meant to be
 #568578 by Roger Lopez: Add client side redirect AJAX command.
 #561788 by sirkitree: Add client side reload AJAX command.
 #566256 by mikl: HTML safe converter for string context.
+#558856 by sdboyer: Allow Views Panes to mark contexts optional.
 
 ctools 6.x-1.0
 ==============
