@@ -8,7 +8,8 @@ Add a couple of support functions for ctools_set_page_token that are meant to be
 #553112: dependent.js failed to set proper initial state if inside an already hidden element.
 #569508 by markus_petrux: Update user_profile content type.
 #558942 by Roi Danton: In wizard.inc, be sure to check cancel path if return path is not set, as noted in documentation.
-#568578 by Roger Lopez: Add client side redirect command.
+#568578 by Roger Lopez: Add client side redirect AJAX command.
+#561788 by sirkitree: Add client side reload AJAX command.
 
 ctools 6.x-1.0
 ==============

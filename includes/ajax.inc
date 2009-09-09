@@ -71,6 +71,8 @@
  * - redirect
  *   - url: The url to be redirected to. This can be an absolute URL or a Drupal path.
  *
+ * - reload
+ *
  * Commands are usually created with a couple of helper functions, so they
  * look like this:
  *
@@ -375,6 +377,15 @@ function ctools_ajax_command_redirect($url) {
   return array(
     'command' => 'redirect',
     'url' => url($url),
+  );
+}
+
+/**
+ * Force a reload of the current page.
+ */
+function ctools_ajax_command_reload() {
+  return array(
+    'command' => 'reload',
   );
 }
 

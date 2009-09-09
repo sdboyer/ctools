@@ -282,6 +282,10 @@ Drupal.CTools.AJAX.commands = {
 
   redirect: function(data) {
     location.href = data.url;
+  },
+
+  reload: function(data) {
+    location.reload();
   }
 };
 
