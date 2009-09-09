@@ -68,6 +68,9 @@
  *   - name: The name or key of the data attached to this selector.
  *   - value: The value of the data. Not just limited to strings can be any format.
  *
+ * - redirect
+ *   - url: The url to be redirected to. This can be an absolute URL or a Drupal path.
+ *
  * Commands are usually created with a couple of helper functions, so they
  * look like this:
  *
@@ -358,6 +361,20 @@ function ctools_ajax_command_restripe($selector) {
   return array(
     'command' => 'restripe',
     'selector' => $selector,
+  );
+}
+
+/**
+ * Force a client-side redirect.
+ *
+ * @param $url
+ *   The url to be redirected to. This can be an absolute URL or a
+ *   Drupal path.
+ */
+function ctools_ajax_command_redirect($url) {
+  return array(
+    'command' => 'redirect',
+    'url' => url($url),
   );
 }
 

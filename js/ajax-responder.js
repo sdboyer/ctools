@@ -278,6 +278,10 @@ Drupal.CTools.AJAX.commands = {
       .end()
       .filter(':odd')
         .addClass('even');
+  },
+
+  redirect: function(data) {
+    location.href = data.url;
   }
 };
 
