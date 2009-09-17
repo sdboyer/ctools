@@ -316,6 +316,7 @@ function page_manager_save_page_cache($cache) {
     // Force a menu rebuild to make sure the menu entries are set.
     menu_rebuild();
   }
+  cache_clear_all();
 }
 
 /**

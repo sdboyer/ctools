@@ -16,6 +16,7 @@ Add a couple of support functions for ctools_set_page_token that are meant to be
 #565808 by sirkitree: Replace /nojs/g instead of just "/nojs/" with ajax, allowing nojs to be the last item in a URL.
 #564522 by Roger Lopez: Prevent accidental inclusion of .info files in plugins.
 #558918: Collapsible can be set to remember state between page loads. Allow collapsible handle and content to be separated and not have to be divs.
+#545208: Page cache needs to be cleared when page manager pages are saved.
 
 ctools 6.x-1.0
 ==============
