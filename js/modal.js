@@ -1,6 +1,6 @@
 // $Id$
 /**
- * @file 
+ * @file
  *
  * Implement a modal form.
  *
@@ -22,11 +22,11 @@ Drupal.CTools.Modal.show = function() {
     // Drupal.CTools.Modal.modal but otherwise the context must be more than that.
     var context = e ? document : Drupal.CTools.Modal.modal;
     $('div.ctools-modal-content', context).css({
-      'width': $(window).width() * .8 + 'px', 
+      'width': $(window).width() * .8 + 'px',
       'height': $(window).height() * .8 + 'px'
     });
     $('div.ctools-modal-content .modal-content', context).css({
-      'width': ($(window).width() * .8 - 25) + 'px', 
+      'width': ($(window).width() * .8 - 25) + 'px',
       'height': ($(window).height() * .8 - 35) + 'px'
     });
   }
@@ -38,11 +38,13 @@ Drupal.CTools.Modal.show = function() {
 
   resize();
   $('span.modal-title', Drupal.CTools.Modal.modal).html(Drupal.t('Loading...'));
-  Drupal.CTools.Modal.modal.modalContent({
+  var opts = {
     // @todo this should be elsewhere.
-    opacity: '.55', 
+    opacity: '.55',
     background: '#fff'
-  });
+  };
+
+  Drupal.CTools.Modal.modalContent(Drupal.CTools.Modal.modal, opts);
   $('#modalContent .modal-content').html(Drupal.theme('CToolsModalThrobber'));
 };
 
@@ -51,7 +53,7 @@ Drupal.CTools.Modal.show = function() {
  */
 Drupal.CTools.Modal.dismiss = function() {
   if (Drupal.CTools.Modal.modal) {
-    Drupal.CTools.Modal.modal.unmodalContent();
+    Drupal.CTools.Modal.unmodalContent(Drupal.CTools.Modal.modal);
   }
 };
 
@@ -143,8 +145,8 @@ Drupal.CTools.Modal.submitAjaxForm = function() {
       data: '',
       global: true,
       success: Drupal.CTools.AJAX.respond,
-      error: function() { 
-        alert("An error occurred while attempting to process " + url); 
+      error: function() {
+        alert("An error occurred while attempting to process " + url);
       },
       complete: function() {
         object.removeClass('ctools-ajaxing');
@@ -167,7 +169,7 @@ Drupal.CTools.Modal.submitAjaxForm = function() {
     $(this).ajaxSubmit(ajaxOptions);
   }
   catch (err) {
-    alert("An error occurred while attempting to process " + url); 
+    alert("An error occurred while attempting to process " + url);
     $(this).removeClass('ctools-ajaxing');
     $('div.ctools-ajaxing', this).remove();
     return false;
