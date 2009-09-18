@@ -158,7 +158,7 @@ Drupal.CTools.bindCollapsible = function () {
     // In this case, the container *is* the handle and the content is found
     // by adding '-content' to the id. Obviously, an id is required.
     var handle = $container;
-    var content = $($container.attr('id') + '-content');
+    var content = $('#' + $container.attr('id') + '-content');
   }
   else {
     var handle = $container.children('.ctools-collapsible-handle');
@@ -222,7 +222,7 @@ Drupal.CTools.bindCollapsible = function () {
  * Support Drupal's 'behaviors' system for binding.
  */
 Drupal.behaviors.CToolsCollapsible = function(context) {
-  $('div.ctools-collapsible-container:not(.ctools-collapsible-processed)', context)
+  $('ctools-collapsible-container:not(.ctools-collapsible-processed)', context)
     .each(Drupal.CTools.bindCollapsible)
     .addClass('ctools-collapsible-processed');
 }
