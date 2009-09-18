@@ -222,7 +222,7 @@ Drupal.CTools.bindCollapsible = function () {
  * Support Drupal's 'behaviors' system for binding.
  */
 Drupal.behaviors.CToolsCollapsible = function(context) {
-  $('ctools-collapsible-container:not(.ctools-collapsible-processed)', context)
+  $('.ctools-collapsible-container:not(.ctools-collapsible-processed)', context)
     .each(Drupal.CTools.bindCollapsible)
     .addClass('ctools-collapsible-processed');
 }
