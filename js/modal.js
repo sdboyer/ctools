@@ -210,6 +210,10 @@ Drupal.behaviors.CToolsModal = function(context) {
     $('input[type="submit"]:not(.ctools-use-modal-processed), button:not(.ctools-use-modal-processed)', context)
       .addClass('ctools-use-modal-processed')
       .click(function() {
+        if (Drupal.autocompleteSubmit && !Drupal.autocompleteSubmit()) {
+          return false;
+        }
+
         // Make sure it knows our button.
         if (!$(this.form).hasClass('ctools-ajaxing')) {
           this.form.clk = this;
