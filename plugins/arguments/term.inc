@@ -40,11 +40,11 @@ function ctools_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
       if (!is_numeric($arg)) {
         return FALSE;
       }
-      $term = taxonomy_get_term($arg);
+      $term = taxonomy_term_load($arg);
       break;
 
     case 'term':
-      $terms = taxonomy_get_term_by_name($arg);
+      $terms = taxonomy_term_load_by_name($arg);
       if (count($terms) != 1) {
         foreach ($terms as $potential) {
           foreach ($conf['vids'] as $vid => $active) {
@@ -128,7 +128,7 @@ function ctools_term_breadcrumb($conf, $context) {
     $current = array_shift($parents);
     $breadcrumb[] = l($current->name, 'taxonomy/term/' . $current->tid);
   }
-  
+
   $breadcrumb = array_merge(drupal_get_breadcrumb(), array_reverse($breadcrumb));
   drupal_set_breadcrumb($breadcrumb);
 }

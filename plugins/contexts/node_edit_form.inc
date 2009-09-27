@@ -51,7 +51,7 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
     $form_state = array('want form' => TRUE, 'args' => array($node));
 
     $file = drupal_get_path('module', 'node') . '/node.pages.inc';
-    include_once './' . $file;
+    require_once DRUPAL_ROOT . '/' . $file;
     // This piece of information can let other modules know that more files
     // need to be included if this form is loaded from cache:
     $form_state['form_load_files'] = array($file);
@@ -115,10 +115,10 @@ function ctools_context_node_edit_form_settings_form_validate($form, &$form_valu
 
   $nid = $form_values['node'];
   if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
+    $node = db_fetch_object(db_query("SELECT n.nid FROM {node} n WHERE n.nid = %d", $nid));
   }
   else {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
+    $node = db_fetch_object(db_query("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')", $nid));
     if ($node) {
       form_set_value($form['nid'], $node->nid, $form_state);
     }

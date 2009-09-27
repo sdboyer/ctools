@@ -936,11 +936,11 @@ function page_manager_page_subtask_argument_ajax($step = NULL, $task_name = NULL
   ctools_include('wizard');
 
   if (!$step) {
-    return ctools_ajax_render_error();
+    return ajax_render_error();
   }
 
   if (!$cache = page_manager_get_page_cache($task_name)) {
-    return ctools_ajax_render_error(t('Invalid object name.'));
+    return ajax_render_error(t('Invalid object name.'));
   }
 
   $page = &$cache->subtask['subtask'];
@@ -949,7 +949,7 @@ function page_manager_page_subtask_argument_ajax($step = NULL, $task_name = NULL
 
   // Load stored object from cache.
   if (!isset($arguments[$keyword])) {
-    return ctools_ajax_render_error(t('Invalid keyword.'));
+    return ajax_render_error(t('Invalid keyword.'));
   }
 
   // Set up wizard info
@@ -1028,7 +1028,7 @@ function page_manager_page_argument_finish(&$form_state) {
 
   // Render just the table portion.
   $output = drupal_render($form['table']);
-  $form_state['commands'][] = ctools_ajax_command_replace('#page-manager-argument-table', $output);
+  $form_state['commands'][] = ajax_command_replace('#page-manager-argument-table', $output);
 }
 
 /**

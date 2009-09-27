@@ -56,7 +56,7 @@ function ctools_object_cache_get($obj, $name, $skip_cache = FALSE) {
  */
 function ctools_object_cache_set($obj, $name, $cache) {
   ctools_object_cache_clear($obj, $name);
-  db_query("INSERT INTO {ctools_object_cache} (sid, obj, name, data, updated) VALUES ('%s', '%s', '%s', %b, %d)", session_id(), $obj, $name, serialize($cache), time());
+  db_query("INSERT INTO {ctools_object_cache} (sid, obj, name, data, updated) VALUES ('%s', '%s', '%s', %b, %d)", session_id(), $obj, $name, serialize($cache), REQUEST_TIME);
 }
 
 /**
@@ -119,5 +119,5 @@ function ctools_object_cache_clean($age = NULL) {
   if (empty($age)) {
     $age = 86400 * 7; // 7 days
   }
-  db_query("DELETE FROM {ctools_object_cache} WHERE updated < %d", time() - $age);
+  db_query("DELETE FROM {ctools_object_cache} WHERE updated < %d", REQUEST_TIME - $age);
 }

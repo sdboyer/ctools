@@ -18,7 +18,7 @@ function ctools_node_comment_form_ctools_content_types() {
 }
 
 function ctools_node_comment_form_content_type_render($subtype, $conf, $panel_args, $context) {
-  $node = isset($context->data) ? drupal_clone($context->data) : NULL;
+  $node = isset($context->data) ? clone($context->data) : NULL;
   $block = new stdClass();
   $block->module = 'comments';
   $block->delta  = $node->nid;

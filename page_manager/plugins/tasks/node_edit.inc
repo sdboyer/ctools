@@ -58,7 +58,7 @@ function page_manager_node_edit_menu_alter(&$items, $task) {
   }
 
   // Also catch node/add handling:
-  foreach (node_get_types('types', NULL, TRUE) as $type) {
+  foreach (node_type_get_types() as $type) {
     $path = 'node/add/' . str_replace('_', '-', $type->type);
     if ($items[$path]['page callback'] != 'node_add') {
       if (!empty($GLOBALS['page_manager_enabling_node_edit'])) {
@@ -116,7 +116,7 @@ function page_manager_node_edit($node) {
 function page_manager_node_add($type) {
   global $user;
 
-  $types = node_get_types();
+  $types = node_type_get_types();
 
   // Initialize settings:
   $node = (object) array(

@@ -116,7 +116,7 @@ function theme_page_manager_handler_rearrange($form) {
 function theme_page_manager_lock($page) {
   $account  = user_load($page->locked->uid);
   $name     = theme('username', $account);
-  $lock_age = format_interval(time() - $page->locked->updated);
+  $lock_age = format_interval(REQUEST_TIME - $page->locked->updated);
   $break    = url(page_manager_edit_url($page->task_name, array('actions', 'break-lock')));
 
   ctools_add_css('ctools');

@@ -166,10 +166,10 @@ function  ctools_node_content_type_edit_form_validate(&$form, &$form_state) {
     $nid = $preg_matches[1];
   }
   if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
+    $node = db_fetch_object(db_query("SELECT n.nid FROM {node} n WHERE n.nid = %d", $nid));
   }
   else {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
+    $node = db_fetch_object(db_query("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')", $nid));
   }
   if ($node) {
     $form_state['values']['nid'] = $node->nid;

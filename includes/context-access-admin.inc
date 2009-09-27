@@ -256,12 +256,12 @@ function ctools_access_ajax_add($fragment = NULL, $name = NULL) {
   ctools_include('context');
 
   if (empty($fragment) || empty($name)) {
-    ctools_ajax_render_error();
+    ajax_render_error();
   }
 
   $plugin = ctools_get_access_plugin($name);
   if (empty($plugin)) {
-    ctools_ajax_render_error();
+    ajax_render_error();
   }
 
   // Separate the fragment into 'module' and 'argument'
@@ -275,7 +275,7 @@ function ctools_access_ajax_add($fragment = NULL, $name = NULL) {
 
   $function = $module . '_ctools_access_get';
   if (!function_exists($function)) {
-    ctools_ajax_render_error(t('Missing callback hooks.'));
+    ajax_render_error(t('Missing callback hooks.'));
   }
 
   list($access, $contexts) = $function($argument);
@@ -313,11 +313,11 @@ function ctools_access_ajax_add($fragment = NULL, $name = NULL) {
 
     $table    = ctools_access_admin_render_table($access, $fragment, $contexts);
     $output   = array();
-    $output[] = ctools_ajax_command_replace('table#ctools-access-table', $table);
+    $output[] = ajax_command_replace('table#ctools-access-table', $table);
     $output[] = ctools_modal_command_dismiss();
   }
 
-  ctools_ajax_render($output);
+  ajax_render($output);
 }
 
 /**
@@ -329,7 +329,7 @@ function ctools_access_ajax_edit($fragment = NULL, $id = NULL) {
   ctools_include('context');
 
   if (empty($fragment) || !isset($id)) {
-    ctools_ajax_render_error();
+    ajax_render_error();
   }
 
   // Separate the fragment into 'module' and 'argument'
@@ -343,13 +343,13 @@ function ctools_access_ajax_edit($fragment = NULL, $id = NULL) {
 
   $function = $module . '_ctools_access_get';
   if (!function_exists($function)) {
-    ctools_ajax_render_error(t('Missing callback hooks.'));
+    ajax_render_error(t('Missing callback hooks.'));
   }
 
   list($access, $contexts) = $function($argument);
 
   if (empty($access['plugins'][$id])) {
-    ctools_ajax_render_error();
+    ajax_render_error();
   }
 
   // Make sure we have the logged in user context
@@ -377,11 +377,11 @@ function ctools_access_ajax_edit($fragment = NULL, $id = NULL) {
 
     $table    = ctools_access_admin_render_table($access, $fragment, $contexts);
     $output   = array();
-    $output[] = ctools_ajax_command_replace('table#ctools-access-table', $table);
+    $output[] = ajax_command_replace('table#ctools-access-table', $table);
     $output[] = ctools_modal_command_dismiss();
   }
 
-  ctools_ajax_render($output);
+  ajax_render($output);
 }
 
 /**
@@ -440,7 +440,7 @@ function ctools_access_ajax_delete($fragment = NULL, $id = NULL) {
   ctools_include('context');
 
   if (empty($fragment) || !isset($id)) {
-    ctools_ajax_render_error();
+    ajax_render_error();
   }
 
   // Separate the fragment into 'module' and 'argument'
@@ -454,7 +454,7 @@ function ctools_access_ajax_delete($fragment = NULL, $id = NULL) {
 
   $function = $module . '_ctools_access_get';
   if (!function_exists($function)) {
-    ctools_ajax_render_error(t('Missing callback hooks.'));
+    ajax_render_error(t('Missing callback hooks.'));
   }
 
   list($access, $contexts) = $function($argument);
@@ -471,7 +471,7 @@ function ctools_access_ajax_delete($fragment = NULL, $id = NULL) {
 
   $table    = ctools_access_admin_render_table($access, $fragment, $contexts);
   $output   = array();
-  $output[] = ctools_ajax_command_replace('table#ctools-access-table', $table);
+  $output[] = ajax_command_replace('table#ctools-access-table', $table);
 
-  ctools_ajax_render($output);
+  ajax_render($output);
 }

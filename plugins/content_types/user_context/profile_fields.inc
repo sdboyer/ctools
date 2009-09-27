@@ -24,7 +24,7 @@ function ctools_profile_fields_ctools_content_types() {
  * 'Render' callback for the 'profile fields' content type.
  */
 function ctools_profile_fields_content_type_render($subtype, $conf, $panel_args, $context) {
-  $account = isset($context->data) ? drupal_clone($context->data) : NULL;
+  $account = isset($context->data) ? clone($context->data) : NULL;
   $block = new stdClass();
   $block->module = 'profile fields';
 

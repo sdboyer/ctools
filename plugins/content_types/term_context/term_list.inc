@@ -17,7 +17,7 @@ function ctools_term_list_ctools_content_types() {
 }
 
 function ctools_term_list_content_type_render($subtype, $conf, $panel_args, $context) {
-  $term = isset($context->data) ? drupal_clone($context->data) : NULL;
+  $term = isset($context->data) ? clone($context->data) : NULL;
   $block = new stdClass();
   $block->module = 'term-list';
 
@@ -40,7 +40,7 @@ function ctools_term_list_content_type_render($subtype, $conf, $panel_args, $con
         break;
 
       case 'sibling':
-        $parent = db_result(db_query("SELECT parent FROM {term_hierarchy} WHERE tid = %d", $term->tid));
+        $parent = db_result(db_query("SELECT parent FROM {taxonomy_term_hierarchy} WHERE tid = %d", $term->tid));
         $terms = taxonomy_get_children($parent, $term->vid);
         // Remove the term that started this.
         unset($terms[$term->tid]);

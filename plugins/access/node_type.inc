@@ -29,7 +29,7 @@ function ctools_node_type_ctools_access() {
  * Settings form for the 'by node_type' access plugin
  */
 function ctools_node_type_ctools_access_settings(&$form, &$form_state, $conf) {
-  $types = node_get_types();
+  $types = node_type_get_types();
   foreach ($types as $type => $info) {
     $options[$type] = check_plain($info->name);
   }
@@ -87,7 +87,7 @@ function ctools_node_type_ctools_access_summary($conf, $context) {
   if (!isset($conf['type'])) {
     $conf['type'] = array();
   }
-  $types = node_get_types();
+  $types = node_type_get_types();
 
   $names = array();
   foreach (array_filter($conf['type']) as $type) {

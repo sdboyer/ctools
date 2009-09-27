@@ -169,7 +169,7 @@ function ctools_modal_text_button($text, $dest, $alt, $class = '') {
  * @return
  *   The output of the form, if it was rendered. If $form_state['ajax']
  *   is set, this will use ctools_modal_form_render so it will be
- *   a $command object suitable for ctools_ajax_render already.
+ *   a $command object suitable for ajax_render already.
  *
  *   The return will be NULL if the form was successfully submitted unless
  *   you specifically set re_render = TRUE. If ajax is set the
@@ -205,7 +205,7 @@ function ctools_modal_form_render($form_state, $output) {
 
   $commands = array();
   if (isset($form_state['js settings'])) {
-    $commands[] = ctools_ajax_command_settings($form_state['js settings']);
+    $commands[] = ajax_command_settings($form_state['js settings']);
   }
 
   $commands[] = ctools_modal_command_display($title, $output);
@@ -221,6 +221,6 @@ function ctools_modal_form_render($form_state, $output) {
 function ctools_modal_render($title, $output) {
   $commands = array();
   $commands[] = ctools_modal_command_display($title, $output);
-  ctools_ajax_render($commands);
+  ajax_render($commands);
 }
 

@@ -76,11 +76,11 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
   if (!empty($info['include'])) {
     if (is_array($info['include'])) {
       foreach ($info['include'] as $file) {
-        require_once './' . $file;
+        require_once DRUPAL_ROOT . '/' . $file;
       }
     }
     else {
-      require_once './' . $info['include'];
+      require_once DRUPAL_ROOT . '/' . $info['include'];
     }
   }
 
@@ -156,7 +156,7 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
 
   // Render ajax commands if we have any.
   if (isset($form_state['ajax']) && isset($form_state['commands'])) {
-    return ctools_ajax_render($form_state['commands']);
+    return ajax_render($form_state['commands']);
   }
 
   // Otherwise, return the output.

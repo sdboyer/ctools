@@ -10,7 +10,7 @@
  * must be implemented in the module file.
  */
 
-define('CTOOLS_API_VERSION', '1.1.1');
+define('CTOOLS_API_VERSION', '2.0.0');
 
 /**
  * Test the CTools API version.
@@ -81,7 +81,7 @@ function ctools_api_version($minimum, $maximum = NULL) {
 function ctools_include($file) {
   static $used = array();
   if (!isset($used[$file])) {
-    require_once './' . drupal_get_path('module', 'ctools') . "/includes/$file.inc";
+    require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'ctools') . "/includes/$file.inc";
   }
 
   $used[$file] = TRUE;
@@ -124,9 +124,9 @@ function ctools_init() {
  * addition. It modifies the array by reference and doesn't need to return it.
  */
 function _ctools_passthrough(&$items, $type = 'theme') {
-  $files = drupal_system_listing('.' . $type . '.inc$', drupal_get_path('module', 'ctools') . '/includes', 'name', 0);
+  $files = drupal_system_listing('.' . $type . '/.inc$/', drupal_get_path('module', 'ctools') . '/includes', 'name', 0);
   foreach ($files as $file) {
-    require_once './' . $file->filename;
+    require_once DRUPAL_ROOT . '/' . $file->filename;
     list($tool) = explode('.', $file->name, 2);
 
     $function = 'ctools_' . $tool . '_' . $type;
@@ -136,6 +136,9 @@ function _ctools_passthrough(&$items, $type = 'theme') {
   }
 }
 
+/**
+ * Implementation of hook_theme_registry_alter()
+ */
 function ctools_theme_registry_alter(&$registry) {
   if ($registry['menu_local_tasks']['function'] == 'theme_menu_local_tasks') {
     $registry['menu_local_tasks'] = array(
@@ -153,6 +156,7 @@ function ctools_theme_registry_alter(&$registry) {
     ) + $registry['help'];
   }
 
+/*
   // Handle a special override for garland because it's cute and does its own
   // thing with tabs and we can't ask users to edit a core theme for us.
   if ($registry['menu_local_tasks']['function'] == 'phptemplate_menu_local_tasks' &&
@@ -169,6 +173,7 @@ function ctools_theme_registry_alter(&$registry) {
       $registry['page']['theme paths'][1] == 'themes/garland') {
     $registry['page']['preprocess functions'][2] = 'ctools_garland_preprocess_page';
   }
+*/
 }
 
 
@@ -275,8 +280,9 @@ function ctools_access_menu($access) {
  * Implementation of hook_cron. Clean up old caches.
  */
 function ctools_cron() {
-  if (variable_get('ctools_last_cron', 0) < time() - 86400) {
-    variable_set('ctools_last_cron', time());
+  // TODO: Should this use the passthrough?
+  if (variable_get('ctools_last_cron', 0) < REQUEST_TIME - 86400) {
+    variable_set('ctools_last_cron', REQUEST_TIME);
     ctools_include('object-cache');
     ctools_object_cache_clean();
   }
@@ -342,6 +348,7 @@ function ctools_preprocess_node(&$vars) {
  * Ensure the CTools CSS cache is flushed whenever hook_flush_caches is invoked.
  */
 function ctools_flush_caches() {
+  // TODO: Should this use the passthrough mechanism?
   ctools_include('css');
   ctools_css_flush_caches();
 }

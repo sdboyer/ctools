@@ -30,7 +30,7 @@ function ctools_node_title_content_type_render($subtype, $conf, $panel_args, $co
   $node = $context->data;
 
   // Load information about the node type.
-  $type = node_get_types('type', $node->type);
+  $type = node_type_get_type($node);
 
   // Build the content type block.
   $block = new stdClass();

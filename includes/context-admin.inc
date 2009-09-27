@@ -354,18 +354,18 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
   ctools_include('object-cache');
 
   if (!$name) {
-    return ctools_ajax_render_error();
+    return ajax_render_error();
   }
 
   // Load stored object from cache.
   if (!($object = ctools_context_cache_get($module, $object_name))) {
-    ctools_ajax_render_error(t('Invalid object name.'));
+    ajax_render_error(t('Invalid object name.'));
   }
 
   // Get info about what we're adding.
   $info = ctools_context_data($type, $name);
   if (empty($info)) {
-    return ctools_ajax_render_error();
+    return ajax_render_error();
   }
   $type_info = ctools_context_info($type);
 
@@ -456,16 +456,16 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     if (!empty($available_relationships)) {
       ctools_context_add_item_table_buttons('relationship', $module, $rel_form, $available_relationships);
       $rel_form = form_builder('dummy_form_id', $rel_form, $arg_form_state);
-      $output[] = ctools_ajax_command_replace('div#ctools-relationships-table div.buttons', drupal_render($rel_form));
+      $output[] = ajax_command_replace('div#ctools-relationships-table div.buttons', drupal_render($rel_form));
     }
 
     $text = theme('ctools_context_item_row', $type, $arg_form[$type][$position], $position, $position);
-    $output[] = ctools_ajax_command_append('#' . $type . '-table tbody', $text);
-    $output[] = ctools_ajax_command_changed('#' . $type . '-row-' . $position, '.title');
+    $output[] = ajax_command_append('#' . $type . '-table tbody', $text);
+    $output[] = ajax_command_changed('#' . $type . '-row-' . $position, '.title');
     $output[] = ctools_modal_command_dismiss();
   }
 
-  ctools_ajax_render($output);
+  ajax_render($output);
 }
 
 /**
@@ -478,12 +478,12 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
   ctools_include('object-cache');
 
   if (!isset($position)) {
-    return ctools_ajax_render_error();
+    return ajax_render_error();
   }
 
   // Load stored object from cache.
   if (!($object = ctools_context_cache_get($module, $object_name))) {
-    ctools_ajax_render_error(t('Invalid object name.'));
+    ajax_render_error(t('Invalid object name.'));
   }
 
   $type_info = ctools_context_info($type);
@@ -495,13 +495,13 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
 
   $name = $ref[$position]['name'];
   if (empty($name)) {
-    ctools_ajax_render_error();
+    ajax_render_error();
   }
 
   // load the context
   $info = ctools_context_data($type, $name);
   if (empty($info)) {
-    ctools_ajax_render_error(t('Invalid context type'));
+    ajax_render_error(t('Invalid context type'));
   }
 
   $base_contexts = isset($object->base_contexts) ? $object->base_contexts : array();
@@ -549,10 +549,10 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
     ctools_context_add_item_to_form($module, $type, $object_name, $arg_form[$type][$position], $position, $ref[$position]);
     $arg_form = form_builder($type_info['form id'], $arg_form, $arg_form_state);
 
-    $output[] = ctools_ajax_command_replace('#' . $type . '-row-' . $position, theme('ctools_context_item_row', $type, $arg_form[$type][$position], $position, $position));
-    $output[] = ctools_ajax_command_changed('#' . $type . '-row-' . $position, '.title');
+    $output[] = ajax_command_replace('#' . $type . '-row-' . $position, theme('ctools_context_item_row', $type, $arg_form[$type][$position], $position, $position));
+    $output[] = ajax_command_changed('#' . $type . '-row-' . $position, '.title');
   }
-  ctools_ajax_render($output);
+  ajax_render($output);
 }
 
 /**
@@ -916,12 +916,12 @@ function ctools_context_ajax_item_delete($module = NULL, $type = NULL, $object_n
   ctools_include('object-cache');
 
   if (!isset($position)) {
-    return ctools_ajax_render_error();
+    return ajax_render_error();
   }
 
   // Load stored object from cache.
   if (!($object = ctools_context_cache_get($module, $object_name))) {
-    ctools_ajax_render_error(t('Invalid object name.'));
+    ajax_render_error(t('Invalid object name.'));
   }
 
   $type_info = ctools_context_info($type);
@@ -932,16 +932,16 @@ function ctools_context_ajax_item_delete($module = NULL, $type = NULL, $object_n
   $ref = &$object->{$type_info['key']};
 
   if (!array_key_exists($position, $ref)) {
-    ctools_ajax_render_error(t('Unable to delete missing item!'));
+    ajax_render_error(t('Unable to delete missing item!'));
   }
 
   unset($ref[$position]);
   ctools_context_cache_set($module, $object_name, $object);
 
   $output   = array();
-  $output[] = ctools_ajax_command_replace('#' . $type . '-row-' . $position, '');
-  $output[] = ctools_ajax_command_restripe("#$type-table");
-  ctools_ajax_render($output);
+  $output[] = ajax_command_replace('#' . $type . '-row-' . $position, '');
+  $output[] = ajax_command_restripe("#$type-table");
+  ajax_render($output);
 }
 
 // --- End of contexts

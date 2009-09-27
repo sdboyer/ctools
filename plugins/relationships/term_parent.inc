@@ -32,7 +32,7 @@ function ctools_term_parent_context($context, $conf) {
   }
 
   if (isset($context->data)) {
-    $result = db_fetch_array(db_query("SELECT t1.* FROM {term_hierarchy} t1 INNER JOIN {term_hierarchy} t2 ON t1.tid = t2.parent WHERE t2.tid = %d", $context->data->tid));
+    $result = db_fetch_array(db_query("SELECT t1.* FROM {taxonomy_term_hierarchy} t1 INNER JOIN {taxonomy_term_hierarchy} t2 ON t1.tid = t2.parent WHERE t2.tid = %d", $context->data->tid));
 
     // If top level term, keep looking up until we see a top level.
     if ($conf['type'] == 'top') {
@@ -42,13 +42,13 @@ function ctools_term_parent_context($context, $conf) {
         $result['tid'] = $context->data->tid;
       }
       while (!empty($result['parent'])) {
-        $result = db_fetch_array(db_query("SELECT * FROM {term_hierarchy} WHERE tid = %d", $result['parent']));
+        $result = db_fetch_array(db_query("SELECT * FROM {taxonomy_term_hierarchy} WHERE tid = %d", $result['parent']));
       }
     }
 
     // Load the term.
     if ($result) {
-      $term = taxonomy_get_term($result['tid']);
+      $term = taxonomy_term_load($result['tid']);
       return ctools_context_create('term', $term);
     }
   }

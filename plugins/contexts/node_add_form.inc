@@ -46,7 +46,7 @@ function ctools_context_create_node_add_form($empty, $data = NULL, $conf = FALSE
   }
 
   if (!empty($data)) {
-    $types = node_get_types();
+    $types = node_type_get_types();
     $type = str_replace('-', '_', $data);
 
     // Validate the node type exists.
@@ -61,7 +61,7 @@ function ctools_context_create_node_add_form($empty, $data = NULL, $conf = FALSE
       $form_state = array('want form' => TRUE, 'args' => array($node));
 
       $file = drupal_get_path('module', 'node') . '/node.pages.inc';
-      include_once './' . $file;
+      require_once DRUPAL_ROOT . '/' . $file;
       // This piece of information can let other modules know that more files
       // need to be included if this form is loaded from cache:
       $form_state['form_load_files'] = array($file);
@@ -85,7 +85,7 @@ function ctools_context_create_node_add_form($empty, $data = NULL, $conf = FALSE
 }
 
 function ctools_context_node_add_form_settings_form($conf) {
-  foreach (node_get_types() as $type => $info) {
+  foreach (node_type_get_types() as $type => $info) {
     $options[$type] = $info->name;
   }
   asort($options);

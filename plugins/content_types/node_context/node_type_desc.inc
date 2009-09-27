@@ -20,12 +20,12 @@ function ctools_node_type_desc_ctools_content_types() {
  * based on the module and delta supplied in the configuration.
  */
 function ctools_node_type_desc_content_type_render($subtype, $conf, $panel_args, $context) {
-  $node = isset($context->data) ? drupal_clone($context->data) : NULL;
+  $node = isset($context->data) ? clone($context->data) : NULL;
   $block = new stdClass();
   $block->module = 'node_type';
 
   if ($node) {
-    $type = node_get_types('type', $node);
+    $type = node_type_get_type($node);
     $block->title = $type->name;
     $block->content = filter_xss_admin($type->description);
     $block->delta   = $node->type;

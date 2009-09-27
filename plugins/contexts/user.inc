@@ -42,7 +42,7 @@ function ctools_context_create_user($empty, $data = NULL, $conf = FALSE) {
   }
 
   if ($conf) {
-    $data = user_load(array('uid' => $data['uid']));
+    $data = user_load($data['uid']);
   }
 
   if (!empty($data)) {

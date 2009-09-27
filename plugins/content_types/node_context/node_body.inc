@@ -27,7 +27,7 @@ function ctools_node_body_content_type_render($subtype, $conf, $panel_args, $con
   $node = $context->data;
 
   // Load information about the node type.
-  $type = node_get_types('type', $node->type);
+  $type = node_type_get_type($node);
 
   // Do not render if the body is disabled for this node type.
   if (!$type->has_body) {
