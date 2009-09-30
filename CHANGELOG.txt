@@ -19,6 +19,7 @@ Add a couple of support functions for ctools_set_page_token that are meant to be
 #545208: Page cache needs to be cleared when page manager pages are saved.
 #577542 by EclipseGC: Add footer message as a page element.
 #581670: Fix autocomplete in the modal so that using it does not submit the form.
+#580342: Fix Page Manager variant import, which did not work at all.
 
 ctools 6.x-1.0
 ==============
