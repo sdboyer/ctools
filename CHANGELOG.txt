@@ -23,6 +23,7 @@ Add a couple of support functions for ctools_set_page_token that are meant to be
 #589342: Introduce page_manager_get_current_page() to get information about the current page manager page.
 #564492: by Roger Lopez: Change default class includes from .inc files to .class.php files so they don't get read as plugins.
 #590654 by fenstrat: Add submit form as a possible AJAX operation.
+#534034 by DamienMcKenna: Add access rule for term ID selection.
 
 ctools 6.x-1.0
 ==============
