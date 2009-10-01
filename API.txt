@@ -13,7 +13,7 @@ API version 1.1.1:
   Introduce ctools_ajax_command_redirect().
   Introduce ctools_ajax_command_reload().
   Introduce ctools_ajax_command_submit().
-
+  Introduce ctools_static().
 
 API version 1.1.0:
   delegator module destroyed, replaced by page manager. All 'task' and 'task_handler' plugins 

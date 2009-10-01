@@ -80,8 +80,8 @@ define('EXPORT_IN_CODE', 0x02);
  *   An array of arguments whose actual use is defined by the $type argument.
  */
 function ctools_export_load_object($table, $type = 'all', $args = array()) {
-  static $cache = array();
-  static $cached_database = array();
+  $cache = &ctools_static(__FUNCTION__);
+  $cached_database = &ctools_static('ctools_export_load_object_all');
 
   $schema = ctools_export_get_schema($table);
   $export = $schema['export'];
@@ -217,6 +217,27 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
 
   // For conditions,
   return $return;
+}
+
+/**
+ * Reset all static caches in ctools_export_load_object() or static caches for 
+ * a given table in ctools_export_load_object().
+ * 
+ * @param $table
+ *   String that is the name of a table. If not defined, all static caches in 
+ *   ctools_export_load_object() will be reset.
+ */
+function ctools_export_load_object_reset($table = NULL) {
+  if (empty($table)) {
+    ctools_static_reset('ctools_export_load_object');
+    ctools_static_reset('ctools_export_load_object_all');
+  }
+  else {
+    $cache = &ctools_static('ctools_export_load_object');
+    $cached_database = &ctools_static('ctools_export_load_object_all');
+    unset($cache[$table]);
+    unset($cached_database[$table]);
+  }
 }
 
 /**

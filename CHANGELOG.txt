@@ -24,6 +24,7 @@ Add a couple of support functions for ctools_set_page_token that are meant to be
 #564492: by Roger Lopez: Change default class includes from .inc files to .class.php files so they don't get read as plugins.
 #590654 by fenstrat: Add submit form as a possible AJAX operation.
 #534034 by DamienMcKenna: Add access rule for term ID selection.
+#531522 by alex_b: Introduce ctools_static() modelled after static object handling in D7.
 
 ctools 6.x-1.0
 ==============
