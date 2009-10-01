@@ -11,7 +11,7 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_user_ctools_contexts() {
-  $args['user'] = array(
+  return array(
     'title' => t("User"),
     'description' => t('A single user object.'),
     'context' => 'ctools_context_create_user',
@@ -26,7 +26,6 @@ function ctools_user_ctools_contexts() {
     ),
     'convert' => 'ctools_context_user_convert',
   );
-  return $args;
 }
 
 /**

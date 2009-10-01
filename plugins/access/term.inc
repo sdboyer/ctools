@@ -10,8 +10,7 @@
  * Implementation of specially named hook_ctools_access().
  */
 function ctools_term_ctools_access() {
-  $args = array();
-  $args['term'] = array(
+  return array(
     'title' => t("Taxonomy: term"),
     'description' => t('Control access by a specific term.'),
     'callback' => 'ctools_term_ctools_access_check',
@@ -20,10 +19,8 @@ function ctools_term_ctools_access() {
     'settings form validation' => 'ctools_term_ctools_access_settings_validate',
     'settings form submit' => 'ctools_term_ctools_access_settings_submit',
     'summary' => 'ctools_term_ctools_acesss_summary',
-    // 'required context' => new ctools_context_required(t('Term'), array('term', 'terms')),
+    'required context' => new ctools_context_required(t('Term'), array('term', 'terms')),
   );
-
-  return $args;
 }
 
 /**
@@ -39,7 +36,7 @@ function ctools_term_ctools_access_settings(&$form, &$form_state, $conf) {
   if (!isset($conf['vid'])) {
     $conf['vid'] = 0;
   }
-  
+
   $form['settings']['vid'] = array(
     '#title' => t('Vocabulary'),
     '#type' => 'select',
@@ -58,7 +55,7 @@ function ctools_term_ctools_access_settings(&$form, &$form_state, $conf) {
   // own like the content types.
 
   $form['settings']['#tree'] = TRUE;
-  
+
   // Loop over each of the configured vocabularies.
   foreach (taxonomy_get_vocabularies() as $vid => $vocabulary) {
     $options[$vid] = $vocabulary->name;

@@ -11,7 +11,7 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_vocabulary_ctools_contexts() {
-  $args['vocabulary'] = array(
+  return array(
     'title' => t("Taxonomy vocabulary"),
     'description' => t('A single taxonomy vocabulary object.'),
     'context' => 'ctools_context_create_vocabulary',
@@ -20,7 +20,6 @@ function ctools_vocabulary_ctools_contexts() {
     'keyword' => 'vocabulary',
     'context name' => 'vocabulary',
   );
-  return $args;
 }
 
 /**

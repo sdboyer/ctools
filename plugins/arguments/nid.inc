@@ -11,7 +11,7 @@
  * Implementation of specially named hook_ctools_arguments().
  */
 function ctools_nid_ctools_arguments() {
-  $args['nid'] = array(
+  return array(
     'title' => t("Node ID"),
     'keyword' => 'node',
     'description' => t('Creates a node context from a node ID argument.'),
@@ -21,7 +21,6 @@ function ctools_nid_ctools_arguments() {
       '#description' => t('Enter the node ID of a node for this argument'),
     ),
   );
-  return $args;
 }
 
 /**

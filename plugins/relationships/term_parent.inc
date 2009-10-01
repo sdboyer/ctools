@@ -10,7 +10,7 @@
  * Implementation of specially named hook_ctools_relationships().
  */
 function ctools_term_parent_ctools_relationships() {
-  $args['term_parent'] = array(
+  return array(
     'title' => t('Term parent'),
     'keyword' => 'parent_term',
     'description' => t('Adds a taxonomy term parent from a term context.'),

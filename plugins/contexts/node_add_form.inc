@@ -11,7 +11,7 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_node_add_form_ctools_contexts() {
-  $args['node_add_form'] = array(
+  return array(
     'title' => t("Node add form"),
     'description' => t('A node add form.'),
     'context' => 'ctools_context_create_node_add_form',
@@ -25,7 +25,6 @@ function ctools_node_add_form_ctools_contexts() {
       '#description' => t('Enter the node type this context.'),
     ),
   );
-  return $args;
 }
 
 /**

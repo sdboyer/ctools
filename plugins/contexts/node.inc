@@ -12,7 +12,7 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_node_ctools_contexts() {
-  $args['node'] = array(
+  return array(
     'title' => t("Node"),
     'description' => t('A node object.'),
     'context' => 'ctools_context_create_node',
@@ -28,7 +28,6 @@ function ctools_node_ctools_contexts() {
       '#description' => t('Enter the node ID of a node for this context.'),
     ),
   );
-  return $args;
 }
 
 /**

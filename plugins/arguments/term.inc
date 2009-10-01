@@ -11,7 +11,7 @@
  * Implementation of specially named hook_ctools_arguments().
  */
 function ctools_term_ctools_arguments() {
-  $args['term'] = array(
+  return array(
     'title' => t("Taxonomy term"),
     // keyword to use for %substitution
     'keyword' => 'term',
@@ -22,7 +22,6 @@ function ctools_term_ctools_arguments() {
     'placeholder form' => 'ctools_term_ctools_argument_placeholder',
     'breadcrumb' => 'ctools_term_breadcrumb',
   );
-  return $args;
 }
 
 /**
@@ -128,7 +127,7 @@ function ctools_term_breadcrumb($conf, $context) {
     $current = array_shift($parents);
     $breadcrumb[] = l($current->name, 'taxonomy/term/' . $current->tid);
   }
-  
+
   $breadcrumb = array_merge(drupal_get_breadcrumb(), array_reverse($breadcrumb));
   drupal_set_breadcrumb($breadcrumb);
 }

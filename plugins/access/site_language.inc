@@ -11,7 +11,7 @@
  */
 function ctools_site_language_ctools_access() {
   if (module_exists('locale')) {
-    $items['site_language'] = array(
+    return array(
       'title' => t("User: language"),
       'description' => t('Control access by the language the user or site currently uses.'),
       'callback' => 'ctools_site_language_ctools_access_check',
@@ -20,7 +20,6 @@ function ctools_site_language_ctools_access() {
       'settings form submit' => 'ctools_site_language_ctools_access_settings_submit',
       'summary' => 'ctools_site_language_ctools_acesss_summary',
     );
-    return $items;
   }
 }
 

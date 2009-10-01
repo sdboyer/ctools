@@ -11,7 +11,7 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_term_ctools_contexts() {
-  $args['term'] = array(
+  return array(
     'title' => t("Taxonomy term"),
     'description' => t('A single taxonomy term object.'),
     'context' => 'ctools_context_create_term',
@@ -28,7 +28,6 @@ function ctools_term_ctools_contexts() {
     'convert' => 'ctools_context_term_convert',
     'js' => array('misc/autocomplete.js'),
   );
-  return $args;
 }
 
 /**

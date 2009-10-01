@@ -11,7 +11,7 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_node_edit_form_ctools_contexts() {
-  $args['node_edit_form'] = array(
+  return array(
     'title' => t("Node edit form"),
     'description' => t('A node edit form.'),
     'context' => 'ctools_context_create_node_edit_form',
@@ -24,7 +24,6 @@ function ctools_node_edit_form_ctools_contexts() {
       '#description' => t('Enter the node ID of a node for this argument:'),
     ),
   );
-  return $args;
 }
 
 /**

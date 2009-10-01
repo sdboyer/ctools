@@ -12,7 +12,7 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_terms_ctools_contexts() {
-  $args['terms'] = array(
+  return array(
     'title' => t("Taxonomy terms"),
     'description' => t('Multiple taxonomy terms, as a group.'),
     'context' => 'ctools_context_create_terms',
@@ -30,7 +30,6 @@ function ctools_terms_ctools_contexts() {
     ),
     'convert' => 'ctools_context_terms_convert',
   );
-  return $args;
 }
 
 /**

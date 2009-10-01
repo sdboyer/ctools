@@ -11,7 +11,7 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_string_ctools_contexts() {
-  $args['string'] = array(
+  return array(
     'title' => t('String'),
     'description' => t('A context that is just a string.'),
     'context' => 'ctools_context_create_string',
@@ -28,7 +28,6 @@ function ctools_string_ctools_contexts() {
       '#description' => t('Enter the string for this context.'),
     ),
   );
-  return $args;
 }
 
 /**
