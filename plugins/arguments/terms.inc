@@ -12,7 +12,7 @@
  */
 function ctools_terms_ctools_arguments() {
   return array(
-    'title' => t("Taxonomy term (multiple)"),
+    'title' => t("Taxonomy term (multiple): ID"),
     // keyword to use for %substitution
     'keyword' => 'term',
     'description' => t('Creates a group of taxonomy terms from a list of tids separated by a comma or a plus sign. In general the first term of the list will be used for panes.'),

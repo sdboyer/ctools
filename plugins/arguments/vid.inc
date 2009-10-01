@@ -12,7 +12,7 @@
  */
 function ctools_vid_ctools_arguments() {
   return array(
-    'title' => t("Vocabulary ID"),
+    'title' => t("Vocabulary: ID"),
     // keyword to use for %substitution
     'keyword' => 'vocabulary',
     'description' => t('Creates a vocabulary context from a vocabulary ID argument.'),

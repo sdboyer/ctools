@@ -12,7 +12,7 @@
  */
 function ctools_term_ctools_arguments() {
   return array(
-    'title' => t("Taxonomy term"),
+    'title' => t("Taxonomy term: ID"),
     // keyword to use for %substitution
     'keyword' => 'term',
     'description' => t('Creates a single taxonomy term from a taxonomy ID or taxonomy term name.'),

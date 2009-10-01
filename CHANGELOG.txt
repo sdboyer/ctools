@@ -25,6 +25,7 @@ Add a couple of support functions for ctools_set_page_token that are meant to be
 #590654 by fenstrat: Add submit form as a possible AJAX operation.
 #534034 by DamienMcKenna: Add access rule for term ID selection.
 #531522 by alex_b: Introduce ctools_static() modelled after static object handling in D7.
+#541428 by viz8: User name as a context argument.
 
 ctools 6.x-1.0
 ==============

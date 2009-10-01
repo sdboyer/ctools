@@ -12,7 +12,7 @@
  */
 function ctools_nid_ctools_arguments() {
   return array(
-    'title' => t("Node ID"),
+    'title' => t("Node: ID"),
     'keyword' => 'node',
     'description' => t('Creates a node context from a node ID argument.'),
     'context' => 'ctools_argument_nid_context',

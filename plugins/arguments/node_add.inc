@@ -12,7 +12,7 @@
  */
 function ctools_node_add_ctools_arguments() {
   return array(
-    'title' => t("Node add form"),
+    'title' => t("Node add form: node type"),
     // keyword to use for %substitution
     'keyword' => 'node_type',
     'description' => t('Creates a node add form context from a node type argument.'),
