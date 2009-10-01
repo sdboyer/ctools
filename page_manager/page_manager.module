@@ -1061,3 +1061,31 @@ function page_manager_page_manager_pages_to_hook_code($names = array(), $name = 
     return $code;
   }
 }
+
+/**
+ * Get the current page information.
+ *
+ * @return $page
+ *   An array containing the following information.
+ *
+ * - 'name': The name of the page as used in the page manager admin UI.
+ * - 'task': The plugin for the task in use. If this is a system page it
+ *   will contain information about that page, such as what functions
+ *   it uses.
+ * - 'subtask': The plugin for the subtask. If this is a custom page, this
+ *   will contain information about that custom page. See 'subtask' in this
+ *   array to get the actual page object.
+ * - 'handler': The actual handler object used. If using panels, see
+ *   $page['handler']->conf['display'] for the actual panels display
+ *   used to render.
+ * - 'contexts': The context objects used to render this page.
+ * - 'arguments': The raw arguments from the URL used on this page.
+ */
+function page_manager_get_current_page($page = NULL) {
+  static $current = array();
+  if (isset($page)) {
+    $current = $page;
+  }
+
+  return $current;
+}

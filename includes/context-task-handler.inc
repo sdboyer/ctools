@@ -50,6 +50,15 @@ function ctools_context_handler_render($task, $subtask, $contexts, $args, $page 
           return $info;
         }
 
+        page_manager_get_current_page(array(
+          'name' => page_manager_make_task_name($task['name'], $subtask['name']),
+          'task' => $task,
+          'subtask' => $subtask,
+          'contexts' => $contexts,
+          'arguments' => $args,
+          'handler' => $handler,
+        ));
+
         /*
         // Only do this if something hasn't already changed the active menu,
         // such as a book.
