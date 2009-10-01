@@ -18,7 +18,7 @@ function ctools_term_ctools_access() {
     'settings form' => 'ctools_term_ctools_access_settings',
     'settings form validation' => 'ctools_term_ctools_access_settings_validate',
     'settings form submit' => 'ctools_term_ctools_access_settings_submit',
-    'summary' => 'ctools_term_ctools_acesss_summary',
+    'summary' => 'ctools_term_ctools_access_summary',
     'required context' => new ctools_context_required(t('Term'), array('term', 'terms')),
   );
 }
@@ -64,7 +64,7 @@ function ctools_term_ctools_access_settings(&$form, &$form_state, $conf) {
       '#description' => t('Select a term or terms from @vocabulary.', array('@vocabulary' => $vocabulary->name)), //. $description,
       '#process' => array('ctools_dependent_process'),
       '#dependency' => array('ctools-select-vid' => array($vocabulary->vid)),
-      '#default_value' => $conf[$vid],
+      '#default_value' => !empty($conf[$vid]) ? $conf[$vid] : '',
       '#multiple' => TRUE,
     );
 
@@ -114,21 +114,25 @@ function ctools_term_ctools_access_check($conf, $context) {
   // Tags get saved as an imploded array of strings.
   if (!is_array($terms)) {
     $terms = expand(', ', $terms);
+    // For multi-term with names, we'll only accept the first term because
+    // that is the name we have.
+    return in_array($context->data->name, $terms);
   }
-  // Loop over each of the values.
-  foreach ($terms as $term) {
-    if ($context->data->tid == $term) {
-      $return = TRUE;
+  else {
+    // For multi-term if any terms coincide, let's call that good enough:
+    if (isset($context->tids)) {
+      return (bool) array_intersect($terms, $context->tids);
+    }
+    else {
+      return in_array($context->data->tid, $terms);
     }
   }
-
-  return $return;
 }
 
 /**
  * Provide a summary description based upon the checked terms.
  */
-function ctools_term_ctools_acesss_summary($conf, $context) {
+function ctools_term_ctools_access_summary($conf, $context) {
   $vocab = taxonomy_vocabulary_load($conf['vid']);
   if ($vocab->tags) {
     $terms = explode(', ', $conf[$vocab->vid]);
@@ -142,8 +146,8 @@ function ctools_term_ctools_acesss_summary($conf, $context) {
   }
 
   return format_plural(count($terms),
-    '@vocab can be the term "@terms"',
-    '@vocab can be one of these terms: @terms',
+    '@term can be the term "@terms"',
+    '@term can be one of these terms: @terms',
     array('@terms' => implode(', ', $terms),
-      '@vocab' => $vocab->name));
+      '@term' => $context->identifier));
 }
