@@ -73,6 +73,10 @@
  *
  * - reload
  *
+ * - submit
+ *   - selector: The CSS selector to identify the form for submission. This can
+ *     be any selector jquery uses in $().
+ *
  * Commands are usually created with a couple of helper functions, so they
  * look like this:
  *
@@ -349,7 +353,7 @@ function ctools_ajax_command_data($selector, $name, $value) {
      'value' => $value,
    );
  }
- 
+
 /**
  * Force a table to be restriped.
  *
@@ -390,6 +394,23 @@ function ctools_ajax_command_reload() {
 }
 
 /**
+ * Submit a form.
+ *
+ * This is useful for submitting a parent form after a child form has finished
+ * processing in a modal overlay.
+ *
+ * @param $selector
+ *   The CSS selector to identify the form for submission. This can be any
+ *   selector jquery uses in $().
+ */
+function ctools_ajax_command_submit($selector) {
+  return array(
+    'command' => 'submit',
+    'selector' => $selector,
+  );
+}
+
+/**
  * Render a commands array into JSON and immediately hand this back
  * to the AJAX requester.
  */
@@ -419,8 +440,8 @@ function ctools_ajax_render_error($error = '') {
  * Associate a URL to a form element with a hidden form.
  *
  * This is a helper function to easily associate a URL with a form element
- * which can be used for different ajax functionality. 
- * 
+ * which can be used for different ajax functionality.
+ *
  * You would call this function on a form element in the form function like this:
  *
  * @code
@@ -432,7 +453,7 @@ function ctools_ajax_render_error($error = '') {
  *   );
  *   ctools_ajax_associate_url_to_element($form, $form['example'], 'example/ajax/urlpath');
  * @endcode
- * 
+ *
  * The AJAX request will POST the value of the form element in the "ctools_changed" parameter.
  *
  * @param &$form
@@ -454,7 +475,7 @@ function ctools_ajax_associate_url_to_element(&$form, &$form_element, $dest, $ty
 
     $form_element['#attributes']['class'] = $type;
   }
-  
+
   //Add hidden form element to hold base URL
   $form[$form_element['#id'] . '-url'] = array(
     '#type' => 'hidden',

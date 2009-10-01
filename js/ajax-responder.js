@@ -7,6 +7,7 @@
 
 Drupal.CTools = Drupal.CTools || {};
 Drupal.CTools.AJAX = Drupal.CTools.AJAX || {};
+Drupal.CTools.AJAX.commands = Drupal.CTools.AJAX.commands || {};
 
 /**
  * Success callback for an ajax request.
@@ -192,102 +193,105 @@ Drupal.CTools.AJAX.findURL = function(item) {
   return url;
 };
 
-Drupal.CTools.AJAX.commands = {
-  prepend: function(data) {
-    $(data.selector).prepend(data.data);
-    Drupal.attachBehaviors($(data.selector));
-  },
+Drupal.CTools.AJAX.commands.prepend = function(data) {
+  $(data.selector).prepend(data.data);
+  Drupal.attachBehaviors($(data.selector));
+};
 
-  append: function(data) {
-    $(data.selector).append(data.data);
-    Drupal.attachBehaviors($(data.selector));
-  },
+Drupal.CTools.AJAX.commands.append = function(data) {
+  $(data.selector).append(data.data);
+  Drupal.attachBehaviors($(data.selector));
+};
 
-  replace: function(data) {
-    $(data.selector).replaceWith(data.data);
-    Drupal.attachBehaviors($(data.selector));
-  },
+Drupal.CTools.AJAX.commands.replace = function(data) {
+  $(data.selector).replaceWith(data.data);
+  Drupal.attachBehaviors($(data.selector));
+};
 
-  after: function(data) {
-    var object = $(data.data);
-    $(data.selector).after(object);
-    Drupal.attachBehaviors(object);
-  },
+Drupal.CTools.AJAX.commands.after = function(data) {
+  var object = $(data.data);
+  $(data.selector).after(object);
+  Drupal.attachBehaviors(object);
+};
 
-  before: function(data) {
-    var object = $(data.data);
-    $(data.selector).before(object);
-    Drupal.attachBehaviors(object);
-  },
+Drupal.CTools.AJAX.commands.before = function(data) {
+  var object = $(data.data);
+  $(data.selector).before(object);
+  Drupal.attachBehaviors(object);
+};
 
-  html: function(data) {
-    $(data.selector).html(data.data);
-    Drupal.attachBehaviors($(data.selector));
-  },
+Drupal.CTools.AJAX.commands.html = function(data) {
+  $(data.selector).html(data.data);
+  Drupal.attachBehaviors($(data.selector));
+};
 
-  remove: function(data) {
-    $(data.selector).remove();
-  },
+Drupal.CTools.AJAX.commands.remove = function(data) {
+  $(data.selector).remove();
+};
 
-  changed: function(data) {
-    if (!$(data.selector).hasClass('changed')) {
-      $(data.selector).addClass('changed');
-      if (data.star) {
-        $(data.selector).find(data.star).append(' <span class="star">*</span> ');
-      }
+Drupal.CTools.AJAX.commands.changed = function(data) {
+  if (!$(data.selector).hasClass('changed')) {
+    $(data.selector).addClass('changed');
+    if (data.star) {
+      $(data.selector).find(data.star).append(' <span class="star">*</span> ');
     }
-  },
-
-  alert: function(data) {
-    alert(data.text, data.title);
-  },
-
-  css: function(data) {
-/*
-    if (data.selector && data.selector.contains('* html ')) {
-      // This indicates an IE hack and we should only do it if we are IE.
-      if (!jQuery.browser.msie) {
-        return;
-      }
-      data.selector = data.selector.replace('* html ', '');
-    }
-*/
-    $(data.selector).css(data.argument);
-  },
-
-  settings: function(data) {
-    $.extend(Drupal.settings, data.argument);
-  },
-
-  data: function(data) {
-    $(data.selector).data(data.name, data.value);
-  },
-
-  attr: function(data) {
-    $(data.selector).attr(data.name, data.value);
-  },
-
-  restripe: function(data) {
-    // :even and :odd are reversed because jquery counts from 0 and
-    // we count from 1, so we're out of sync.
-    $('tbody tr:not(:hidden)', $(data.selector))
-      .removeClass('even')
-      .removeClass('odd')
-      .filter(':even')
-        .addClass('odd')
-      .end()
-      .filter(':odd')
-        .addClass('even');
-  },
-
-  redirect: function(data) {
-    location.href = data.url;
-  },
-
-  reload: function(data) {
-    location.reload();
   }
 };
+
+Drupal.CTools.AJAX.commands.alert = function(data) {
+  alert(data.text, data.title);
+};
+
+Drupal.CTools.AJAX.commands.css = function(data) {
+/*
+  if (data.selector && data.selector.contains('* html ')) {
+    // This indicates an IE hack and we should only do it if we are IE.
+    if (!jQuery.browser.msie) {
+      return;
+    }
+    data.selector = data.selector.replace('* html ', '');
+  }
+*/
+  $(data.selector).css(data.argument);
+};
+
+Drupal.CTools.AJAX.commands.settings = function(data) {
+  $.extend(Drupal.settings, data.argument);
+};
+
+Drupal.CTools.AJAX.commands.data = function(data) {
+  $(data.selector).data(data.name, data.value);
+};
+
+Drupal.CTools.AJAX.commands.attr = function(data) {
+  $(data.selector).attr(data.name, data.value);
+};
+
+Drupal.CTools.AJAX.commands.restripe = function(data) {
+  // :even and :odd are reversed because jquery counts from 0 and
+  // we count from 1, so we're out of sync.
+  $('tbody tr:not(:hidden)', $(data.selector))
+    .removeClass('even')
+    .removeClass('odd')
+    .filter(':even')
+      .addClass('odd')
+    .end()
+    .filter(':odd')
+      .addClass('even');
+};
+
+Drupal.CTools.AJAX.commands.redirect = function(data) {
+  location.href = data.url;
+};
+
+Drupal.CTools.AJAX.commands.reload = function(data) {
+  location.reload();
+};
+
+Drupal.CTools.AJAX.commands.submit = function(data) {
+  $(data.selector).submit();
+}
+
 
 /**
  * Bind links that will open modals to the appropriate function.

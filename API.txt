@@ -10,6 +10,10 @@ API version 1.1.1:
   Introduce ctools_set_callback_token().
   Introduce cleanstring tool. See cleanstring.inc
   Introduce page_manager_get_current_page().
+  Introduce ctools_ajax_command_redirect().
+  Introduce ctools_ajax_command_reload().
+  Introduce ctools_ajax_command_submit().
+
 
 API version 1.1.0:
   delegator module destroyed, replaced by page manager. All 'task' and 'task_handler' plugins 
