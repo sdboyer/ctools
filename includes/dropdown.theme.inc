@@ -79,7 +79,7 @@ function theme_ctools_dropdown($title, $links, $image = FALSE, $class = '') {
   $output .= '</div>'; // wrapper
   $output .= '<div class="ctools-dropdown-container-wrapper">';
   $output .= '<div class="ctools-dropdown-container">';
-  $output .= theme('links', $links);
+  $output .= theme_links($links);
   $output .= '</div>'; // container
   $output .= '</div>'; // container wrapper
   $output .= '</div>'; // dropdown
