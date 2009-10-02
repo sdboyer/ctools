@@ -336,14 +336,12 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
 
   ctools_include('dependent');
   if ($allow['use_pager']) {
-    $form['pager_aligner_start'] = array(
-      '#value' => '<div class="option-text-aligner">',
-    );
     $form['use_pager'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use pager'),
         '#default_value' => isset($conf['use_pager']) ? $conf['use_pager'] : $view->display_handler->get_option('use_pager'),
       '#id' => 'use-pager-checkbox',
+      '#prefix' => '<div class="container-inline">',
     );
     $form['pager_id'] = array(
       '#type' => 'textfield',
@@ -353,9 +351,7 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
       '#id' => 'use-pager-textfield',
       '#process' => array('ctools_dependent_process'),
       '#dependency' => array('use-pager-checkbox' => array(1)),
-    );
-    $form['pager_aligner_stop'] = array(
-      '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
+      '#suffix' => '</div>',
     );
   }
   if ($allow['items_per_page']) {

@@ -89,12 +89,22 @@ function ctools_dependent_process($element, $edit, &$form_state, &$form) {
     if (!isset($element['#dependency_count'])) {
       $element['#dependency_count'] = 1;
     }
+    if (!isset($element['#dependency_type'])) {
+      $element['#dependency_type'] = 'hide';
+    }
+
+    $js = array(
+      'values' => $element['#dependency'],
+      'num' => $element['#dependency_count'],
+      'type' => $element['#dependency_type'],
+    );
+
     if (!empty($form_state['ajax'])) {
-      $form_state['js settings']['CTools']['dependent'][$element['#id']] = array('num' => $element['#dependency_count'], 'values' => $element['#dependency']);
+      $form_state['js settings']['CTools']['dependent'][$element['#id']] = $js;
     }
     else {
       ctools_add_js('dependent');
-      $options['CTools']['dependent'][$element['#id']] = array('num' => $element['#dependency_count'], 'values' => $element['#dependency']);
+      $options['CTools']['dependent'][$element['#id']] = $js;
       drupal_add_js($options, 'setting');
     }
   }

@@ -137,15 +137,31 @@ Drupal.CTools.dependent.autoAttach = function() {
               object = jQuery('#' + id).parent();
             }
 
-            if (Drupal.settings.CTools.dependent[id].num <= len) {
-              // Show if the element if criteria is matched
-              object.show(0);
+            if (Drupal.settings.CTools.dependent[id].type == 'disable') {
+              if (Drupal.settings.CTools.dependent[id].num <= len) {
+                // Show if the element if criteria is matched
+                object.attr('disabled', false);
+                object.children().attr('disabled', false);
+              }
+              else {
+                // Otherwise hide. Use css rather than hide() because hide()
+                // does not work if the item is already hidden, for example,
+                // in a collapsed fieldset.
+                object.attr('disabled', true);
+                object.children().attr('disabled', true);
+              }
             }
             else {
-              // Otherwise hide. Use css rather than hide() because hide()
-              // does not work if the item is already hidden, for example,
-              // in a collapsed fieldset.
-              object.css('display', 'none');
+              if (Drupal.settings.CTools.dependent[id].num <= len) {
+                // Show if the element if criteria is matched
+                object.show(0);
+              }
+              else {
+                // Otherwise hide. Use css rather than hide() because hide()
+                // does not work if the item is already hidden, for example,
+                // in a collapsed fieldset.
+                object.css('display', 'none');
+              }
             }
           }
         }
