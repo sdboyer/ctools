@@ -30,199 +30,201 @@
  * as a class, which will cause the container to draw collapsed.
  */
 
-// All CTools tools begin with this if they need to use the CTools namespace.
-if (!Drupal.CTools) {
-  Drupal.CTools = {};
-}
-
-/**
- * Object to store state.
- *
- * This object will remember the state of collapsible containers. The first
- * time a state is requested, it will check the cookie and set up the variable.
- * If a state has been changed, when the window is unloaded the state will be
- * saved.
- */
-Drupal.CTools.Collapsible = {
-  state: {},
-  stateLoaded: false,
-  stateChanged: false,
-  cookieString: 'ctools-collapsible-state=',
+(function ($) {
+  // All CTools tools begin with this if they need to use the CTools namespace.
+  if (!Drupal.CTools) {
+    Drupal.CTools = {};
+  }
 
   /**
-   * Get the current collapsed state of a container.
+   * Object to store state.
    *
-   * If set to 1, the container is open. If set to -1, the container is
-   * collapsed. If unset the state is unknown, and the default state should
-   * be used.
+   * This object will remember the state of collapsible containers. The first
+   * time a state is requested, it will check the cookie and set up the variable.
+   * If a state has been changed, when the window is unloaded the state will be
+   * saved.
    */
-  getState: function (id) {
-    if (!this.stateLoaded) {
-      this.loadCookie();
-    }
+  Drupal.CTools.Collapsible = {
+    state: {},
+    stateLoaded: false,
+    stateChanged: false,
+    cookieString: 'ctools-collapsible-state=',
 
-    return this.state[id];
-  },
+    /**
+     * Get the current collapsed state of a container.
+     *
+     * If set to 1, the container is open. If set to -1, the container is
+     * collapsed. If unset the state is unknown, and the default state should
+     * be used.
+     */
+    getState: function (id) {
+      if (!this.stateLoaded) {
+        this.loadCookie();
+      }
 
-  /**
-   * Set the collapsed state of a container for subsequent page loads.
-   *
-   * Set the state to 1 for open, -1 for collapsed.
-   */
-  setState: function (id, state) {
-    if (!this.stateLoaded) {
-      this.loadCookie();
-    }
+      return this.state[id];
+    },
 
-    this.state[id] = state;
+    /**
+     * Set the collapsed state of a container for subsequent page loads.
+     *
+     * Set the state to 1 for open, -1 for collapsed.
+     */
+    setState: function (id, state) {
+      if (!this.stateLoaded) {
+        this.loadCookie();
+      }
 
-    if (!this.stateChanged) {
-      this.stateChanged = true;
-      $(window).unload(this.unload);
-    }
-  },
+      this.state[id] = state;
 
-  /**
-   * Check the cookie and load the state variable.
-   */
-  loadCookie: function () {
-    // If there is a previous instance of this cookie
-    if (document.cookie.length > 0) {
-      // Get the number of characters that have the list of values
-      // from our string index.
-      offset = document.cookie.indexOf(this.cookieString);
+      if (!this.stateChanged) {
+        this.stateChanged = true;
+        $(window).unload(this.unload);
+      }
+    },
 
-      // If its positive, there is a list!
-      if (offset != -1) {
-        offset += this.cookieString.length;
-        var end = document.cookie.indexOf(';', offset);
-        if (end == -1) {
-          end = document.cookie.length;
-        }
+    /**
+     * Check the cookie and load the state variable.
+     */
+    loadCookie: function () {
+      // If there is a previous instance of this cookie
+      if (document.cookie.length > 0) {
+        // Get the number of characters that have the list of values
+        // from our string index.
+        offset = document.cookie.indexOf(this.cookieString);
 
-        // Get a list of all values that are saved on our string
-        var cookie = unescape(document.cookie.substring(offset, end));
+        // If its positive, there is a list!
+        if (offset != -1) {
+          offset += this.cookieString.length;
+          var end = document.cookie.indexOf(';', offset);
+          if (end == -1) {
+            end = document.cookie.length;
+          }
 
-        if (cookie != '') {
-          var cookieList = cookie.split(',');
-          for (var i = 0; i < cookieList.length; i++) {
-            var info = cookieList[i].split(':');
-            this.state[info[0]] = info[1];
+          // Get a list of all values that are saved on our string
+          var cookie = unescape(document.cookie.substring(offset, end));
+
+          if (cookie != '') {
+            var cookieList = cookie.split(',');
+            for (var i = 0; i < cookieList.length; i++) {
+              var info = cookieList[i].split(':');
+              this.state[info[0]] = info[1];
+            }
           }
         }
       }
-    }
 
-    this.stateLoaded = true;
-  },
+      this.stateLoaded = true;
+    },
+
+    /**
+     * Turn the state variable into a string and store it in the cookie.
+     */
+    storeCookie: function () {
+      var cookie = '';
+
+      // Get a list of IDs, saparated by comma
+      for (i in this.state) {
+        if (cookie != '') {
+          cookie += ',';
+        }
+        cookie += i + ':' + this.state[i];
+      }
+
+      // Save this values on the cookie
+      document.cookie = this.cookieString + escape(cookie) + ';path=/';
+    },
+
+    /**
+     * Respond to the unload event by storing the current state.
+     */
+    unload: function() {
+      Drupal.CTools.Collapsible.storeCookie();
+    }
+  };
+
+  // Set up an array for callbacks.
+  Drupal.CTools.CollapsibleCallbacks = [];
+  Drupal.CTools.CollapsibleCallbacksAfterToggle = [];
 
   /**
-   * Turn the state variable into a string and store it in the cookie.
+   * Bind collapsible behavior to a given container.
    */
-  storeCookie: function () {
-    var cookie = '';
+  Drupal.CTools.bindCollapsible = function () {
+    var $container = $(this);
 
-    // Get a list of IDs, saparated by comma
-    for (i in this.state) {
-      if (cookie != '') {
-        cookie += ',';
-      }
-      cookie += i + ':' + this.state[i];
+    // Allow the specification of the 'no container' class, which means the
+    // handle and the container can be completely independent.
+    if ($container.hasClass('ctools-no-container') && $container.attr('id')) {
+      // In this case, the container *is* the handle and the content is found
+      // by adding '-content' to the id. Obviously, an id is required.
+      var handle = $container;
+      var content = $('#' + $container.attr('id') + '-content');
+    }
+    else {
+      var handle = $container.children('.ctools-collapsible-handle');
+      var content = $container.children('div.ctools-collapsible-content');
     }
 
-    // Save this values on the cookie
-    document.cookie = this.cookieString + escape(cookie) + ';path=/';
-  },
+    if (content.length) {
+      // Create the toggle item and place it in front of the toggle.
+      var toggle = $('<span class="ctools-toggle"></span>');
+      handle.before(toggle);
 
-  /**
-   * Respond to the unload event by storing the current state.
-   */
-  unload: function() {
-    Drupal.CTools.Collapsible.storeCookie();
-  }
-};
-
-// Set up an array for callbacks.
-Drupal.CTools.CollapsibleCallbacks = [];
-Drupal.CTools.CollapsibleCallbacksAfterToggle = [];
-
-/**
- * Bind collapsible behavior to a given container.
- */
-Drupal.CTools.bindCollapsible = function () {
-  var $container = $(this);
-
-  // Allow the specification of the 'no container' class, which means the
-  // handle and the container can be completely independent.
-  if ($container.hasClass('ctools-no-container') && $container.attr('id')) {
-    // In this case, the container *is* the handle and the content is found
-    // by adding '-content' to the id. Obviously, an id is required.
-    var handle = $container;
-    var content = $('#' + $container.attr('id') + '-content');
-  }
-  else {
-    var handle = $container.children('.ctools-collapsible-handle');
-    var content = $container.children('div.ctools-collapsible-content');
-  }
-
-  if (content.length) {
-    // Create the toggle item and place it in front of the toggle.
-    var toggle = $('<span class="ctools-toggle"></span>');
-    handle.before(toggle);
-
-    // If the remember class is set, check to see if we have a remembered
-    // state stored.
-    if ($container.hasClass('ctools-collapsible-remember') && $container.attr('id')) {
-      var state = Drupal.CTools.Collapsible.getState($container.attr('id'));
-      if (state == 1) {
-        $container.removeClass('ctools-collapsed');
-      }
-      else if (state == -1) {
-        $container.addClass('ctools-collapsed');
-      }
-    }
-
-    // If we should start collapsed, do so:
-    if ($container.hasClass('ctools-collapsed')) {
-      toggle.toggleClass('ctools-toggle-collapsed');
-      content.hide();
-    }
-
-    var afterToggle = function () {
-      if (Drupal.CTools.CollapsibleCallbacksAfterToggle) {
-        for (i in Drupal.CTools.CollapsibleCallbacksAfterToggle) {
-          Drupal.CTools.CollapsibleCallbacksAfterToggle[i]($container, handle, content, toggle);
-        }
-      }
-    }
-
-    var clickMe = function () {
-      if (Drupal.CTools.CollapsibleCallbacks) {
-        for (i in Drupal.CTools.CollapsibleCallbacks) {
-          Drupal.CTools.CollapsibleCallbacks[i]($container, handle, content, toggle);
-        }
-      }
-      content.slideToggle(100, afterToggle);
-      toggle.toggleClass('ctools-toggle-collapsed');
-
-      // If we're supposed to remember the state of this class, do so.
+      // If the remember class is set, check to see if we have a remembered
+      // state stored.
       if ($container.hasClass('ctools-collapsible-remember') && $container.attr('id')) {
-        var state = toggle.hasClass('ctools-toggle-collapsed') ? -1 : 1;
-        Drupal.CTools.Collapsible.setState($container.attr('id'), state);
+        var state = Drupal.CTools.Collapsible.getState($container.attr('id'));
+        if (state == 1) {
+          $container.removeClass('ctools-collapsed');
+        }
+        else if (state == -1) {
+          $container.addClass('ctools-collapsed');
+        }
       }
+
+      // If we should start collapsed, do so:
+      if ($container.hasClass('ctools-collapsed')) {
+        toggle.toggleClass('ctools-toggle-collapsed');
+        content.hide();
+      }
+
+      var afterToggle = function () {
+        if (Drupal.CTools.CollapsibleCallbacksAfterToggle) {
+          for (i in Drupal.CTools.CollapsibleCallbacksAfterToggle) {
+            Drupal.CTools.CollapsibleCallbacksAfterToggle[i]($container, handle, content, toggle);
+          }
+        }
+      }
+
+      var clickMe = function () {
+        if (Drupal.CTools.CollapsibleCallbacks) {
+          for (i in Drupal.CTools.CollapsibleCallbacks) {
+            Drupal.CTools.CollapsibleCallbacks[i]($container, handle, content, toggle);
+          }
+        }
+        content.slideToggle(100, afterToggle);
+        toggle.toggleClass('ctools-toggle-collapsed');
+
+        // If we're supposed to remember the state of this class, do so.
+        if ($container.hasClass('ctools-collapsible-remember') && $container.attr('id')) {
+          var state = toggle.hasClass('ctools-toggle-collapsed') ? -1 : 1;
+          Drupal.CTools.Collapsible.setState($container.attr('id'), state);
+        }
+      }
+
+      // Let both the toggle and the handle be clickable.
+      toggle.click(clickMe);
+      handle.click(clickMe);
     }
+  };
 
-    // Let both the toggle and the handle be clickable.
-    toggle.click(clickMe);
-    handle.click(clickMe);
+  /**
+   * Support Drupal's 'behaviors' system for binding.
+   */
+  Drupal.behaviors.CToolsCollapsible = function(context) {
+    $('.ctools-collapsible-container:not(.ctools-collapsible-processed)', context)
+      .each(Drupal.CTools.bindCollapsible)
+      .addClass('ctools-collapsible-processed');
   }
-};
-
-/**
- * Support Drupal's 'behaviors' system for binding.
- */
-Drupal.behaviors.CToolsCollapsible = function(context) {
-  $('.ctools-collapsible-container:not(.ctools-collapsible-processed)', context)
-    .each(Drupal.CTools.bindCollapsible)
-    .addClass('ctools-collapsible-processed');
-}
+})(jQuery);
