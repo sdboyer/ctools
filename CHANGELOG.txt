@@ -29,6 +29,7 @@ Add a couple of support functions for ctools_set_page_token that are meant to be
 #592692 by johnskulski: use theme_links instead of theme('links') for dropdown because we do not actually want a theme to change this output.
 #547686: Allow view panes to better respect the default pager settings.
 #424548: Add a warning about overridng pager settings with Views AJAX.
+#555802: Add an administrative title to custom content panes to make them easier to manage.
 
 ctools 6.x-1.0
 ==============

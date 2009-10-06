@@ -24,7 +24,7 @@ function ctools_custom_ctools_content_types() {
     // that.
     'top level' => TRUE,
     'category' => t('Custom'),
-    'defaults' => array('title' => '', 'body' => '', 'format' => FILTER_FORMAT_DEFAULT, 'substitute' => TRUE),
+    'defaults' => array('admin_title' => '', 'title' => '', 'body' => '', 'format' => FILTER_FORMAT_DEFAULT, 'substitute' => TRUE),
     // render callback is automatically deduced:
     // 'render callback' => 'ctools_custom_content_type_render',
     'js' => array('misc/autocomplete.js', 'misc/textarea.js', 'misc/collapse.js'),
@@ -56,8 +56,9 @@ function ctools_custom_content_type_render($subtype, $conf, $args, $contexts) {
  */
 function ctools_custom_content_type_admin_title($subtype, $conf) {
   $output = t('Custom');
-  if (!empty($conf['title'])) {
-    $output .= " (" . filter_xss_admin($conf['title']) . ")";
+  $title = !empty($conf['admin_title']) ? $conf['admin_title'] : $conf['title'];
+  if ($title) {
+    $output = t('Custom: @title', array('@title' => $title));
   }
   return $output;
 }
@@ -99,11 +100,19 @@ function ctools_custom_content_type_admin_info($subtype, $conf) {
  */
 function ctools_custom_content_type_edit_form(&$form, &$form_state) {
   $conf = $form_state['conf'];
+  $form['admin_title'] = array(
+    '#type' => 'textfield',
+    '#default_value' => isset($conf['admin_title']) ? $conf['admin_title'] : '',
+    '#title' => t('Administrative title'),
+    '#description' => t('This title will be used administratively to identify this pane. If blank, the regular title will be used.'),
+  );
+
   $form['title'] = array(
     '#type' => 'textfield',
     '#default_value' => $conf['title'],
     '#title' => t('Title'),
   );
+
   $form['body_field']['body'] = array(
     '#title' => t('Body'),
     '#type' => 'textarea',
