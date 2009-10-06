@@ -19,6 +19,7 @@ function ctools_node_ctools_contexts() {
     'settings form' => 'ctools_context_node_settings_form',
     'settings form validate' => 'ctools_context_node_settings_form_validate',
     'settings form submit' => 'ctools_context_node_settings_form_submit',
+    'defaults' => array('nid' => ''),
     'keyword' => 'node',
     'context name' => 'node',
     'convert list' => 'ctools_context_node_convert_list',

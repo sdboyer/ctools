@@ -1413,13 +1413,22 @@ function ctools_access_new_test($plugin) {
     }
   }
 
-  // Setup plugin defaults.
+
+  $default = NULL;
   if (isset($plugin['default'])) {
-    if (is_array($plugin['default'])) {
-      $test['settings'] = $plugin['default'];
+    $default = isset($plugin['default']);
+  }
+  elseif (isset($plugin['defaults'])) {
+    $default = isset($plugin['defaults']);
+  }
+
+  // Setup plugin defaults.
+  if (isset($default)) {
+    if (is_array($default)) {
+      $test['settings'] = $default;
     }
-    else if (function_exists($plugin['default'])) {
-      $test['settings'] = $plugin['default']();
+    else if (function_exists($default)) {
+      $test['settings'] = $default();
     }
     else {
       $test['settings'] = array();

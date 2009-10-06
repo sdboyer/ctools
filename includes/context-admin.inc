@@ -31,6 +31,7 @@ function ctools_context_info($type = NULL) {
         'form id' => 'ctools_edit_argument_form',
         'key' => 'arguments', // the key that data will be stored on an object, eg $panel_page
         'sortable' => TRUE,
+        'settings' => 'argument_settings',
       ),
       'relationship' => array(
         'title' => t('Relationships'),
@@ -41,6 +42,7 @@ function ctools_context_info($type = NULL) {
         'form id' => 'ctools_edit_relationship_form',
         'key' => 'relationships',
         'sortable' => FALSE,
+        'settings' => 'relationship_settings',
       ),
       'context' => array(
         'title' => t('Contexts'),
@@ -51,6 +53,7 @@ function ctools_context_info($type = NULL) {
         'form id' => 'ctools_edit_context_form',
         'key' => 'contexts',
         'sortable' => FALSE,
+        'settings' => 'context_settings',
       ),
       'requiredcontext' => array(
         'title' => t('Required contexts'),
@@ -388,6 +391,10 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     'id' => $id,
     'name' => $name,
   );
+
+  if (isset($type_info['settings'])) {
+    $ref[$position][$type_info['settings']] = isset($info['defaults']) ? $info['defaults'] : array();
+  }
 
   $base_contexts = isset($object->base_contexts) ? $object->base_contexts : array();
   $contexts = ctools_context_load_contexts($object, TRUE, $base_contexts);
