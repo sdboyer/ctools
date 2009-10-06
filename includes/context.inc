@@ -1416,10 +1416,10 @@ function ctools_access_new_test($plugin) {
 
   $default = NULL;
   if (isset($plugin['default'])) {
-    $default = isset($plugin['default']);
+    $default = $plugin['default'];
   }
   elseif (isset($plugin['defaults'])) {
-    $default = isset($plugin['defaults']);
+    $default = $plugin['defaults'];
   }
 
   // Setup plugin defaults.
