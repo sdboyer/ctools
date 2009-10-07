@@ -277,6 +277,7 @@ function ctools_content_render($type, $subtype, $conf, $keywords = array(), $arg
     if (!empty($conf['override_title'])) {
       // Give previous title as an available substitution here.
       $keywords['%title'] = empty($content->title) ? '' : $content->title;
+      $content->original_title = $content->title;
       $content->title = $conf['override_title_text'];
     }
 
