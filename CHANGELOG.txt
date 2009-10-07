@@ -31,6 +31,7 @@ Add a couple of support functions for ctools_set_page_token that are meant to be
 #424548: Add a warning about overridng pager settings with Views AJAX.
 #555802: Add an administrative title to custom content panes to make them easier to manage.
 #556870: Node edit settings form context autocomplete was not working correctly.
+#491884 by ayalon: Provide blank substitutions for optional contexts that do not appear.
 
 ctools 6.x-1.0
 ==============
