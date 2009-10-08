@@ -613,6 +613,9 @@ function ctools_context_keyword_substitute($string, $keywords, $contexts) {
         if (isset($context_keywords[$context])) {
           $keywords['%' . $keyword] = ctools_context_convert_context($context_keywords[$context], $converter);
         }
+        else {
+          $keywords['%' . $keyword] = '';
+        }
       }
       else {
         if (isset($context_keywords[$keyword])) {
