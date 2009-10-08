@@ -114,6 +114,9 @@ function ctools_css_clear($id) {
 
   if (file_exists($cache->filename)) {
     file_delete($cache->filename);
+    // If we remove an existing file, there may be cached pages that refer
+    // to it. We must get rid of them:
+    cache_clear_all();
   }
 
   db_query("DELETE FROM {ctools_css_cache} WHERE cid = '%s'", $id);
