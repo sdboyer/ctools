@@ -38,20 +38,6 @@ function ctools_requirements($phase) {
 }
 
 /**
- * Implementation of hook_install()
- */
-function ctools_install() {
-  drupal_install_schema('ctools');
-}
-
-/**
- * Implementation of hook_uninstall()
- */
-function ctools_uninstall() {
-  drupal_uninstall_schema('ctools');
-}
-
-/**
  * Implementation of hook_schemea
  */
 function ctools_schema() {

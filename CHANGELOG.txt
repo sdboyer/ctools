@@ -3,6 +3,7 @@ Current API VERSION: 1.1.1. See API.txt for more information.
 ctools 7.x-1.x-dev
 ==================
 
+#589636 by sun: Updated for automatic database schema installation.
 #589636 by sun: Updated for all 'class' attributes are an array.
 #589636 by sun: Updated .info files for D7 and new class registry.
 

@@ -41,6 +41,7 @@ function ctools_profile_fields_content_type_render($subtype, $conf, $panel_args,
     if (is_array($account->content[$category])) {
       foreach ($account->content[$category] as $field) {
         if (is_array($field['#attributes'])) {
+          // @todo 'class' is *always* an array now. 04/10/2009 sun
           $vars[$field['#attributes']['class']]['title'] = $field['#title'];
           $vars[$field['#attributes']['class']]['value'] = $field['#value'];
         }
