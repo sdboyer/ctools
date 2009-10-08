@@ -84,13 +84,13 @@ function theme_page_manager_handler_rearrange($form) {
 
       $row[] = array(
         'data' => drupal_render($element['title']),
-        'class' => 'page-manager-handler',
+        'class' => array('page-manager-handler'),
       );
 
-      $element['weight']['#attributes']['class'] = 'weight';
+      $element['weight']['#attributes']['class'][] = 'weight';
       $row[] = drupal_render($element['weight']);
 
-      $rows[] = array('data' => $row, 'class' => 'draggable', 'id' => 'page-manager-row-' . $id);
+      $rows[] = array('data' => $row, 'class' => array('draggable'), 'id' => 'page-manager-row-' . $id);
     }
   }
 
@@ -99,7 +99,7 @@ function theme_page_manager_handler_rearrange($form) {
   }
 
   $header = array(
-    array('data' => t('Variant'), 'class' => 'page-manager-handler'),
+    array('data' => t('Variant'), 'class' => array('page-manager-handler')),
     t('Weight'),
   );
 

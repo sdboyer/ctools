@@ -132,7 +132,7 @@ function ctools_access_admin_form(&$form_state) {
   );
   // This sets up the URL for the add access modal.
   $form['add-button']['add-url'] = array(
-    '#attributes' => array('class' => "ctools-access-add-url"),
+    '#attributes' => array('class' => array("ctools-access-add-url")),
     '#type' => 'hidden',
     '#value' => url("ctools/context/ajax/access/add/$fragment", array('absolute' => TRUE)),
   );
@@ -147,14 +147,14 @@ function ctools_access_admin_form(&$form_state) {
 
   $form['add-button']['type'] = array(
     // This ensures that the form item is added to the URL.
-    '#attributes' => array('class' => "ctools-access-add-url"),
+    '#attributes' => array('class' => array("ctools-access-add-url")),
     '#type' => 'select',
     '#options' => $options,
   );
 
   $form['add-button']['add'] = array(
     '#type' => 'submit',
-    '#attributes' => array('class' => 'ctools-use-modal'),
+    '#attributes' => array('class' => array('ctools-use-modal')),
     '#id' => "ctools-access-add",
     '#value' => t('Add'),
   );
@@ -197,23 +197,23 @@ function ctools_access_admin_render_table($access, $fragment, $contexts) {
     $plugin = ctools_get_access_plugin($test['name']);
     $title  = isset($plugin['title']) ? $plugin['title'] : t('Broken/missing access plugin %plugin', array('%plugin' => $test['name']));
 
-    $row[] = array('data' => $title, 'class' => 'ctools-access-title');
+    $row[] = array('data' => $title, 'class' => array('ctools-access-title'));
 
     $description = ctools_access_summary($plugin, $contexts, $test);
-    $row[] = array('data' => $description, 'class' => 'ctools-access-description');
+    $row[] = array('data' => $description, 'class' => array('ctools-access-description'));
 
     $operations = ctools_modal_image_button(ctools_image_path('icon-configure.png'), "ctools/context/ajax/access/configure/$fragment/$id", t('Configure settings for this item.'));
     $operations .= ctools_ajax_image_button(ctools_image_path('icon-delete.png'), "ctools/context/ajax/access/delete/$fragment/$id", t('Remove this item.'));
 
-    $row[] = array('data' => $operations, 'class' => 'ctools-access-operations', 'align' => 'right');
+    $row[] = array('data' => $operations, 'class' => array('ctools-access-operations'), 'align' => 'right');
 
     $rows[] = $row;
   }
 
   $header = array(
-    array('data' => t('Title'), 'class' => 'ctools-access-title'),
-    array('data' => t('Description'), 'class' => 'ctools-access-description'),
-    array('data' => '', 'class' => 'ctools-access-operations', 'align' => 'right'),
+    array('data' => t('Title'), 'class' => array('ctools-access-title')),
+    array('data' => t('Description'), 'class' => array('ctools-access-description')),
+    array('data' => '', 'class' => array('ctools-access-operations'), 'align' => 'right'),
   );
 
   if (empty($rows)) {

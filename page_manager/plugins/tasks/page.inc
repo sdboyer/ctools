@@ -572,9 +572,9 @@ function page_manager_page_admin_summary($task, $subtask) {
   $rows = array();
 
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Storage')),
-    array('class' => t('page-summary-data'), 'data' => $subtask['storage']),
-    array('class' => t('page-summary-operation'), 'data' => ''),
+    array('class' => array('page-summary-label'), 'data' => t('Storage')),
+    array('class' => array('page-summary-data'), 'data' => $subtask['storage']),
+    array('class' => array('page-summary-operation'), 'data' => ''),
   );
 
   if (!empty($page->disabled)) {
@@ -587,9 +587,9 @@ function page_manager_page_admin_summary($task, $subtask) {
   }
 
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Status')),
-    array('class' => t('page-summary-data'), 'data' => $text),
-    array('class' => t('page-summary-operation'), 'data' => $link),
+    array('class' => array('page-summary-label'), 'data' => t('Status')),
+    array('class' => array('page-summary-data'), 'data' => $text),
+    array('class' => array('page-summary-operation'), 'data' => $link),
   );
 
 
@@ -614,8 +614,8 @@ function page_manager_page_admin_summary($task, $subtask) {
 
   if ($message) {
     $rows[] = array(
-      array('class' => t('page-summary-data'), 'data' => $message, 'colspan' => 2),
-      array('class' => t('page-summary-operation'), 'data' => $link),
+      array('class' => array('page-summary-data'), 'data' => $message, 'colspan' => 2),
+      array('class' => array('page-summary-operation'), 'data' => $link),
     );
   }
 
@@ -627,9 +627,9 @@ function page_manager_page_admin_summary($task, $subtask) {
   }
 
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Path')),
-    array('class' => t('page-summary-data'), 'data' => $path),
-    array('class' => t('page-summary-operation'), 'data' => $link),
+    array('class' => array('page-summary-label'), 'data' => t('Path')),
+    array('class' => array('page-summary-data'), 'data' => $path),
+    array('class' => array('page-summary-operation'), 'data' => $link),
   );
 
   if (empty($access['plugins'])) {
@@ -648,9 +648,9 @@ function page_manager_page_admin_summary($task, $subtask) {
   $link = l(t('Edit'), page_manager_edit_url($task_name, array('settings', 'access')));
 
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Access')),
-    array('class' => t('page-summary-data'), 'data' => $access),
-    array('class' => t('page-summary-operation'), 'data' => $link),
+    array('class' => array('page-summary-label'), 'data' => t('Access')),
+    array('class' => array('page-summary-data'), 'data' => $access),
+    array('class' => array('page-summary-operation'), 'data' => $link),
   );
 
   $menu_options = array(
@@ -683,9 +683,9 @@ function page_manager_page_admin_summary($task, $subtask) {
 
   $link = l(t('Edit'), page_manager_edit_url($task_name, array('settings', 'menu')));
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Menu')),
-    array('class' => t('page-summary-data'), 'data' => $menu),
-    array('class' => t('page-summary-operation'), 'data' => $link),
+    array('class' => array('page-summary-label'), 'data' => t('Menu')),
+    array('class' => array('page-summary-data'), 'data' => $menu),
+    array('class' => array('page-summary-operation'), 'data' => $link),
   );
 
   $output .= theme('table', array(), $rows, array('id' => 'page-manager-page-summary'));

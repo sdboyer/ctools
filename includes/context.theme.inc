@@ -93,8 +93,8 @@ function theme_ctools_context_item_form($form) {
   if (!empty($form['buttons'])) {
     // Display the add context item.
     $row   = array();
-    $row[] = array('data' => drupal_render($form['buttons'][$type]['item']), 'class' => 'title');
-    $row[] = array('data' => drupal_render($form['buttons'][$type]['add']), 'class' => 'add', 'width' => "60%");
+    $row[] = array('data' => drupal_render($form['buttons'][$type]['item']), 'class' => array('title'));
+    $row[] = array('data' => drupal_render($form['buttons'][$type]['add']), 'class' => array('add'), 'width' => "60%");
     $output .= '<div class="buttons">';
     $output .= drupal_render($form['buttons'][$type]);
     $output .= theme('table', array(), array($row), array('id' => $type . '-add-table'));

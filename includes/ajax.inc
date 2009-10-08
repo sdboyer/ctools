@@ -44,7 +44,7 @@ function ctools_ajax_image_button($image, $dest, $alt, $class = '') {
  *   to use-ajax.
  */
 function ctools_ajax_text_button($text, $dest, $alt, $class = '', $type = 'use-ajax') {
-  return l($text, $dest, array('html' => TRUE, 'attributes' => array('class' => "$type $class", 'title' => $alt)));
+  return l($text, $dest, array('html' => TRUE, 'attributes' => array('class' => array($type, $class), 'title' => $alt)));
 }
 
 /**
@@ -125,13 +125,13 @@ function ctools_ajax_associate_url_to_element(&$form, &$form_element, $dest, $ty
     //Create a unique ID to associate $form_element and hidden elements since we dont have an ID
     $form_element['#id'] = uniqid('ctools-ajax-url-');
 
-    $form_element['#attributes']['class'] = $type;
+    $form_element['#attributes']['class'] = array($type);
   }
 
   //Add hidden form element to hold base URL
   $form[$form_element['#id'] . '-url'] = array(
     '#type' => 'hidden',
     '#value' => $dest,
-    '#attributes' => array('class' =>  $form_element['#id'] . '-url'),
+    '#attributes' => array('class' => array($form_element['#id'] . '-url')),
   );
 }

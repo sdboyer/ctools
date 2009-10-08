@@ -858,14 +858,14 @@ function page_manager_page_form_argument(&$form, &$form_state) {
 
     // The URL for this ajax button
     $form['table']['argument'][$keyword]['change-url'] = array(
-      '#attributes' => array('class' => "page-manager-context-$keyword-change-url"),
+      '#attributes' => array('class' => array("page-manager-context-$keyword-change-url")),
       '#type' => 'hidden',
       '#value' => url("admin/build/pages/argument/change/$task_name/$keyword", array('absolute' => TRUE)),
     );
     $form['table']['argument'][$keyword]['change'] = array(
       '#type' => 'submit',
       '#value' => t('Change'),
-      '#attributes' => array('class' => 'ctools-use-modal'),
+      '#attributes' => array('class' => array('ctools-use-modal')),
       '#id' => "page-manager-context-$keyword-change",
     );
 
@@ -875,14 +875,14 @@ function page_manager_page_form_argument(&$form, &$form_state) {
     if (!empty($plugin)) {
       // The URL for this ajax button
       $form['table']['argument'][$keyword]['settings-url'] = array(
-        '#attributes' => array('class' => "page-manager-context-$keyword-settings-url"),
+        '#attributes' => array('class' => array("page-manager-context-$keyword-settings-url")),
         '#type' => 'hidden',
         '#value' => url("admin/build/pages/argument/settings/$task_name/$keyword", array('absolute' => TRUE)),
       );
       $form['table']['argument'][$keyword]['settings'] = array(
         '#type' => 'submit',
         '#value' => t('Settings'),
-        '#attributes' => array('class' => 'ctools-use-modal'),
+        '#attributes' => array('class' => array('ctools-use-modal')),
         '#id' => "page-manager-context-$keyword-settings",
       );
     }
@@ -894,10 +894,10 @@ function page_manager_page_form_argument(&$form, &$form_state) {
  */
 function theme_page_manager_page_form_argument_table($form) {
   $header = array(
-    array('data' => t('Argument'), 'class' => 'page-manager-argument'),
-    array('data' => t('Position in path'), 'class' => 'page-manager-position'),
-    array('data' => t('Context assigned'), 'class' => 'page-manager-context'),
-    array('data' => t('Operations'), 'class' => 'page-manager-operations'),
+    array('data' => t('Argument'), 'class' => array('page-manager-argument')),
+    array('data' => t('Position in path'), 'class' => array('page-manager-position')),
+    array('data' => t('Context assigned'), 'class' => array('page-manager-context')),
+    array('data' => t('Operations'), 'class' => array('page-manager-operations')),
   );
 
   $rows = array();

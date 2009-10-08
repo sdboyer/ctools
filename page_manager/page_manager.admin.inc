@@ -71,14 +71,14 @@ function page_manager_list_page($js = NULL) {
   $form = ctools_build_form('page_manager_list_pages_form', $form_state);
 
   $header = array(
-    array('data' => t('Type'), 'class' => 'page-manager-page-type'),
-    array('data' => t('Name'), 'class' => 'page-manager-page-name'),
-    array('data' => t('Title'), 'class' => 'page-manager-page-title'),
-    array('data' => t('Path'), 'class' => 'page-manager-page-path'),
-    array('data' => t('Storage'), 'class' => 'page-manager-page-storage'),
+    array('data' => t('Type'), 'class' => array('page-manager-page-type')),
+    array('data' => t('Name'), 'class' => array('page-manager-page-name')),
+    array('data' => t('Title'), 'class' => array('page-manager-page-title')),
+    array('data' => t('Path'), 'class' => array('page-manager-page-path')),
+    array('data' => t('Storage'), 'class' => array('page-manager-page-storage')),
   );
 
-  $header[] = array('data' => t('Operations'), 'class' => 'page-manager-page-operations');
+  $header[] = array('data' => t('Operations'), 'class' => array('page-manager-page-operations'));
   $table = theme('table', $header, $pages['rows'], array('id' => 'page-manager-list-pages'));
 
   $operations = '<div id="page-manager-links" class="links">' . theme('links', $pages['operations']) . '</div>';
@@ -120,13 +120,13 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
       $task_name = $task['name'];
     }
 
-    $class = 'page-task-' . $id;
+    $class = array('page-task-' . $id);
     if (isset($task['row class'])) {
-      $class .= ' ' . $task['row class'];
+      $class[] = $task['row class'];
     }
 
     if (!empty($task['disabled'])) {
-      $class .= ' page-manager-disabled';
+      $class[] = 'page-manager-disabled';
     }
 
     $path = array();
@@ -148,15 +148,15 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
 
     $type = isset($task['admin type']) ? $task['admin type'] : t('System');
     $pages['types'][$type] = $type;
-    $row['data']['type'] = array('data' => $type, 'class' => 'page-manager-page-type');
+    $row['data']['type'] = array('data' => $type, 'class' => array('page-manager-page-type'));
 
-    $row['data']['name'] = array('data' => $task_name, 'class' => 'page-manager-page-name');
-    $row['data']['title'] = array('data' => $task['admin title'], 'class' => 'page-manager-page-title');
-    $row['data']['path'] = array('data' => $visible_path, 'class' => 'page-manager-page-path');
+    $row['data']['name'] = array('data' => $task_name, 'class' => array('page-manager-page-name'));
+    $row['data']['title'] = array('data' => $task['admin title'], 'class' => array('page-manager-page-title'));
+    $row['data']['path'] = array('data' => $visible_path, 'class' => array('page-manager-page-path'));
 
     $storage = isset($task['storage']) ? $task['storage'] : t('In code');
     $pages['storages'][$storage] = $storage;
-    $row['data']['storage'] = array('data' => $storage, 'class' => 'page-manager-page-storage');
+    $row['data']['storage'] = array('data' => $storage, 'class' => array('page-manager-page-storage'));
 
 
 /*
@@ -192,7 +192,7 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
       }
     }
 
-    $row['data']['operations'] = array('data' => theme('links', $operations), 'class' => 'page-manager-page-operations');
+    $row['data']['operations'] = array('data' => theme('links', $operations), 'class' => array('page-manager-page-operations'));
 
     $pages['disabled'][$task_name] = !empty($task['disabled']);
     $pages['rows'][$task_name] = $row;
@@ -273,14 +273,14 @@ function page_manager_list_pages_form(&$form_state) {
     '#type' => 'submit',
     '#id' => 'edit-pages-apply',
     '#value' => t('Apply'),
-    '#attributes' => array('class' => 'ctools-use-ajax'),
+    '#attributes' => array('class' => array('ctools-use-ajax')),
   );
 
   $form['reset'] = array(
     '#type' => 'submit',
     '#id' => 'edit-pages-reset',
     '#value' => t('Reset'),
-    '#attributes' => array('class' => 'ctools-use-ajax'),
+    '#attributes' => array('class' => array('ctools-use-ajax')),
   );
 
   ctools_add_js('ajax-responder');
@@ -373,7 +373,7 @@ function page_manager_edit_page($page) {
 
   $operations = page_manager_get_operations($page);
   $args = array('summary');
-  $rendered_operations = page_manager_render_operations($page, $operations, $args, array('class' => 'operations-main'), 'nav');
+  $rendered_operations = page_manager_render_operations($page, $operations, $args, array('class' => array('operations-main')), 'nav');
   $content = page_manager_get_operation_content(FALSE, $page, $args, $operations);
 
   $output = theme('page_manager_edit_page', $page, $form, $rendered_operations, $content);
@@ -410,7 +410,7 @@ function page_manager_edit_page_operation() {
   // operations, such as renaming or adding a handler. Thus we get a new set
   // of operations.
   $operations = page_manager_get_operations($page);
-  $rendered_operations = page_manager_render_operations($page, $operations, $args, array('class' => 'operations-main'), 'nav');
+  $rendered_operations = page_manager_render_operations($page, $operations, $args, array('class' => array('operations-main')), 'nav');
 
   // Since this form should never be submitted to this page, process it late so
   // that we can be sure it notices changes.
@@ -465,7 +465,7 @@ function page_manager_get_operations($page, $operations = NULL) {
       'actions' => array(
         'type' => 'group',
         'title' => '',
-        'class' => 'operations-actions',
+        'class' => array('operations-actions'),
         'location' => 'primary',
         'children' => array(),
       ),
@@ -611,7 +611,7 @@ function page_manager_get_handler_operations(&$page) {
   ctools_include('export');
   $group = array(
     'type' => 'group',
-    'class' => 'operations-handlers',
+    'class' => array('operations-handlers'),
     'title' => t('Variants'),
   );
 
@@ -628,7 +628,7 @@ function page_manager_get_handler_operations(&$page) {
 
     $operations[$id] = array(
       'type' => 'group',
-      'class' => 'operations-handlers-' . $id,
+      'class' => array('operations-handlers-' . $id),
       'title' => page_manager_get_handler_title($plugin, $handler, $page->task, $page->subtask_id),
       'collapsible' => $collapsible,
       'children' => array(),
@@ -636,7 +636,7 @@ function page_manager_get_handler_operations(&$page) {
 
     $operations[$id]['children']['actions'] = array(
       'type' => 'group',
-      'class' => 'operations-handlers-actions-' . $id,
+      'class' => array('operations-handlers-actions-' . $id),
       'title' => t('Variant operations'),
       'children' => array(),
       'location' => $id,
@@ -1042,29 +1042,29 @@ function page_manager_render_operations(&$page, $operations, $active_trail, $att
 
     // We only render an li for things in the same nav tree.
     if (empty($operation['location']) || $operation['location'] == $location) {
-      $class = $attributes['class'];
+      $class = array($attributes['class']);
       if ($id == $first) {
-        $class .= ' operation-first';
+        $class[] = 'operation-first';
       }
       else if ($id == $last) {
-        $class .= ' operation-last';
+        $class[] = 'operation-last';
       }
 
       if (empty($operation['silent']) && !empty($page->changes[$current_path])) {
-        $class .= $operation['type'] == 'group' ? ' changed-group' : ' changed';
+        $class[] = $operation['type'] == 'group' ? 'changed-group' : 'changed';
       }
       else {
-        $class .= ' not-changed';
+        $class[] = 'not-changed';
       }
 
       if ($active == $id) {
-        $class .= $operation['type'] == 'group' ? ' active-group' : ' active';
+        $class[] = $operation['type'] == 'group' ? 'active-group' : 'active';
       }
       else {
-        $class .= ' not-active';
+        $class[] = 'not-active';
       }
 
-      $output[$location] .= '<li class="' . $class . '">';
+      $output[$location] .= '<li class="' . implode(' ', $class) . '">';
     }
 
     switch ($operation['type']) {
@@ -1084,12 +1084,12 @@ function page_manager_render_operations(&$page, $operations, $active_trail, $att
           }
         }
 
-        $class = 'page-manager-operation';
+        $class = array('page-manager-operation');
         if (!isset($operation['ajax']) || !empty($operation['ajax'])) {
-          $class .= ' ctools-use-ajax';
+          $class[] = 'ctools-use-ajax';
         }
         if (!empty($operation['class'])) {
-          $class .= ' ' . $operation['class'];
+          $class[] = $operation['class'];
         }
 
         $description = isset($operation['description']) ? $operation['description'] : '';

@@ -255,23 +255,23 @@ function page_manager_term_view_admin_summary($task, $subtask) {
   $task_name = page_manager_make_task_name($task['name'], $subtask['name']);
 
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Path')),
-    array('class' => t('page-summary-data'), 'data' => 'taxonomy/term/%term'),
-    array('class' => t('page-summary-operation'), 'data' => ''),
+    array('class' => array('page-summary-label'), 'data' => t('Path')),
+    array('class' => array('page-summary-data'), 'data' => 'taxonomy/term/%term'),
+    array('class' => array('page-summary-operation'), 'data' => ''),
   );
 
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Access')),
-    array('class' => t('page-summary-data'), 'data' => t('This page is publicly accessible.')),
-    array('class' => t('page-summary-operation'), 'data' => ''),
+    array('class' => array('page-summary-label'), 'data' => t('Access')),
+    array('class' => array('page-summary-data'), 'data' => t('This page is publicly accessible.')),
+    array('class' => array('page-summary-operation'), 'data' => ''),
   );
 
   $menu = t('No menu entry');
 
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Menu')),
-    array('class' => t('page-summary-data'), 'data' => $menu),
-    array('class' => t('page-summary-operation'), 'data' => ''),
+    array('class' => array('page-summary-label'), 'data' => t('Menu')),
+    array('class' => array('page-summary-data'), 'data' => $menu),
+    array('class' => array('page-summary-operation'), 'data' => ''),
   );
 
   if (variable_get('page_manager_term_view_type', 'multiple') == 'multiple') {
@@ -282,9 +282,9 @@ function page_manager_term_view_admin_summary($task, $subtask) {
   }
 
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('%term')),
-    array('class' => t('page-summary-data'), 'data' => $message),
-    array('class' => t('page-summary-operation'), 'data' => ''),
+    array('class' => array('page-summary-label'), 'data' => t('%term')),
+    array('class' => array('page-summary-data'), 'data' => $message),
+    array('class' => array('page-summary-operation'), 'data' => ''),
   );
 
   if (variable_get('page_manager_taxonomy_breadcrumb', TRUE)) {
@@ -295,9 +295,9 @@ function page_manager_term_view_admin_summary($task, $subtask) {
   }
 
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Breadcrumb')),
-    array('class' => t('page-summary-data'), 'data' => $message),
-    array('class' => t('page-summary-operation'), 'data' => ''),
+    array('class' => array('page-summary-label'), 'data' => t('Breadcrumb')),
+    array('class' => array('page-summary-data'), 'data' => $message),
+    array('class' => array('page-summary-operation'), 'data' => ''),
   );
 
   $output = theme('table', array(), $rows, array('id' => 'page-manager-page-summary'));

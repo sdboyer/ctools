@@ -288,21 +288,21 @@ function ctools_context_add_item_table_buttons($type, $module, &$form, $availabl
 
     // The URL for this ajax button
     $form['buttons'][$type]['add-url'] = array(
-      '#attributes' => array('class' => "ctools-$type-add-url"),
+      '#attributes' => array('class' => array("ctools-$type-add-url")),
       '#type' => 'hidden',
       '#value' => url("ctools/context/ajax/add/$module/$type/$name", array('absolute' => TRUE)),
     );
 
     // This also will be in the URL.
     $form['buttons'][$type]['item'] = array(
-      '#attributes' => array('class' => "ctools-$type-add-url"),
+      '#attributes' => array('class' => array("ctools-$type-add-url")),
       '#type' => 'select',
       '#options' => $available_contexts,
     );
 
     $form['buttons'][$type]['add'] = array(
       '#type' => 'submit',
-      '#attributes' => array('class' => 'ctools-use-modal'),
+      '#attributes' => array('class' => array('ctools-use-modal')),
       '#id' => "ctools-$type-add",
       '#value' => $type_info['add button'],
     );
@@ -327,7 +327,7 @@ function ctools_context_add_item_to_form($module, $type, $name, &$form, $positio
     $form['position'] = array(
       '#type' => 'weight',
       '#default_value' => $position,
-      '#attributes' => array('class' => 'drag-position'),
+      '#attributes' => array('class' => array('drag-position')),
     );
   }
 

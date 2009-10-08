@@ -218,7 +218,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
 
     $button_attributes = array();
     if (!empty($form_state['ajax']) && empty($form_state['modal'])) {
-      $button_attributes = array('class' => 'ctools-use-ajax');
+      $button_attributes = array('class' => array('ctools-use-ajax'));
     }
 
     if (!empty($form_info['show back']) && isset($form_state['previous'])) {
