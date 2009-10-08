@@ -8,6 +8,7 @@ ctools 7.x-1.x-dev
 #589636 by sun: Updated .info files for D7 and new class registry.
 #599136 by alex_b: Fix incorrect references to object unique name in export.inc.
 #580342: Fix Page Manager variant import, which did not work at all.
+#589342: Introduce page_manager_get_current_page() to get information about the current page manager page.
 
 ctools 6.x-1.x-dev
 ==================
