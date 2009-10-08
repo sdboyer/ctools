@@ -7,6 +7,7 @@ ctools 7.x-1.x-dev
 #589636 by sun: Updated for all 'class' attributes are an array.
 #589636 by sun: Updated .info files for D7 and new class registry.
 #599136 by alex_b: Fix incorrect references to object unique name in export.inc.
+#580342: Fix Page Manager variant import, which did not work at all.
 
 ctools 6.x-1.x-dev
 ==================
