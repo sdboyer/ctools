@@ -146,8 +146,8 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
     $object->type = t('Normal');
     $object->export_type = EXPORT_IN_DATABASE;
     // Determine if default object is enabled or disabled.
-    if (isset($status[$object->name])) {
-      $object->disabled = $status[$object->name];
+    if (isset($status[$object->{$export['key']}])) {
+      $object->disabled = $status[$object->{$export['key']}];
     }
 
     $cache[$table][$object->{$export['key']}] = $object;
@@ -268,8 +268,8 @@ function ctools_get_default_object($table, $name) {
   $object = $defaults[$name];
 
   // Determine if default object is enabled or disabled.
-  if (isset($status[$object->name])) {
-    $object->disabled = $status[$object->name];
+  if (isset($status[$object->{$export['key']}])) {
+    $object->disabled = $status[$object->{$export['key']}];
   }
 
   $object->type = t('Default');
@@ -544,14 +544,15 @@ function ctools_export_set_status($table, $name, $new_status = TRUE) {
 function ctools_export_set_object_status($object, $new_status = TRUE) {
   $table = $object->table;
   $schema = ctools_export_get_schema($table);
+  $export = $schema['export'];
   $status = variable_get($schema['export']['status'], array());
 
   // Compare
   if (!$new_status && $object->export_type & EXPORT_IN_DATABASE) {
-    unset($status[$object->name]);
+    unset($status[$object->{$export['key']}]);
   }
   else {
-    $status[$object->name] = $new_status;
+    $status[$object->{$export['key']}] = $new_status;
   }
 
   variable_set($schema['export']['status'], $status);
