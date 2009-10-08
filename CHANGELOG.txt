@@ -9,6 +9,7 @@ ctools 7.x-1.x-dev
 #599136 by alex_b: Fix incorrect references to object unique name in export.inc.
 #580342: Fix Page Manager variant import, which did not work at all.
 #589342: Introduce page_manager_get_current_page() to get information about the current page manager page.
+#564492: by Roger Lopez: Change default class includes from .inc files to .class.php files so they dont get read as plugins.
 
 ctools 6.x-1.x-dev
 ==================
