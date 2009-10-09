@@ -60,7 +60,7 @@ function page_manager_page_menu(&$items, $task) {
     $path             = array();
     $page_arguments   = array($subtask_id);
     $access_arguments = array($subtask->access);
-    $load_arguments   = array($subtask_id, '%index');
+    $load_arguments   = array($subtask_id, '%index', '%map');
 
     // Replace named placeholders with our own placeholder to load contexts.
     $position = 0;
@@ -83,7 +83,12 @@ function page_manager_page_menu(&$items, $task) {
           ctools_include('context');
           $plugin = ctools_get_argument($subtask->arguments[$name]['name']);
           if (isset($plugin['path placeholder'])) {
-            $placeholder = $plugin['path placeholder'];
+            if (function_exists($plugin['path placeholder'])) {
+              $placeholder = $plugin['path placeholder']($subtask->arguments[$name]);
+            }
+            else {
+              $placeholder = $plugin['path placeholder'];
+            }
           }
         }
         // If an argument, swap it out with our argument loader and make sure

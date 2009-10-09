@@ -33,6 +33,7 @@ Add a couple of support functions for ctools_set_page_token that are meant to be
 #556870: Node edit settings form context autocomplete was not working correctly.
 #491884 by ayalon: Provide blank substitutions for optional contexts that do not appear.
 #599136 by alex_b: Fix incorrect references to object unique name in export.inc.
+Allow the string argument to accept the entire path tail.
 
 ctools 6.x-1.0
 ==============

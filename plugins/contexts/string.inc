@@ -47,6 +47,7 @@ function ctools_context_create_string($empty, $data = NULL, $conf = FALSE) {
 
   if ($data !== FALSE ) {
     $context->data = $data;
+    $context->title = check_plain($data);
     return $context;
   }
 }
