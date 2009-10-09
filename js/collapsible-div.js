@@ -203,7 +203,15 @@
             Drupal.CTools.CollapsibleCallbacks[i]($container, handle, content, toggle);
           }
         }
-        content.slideToggle(100, afterToggle);
+
+        // If the container is a table element slideToggle does not do what
+        // we want, so use toggle() instead.
+        if ($container.is('table')) {
+          content.toggle(0, afterToggle);
+        }
+        else {
+          content.slideToggle(100, afterToggle);
+        }
         toggle.toggleClass('ctools-toggle-collapsed');
 
         // If we're supposed to remember the state of this class, do so.
