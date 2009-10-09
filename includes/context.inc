@@ -610,7 +610,7 @@ function ctools_context_keyword_substitute($string, $keywords, $contexts) {
 
       if (strpos($keyword, ':')) {
         list($context, $converter) = explode(':', $keyword);
-        if (isset($context_keywords[$context])) {
+        if (empty($context->empty) && isset($context_keywords[$context])) {
           $keywords['%' . $keyword] = ctools_context_convert_context($context_keywords[$context], $converter);
         }
         else {
@@ -619,7 +619,12 @@ function ctools_context_keyword_substitute($string, $keywords, $contexts) {
       }
       else {
         if (isset($context_keywords[$keyword])) {
-          $keywords['%' . $keyword] = $context_keywords[$keyword]->title;
+          if (empty($context_keywords[$keyword]->empty)) {
+            $keywords['%' . $keyword] = $context_keywords[$keyword]->title;
+          }
+          else {
+            $keywords['%' . $keyword] = '';
+          }
         }
       }
     }

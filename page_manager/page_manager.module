@@ -844,6 +844,16 @@ function pm_arg_load($value, $subtask, $argument) {
 }
 
 /**
+ * Special arg_load function to use %menu_tail like functionality to
+ * get everything after the arg together as a single value.
+ */
+function pm_arg_tail_load($value, $subtask, $argument, $map) {
+  $value = implode('/', array_slice($map, $argument));
+  page_manager_get_task('page');
+  return _pm_arg_load($value, $subtask, $argument);
+}
+
+/**
  * Special menu _load() function for the user:uid argument.
  *
  * This is just the normal page manager argument. It only exists so that
