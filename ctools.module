@@ -494,3 +494,15 @@ function ctools_set_callback_token($token, $callback) {
   ctools_set_page_token($string, 'callback', $callback);
   return $string;
 }
+
+/**
+ * Provide a search form with a different id so that form_alters will miss it
+ * and thus not get advanced search settings.
+ */
+function ctools_forms() {
+  $forms['ctools_search_form']= array(
+    'callback' => 'search_form',
+  );
+
+  return $forms;
+}
