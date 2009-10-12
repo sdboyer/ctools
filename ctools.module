@@ -117,18 +117,18 @@ function ctools_init() {
 
 /**
  * Central static variable storage. Modeled after Drupal 7's drupal_static().
- * 
+ *
  * @param $name
  *   Globally unique name for the variable. For a function with only one static,
- *   variable, the function name (e.g. via the PHP magic __FUNCTION__ constant) 
- *   is recommended. For a function with multiple static variables add a 
+ *   variable, the function name (e.g. via the PHP magic __FUNCTION__ constant)
+ *   is recommended. For a function with multiple static variables add a
  *   distinguishing suffix to the function name for each one.
- * @param $default_value 
+ * @param $default_value
  *   Optional default value.
- * @return $reset 
- *   TRUE to reset a specific named variable, or all variables if $name is NULL. 
- *   Resetting every variable should only be used, for example, for running unit 
- *   tests with a clean environment. Should be used only though via function 
+ * @return $reset
+ *   TRUE to reset a specific named variable, or all variables if $name is NULL.
+ *   Resetting every variable should only be used, for example, for running unit
+ *   tests with a clean environment. Should be used only though via function
  *   ctools_static_reset().
  */
 function &ctools_static($name, $default_value = NULL, $reset = FALSE) {
@@ -157,8 +157,8 @@ function &ctools_static($name, $default_value = NULL, $reset = FALSE) {
 /**
  * Reset one or all centrally stored static variable(s).
  * Modeled after Drupal 7's drupal_static_reset().
- * 
- * @param $name 
+ *
+ * @param $name
  *   Name of the static variable to reset. Omit to reset all variables.
  */
 function ctools_static_reset($name) {
@@ -493,4 +493,16 @@ function ctools_set_callback_token($token, $callback) {
   $string = '<!-- ctools-page-' . $token . ' -->';
   ctools_set_page_token($string, 'callback', $callback);
   return $string;
+}
+
+/**
+ * Provide a search form with a different id so that form_alters will miss it
+ * and thus not get advanced search settings.
+ */
+function ctools_forms() {
+  $forms['ctools_search_form']= array(
+    'callback' => 'search_form',
+  );
+
+  return $forms;
 }
