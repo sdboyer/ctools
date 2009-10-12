@@ -15,7 +15,7 @@ ctools 7.x-1.x-dev
 #491884 by ayalon: Provide blank substitutions for optional contexts that do not appear.
 Allow the string argument to accept the entire path tail.
 #578410: Search path override, plus search form and search result content types.
-
+#567778: Allow override of contact and user contact pages.
 
 ctools 6.x-1.x-dev
 ==================
