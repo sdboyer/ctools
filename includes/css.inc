@@ -67,25 +67,16 @@
  * ctools_css_retrieve.
  */
 function ctools_css_store($id, $css, $filter = TRUE) {
-  $filename = db_result(db_query("SELECT filename FROM {ctools_css_cache} WHERE cid = ':cid'", array(':cid' => $id)));
+  $filename = db_result(db_query("SELECT filename FROM {ctools_css_cache} WHERE cid = '%s'", $id));
   if ($filename && file_exists($filename)) {
-    file_unmanaged_delete($filename);
+    file_delete($filename);
   }
   // Remove any previous records.
-  db_delete('ctools_css_cache')
-    ->condition('cid', $id)
-    ->execute();
+  db_query("DELETE FROM {ctools_css_cache} WHERE cid = '%s'", $id);
 
   $filename = ctools_css_cache($css, $filter);
 
-  db_insert('ctools_css_cache')
-    ->fields(array(
-      'cid' => $id,
-      'filename' => $filename,
-      'css' => $css,
-      'filter' => $filter,
-    ))
-    ->execute();
+  db_query("INSERT INTO {ctools_css_cache} (cid, filename, css, filter) VALUES ('%s', '%s', '%s', %d)", $id, $filename, $css, $filter);
 
   return $filename;
 }
@@ -96,7 +87,7 @@ function ctools_css_store($id, $css, $filter = TRUE) {
  * This will ensure the file still exists and, if not, create it.
  */
 function ctools_css_retrieve($id) {
-  $cache = db_query("SELECT * FROM {ctools_css_cache} WHERE cid = ':id'", array(':id' => $id)))->fetchObject();
+  $cache = db_fetch_object(db_query("SELECT * FROM {ctools_css_cache} WHERE cid = '%s'", $id));
   if (!$cache) {
     return;
   }
@@ -104,10 +95,7 @@ function ctools_css_retrieve($id) {
   if (!file_exists($cache->filename)) {
     $filename = ctools_css_cache($cache->css, $cache->filter);
     if ($filename != $cache->filename) {
-      db_update('ctools_css_cache')
-        ->fields(array('filename' => $filename))
-        ->condition('cid', $id)
-        ->execute();
+      db_query("UPDATE {ctools_css_cache} SET filename = '%s' WHERE cid = '%s'", $filename, $id);
       $cache->filename = $filename;
     }
   }
@@ -119,18 +107,19 @@ function ctools_css_retrieve($id) {
  * Remove stored CSS and any associated file.
  */
 function ctools_css_clear($id) {
-  $cache = db_query("SELECT * FROM {ctools_css_cache} WHERE cid = ':id'", array(':id' => $id)))->fetchObject();
+  $cache = db_fetch_object(db_query("SELECT * FROM {ctools_css_cache} WHERE cid = '%s'", $id));
   if (!$cache) {
     return;
   }
 
   if (file_exists($cache->filename)) {
-    file_unmanaged_delete($cache->filename);
+    file_delete($cache->filename);
+    // If we remove an existing file, there may be cached pages that refer
+    // to it. We must get rid of them:
+    cache_clear_all();
   }
 
-  db_delete('ctools_css_cache')
-    ->condition('cid', $id)
-    ->execute();
+  db_query("DELETE FROM {ctools_css_cache} WHERE cid = '%s'", $id);
 }
 
 
@@ -161,8 +150,15 @@ function ctools_css_cache($css, $filter = TRUE) {
   }
 
   // Create the css/ within the files folder.
-  $path = 'public://ctools/css';
-  if (!file_prepare_directory($path, FILE_CREATE_DIRECTORY)) {
+  $path = file_create_path('ctools/css');
+  if (!file_check_directory($path)) {
+    $path = file_directory_path() . '/ctools';
+    file_check_directory($path, FILE_CREATE_DIRECTORY);
+    $path .= '/css';
+    file_check_directory($path, FILE_CREATE_DIRECTORY);
+  }
+
+  if (!file_check_directory($path)) {
     drupal_set_message(t('Unable to create CTools CSS cache directory. Check the permissions on your files directory.'), 'error');
     return;
   }
@@ -173,7 +169,7 @@ function ctools_css_cache($css, $filter = TRUE) {
   // This will do renames if the file already exists, ensuring we don't
   // accidentally overwrite other files who share the same md5. Yes this
   // is a very miniscule chance but it's safe.
-  $filename = file_unmanaged_save_data($css, $filename);
+  $filename = file_save_data($css, $filename);
 
   return $filename;
 }

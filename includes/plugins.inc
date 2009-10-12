@@ -232,7 +232,7 @@ function ctools_plugin_load_includes($info, $file = NULL) {
     $extension = 'inc';
   }
   foreach ($directories as $module => $path) {
-    $file_list[$module] = drupal_system_listing("/$file." . $extension . '$/', $path, 'name', 0);
+    $file_list[$module] = drupal_system_listing("$file." . $extension . '$', $path, 'name', 0);
   }
   $plugins = array();
 
@@ -246,7 +246,7 @@ function ctools_plugin_load_includes($info, $file = NULL) {
       }
       else {
         // Parse a hook.
-        require_once DRUPAL_ROOT . '/' . $file->filename;
+        require_once './' . $file->filename;
         // .inc files have a special format for the hook identifier.
         // For example, 'foo.inc' in the module 'mogul' using the plugin
         // whose hook is named 'borg_type' should have a function named (deep breath)
@@ -449,7 +449,7 @@ function ctools_plugin_get_function($plugin, $function_name) {
     // $plugin['file'].  Don't try to run those.
     $info = ctools_plugin_get_info($plugin['plugin module'], $plugin['plugin type']);
     if (empty($info['info file'])) {
-      require_once DRUPAL_ROOT . '/' . $plugin['path'] . '/' . $plugin['file'];
+      require_once './' . $plugin['path'] . '/' . $plugin['file'];
     }
   }
 
@@ -464,7 +464,7 @@ function ctools_plugin_get_function($plugin, $function_name) {
       if (isset($plugin[$function_name]['path'])) {
         $file = $plugin[$function_name]['path'] . '/' . $file;
       }
-      require_once DRUPAL_ROOT . '/' . $file;
+      require_once './' . $file;
     }
   }
   else {
@@ -518,7 +518,7 @@ function ctools_plugin_get_class($plugin, $class_name) {
     // $plugin['file'].  Don't try to run those.
     $info = ctools_plugin_get_info($plugin['plugin module'], $plugin['plugin type']);
     if (empty($info['info file'])) {
-      require_once DRUPAL_ROOT . '/' . $plugin['path'] . '/' . $plugin['file'];
+      require_once './' . $plugin['path'] . '/' . $plugin['file'];
     }
   }
 
@@ -537,13 +537,13 @@ function ctools_plugin_get_class($plugin, $class_name) {
       if (isset($plugin[$class_name]['path'])) {
         $file = $plugin[$class_name]['path'] . '/' . $file;
       }
-      require_once DRUPAL_ROOT . '/' . $file;
+      require_once './' . $file;
     }
   }
   else {
     $class = $plugin[$class_name];
   }
-
+  
   // If we didn't explicitly include a file above, try autoloading a file
   // based on the class' name.
   if (!isset($file) && file_exists($plugin['path'] . "/$class.class.php")) {

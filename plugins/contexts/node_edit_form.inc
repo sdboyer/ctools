@@ -11,12 +11,15 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_node_edit_form_ctools_contexts() {
-  $args['node_edit_form'] = array(
+  return array(
     'title' => t("Node edit form"),
     'description' => t('A node edit form.'),
     'context' => 'ctools_context_create_node_edit_form',
     'settings form' => 'ctools_context_node_edit_form_settings_form',
     'settings form validate' => 'ctools_context_node_edit_form_settings_form_validate',
+    'settings form validate' => 'ctools_context_node_edit_form_settings_form_validate',
+    'settings form submit' => 'ctools_context_node_edit_form_settings_form_submit',
+    'defaults' => array('nid' => ''),
     'keyword' => 'node_edit',
     'context name' => 'node_edit_form',
     'placeholder form' => array(
@@ -24,7 +27,6 @@ function ctools_node_edit_form_ctools_contexts() {
       '#description' => t('Enter the node ID of a node for this argument:'),
     ),
   );
-  return $args;
 }
 
 /**
@@ -41,7 +43,18 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
 
   if ($conf) {
     // In this case, $node is actually our $conf array.
-    $node = node_load($node['nid']);
+    $nid = is_array($node) && isset($node['nid']) ? $node['nid'] : (is_object($node) ? $node->nid : 0);
+
+    if (module_exists('translation')) {
+      if ($translation = module_invoke('translation', 'node_nid', $nid, $GLOBALS['language']->language)) {
+        $nid = $translation;
+        $reload = TRUE;
+      }
+    }
+
+    if (is_array($node) || !empty($reload)) {
+      $node = node_load($nid);
+    }
   }
 
   if (!empty($node)) {
@@ -51,7 +64,7 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
     $form_state = array('want form' => TRUE, 'args' => array($node));
 
     $file = drupal_get_path('module', 'node') . '/node.pages.inc';
-    require_once DRUPAL_ROOT . '/' . $file;
+    include_once './' . $file;
     // This piece of information can let other modules know that more files
     // need to be included if this form is loaded from cache:
     $form_state['form_load_files'] = array($file);
@@ -74,6 +87,12 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
 }
 
 function ctools_context_node_edit_form_settings_form($conf) {
+  if (empty($conf)) {
+    $conf = array(
+      'nid' => '',
+    );
+  }
+
   $form['node'] = array(
     '#prefix' => '<div class="no-float">',
     '#suffix' => '</div>',
@@ -85,9 +104,9 @@ function ctools_context_node_edit_form_settings_form($conf) {
   );
 
   if (!empty($conf['nid'])) {
-    $info = db_fetch_object(db_query("SELECT * FROM {node} WHERE nid = %d", $conf['nid']));
+    $info = db_fetch_object(db_query("SELECT * FROM {node} n WHERE n.nid = %d", $conf['nid']));
     if ($info) {
-      $link = l(t("'%title' [node id %nid]", array('%title' => $info->title, '%nid' => $info->nid)), "node/$info->nid", array('target' => '_blank', 'title' => t('Open in new window')));
+      $link = l(t("'%title' [node id %nid]", array('%title' => $info->title, '%nid' => $info->nid)), "node/$info->nid", array('attributes' => array('target' => '_blank', 'title' => t('Open in new window')), 'html' => TRUE));
       $form['node']['#description'] = t('Currently set to !link', array('!link' => $link));
     }
   }
@@ -97,6 +116,13 @@ function ctools_context_node_edit_form_settings_form($conf) {
     '#value' => $conf['nid'],
   );
 
+  $form['set_identifier'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => FALSE,
+    '#title' => t('Reset identifier to node title'),
+    '#description' => t('If checked, the identifier will be reset to the node title of the selected node.'),
+  );
+
   return $form;
 }
 
@@ -104,6 +130,7 @@ function ctools_context_node_edit_form_settings_form($conf) {
  * Validate a node.
  */
 function ctools_context_node_edit_form_settings_form_validate($form, &$form_values, &$form_state) {
+  // Validate the autocomplete
   if (empty($form_values['nid']) && empty($form_values['node'])) {
     form_error($form['node'], t('You must select a node.'));
     return;
@@ -113,19 +140,38 @@ function ctools_context_node_edit_form_settings_form_validate($form, &$form_valu
     return;
   }
 
-  $nid = $form_values['node'];
+  $nid          = $form_values['node'];
+  $preg_matches = array();
+  $match        = preg_match('/\[nid: (\d+)\]/', $nid, $preg_matches);
+  if (!$match) {
+    $match = preg_match('/^nid: (\d+)/', $nid, $preg_matches);
+  }
+
+  if ($match) {
+    $nid = $preg_matches[1];
+  }
   if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query("SELECT n.nid FROM {node} n WHERE n.nid = %d", $nid));
+    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
   }
   else {
-    $node = db_fetch_object(db_query("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')", $nid));
-    if ($node) {
-      form_set_value($form['nid'], $node->nid, $form_state);
-    }
+    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
   }
 
   if (!$node) {
     form_error($form['node'], t('Invalid node selected.'));
   }
+  else {
+    form_set_value($form['nid'], $node->nid, $form_state);
+    // $form_values['nid'] = $node->nid;
+  }
 }
 
+function ctools_context_node_edit_form_settings_form_submit($form, &$form_values, &$form_state) {
+  if ($form_values['set_identifier']) {
+    $node = node_load($form_values['nid']);
+    $form_state['values']['context']['identifier'] = $node->title;
+  }
+
+  // Don't let this be stored.
+  unset($form_values['set_identifier']);
+}

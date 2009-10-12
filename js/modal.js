@@ -189,40 +189,39 @@
   /**
    * Bind links that will open modals to the appropriate function.
    */
-  Drupal.behaviors.CToolsModal = {
-    attach: function(context) {
-      // Bind links
-      $('a.ctools-use-modal:not(.ctools-use-modal-processed)', context)
+  Drupal.behaviors.CToolsModal = function(context) {
+    // Bind links
+    $('a.ctools-use-modal:not(.ctools-use-modal-processed)', context)
+      .addClass('ctools-use-modal-processed')
+      .click(Drupal.CTools.Modal.clickAjaxLink);
+
+    // Bind buttons
+    $('input.ctools-use-modal:not(.ctools-use-modal-processed), button.ctools-use-modal:not(.ctools-use-modal-processed)', context)
+      .addClass('ctools-use-modal-processed')
+      .click(Drupal.CTools.Modal.clickAjaxButton);
+
+    if ($(context).attr('id') == 'modal-content') {
+      // Bind submit links in the modal form.
+      $('form:not(.ctools-use-modal-processed)', context)
         .addClass('ctools-use-modal-processed')
-        .click(Drupal.CTools.Modal.clickAjaxLink);
+        .submit(Drupal.CTools.Modal.submitAjaxForm);
+      // add click handlers so that we can tell which button was clicked,
+      // because the AJAX submit does not set the values properly.
 
-      // Bind buttons
-      $('input.ctools-use-modal:not(.ctools-use-modal-processed), button.ctools-use-modal:not(.ctools-use-modal-processed)', context)
+      $('input[type="submit"]:not(.ctools-use-modal-processed), button:not(.ctools-use-modal-processed)', context)
         .addClass('ctools-use-modal-processed')
-        .click(Drupal.CTools.Modal.clickAjaxButton);
+        .click(function() {
+          if (Drupal.autocompleteSubmit && !Drupal.autocompleteSubmit()) {
+            return false;
+          }
 
-      if ($(context).attr('id') == 'modal-content') {
-        // Bind submit links in the modal form.
-        $('form:not(.ctools-use-modal-processed)', context)
-          .addClass('ctools-use-modal-processed')
-          .submit(Drupal.CTools.Modal.submitAjaxForm);
-        // add click handlers so that we can tell which button was clicked,
-        // because the AJAX submit does not set the values properly.
+          // Make sure it knows our button.
+          if (!$(this.form).hasClass('ctools-ajaxing')) {
+            this.form.clk = this;
+            $(this).after('<div class="ctools-ajaxing"> &nbsp; </div>');
+          }
+        });
 
-        $('input[type="submit"]:not(.ctools-use-modal-processed), button:not(.ctools-use-modal-processed)', context)
-          .addClass('ctools-use-modal-processed')
-          .click(function() {
-            if (Drupal.autocompleteSubmit && !Drupal.autocompleteSubmit()) {
-              return false;
-            }
-
-            // Make sure it knows our button.
-            if (!$(this.form).hasClass('ctools-ajaxing')) {
-              this.form.clk = this;
-              $(this).after('<div class="ctools-ajaxing"> &nbsp; </div>');
-            }
-          });
-      }
     }
   };
 

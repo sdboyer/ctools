@@ -11,7 +11,7 @@
  * Implementation of specially named hook_ctools_arguments().
  */
 function ctools_string_ctools_arguments() {
-  $args['string'] = array(
+  return array(
     'title' => t("String"),
     // keyword to use for %substitution
     'keyword' => 'string',
@@ -24,7 +24,6 @@ function ctools_string_ctools_arguments() {
     ),
     'path placeholder' => 'ctools_string_path_placeholder', // This is in pagemanager.
   );
-  return $args;
 }
 
 /**

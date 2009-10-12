@@ -11,8 +11,8 @@
  * Implementation of specially named hook_ctools_arguments().
  */
 function ctools_vid_ctools_arguments() {
-  $args['vid'] = array(
-    'title' => t("Vocabulary ID"),
+  return array(
+    'title' => t("Vocabulary: ID"),
     // keyword to use for %substitution
     'keyword' => 'vocabulary',
     'description' => t('Creates a vocabulary context from a vocabulary ID argument.'),
@@ -22,7 +22,6 @@ function ctools_vid_ctools_arguments() {
       '#description' => t('Enter the vocabulary ID for this argument'),
     ),
   );
-  return $args;
 }
 
 /**

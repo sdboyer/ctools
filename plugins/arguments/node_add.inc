@@ -11,14 +11,13 @@
  * Implementation of specially named hook_ctools_arguments().
  */
 function ctools_node_add_ctools_arguments() {
-  $args['node_add'] = array(
-    'title' => t("Node add form"),
+  return array(
+    'title' => t("Node add form: node type"),
     // keyword to use for %substitution
     'keyword' => 'node_type',
     'description' => t('Creates a node add form context from a node type argument.'),
     'context' => 'ctools_node_add_context',
   );
-  return $args;
 }
 
 /**

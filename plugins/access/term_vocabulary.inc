@@ -10,7 +10,7 @@
  * Implementation of specially named hook_ctools_access().
  */
 function ctools_term_vocabulary_ctools_access() {
-  $args['term_vocabulary'] = array(
+  return array(
     'title' => t("Taxonomy: vocabulary"),
     'description' => t('Control access by term vocabulary.'),
     'callback' => 'ctools_term_vocabulary_ctools_access_check',
@@ -20,8 +20,6 @@ function ctools_term_vocabulary_ctools_access() {
     'summary' => 'ctools_term_vocabulary_ctools_acesss_summary',
     'required context' => new ctools_context_required(t('Term'), array('term', 'terms')),
   );
-
-  return $args;
 }
 
 /**

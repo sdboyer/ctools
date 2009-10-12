@@ -596,7 +596,7 @@ function page_manager_delete_task_handler($handler) {
 function page_manager_export_task_handler($handler, $indent = '') {
   ctools_include('export');
   ctools_include('plugins');
-  $handler = clone($handler);
+  $handler = drupal_clone($handler);
 
   $append = '';
   if ($function = ctools_plugin_load_function('page_manager', 'task_handlers', $handler->handler, 'export')) {

@@ -12,13 +12,14 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_node_ctools_contexts() {
-  $args['node'] = array(
+  return array(
     'title' => t("Node"),
     'description' => t('A node object.'),
     'context' => 'ctools_context_create_node',
     'settings form' => 'ctools_context_node_settings_form',
     'settings form validate' => 'ctools_context_node_settings_form_validate',
     'settings form submit' => 'ctools_context_node_settings_form_submit',
+    'defaults' => array('nid' => ''),
     'keyword' => 'node',
     'context name' => 'node',
     'convert list' => 'ctools_context_node_convert_list',
@@ -28,7 +29,6 @@ function ctools_node_ctools_contexts() {
       '#description' => t('Enter the node ID of a node for this context.'),
     ),
   );
-  return $args;
 }
 
 /**
@@ -133,10 +133,10 @@ function ctools_context_node_settings_form_validate($form, &$form_values, &$form
     $nid = $preg_matches[1];
   }
   if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid);
+    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
   }
   else {
-    $node = db_fetch_object(db_query("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')", $nid));
+    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
   }
 
   if (!$node) {

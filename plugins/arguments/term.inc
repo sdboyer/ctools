@@ -11,8 +11,8 @@
  * Implementation of specially named hook_ctools_arguments().
  */
 function ctools_term_ctools_arguments() {
-  $args['term'] = array(
-    'title' => t("Taxonomy term"),
+  return array(
+    'title' => t("Taxonomy term: ID"),
     // keyword to use for %substitution
     'keyword' => 'term',
     'description' => t('Creates a single taxonomy term from a taxonomy ID or taxonomy term name.'),
@@ -22,7 +22,6 @@ function ctools_term_ctools_arguments() {
     'placeholder form' => 'ctools_term_ctools_argument_placeholder',
     'breadcrumb' => 'ctools_term_breadcrumb',
   );
-  return $args;
 }
 
 /**
@@ -40,11 +39,11 @@ function ctools_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
       if (!is_numeric($arg)) {
         return FALSE;
       }
-      $term = taxonomy_term_load($arg);
+      $term = taxonomy_get_term($arg);
       break;
 
     case 'term':
-      $terms = taxonomy_term_load_by_name($arg);
+      $terms = taxonomy_get_term_by_name($arg);
       if (count($terms) != 1) {
         foreach ($terms as $potential) {
           foreach ($conf['vids'] as $vid => $active) {

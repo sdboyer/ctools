@@ -11,8 +11,8 @@
  * Implementation of specially named hook_ctools_arguments().
  */
 function ctools_node_edit_ctools_arguments() {
-  $args['node_edit'] = array(
-    'title' => t("Node edit form"),
+  return array(
+    'title' => t("Node edit form: node ID"),
     // keyword to use for %substitution
     'keyword' => 'node',
     'description' => t('Creates a node edit form context from a node ID argument.'),
@@ -22,7 +22,6 @@ function ctools_node_edit_ctools_arguments() {
       '#description' => t('Enter the node ID of a node for this argument'),
     ),
   );
-  return $args;
 }
 
 /**

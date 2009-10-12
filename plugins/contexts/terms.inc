@@ -12,7 +12,7 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_terms_ctools_contexts() {
-  $args['terms'] = array(
+  return array(
     'title' => t("Taxonomy terms"),
     'description' => t('Multiple taxonomy terms, as a group.'),
     'context' => 'ctools_context_create_terms',
@@ -30,7 +30,6 @@ function ctools_terms_ctools_contexts() {
     ),
     'convert' => 'ctools_context_terms_convert',
   );
-  return $args;
 }
 
 /**
@@ -54,7 +53,7 @@ function ctools_context_create_terms($empty, $data = NULL, $conf = FALSE) {
     if (!isset($data->term)) {
       // load the first term:
       reset($context->tids);
-      $data->term = taxonomy_term_load(current($context->tids));
+      $data->term = taxonomy_get_term(current($context->tids));
     }
     $context->data     = $data->term;
     $context->title    = $data->term->name;
@@ -81,7 +80,7 @@ function ctools_context_terms_convert($context, $type) {
           $context->names = '';
         }
         else {
-          $result = db_query("SELECT tid, name FROM {taxonomy_term_data} WHERE tid IN (" . db_placeholders($context->tids) . ")", $context->tids);
+          $result = db_query("SELECT tid, name FROM {term_data} WHERE tid IN (" . db_placeholders($context->tids) . ")", $context->tids);
           while ($term = db_fetch_object($result)) {
             $names[$term->tid] = $term->name;
           }

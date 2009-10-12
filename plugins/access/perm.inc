@@ -10,7 +10,7 @@
  * Implementation of specially named hook_ctools_access().
  */
 function ctools_perm_ctools_access() {
-  $args['perm'] = array(
+  return array(
     'title' => t("User: permission"),
     'description' => t('Control access by permission string.'),
     'callback' => 'ctools_perm_ctools_access_check',
@@ -19,8 +19,6 @@ function ctools_perm_ctools_access() {
     'summary' => 'ctools_perm_ctools_acesss_summary',
     'required context' => new ctools_context_required(t('User'), 'user'),
   );
-
-  return $args;
 }
 
 /**

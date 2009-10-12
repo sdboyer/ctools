@@ -138,15 +138,31 @@
                 object = jQuery('#' + id).parent();
               }
 
-              if (Drupal.settings.CTools.dependent[id].num <= len) {
-                // Show if the element if criteria is matched
-                object.show(0);
+              if (Drupal.settings.CTools.dependent[id].type == 'disable') {
+                if (Drupal.settings.CTools.dependent[id].num <= len) {
+                  // Show if the element if criteria is matched
+                  object.attr('disabled', false);
+                  object.children().attr('disabled', false);
+                }
+                else {
+                  // Otherwise hide. Use css rather than hide() because hide()
+                  // does not work if the item is already hidden, for example,
+                  // in a collapsed fieldset.
+                  object.attr('disabled', true);
+                  object.children().attr('disabled', true);
+                }
               }
               else {
-                // Otherwise hide. Use css rather than hide() because hide()
-                // does not work if the item is already hidden, for example,
-                // in a collapsed fieldset.
-                object.css('display', 'none');
+                if (Drupal.settings.CTools.dependent[id].num <= len) {
+                  // Show if the element if criteria is matched
+                  object.show(0);
+                }
+                else {
+                  // Otherwise hide. Use css rather than hide() because hide()
+                  // does not work if the item is already hidden, for example,
+                  // in a collapsed fieldset.
+                  object.css('display', 'none');
+                }
               }
             }
           }
@@ -164,25 +180,23 @@
     }
   }
 
-  Drupal.behaviors.CToolsDependent = {
-    attach: function (context) {
-      Drupal.CTools.dependent.autoAttach();
+  Drupal.behaviors.CToolsDependent = function (context) {
+    Drupal.CTools.dependent.autoAttach();
 
-      // Really large sets of fields are too slow with the above method, so this
-      // is a sort of hacked one that's faster but much less flexible.
-      $("select.ctools-master-dependent:not(.ctools-processed)")
-        .addClass('ctools-processed')
-        .change(function() {
-          var val = $(this).val();
-          if (val == 'all') {
-            $('.ctools-dependent-all').show(0);
-          }
-          else {
-            $('.ctools-dependent-all').hide(0);
-            $('.ctools-dependent-' + val).show(0);
-          }
-        })
-        .trigger('change');
-    }
+    // Really large sets of fields are too slow with the above method, so this
+    // is a sort of hacked one that's faster but much less flexible.
+    $("select.ctools-master-dependent:not(.ctools-processed)")
+      .addClass('ctools-processed')
+      .change(function() {
+        var val = $(this).val();
+        if (val == 'all') {
+          $('.ctools-dependent-all').show(0);
+        }
+        else {
+          $('.ctools-dependent-all').hide(0);
+          $('.ctools-dependent-' + val).show(0);
+        }
+      })
+      .trigger('change');
   }
 })(jQuery);

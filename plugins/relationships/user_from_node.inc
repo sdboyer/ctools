@@ -10,7 +10,7 @@
  * Implementation of specially named hook_ctools_relationships().
  */
 function ctools_user_from_node_ctools_relationships() {
-  $args['user_from_node'] = array(
+  return array(
     'title' => t('Node author'),
     'keyword' => 'user',
     'description' => t('Creates the author of a node as a user context.'),
@@ -32,7 +32,7 @@ function ctools_user_from_node_context($context, $conf) {
   if (isset($context->data->uid)) {
     // Load the user that is the author of the node.
     $uid = $context->data->uid;
-    $account = user_load($uid);
+    $account = user_load(array('uid' => $uid));
 
     // Send it to ctools.
     return ctools_context_create('user', $account);

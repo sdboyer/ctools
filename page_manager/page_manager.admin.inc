@@ -91,11 +91,11 @@ function page_manager_list_page($js = NULL) {
 
   ctools_include('ajax');
   $commands = array();
-  $commands[] = ajax_command_replace('#page-manager-list-pages', $table);
+  $commands[] = ctools_ajax_command_replace('#page-manager-list-pages', $table);
   if (!empty($replace_form)) {
-    $commands[] = ajax_command_replace('#page-manager-list-pages-form', $form);
+    $commands[] = ctools_ajax_command_replace('#page-manager-list-pages-form', $form);
   }
-  ajax_render($commands);
+  ctools_ajax_render($commands);
 }
 
 /**
@@ -423,11 +423,11 @@ function page_manager_edit_page_operation() {
   if ($js) {
     $commands = array();
     if (isset($content['js settings'])) {
-      $commands[] = ajax_command_settings($content['js settings']);
+      $commands[] = ctools_ajax_command_settings($content['js settings']);
     }
-    $commands[] = ajax_command_replace('#page-manager-edit', $output);
+    $commands[] = ctools_ajax_command_replace('#page-manager-edit', $output);
 
-    ajax_render($commands);
+    ctools_ajax_render($commands);
   }
 
   drupal_set_title($page->subtask['admin title']);

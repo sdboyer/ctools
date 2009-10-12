@@ -440,6 +440,8 @@ function ctools_content_configure_form_defaults(&$form, &$form_state) {
     $add_submit = TRUE;
   }
 
+  ctools_include('dependent');
+
   // Unless we're not allowed to override the title on this content type, add this
   // gadget to all panes.
   if (empty($plugin['no title override']) && empty($subtype['no title override'])) {
@@ -459,6 +461,7 @@ function ctools_content_configure_form_defaults(&$form, &$form_state) {
       '#id' => 'override-title-textfield',
       '#process' => array('ctools_dependent_process'),
       '#dependency' => array('override-title-checkbox' => array(1)),
+      '#dependency_type' => 'disable',
     );
     $form['aligner_stop'] = array(
       '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',

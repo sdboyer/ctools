@@ -10,7 +10,7 @@
  * Implementation of specially named hook_ctools_relationships().
  */
 function ctools_book_parent_ctools_relationships() {
-  $args['book_parent'] = array(
+  return array(
     'title' => t('Book parent'),
     'keyword' => 'book_parent',
     'description' => t('Adds a book parent from a node context.'),

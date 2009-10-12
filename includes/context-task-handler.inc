@@ -50,8 +50,15 @@ function ctools_context_handler_render($task, $subtask, $contexts, $args, $page 
           return $info;
         }
 
+        if ($subtask) {
+          $task_name = page_manager_make_task_name($task['name'], $subtask['name']);
+        }
+        else {
+          $task_name = $task['name'];
+        }
+
         page_manager_get_current_page(array(
-          'name' => page_manager_make_task_name($task['name'], $subtask['name']),
+          'name' => $task_name,
           'task' => $task,
           'subtask' => $subtask,
           'contexts' => $contexts,

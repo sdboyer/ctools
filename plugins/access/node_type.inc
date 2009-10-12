@@ -10,7 +10,7 @@
  * Implementation of specially named hook_ctools_access().
  */
 function ctools_node_type_ctools_access() {
-  $args['node_type'] = array(
+  return array(
     'title' => t("Node: type"),
     'description' => t('Control access by node_type.'),
     'callback' => 'ctools_node_type_ctools_access_check',
@@ -21,15 +21,13 @@ function ctools_node_type_ctools_access() {
     'required context' => new ctools_context_required(t('Node'), 'node'),
     'restrictions' => 'ctools_node_type_ctools_access_restrictions',
   );
-
-  return $args;
 }
 
 /**
  * Settings form for the 'by node_type' access plugin
  */
 function ctools_node_type_ctools_access_settings(&$form, &$form_state, $conf) {
-  $types = node_type_get_types();
+  $types = node_get_types();
   foreach ($types as $type => $info) {
     $options[$type] = check_plain($info->name);
   }
@@ -87,7 +85,7 @@ function ctools_node_type_ctools_access_summary($conf, $context) {
   if (!isset($conf['type'])) {
     $conf['type'] = array();
   }
-  $types = node_type_get_types();
+  $types = node_get_types();
 
   $names = array();
   foreach (array_filter($conf['type']) as $type) {

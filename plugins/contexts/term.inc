@@ -11,7 +11,7 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_term_ctools_contexts() {
-  $args['term'] = array(
+  return array(
     'title' => t("Taxonomy term"),
     'description' => t('A single taxonomy term object.'),
     'context' => 'ctools_context_create_term',
@@ -28,7 +28,6 @@ function ctools_term_ctools_contexts() {
     'convert' => 'ctools_context_term_convert',
     'js' => array('misc/autocomplete.js'),
   );
-  return $args;
 }
 
 /**
@@ -44,7 +43,7 @@ function ctools_context_create_term($empty, $data = NULL, $conf = FALSE) {
   }
 
   if ($conf && isset($data['tid'])) {
-    $data = taxonomy_term_load($data['tid']);
+    $data = taxonomy_get_term($data['tid']);
   }
 
   if (!empty($data)) {
@@ -75,7 +74,7 @@ function ctools_context_term_settings_form($conf) {
 
   $description = '';
   if (!empty($conf['tid'])) {
-    $info = db_fetch_object(db_query("SELECT * FROM {taxonomy_term_data} n WHERE n.tid = %d", $conf['tid']));
+    $info = db_fetch_object(db_query("SELECT * FROM {term_data} n WHERE n.tid = %d", $conf['tid']));
     if ($info) {
       $description = ' ' . t('Currently set to @term. Enter another term if you wish to change the term.', array('@term' => $info->name));
     }
@@ -134,7 +133,7 @@ function ctools_context_term_settings_form_validate($form, &$form_values, &$form
     return;
   }
 
-  $term = db_fetch_object(db_query("SELECT t.tid FROM {taxonomy_term_data} t WHERE LOWER(t.name) = LOWER('%s') AND t.vid = %d", $form_values['taxonomy'][$vid], $vid));
+  $term = db_fetch_object(db_query("SELECT t.tid FROM {term_data} t WHERE LOWER(t.name) = LOWER('%s') AND t.vid = %d", $form_values['taxonomy'][$vid], $vid));
 
   if (!$term) {
     form_error($form['taxonomy'][$vid], t('Invalid term selected.'));
@@ -146,7 +145,7 @@ function ctools_context_term_settings_form_validate($form, &$form_values, &$form
 
 function ctools_context_term_settings_form_submit($form, &$form_values, &$form_state) {
   if ($form_values['set_identifier']) {
-    $term = db_fetch_object(db_query("SELECT t.tid, t.name FROM {taxonomy_term_data} t WHERE LOWER(t.tid) = %d", $form_values['tid']));
+    $term = db_fetch_object(db_query("SELECT t.tid, t.name FROM {term_data} t WHERE LOWER(t.tid) = %d", $form_values['tid']));
     $form_state['values']['context']['identifier'] = $term->name;
   }
 
