@@ -16,6 +16,7 @@ ctools 7.x-1.x-dev
 Allow the string argument to accept the entire path tail.
 #578410: Search path override, plus search form and search result content types.
 #567778: Allow override of contact and user contact pages.
+Allow override of blog and user blog pages.
 
 ctools 6.x-1.x-dev
 ==================
