@@ -83,7 +83,7 @@ function simplecontext_content_type_render($subtype, $conf, $args, $context) {
     This is a block of data created by the Simplecontext content type.
     Data in the block may be assembled from static text (like this) or from the
     content type settings form (\$conf) for the content type, or from the context
-    that is passed in. <br/>
+    that is passed in. <br />
     In our case, the configuration form (\$conf) has just one field, 'config_item_1;
     and it's configured with:
     ");
@@ -91,10 +91,10 @@ function simplecontext_content_type_render($subtype, $conf, $args, $context) {
     $block->content .= '<div style="border: 1px solid red;">' . print_r($conf['config_item_1'], TRUE) . '</div>';
   }
   if (!empty($context)) {
-    $block->content .= '<br/>The args ($args) were <div style="border: 1px solid yellow;" >' .
+    $block->content .= '<br />The args ($args) were <div style="border: 1px solid yellow;" >' .
       var_export($args, TRUE) . '</div>';
   }
-  $block->content .= '<br/>And the simplecontext context ($context->data->description) was <div style="border: 1px solid green;" >' .
+  $block->content .= '<br />And the simplecontext context ($context->data->description) was <div style="border: 1px solid green;" >' .
     print_r($context->data->description, TRUE) . '</div>';
   return $block;
 }

@@ -133,7 +133,7 @@ function theme_ctools_context_list($object, $header = '') {
       if (isset($context->keyword)) {
         $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $context->keyword));
         foreach (ctools_context_get_converters('%' . $context->keyword . ':', $context) as $keyword => $title) {
-          $desc .= '<br/>' . t('@keyword --&gt; @title', array('@context' => $keyword, '@title' => $title));
+          $desc .= '<br />' . t('@keyword --&gt; @title', array('@context' => $keyword, '@title' => $title));
         }
         $desc .= '</div>';
 
@@ -158,7 +158,7 @@ function theme_ctools_context_list($object, $header = '') {
         $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $argument['keyword']));
         if (isset($contexts[ctools_context_id($argument, 'argument')])) {
           foreach (ctools_context_get_converters('%' . $argument['keyword'] . ':', $contexts[ctools_context_id($argument, 'argument')]) as $keyword => $title) {
-            $desc .= '<br/>' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
+            $desc .= '<br />' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
           }
         }
         $desc .= '</div>';
@@ -180,7 +180,7 @@ function theme_ctools_context_list($object, $header = '') {
       if (isset($context['keyword'])) {
         $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $context['keyword']));
         foreach (ctools_context_get_converters('%' . $context['keyword'] . ':', $contexts[ctools_context_id($context, 'context')]) as $keyword => $title) {
-          $desc .= '<br/>' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
+          $desc .= '<br />' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
         }
         $desc .= '</div>';
       }
@@ -200,7 +200,7 @@ function theme_ctools_context_list($object, $header = '') {
       if (isset($relationship['keyword'])) {
         $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $relationship['keyword']));
         foreach (ctools_context_get_converters('%' . $relationship['keyword'] . ':', $contexts[ctools_context_id($relationship, 'relationship')]) as $keyword => $title) {
-          $desc .= '<br/>' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
+          $desc .= '<br />' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
         }
         $desc .= '</div>';
       }
