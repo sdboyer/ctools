@@ -106,7 +106,7 @@ function ctools_plugin_example_default_panel_pages() {
       'css_class' => '',
       'title' => 'Simplecontext',
       'body' => 'The "Simplecontext" content and content type demonstrate a very basic context and how to display it.
-    
+
     Simplecontext includes configuration, so it can get info from the config. It can also get its information to run from a simplecontext context, generated either from an arg to the panels page or via explicitly adding a context to the page.',
       'format' => '1',
   );
@@ -193,11 +193,11 @@ function ctools_plugin_example_default_panel_pages() {
     if (!$arg) {
     $block->content = <<<END
     <em>This page is intended to run with an arg and you don\'t have one.</em>
-    <br/>
+    <br />
     Without an arg, the page doesn\'t have any context.
-    <br/>Please try something like "/$arg0/xxx"
+    <br />Please try something like "/$arg0/xxx"
 END;
-    
+
     $block->title = "This is intended to run with an argument";
     } else {
     $block->content = "The arg for this page is \'$arg\'";
