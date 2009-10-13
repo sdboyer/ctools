@@ -497,6 +497,10 @@ function page_manager_page_form_basic_validate(&$form, &$form_state) {
       continue;
     }
 
+    if ($bit == '%' || $bit == '!') {
+      form_error($form['path'], t('You cannot have an unnamed placeholder (% or ! by itself). Please name your placeholder by adding a short piece of descriptive text to the % or !, such as %user or %node.'));
+    }
+
     if ($bit[0] == '%') {
       if ($found) {
         form_error($form['path'], t('You cannot have a dynamic path element after an optional path element.'));
