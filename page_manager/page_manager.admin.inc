@@ -1536,7 +1536,7 @@ function page_manager_handler_enable_submit(&$form, &$form_state) {
   $form_state['handler']->disabled = FALSE;
   $form_state['page']->handler_info[$form_state['handler_id']]['disabled'] = FALSE;
   $form_state['page']->handler_info[$form_state['handler_id']]['changed'] |= PAGE_MANAGER_CHANGED_STATUS;
-  $form_state['new trail'] = array('handlers', $form_state['handler_id'], 'disable');
+  $form_state['new trail'] = array('handlers', $form_state['handler_id'], 'actions', 'disable');
 }
 
 /**
@@ -1568,7 +1568,7 @@ function page_manager_handler_disable_submit(&$form, &$form_state) {
   $form_state['handler']->disabled = TRUE;
   $form_state['page']->handler_info[$form_state['handler_id']]['disabled'] = TRUE;
   $form_state['page']->handler_info[$form_state['handler_id']]['changed'] |= PAGE_MANAGER_CHANGED_STATUS;
-  $form_state['new trail'] = array('handlers', $form_state['handler_id'], 'enable');
+  $form_state['new trail'] = array('handlers', $form_state['handler_id'], 'actions', 'enable');
 }
 
 /**
