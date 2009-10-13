@@ -78,6 +78,7 @@ function page_manager_contact_user($account) {
     return $output;
   }
 
+  module_load_include('inc', 'contact', 'contact.pages');
   $function = 'contact_user_page';
   foreach (module_implements('page_manager_override') as $module) {
     $call = $module . '_page_manager_override';
