@@ -242,4 +242,14 @@
   Drupal.CTools.AJAX.commands.modal_dismiss = function(command) {
     Drupal.CTools.Modal.dismiss();
   }
+
+  /**
+   * Display loading
+   */
+  Drupal.CTools.AJAX.commands.modal_loading = function(command) {
+    Drupal.CTools.AJAX.commands.modal_display({
+      output: Drupal.theme('CToolsModalThrobber'),
+      title: Drupal.t('Loading...')
+    });
+  }
 })(jQuery);

@@ -125,6 +125,15 @@ function ctools_modal_command_dismiss() {
 }
 
 /**
+ * Display loading screen in the modal
+ */
+function ctools_modal_command_loading() {
+  return array(
+    'command' => 'modal_loading',
+  );
+}
+
+/**
  * Render an image as a button link. This will automatically apply an AJAX class
  * to the link and add the appropriate javascript to make this happen.
  *
