@@ -233,6 +233,10 @@ body form#page-manager-list-pages-form {
   border-right: 1px solid #aaa;
 }
 
+#page-manager-edit .handler-title .actions ul {
+  border-right: none;
+}
+
 #page-manager-edit .actions li {
   float: left; /* LTR */
   background: none;
@@ -240,6 +244,10 @@ body form#page-manager-list-pages-form {
   border-left: 1px solid #aaa;
   margin: 0;
   padding: 0;
+}
+
+#page-manager-edit .actions ul li.operation-last {
+  border-right: none;
 }
 
 #page-manager-edit .actions li a:hover {

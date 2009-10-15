@@ -1,6 +1,7 @@
 Current API VERSION: 1.1.1. See API.txt for more information.
-ctools 6.x-1.x-dev
-==================
+
+ctools 6.x-1.1
+==============
 
 Fix problem with ctools_set_page_token()
 Add a couple of support functions for ctools_set_page_token that are meant to be used by themes.
