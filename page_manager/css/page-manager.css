@@ -40,6 +40,20 @@ body form#page-manager-list-pages-form {
   color: #999;
 }
 
+#page-manager-list-pages tr.page-manager-locked td.page-manager-page-name {
+  font-style: italic;
+  color: green;
+  padding-left: 22px; /* LTR */
+  background: url(../images/locked.png) no-repeat scroll left center; /* LTR */
+}
+
+#page-manager-list-pages tr.page-manager-locked-other td.page-manager-page-name {
+  font-style: italic;
+  color: red;
+  padding-left: 22px; /* LTR */
+  background: url(../images/locked-other.png) no-repeat scroll left center; /* LTR */
+}
+
 #page-manager-edit .page-manager-wrapper {
   margin: 0;
   padding: 0 0 0 149px;

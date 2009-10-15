@@ -41,6 +41,7 @@ Allow override of poll page.
 #596450 by Scott Reynolds: Provide an ajax command response to reset the modal to the 'loading' state.
 #554678: Do not allow % or ! by itself as part of a path, as that breaks arguments.
 #599428: Enable and Disable variant buttons led to "Operation trail does not exist."
+Show a LOCK icon on the page list when pages are locked for editing either by the current user or another user.
 
 ctools 6.x-1.0
 ==============

@@ -27,9 +27,24 @@ function page_manager_list_page($js = NULL) {
   $js = $js == 'ajax';
 
   $tasks = page_manager_get_tasks_by_type('page');
-  $pages = array('operations' => array());
+  $pages = array('operations' => array(), 'tasks' => array());
 
   page_manager_get_pages($tasks, $pages);
+
+  // Add lock icon to all locked tasks.
+  global $user;
+  ctools_include('object-cache');
+  $locks = ctools_object_cache_test_objects('page_manager_page', $pages['tasks']);
+  foreach ($locks as $task_name => $lock) {
+    if ($lock->uid == $user->uid) {
+      $pages['rows'][$task_name]['class'] .= ' page-manager-locked';
+      $pages['rows'][$task_name]['title'] = t('This page is currently locked for editing by you. Nobody else may edit this page until these changes are saved or canceled.');
+    }
+    else {
+      $pages['rows'][$task_name]['class'] .= ' page-manager-locked-other';
+      $pages['rows'][$task_name]['title'] = t('This page is currently locked for editing by another user. You may not edit this page without breaking the lock.');
+    }
+  }
 
   $input = $_POST;
 
@@ -195,6 +210,7 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
     $row['data']['operations'] = array('data' => theme('links', $operations), 'class' => 'page-manager-page-operations');
 
     $pages['disabled'][$task_name] = !empty($task['disabled']);
+    $pages['tasks'][] = $task_name;
     $pages['rows'][$task_name] = $row;
   }
 }
