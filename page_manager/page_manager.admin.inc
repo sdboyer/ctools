@@ -18,13 +18,12 @@ function page_manager_list_page($js = NULL) {
     return drupal_not_found();
   }
 
-  if (module_exists('advanced_help')) {
+  // TRUE if 'ajax', FALSE if otherwise.
+  $js = $js == 'ajax';
+
+  if (module_exists('advanced_help') && !$js) {
     drupal_set_message(theme('advanced_help_topic', 'page_manager', 'getting-started', t('See the getting started guide for more information.')));
   }
-
-  // TRUE if 'ajax', FALSE if otherwise.
-
-  $js = $js == 'ajax';
 
   $tasks = page_manager_get_tasks_by_type('page');
   $pages = array('operations' => array(), 'tasks' => array());
