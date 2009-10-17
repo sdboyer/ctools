@@ -7,24 +7,30 @@
  */
 
 /**
- * Implementation of hook_perm().
+ * Implements hook_perm().
  */
-function bulk_export_perm() {
-  return array('use bulk exporter');
+function bulk_export_permission() {
+  return array(
+    'use bulk exporter' => array(
+      'title' => t('Access Bulk Exporter'),
+      'description' => t('Export various system objects into code.'),
+    ),
+  );
 }
 
 /**
- * Implementation of hook_theme().
+ * Implements hook_theme().
  */
 function bulk_export_theme() {
-  return array('bulk_export_export_form' => array(
+  return array(
+    'bulk_export_export_form' => array(
       'arguments' => array('form' => NULL),
     ),
   );
 }
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function bulk_export_menu() {
   $items['admin/build/bulkexport'] = array(
@@ -56,14 +62,13 @@ function bulk_export_export() {
     }
   }
   if ($exportables) {
-    ctools_include('form');
     $form_state = array(
       're_render' => FALSE,
       'no_redirect' => TRUE,
       'exportables' => $exportables,
       'export_tables' => $export_tables,
     );
-    $output = ctools_build_form('bulk_export_export_form', $form_state);
+    $output = drupal_build_form('bulk_export_export_form', $form_state);
     if (!$output) {
       drupal_set_title(t('Bulk export results'));
       $output = '';
@@ -97,7 +102,7 @@ function bulk_export_export() {
       // Add hook_ctools_plugin_api at the top of the module code, if there is any.
       if ($api_code) {
         $api =  "/**\n";
-        $api .= " * Implementation of hook_ctools_plugin_api().\n";
+        $api .= " * Implements hook_ctools_plugin_api().\n";
         $api .= " */\n";
         $api .= "function $form_state[module]_ctools_plugin_api(\$module, \$api) {\n";
         $api .= $api_code;
@@ -138,8 +143,7 @@ function bulk_export_export() {
  * FAPI definition for the bulk exporter form.
  *
  */
-function bulk_export_export_form(&$form_state) {
-  $form = array();
+function bulk_export_export_form($form, &$form_state) {
   $form['tables'] = array(
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',

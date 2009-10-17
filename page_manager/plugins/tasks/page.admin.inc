@@ -520,8 +520,8 @@ function page_manager_page_form_basic_validate(&$form, &$form_state) {
 
   // Check to see if something that isn't a page manager page is using the path.
   $path = implode('/', $path);
-  $result = db_query("SELECT * FROM {menu_router} WHERE path = '%s'", $path);
-  while ($router = db_fetch_object($result)) {
+  $result = db_query('SELECT * FROM {menu_router} WHERE path = :path', array(':path' => $path));
+  foreach ($result as $router) {
     if ($router->page_callback != 'page_manager_page_execute') {
       form_error($form['path'], t('That path is already in used. This system cannot override existing paths.'));
     }
@@ -529,8 +529,8 @@ function page_manager_page_form_basic_validate(&$form, &$form_state) {
 
   // Ensure the path is not already an alias to something else.
   if (strpos($path, '%') === FALSE) {
-    $result = db_query("SELECT src, dst FROM {url_alias} WHERE dst = '%s'", $path);
-    if ($alias = db_fetch_object($result)) {
+    $alias = db_query('SELECT src, dst FROM {url_alias} WHERE dst = :path', array(':path' => $path))->fetchObject();
+    if ($alias) {
       form_error($form['path'], t('That path is currently assigned to be an alias for @alias. This system cannot override existing aliases.', array('@alias' => $alias->src)));
     }
   }

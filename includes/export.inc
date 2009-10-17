@@ -113,34 +113,27 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
   }
 
   // Build the query
-  $query = "SELECT * FROM {" . $table . "}";
+  $query = db_select($table);
   $conditions = array();
   $query_args = array();
 
   // If they passed in names, add them to the query.
   if ($type == 'names') {
-    $conditions[] = "$export[key] IN (" . db_placeholders($args, $schema['fields'][$export['key']]['type']) . ")";
-    $query_args = $args;
+    $query->condition($export['key'], $args, 'IN');
   }
   else if ($type == 'conditions') {
     foreach ($args as $key => $value) {
       if (isset($schema['fields'][$key])) {
-        $conditions[] = "$key = " . db_type_placeholder($schema['fields'][$key]['type']);
-        $query_args[] = $value;
+        $query->condition($key, $value);
       }
     }
   }
 
-  // Make a string out of the conditions.
-  if ($conditions) {
-    $query .= " WHERE " . implode(' AND ', $conditions);
-  }
-
-  $result = db_query($query, $query_args);
+  $result = $query->execute();
 
   $status = variable_get($export['status'], array());
   // Unpack the results of the query onto objects and cache them.
-  while ($data = db_fetch_object($result)) {
+  foreach ($result as $data) {
     $object = _ctools_export_unpack_object($schema, $data, $export['object']);
     $object->table = $table;
     $object->type = t('Normal');
@@ -333,7 +326,7 @@ function _ctools_export_get_defaults($table, $export) {
  * @param $schema
  *   The schema from drupal_get_schema().
  * @param $data
- *   The data as loaded by db_fetch_object().
+ *   The data as loaded from the database.
  * @param $object
  *   If an object, data will be unpacked onto it. If a string
  *   an object of that type will be created.
@@ -350,7 +343,7 @@ function _ctools_export_unpack_object($schema, $data, $object = 'stdClass') {
 
   // Go through our schema and build correlations.
   foreach ($schema['fields'] as $field => $info) {
-    $object->$field = empty($info['serialize']) ? $data->$field : unserialize(db_decode_blob($data->$field));
+    $object->$field = empty($info['serialize']) ? $data->$field : unserialize($data->$field);
   }
 
   return $object;
@@ -362,7 +355,7 @@ function _ctools_export_unpack_object($schema, $data, $object = 'stdClass') {
  * @param $table
  *   The name of the table this object represents.
  * @param $data
- *   The data as loaded by db_fetch_object().
+ *   The data as loaded from the database.
  */
 function ctools_export_unpack_object($table, $data) {
   $schema = ctools_export_get_schema($table);
@@ -626,7 +619,7 @@ function ctools_export_to_hook_code(&$code, $table, $names = array(), $name = 'f
     $objects = ctools_export_load_object($table, 'names', $names);
     if ($objects) {
       $output = "/**\n";
-      $output .= " * Implementation of hook_{$export['default hook']}()\n";
+      $output .= " * Implements hook_{$export['default hook']}()\n";
       $output .= " */\n";
       $output .= "function " . $name . "_{$export['default hook']}() {\n";
       foreach ($objects as $object) {

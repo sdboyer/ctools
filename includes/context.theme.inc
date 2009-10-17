@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_theme()
+ * Implements hook_theme()
  */
 function ctools_context_theme(&$theme) {
   $theme['ctools_context_list'] = array(

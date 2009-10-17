@@ -71,7 +71,7 @@ function ctools_context_handler_render($task, $subtask, $contexts, $args, $page 
         // such as a book.
         if (menu_get_active_menu_name() == 'navigation') {
           $item = menu_get_item();
-          $mlink = db_fetch_object(db_query("SELECT * FROM {menu_links} WHERE link_path = '%s'", $item['href']));
+          $mlink = db_query('SELECT * FROM {menu_links} WHERE link_path = :path', array(':path' => $item['href']))->fetchObject();
 
           if ($mlink && isset($mlink->menu_name)) {
             menu_set_active_menu_name($mlink->menu_name);

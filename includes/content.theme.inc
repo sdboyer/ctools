@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_theme to load all content plugins and pass thru if
+ * Implements hook_theme to load all content plugins and pass thru if
  * necessary.
  */
 function ctools_content_theme(&$theme) {

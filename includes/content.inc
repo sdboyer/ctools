@@ -11,7 +11,7 @@
  */
 
 /**
- * Implementation of hook_ctools_plugin_*.
+ * Implements hook_ctools_plugin_*.
  *
  * Give information to CTools about the content types plugin.
  */
@@ -299,7 +299,7 @@ function ctools_content_render($type, $subtype, $conf, $keywords = array(), $arg
           $url = $content->title_link;
         }
         // set defaults so we don't bring up notices
-        $url += array('href' => '', 'attributes' => NULL, 'query' => NULL, 'fragment' => NULL, 'absolute' => NULL, 'html' => TRUE);
+        $url += array('href' => '', 'attributes' => array(), 'query' => array(), 'fragment' => '', 'absolute' => NULL, 'html' => TRUE);
         $content->title = l($content->title, $url['href'], $url);
       }
     }
@@ -420,7 +420,7 @@ function ctools_content_admin_info($type, $subtype, $conf, $context = NULL) {
   if (empty($output) || !is_object($output)) {
     $output = new stdClass();
     $output->title = t('No info');
-    $output->content =t ('No info available.');
+    $output->content = t('No info available.');
   }
   return $output;
 }

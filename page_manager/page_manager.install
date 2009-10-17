@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function page_manager_schema() {
   // This should always point to our 'current' schema. This makes it relatively easy
@@ -192,13 +192,11 @@ function page_manager_schema_1() {
 }
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function page_manager_install() {
-  db_query("UPDATE {system} SET weight = 99 WHERE name = 'page_manager'");
-}
-
-function page_manager_update_6101() {
-  $ret = array();
-  return $ret;
+  db_update('system')
+    ->fields(array('weight' => 99))
+    ->condition('name', 'page_manager')
+    ->execute();
 }

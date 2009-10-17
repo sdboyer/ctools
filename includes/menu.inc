@@ -145,32 +145,29 @@ function ctools_menu_tree_page_data($item, $menu_name = 'navigation') {
       // Build and run the query, and build the tree.
       if ($item['access']) {
         // Check whether a menu link exists that corresponds to the current path.
-        $args = array($menu_name, $item['href']);
-        $placeholders = "'%s'";
+        $args = array($item['href']);
         if (drupal_is_front_page()) {
           $args[] = '<front>';
-          $placeholders .= ", '%s'";
         }
-        $parents = db_fetch_array(db_query("SELECT p1, p2, p3, p4, p5, p6, p7, p8 FROM {menu_links} WHERE menu_name = '%s' AND link_path IN (". $placeholders .")", $args));
+        $parents = db_query("SELECT p1, p2, p3, p4, p5, p6, p7, p8 FROM {menu_links} WHERE menu_name = :menu_name AND link_path IN (:href)", array(':menu_name' => $menu_name, ':href' => $args))->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($parents)) {
           // If no link exists, we may be on a local task that's not in the links.
           // TODO: Handle the case like a local task on a specific node in the menu.
-          $parents = db_fetch_array(db_query("SELECT p1, p2, p3, p4, p5, p6, p7, p8 FROM {menu_links} WHERE menu_name = '%s' AND link_path = '%s'", $menu_name, $item['tab_root']));
+          $parents = db_query("SELECT p1, p2, p3, p4, p5, p6, p7, p8 FROM {menu_links} WHERE menu_name = :menu_name AND link_path = :path", array(':menu_name' => $menu_name, ':path' => $item['tab_root']))->fetchAll(PDO::FETCH_ASSOC);
         }
         // We always want all the top-level links with plid == 0.
         $parents[] = '0';
 
         // Use array_values() so that the indices are numeric for array_merge().
         $args = $parents = array_unique(array_values($parents));
-        $placeholders = implode(', ', array_fill(0, count($args), '%d'));
         $expanded = variable_get('menu_expanded', array());
         // Check whether the current menu has any links set to be expanded.
         if (in_array($menu_name, $expanded)) {
           // Collect all the links set to be expanded, and then add all of
           // their children to the list as well.
           do {
-            $result = db_query("SELECT mlid FROM {menu_links} WHERE menu_name = '%s' AND expanded = 1 AND has_children = 1 AND plid IN (". $placeholders .') AND mlid NOT IN ('. $placeholders .')', array_merge(array($menu_name), $args, $args));
+            $result = db_query('SELECT mlid FROM {menu_links} WHERE menu_name = :menu_name AND expanded = 1 AND has_children = 1 AND plid IN (:args) AND mlid NOT IN (:args)', array(':menu_name' => $menu_name, ':args' => $args))->fetchAll(PDO::FETCH_ASSOC);
             $num_rows = FALSE;
             while ($item = db_fetch_array($result)) {
               $args[] = $item['mlid'];

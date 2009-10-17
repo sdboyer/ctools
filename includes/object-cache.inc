@@ -35,9 +35,9 @@ function ctools_object_cache_get($obj, $name, $skip_cache = FALSE) {
   }
 
   if (!array_key_exists($key, $cache)) {
-    $data = db_fetch_object(db_query("SELECT * FROM {ctools_object_cache} WHERE sid = '%s' AND obj = '%s' AND name = '%s'", session_id(), $obj, $name));
+    $data = db_query('SELECT * FROM {ctools_object_cache} WHERE sid = :session_id AND obj = :object AND name = :name', array(':session_id' => session_id(), ':object' => $obj, ':name' => $name))->fetchObject();
     if ($data) {
-      $cache[$key] = unserialize(db_decode_blob($data->data));
+      $cache[$key] = unserialize($data->data);
     }
   }
   return isset($cache[$key]) ? $cache[$key] : NULL;
@@ -56,7 +56,15 @@ function ctools_object_cache_get($obj, $name, $skip_cache = FALSE) {
  */
 function ctools_object_cache_set($obj, $name, $cache) {
   ctools_object_cache_clear($obj, $name);
-  db_query("INSERT INTO {ctools_object_cache} (sid, obj, name, data, updated) VALUES ('%s', '%s', '%s', %b, %d)", session_id(), $obj, $name, serialize($cache), REQUEST_TIME);
+  db_insert('ctools_object_cache')
+    ->fields(array(
+      'sid' => session_id(),
+      'obj' => $obj,
+      'name' => $name,
+      'data' => serialize($cache),
+      'updated' => REQUEST_TIME,
+    ))
+    ->execute();
 }
 
 /**
@@ -69,7 +77,11 @@ function ctools_object_cache_set($obj, $name, $cache) {
  *   The name of the object being removed.
  */
 function ctools_object_cache_clear($obj, $name) {
-  db_query("DELETE FROM {ctools_object_cache} WHERE sid = '%s' AND obj = '%s' AND name = '%s'", session_id(), $obj, $name);
+  db_delete('ctools_object_cache')
+    ->condition('sid', session_id())
+    ->condition('obj', $obj)
+    ->condition('name', $name)
+    ->execute();
 }
 
 
@@ -89,7 +101,7 @@ function ctools_object_cache_clear($obj, $name) {
  *   An object containing the UID and updated date if found; NULL if not.
  */
 function ctools_object_cache_test($obj, $name) {
-  return db_fetch_object(db_query("SELECT s.uid, c.updated FROM {ctools_object_cache} c INNER JOIN {sessions}  s ON c.sid = s.sid WHERE s.sid != '%s' AND c.obj = '%s' AND c.name = '%s' ORDER BY c.updated ASC", session_id(), $obj, $name));
+  return db_query('SELECT s.uid, c.updated FROM {ctools_object_cache} c INNER JOIN {sessions} s ON c.sid = s.sid WHERE s.sid <> :session_id AND c.obj = :obj AND c.name = :name ORDER BY c.updated ASC', array(':session_id' => session_id(), ':obj' => $obj, ':name' => $name))->fetchObject();
 }
 
 /**
@@ -132,7 +144,10 @@ function ctools_object_cache_test_objects($obj, $names) {
  *   The name of the object being removed.
  */
 function ctools_object_cache_clear_all($obj, $name) {
-  db_query("DELETE FROM {ctools_object_cache} WHERE obj = '%s' AND name = '%s'", $obj, $name);
+  db_delete('ctools_object_cache')
+    ->condition('obj', $obj)
+    ->condition('name', $name)
+    ->execute();
 }
 
 /**
@@ -147,5 +162,7 @@ function ctools_object_cache_clean($age = NULL) {
   if (empty($age)) {
     $age = 86400 * 7; // 7 days
   }
-  db_query("DELETE FROM {ctools_object_cache} WHERE updated < %d", REQUEST_TIME - $age);
+  db_delete('ctools_object_cache')
+    ->condition('updated', REQUEST_TIME - $age, '<')
+    ->execute();
 }

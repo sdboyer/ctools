@@ -13,22 +13,15 @@
 function ctools_requirements($phase) {
   $requirements = array();
   if ($phase == 'runtime') {
-    $path = file_create_path('ctools/css');
-    if (!file_check_directory($path)) {
-      $path = file_directory_path() . '/ctools';
-      file_check_directory($path, FILE_CREATE_DIRECTORY);
-      $path .= '/css';
-      file_check_directory($path, FILE_CREATE_DIRECTORY);
-    }
-
     $requirements['ctools_css_cache'] = array(
       'title' => t('CTools CSS Cache'),
       'severity' => REQUIREMENT_OK,
       'value' => t('Exists'),
     );
 
-    if (!file_check_directory($path)) {
-      $requirements['ctools_css_cache']['description'] = t('The CTools CSS cache directory, %path could not be created due to a misconfigured files directory. Please ensure that the files directory is correctly configured and that the webserver has permission to create directories.', array('%path' => $path));
+    $path = 'public://ctools/css';
+    if (!file_prepare_directory($path, FILE_CREATE_DIRECTORY)) {
+      $requirements['ctools_css_cache']['description'] = t('The CTools CSS cache directory, %path could not be created due to a misconfigured files directory. Please ensure that the files directory is correctly configured and that the webserver has permission to create directories.', array('%path' => file_uri_target($path)));
       $requirements['ctools_css_cache']['severity'] = REQUIREMENT_ERROR;
       $requirements['ctools_css_cache']['value'] = t('Unable to create');
     }
@@ -38,7 +31,7 @@ function ctools_requirements($phase) {
 }
 
 /**
- * Implementation of hook_schemea
+ * Implements hook_schemea
  */
 function ctools_schema() {
   // Currently, schema 1 is the only schema we have. As we make updates,
@@ -141,50 +134,37 @@ function ctools_schema_1() {
  * errors.
  */
 function ctools_update_6001() {
-  $ret = array();
-
   // Perform updates like this to reduce code duplication.
   $schema = ctools_schema_2();
 
-  db_change_field($ret, 'ctools_object_cache', 'name', 'name', $schema['ctools_object_cache']['fields']['name']);
-
-  return $ret;
+  db_change_field('ctools_object_cache', 'name', 'name', $schema['ctools_object_cache']['fields']['name']);
 }
 
 /**
  * Add the new css cache table.
  */
 function ctools_update_6002() {
-  $ret = array();
-
   // Schema 2 is locked and should not be changed.
   $schema = ctools_schema_2();
 
-  db_create_table($ret, 'ctools_css_cache', $schema['ctools_css_cache']);
-  return $ret;
+  db_create_table('ctools_css_cache', $schema['ctools_css_cache']);
 }
 
 /**
  * Take over for the panels_views module if it was on.
  */
 function ctools_update_6003() {
-  $ret = array();
-
-  $result = db_result(db_query("SELECT status FROM {system} WHERE name = 'panels_views'"));
+  $result = db_query('SELECT status FROM {system} WHERE name = :name', array(':name' => 'panels_views'))->fetchField();
   if ($result) {
-    $ret[] = update_sql("DELETE from {system} WHERE name = 'panels_views'");
+    db_delete('system')->condition('name', 'panels_views')->execute();
     drupal_install_modules(array('views_content'));
   }
-
-  return $ret;
 }
 
 /**
  * Add primary key to the ctools_object_cache table.
  */
 function ctools_update_6004() {
-  $ret = array();
-  db_add_primary_key($ret, 'ctools_object_cache', array('sid', 'obj', 'name'));
-  db_drop_index($ret, 'ctools_object_cache', 'sid_obj_name');
-  return $ret;
+  db_add_primary_key('ctools_object_cache', array('sid', 'obj', 'name'));
+  db_drop_index('ctools_object_cache', 'sid_obj_name');
 }

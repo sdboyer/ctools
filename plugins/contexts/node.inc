@@ -12,7 +12,7 @@
  * Implementation of specially named hook_ctools_contexts().
  */
 function ctools_node_ctools_contexts() {
-  return array(
+  $args['node'] = array(
     'title' => t("Node"),
     'description' => t('A node object.'),
     'context' => 'ctools_context_create_node',
@@ -29,6 +29,7 @@ function ctools_node_ctools_contexts() {
       '#description' => t('Enter the node ID of a node for this context.'),
     ),
   );
+  return $args;
 }
 
 /**
@@ -86,7 +87,7 @@ function ctools_context_node_settings_form($conf) {
   );
 
   if (!empty($conf['nid'])) {
-    $info = db_fetch_object(db_query("SELECT * FROM {node} n WHERE n.nid = %d", $conf['nid']));
+    $info = db_query('SELECT * FROM {node} WHERE nid = :nid', array(':nid' => $conf['nid']))->fetchObject();
     if ($info) {
       $link = l(t("'%title' [node id %nid]", array('%title' => $info->title, '%nid' => $info->nid)), "node/$info->nid", array('attributes' => array('target' => '_blank', 'title' => t('Open in new window')), 'html' => TRUE));
       $form['node']['#description'] = t('Currently set to !link', array('!link' => $link));
@@ -133,10 +134,10 @@ function ctools_context_node_settings_form_validate($form, &$form_values, &$form
     $nid = $preg_matches[1];
   }
   if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE n.nid = %d"), $nid));
+    $node = db_query('SELECT nid FROM {node} WHERE nid = :nid', array(':nid' => $nid))->fetchObject();
   }
   else {
-    $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
+    $node = db_query('SELECT nid FROM {node} WHERE LOWER(title) = LOWER(:title)', array(':title' => $nid))->fetchObject();
   }
 
   if (!$node) {

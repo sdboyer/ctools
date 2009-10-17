@@ -36,7 +36,7 @@ function ctools_book_parent_context($context, $conf) {
       // Search through the book tree to load the top level.
       $result = array('nid' => $context->data->nid, 'vid' => $context->data->vid, 'parent' => $context->data->parent);
       while (!empty($result['parent'])) {
-        $result = db_fetch_array(db_query("SELECT * FROM {book} b INNER JOIN {node} n ON b.vid = n.nid WHERE b.nid = %d", $result['parent']));
+        $result = db_query('SELECT * FROM {book} b INNER JOIN {node} n ON b.vid = n.nid WHERE b.nid = :nid', array(':nid' => $result['parent']))->fetchAssoc();
       }
       $nid = $result['nid'];
     }

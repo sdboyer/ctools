@@ -10,7 +10,7 @@
  * must be implemented in the module file.
  */
 
-define('CTOOLS_API_VERSION', '1.1.1');
+define('CTOOLS_API_VERSION', '2.0.0');
 
 /**
  * Test the CTools API version.
@@ -81,7 +81,7 @@ function ctools_api_version($minimum, $maximum = NULL) {
 function ctools_include($file) {
   static $used = array();
   if (!isset($used[$file])) {
-    require_once './' . drupal_get_path('module', 'ctools') . "/includes/$file.inc";
+    require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'ctools') . "/includes/$file.inc";
   }
 
   $used[$file] = TRUE;
@@ -116,56 +116,6 @@ function ctools_init() {
 }
 
 /**
- * Central static variable storage. Modeled after Drupal 7's drupal_static().
- * 
- * @param $name
- *   Globally unique name for the variable. For a function with only one static,
- *   variable, the function name (e.g. via the PHP magic __FUNCTION__ constant) 
- *   is recommended. For a function with multiple static variables add a 
- *   distinguishing suffix to the function name for each one.
- * @param $default_value 
- *   Optional default value.
- * @return $reset 
- *   TRUE to reset a specific named variable, or all variables if $name is NULL. 
- *   Resetting every variable should only be used, for example, for running unit 
- *   tests with a clean environment. Should be used only though via function 
- *   ctools_static_reset().
- */
-function &ctools_static($name, $default_value = NULL, $reset = FALSE) {
-  static $data = array();
-
-  // Reset a single value, or all values.
-  if ($reset) {
-    if (isset($name)) {
-      unset($data[$name]);
-    }
-    else {
-      $data = array();
-    }
-    // We must return a reference to a variable.
-    $dummy = NULL;
-    return $dummy;
-  }
-
-  if (!isset($data[$name])) {
-    $data[$name] = $default_value;
-  }
-
-  return $data[$name];
-}
-
-/**
- * Reset one or all centrally stored static variable(s).
- * Modeled after Drupal 7's drupal_static_reset().
- * 
- * @param $name 
- *   Name of the static variable to reset. Omit to reset all variables.
- */
-function ctools_static_reset($name) {
-  ctools_static($name, NULL, TRUE);
-}
-
-/**
  * Provide a hook passthrough to included files.
  *
  * To organize things neatly, each CTools tool gets its own toolname.$type.inc
@@ -174,9 +124,9 @@ function ctools_static_reset($name) {
  * addition. It modifies the array by reference and doesn't need to return it.
  */
 function _ctools_passthrough(&$items, $type = 'theme') {
-  $files = drupal_system_listing('.' . $type . '.inc$', drupal_get_path('module', 'ctools') . '/includes', 'name', 0);
+  $files = drupal_system_listing('/\.' . $type . '\.inc$/', drupal_get_path('module', 'ctools') . '/includes', 'name', 0);
   foreach ($files as $file) {
-    require_once './' . $file->filename;
+    require_once DRUPAL_ROOT . '/' . $file->uri;
     list($tool) = explode('.', $file->name, 2);
 
     $function = 'ctools_' . $tool . '_' . $type;
@@ -186,6 +136,9 @@ function _ctools_passthrough(&$items, $type = 'theme') {
   }
 }
 
+/**
+ * Implements hook_theme_registry_alter()
+ */
 function ctools_theme_registry_alter(&$registry) {
   if ($registry['menu_local_tasks']['function'] == 'theme_menu_local_tasks') {
     $registry['menu_local_tasks'] = array(
@@ -203,6 +156,7 @@ function ctools_theme_registry_alter(&$registry) {
     ) + $registry['help'];
   }
 
+/*
   // Handle a special override for garland because it's cute and does its own
   // thing with tabs and we can't ask users to edit a core theme for us.
   if ($registry['menu_local_tasks']['function'] == 'phptemplate_menu_local_tasks' &&
@@ -219,6 +173,7 @@ function ctools_theme_registry_alter(&$registry) {
       $registry['page']['theme paths'][1] == 'themes/garland') {
     $registry['page']['preprocess functions'][2] = 'ctools_garland_preprocess_page';
   }
+*/
 }
 
 
@@ -238,7 +193,7 @@ function ctools_garland_preprocess_page(&$vars) {
 }
 
 /**
- * Implementation of hook_theme().
+ * Implements hook_theme().
  */
 function ctools_theme() {
   $items = array();
@@ -247,7 +202,7 @@ function ctools_theme() {
 }
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function ctools_menu() {
   $items = array();
@@ -256,7 +211,7 @@ function ctools_menu() {
 }
 
 /**
- * Implementation of hook_ctools_plugin_dierctory() to let the system know
+ * Implements hook_ctools_plugin_dierctory() to let the system know
  * we implement task and task_handler plugins.
  */
 function ctools_ctools_plugin_directory($module, $plugin) {
@@ -271,13 +226,8 @@ function ctools_ctools_plugin_directory($module, $plugin) {
 function ctools_get_roles() {
   static $roles = NULL;
   if (!isset($roles)) {
-    $roles = array();
-    $result = db_query("SELECT r.rid, r.name FROM {role} r ORDER BY r.name");
-    while ($obj = db_fetch_object($result)) {
-      $roles[$obj->rid] = $obj->name;
-    }
+    $roles = db_query('SELECT r.rid, r.name FROM {role} r ORDER BY r.name')->fetchAllKeyed();
   }
-
   return $roles;
 }
 
@@ -322,11 +272,12 @@ function ctools_access_menu($access) {
 }
 
 /**
- * Implementation of hook_cron. Clean up old caches.
+ * Implements hook_cron. Clean up old caches.
  */
 function ctools_cron() {
-  if (variable_get('ctools_last_cron', 0) < time() - 86400) {
-    variable_set('ctools_last_cron', time());
+  // TODO: Should this use the passthrough?
+  if (variable_get('ctools_last_cron', 0) < REQUEST_TIME - 86400) {
+    variable_set('ctools_last_cron', REQUEST_TIME);
     ctools_include('object-cache');
     ctools_object_cache_clean();
   }
@@ -392,6 +343,7 @@ function ctools_preprocess_node(&$vars) {
  * Ensure the CTools CSS cache is flushed whenever hook_flush_caches is invoked.
  */
 function ctools_flush_caches() {
+  // TODO: Should this use the passthrough mechanism?
   ctools_include('css');
   ctools_css_flush_caches();
 }

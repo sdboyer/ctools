@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_ctools_content_types()
+ * Implements hook_ctools_content_types()
  */
 function views_content_views_ctools_content_types() {
   if (!variable_get('ctools_content_all_views', TRUE)) {

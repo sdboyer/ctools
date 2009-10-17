@@ -52,11 +52,11 @@ function _ctools_content_vocabulary_terms($vid, $max_depth, $depth = -1, $tid = 
     return array();
   }
   $return = array();
-  $query = db_query('SELECT t.name, t.tid FROM {taxonomy_term_data} t INNER JOIN {taxonomy_term_hierarchy} h ON t.tid = h.tid WHERE t.vid = %d AND h.parent = %d ORDER BY t.weight ASC, t.name ASC', $vid, $tid);
-  while ($result = db_fetch_object($query)) {
+  $result = db_query('SELECT t.name, t.tid FROM {taxonomy_term_data} t INNER JOIN {taxonomy_term_hierarchy} h ON t.tid = h.tid WHERE t.vid = :vid AND h.parent = :parent ORDER BY t.weight ASC, t.name ASC', array(':vid' => $vid, ':parent' => $tid));
+  foreach ($result as $term) {
     $return[] = array(
-      'data' => l($result->name, 'taxonomy/term/'. $result->tid),
-      'children' => _ctools_content_vocabulary_terms($vid, $max_depth, $depth, $result->tid),
+      'data' => l($term->name, 'taxonomy/term/'. $term->tid),
+      'children' => _ctools_content_vocabulary_terms($vid, $max_depth, $depth, $term->tid),
     );
   }
   return $return;

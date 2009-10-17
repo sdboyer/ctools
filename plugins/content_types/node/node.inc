@@ -8,7 +8,7 @@
  */
 
 /**
- * Implementation of hook_ctools_content_types()
+ * Implements hook_ctools_content_types()
  */
 function ctools_node_ctools_content_types() {
   return array(
@@ -90,7 +90,9 @@ function ctools_node_content_type_render($subtype, $conf, $panel_args) {
     $node->build_mode = NODE_BUILD_NORMAL;
   }
 
-  $block->content = node_view($node, $conf['teaser'], FALSE, $conf['links']);
+  // FIXME some of the old behavior will likely not work after the straight
+  // drupal_render() call.
+  $block->content = drupal_render(node_build($node, $conf['teaser'] ? 'teaser' : 'full', FALSE, $conf['links']));
   return $block;
 }
 
@@ -166,10 +168,10 @@ function  ctools_node_content_type_edit_form_validate(&$form, &$form_state) {
     $nid = $preg_matches[1];
   }
   if (is_numeric($nid)) {
-    $node = db_fetch_object(db_query("SELECT n.nid FROM {node} n WHERE n.nid = %d", $nid));
+    $node = db_query('SELECT nid FROM {node} WHERE nid = :nid', array(':nid' => $nid))->fetchObject();
   }
   else {
-    $node = db_fetch_object(db_query("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')", $nid));
+    $node = db_query('SELECT nid FROM {node} WHERE LOWER(title) = LOWER(:title)', array(':title' => $nid))->fetchObject();
   }
   if ($node) {
     $form_state['values']['nid'] = $node->nid;

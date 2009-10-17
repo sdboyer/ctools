@@ -27,7 +27,8 @@ function ctools_term_list_content_type_render($subtype, $conf, $panel_args, $con
     $block->delta = $conf['type'];
     switch ($conf['type']) {
       case 'related':
-        $terms = taxonomy_get_related($term->tid);
+        // FIXME this no longer exists, must be done with Field API
+        // $terms = taxonomy_get_related($term->tid);
         break;
 
       case 'child':
@@ -40,7 +41,7 @@ function ctools_term_list_content_type_render($subtype, $conf, $panel_args, $con
         break;
 
       case 'sibling':
-        $parent = db_result(db_query("SELECT parent FROM {taxonomy_term_hierarchy} WHERE tid = %d", $term->tid));
+        $parent = db_query('SELECT parent FROM {term_hierarchy} WHERE tid = :tid', array(':tid' => $term->tid))->fetchField();
         $terms = taxonomy_get_children($parent, $term->vid);
         // Remove the term that started this.
         unset($terms[$term->tid]);

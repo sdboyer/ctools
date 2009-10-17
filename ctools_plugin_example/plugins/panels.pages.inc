@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_default_panel_pages()
+ * Implements hook_default_panel_pages()
  */
 function ctools_plugin_example_default_panel_pages() {
   $page = new stdClass();

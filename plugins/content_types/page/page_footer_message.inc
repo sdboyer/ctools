@@ -8,7 +8,7 @@
  */
 
 /**
- * Implementation of hook_ctools_content_types()
+ * Implements hook_ctools_content_types()
  */
 function ctools_page_footer_message_ctools_content_types() {
   return array(

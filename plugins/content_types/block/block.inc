@@ -75,7 +75,7 @@ function ctools_block_content_type_render($subtype, $conf) {
   $block->delta = $delta;
 
   if ($module == 'block' && empty($conf['override_title'])) {
-    $block->subject = db_result(db_query("SELECT title FROM {blocks} WHERE module = '%s' AND delta = '%s'", 'block', $delta));
+    $block->subject = db_query('SELECT title FROM {blocks} WHERE module = :module AND delta = :delta', array(':module' => 'block', ':delta' => $delta))->fetchField();
   }
 
   if (isset($block->subject)) {
@@ -106,9 +106,7 @@ function ctools_block_content_type_render($subtype, $conf) {
   }
 
   // Test for block visibility
-
-  $result = db_query("SELECT title, pages, visibility FROM {blocks} WHERE module = '%s' AND delta = '%s'", $block->module, $block->delta);
-  $block_visibility = db_fetch_object($result);
+  $block_visibility = db_query('SELECT title, pages, visibility FROM {blocks} WHERE module = :module AND delta = :delta', array(':module' => $block->module, ':delta' => $block->delta))->fetchObject();
 
   if ($block->module == 'block') {
     $block->title = $block_visibility->title;

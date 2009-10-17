@@ -10,7 +10,7 @@
  */
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function views_content_menu() {
   $items = array();
@@ -30,7 +30,7 @@ function views_content_menu() {
 }
 
 /**
- * Implementation of hook_ctools_plugin_dierctory() to let the system know
+ * Implements hook_ctools_plugin_dierctory() to let the system know
  * we implement task and task_handler plugins.
  */
 function views_content_ctools_plugin_directory($module, $plugin) {
@@ -65,7 +65,7 @@ function views_ctools_block_info($module, $delta, &$info) {
 }
 
 /**
- * Implementation of hook_views_api().
+ * Implements hook_views_api().
  *
  * This one is used as the base to reduce errors when updating.
  */

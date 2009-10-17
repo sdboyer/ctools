@@ -456,7 +456,9 @@ function page_manager_page_delete($page) {
       page_manager_delete_task_handler($handler);
     }
   }
-  db_query("DELETE FROM {page_manager_pages} WHERE name = '%s'", $page->name);
+  db_delete('page_manager_pages')
+    ->condition('name', $page->name)
+    ->execute();
 
   // Check to see if this was the site frontpage. If so, reset the site
   // frontpage to default.

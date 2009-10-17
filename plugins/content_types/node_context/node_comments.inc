@@ -96,41 +96,43 @@ function ctools_comment_render($node, $conf) {
   $comments_per_page = $conf['comments_per_page'];
 
   // Multiple comment view
-  $query_count = 'SELECT COUNT(*) FROM {comments} WHERE nid = %d';
-  $query = 'SELECT c.cid AS cid, c.pid, c.nid, c.subject, c.comment, c.format, c.timestamp, c.name, c.mail, c.homepage, u.uid, u.name AS registered_name, u.picture, u.data, c.thread, c.status, parent_user.uid as parent_uid, parent_user.data as parent_data, parent_user.name as parent_name, parent_user.picture as parent_picture FROM {comments} c INNER JOIN {users} u ON c.uid = u.uid LEFT OUTER JOIN {comments} parent ON c.pid = parent.cid LEFT OUTER JOIN {users} parent_user ON parent.uid = parent_user.uid WHERE c.nid = %d';
+  $query = db_select('comment', 'c')->extend('PagerDefault');
+  $query->addField('c', 'cid');
+  $query
+    ->condition('c.nid', $node->nid)
+    ->addTag('node_access')
+    ->limit($comments_per_page);
 
-  $query_args = array($node->nid);
+  $count_query = db_select('comment', 'c');
+  $count_query->addExpression('COUNT(*)');
+  $count_query
+    ->condition('c.nid', $node->nid)
+    ->addTag('node_access');
+
   if (!user_access('administer comments')) {
-    $query       .= ' AND c.status = %d';
-    $query_count .= ' AND status = %d';
-    $query_args[] = COMMENT_PUBLISHED;
+    $query->condition('c.status', COMMENT_PUBLISHED);
+    $count_query->condition('c.status', COMMENT_PUBLISHED);
+  }
+  if ($mode === COMMENT_MODE_FLAT) {
+    $query->orderBy('c.cid', 'ASC');
+  }
+  else {
+    // See comment above. Analysis reveals that this doesn't cost too
+    // much. It scales much much better than having the whole comment
+    // structure.
+    $query->orderBy('SUBSTRING(c.thread, 1, (LENGTH(c.thread) - 1))', 'ASC');
   }
 
-  if ($order == COMMENT_ORDER_NEWEST_FIRST) {
-    if ($mode == COMMENT_MODE_FLAT_COLLAPSED || $mode == COMMENT_MODE_FLAT_EXPANDED) {
-      $query .= ' ORDER BY c.timestamp DESC';
-    }
-    else {
-      $query .= ' ORDER BY c.thread DESC';
-    }
-  }
-  else if ($order == COMMENT_ORDER_OLDEST_FIRST) {
-    if ($mode == COMMENT_MODE_FLAT_COLLAPSED || $mode == COMMENT_MODE_FLAT_EXPANDED) {
-      $query .= ' ORDER BY c.timestamp';
-    }
-    else {
-      $query .= ' ORDER BY SUBSTRING(c.thread, 1, (LENGTH(c.thread) - 1))';
-    }
-  }
+  $query->setCountQuery($count_query);
+  $cids = $query->execute()->fetchCol();
 
-  // Start a form, for use with comment control.
-  $result = pager_query($query, $comments_per_page, 0, $query_count, $query_args);
+  $comments = comment_load_multiple($cids);
 
   $divs = 0;
   $last_depth = 0;
   drupal_add_css(drupal_get_path('module', 'comment') .'/comment.css');
-  while ($comment = db_fetch_object($result)) {
-    $comment = drupal_unpack($comment);
+  foreach ($comments as $comment) {
+    // @todo Not sure about what of this is still needed. 09/10/2009 sun
     $comment->name  = $comment->uid ? $comment->registered_name : $comment->name;
     $comment->depth = count(explode('.', $comment->thread)) - 1;
 

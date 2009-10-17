@@ -36,14 +36,14 @@ define('PAGE_MANAGER_CHANGED_STATUS', 0x08);
 // Drupal hooks
 
 /**
- * Implementation of hook_perm().
+ * Implements hook_perm().
  */
 function page_manager_perm() {
   return array('use page manager', 'administer page manager');
 }
 
 /**
- * Implementation of hook_ctools_plugin_dierctory() to let the system know
+ * Implements hook_ctools_plugin_directory() to let the system know
  * we implement task and task_handler plugins.
  */
 function page_manager_ctools_plugin_directory($module, $plugin) {
@@ -123,7 +123,7 @@ function page_manager_menu() {
 }
 
 /**
- * Implementation of hook_menu_alter.
+ * Implements hook_menu_alter.
  *
  * Get a list of all tasks and delegate to them.
  */
@@ -146,7 +146,7 @@ function page_manager_menu_alter(&$items) {
 }
 
 /*
- * Implementation of hook_theme()
+ * Implements hook_theme()
  */
 function page_manager_theme() {
   $base = array(
@@ -443,8 +443,8 @@ function page_manager_load_task_handlers($task, $subtask_id = NULL, $default_han
       $placeholders[] = "'%s'";
     }
 
-    $result = db_query("SELECT name, weight FROM {page_manager_weights} WHERE name IN (" . implode(', ', $placeholders) . ")", $names);
-    while ($weight = db_fetch_object($result)) {
+    $result = db_query('SELECT name, weight FROM {page_manager_weights} WHERE name IN :names', array(':names' => $names));
+    foreach ($result as $weight) {
       $handlers[$weight->name]->weight = $weight->weight;
     }
   }
@@ -568,7 +568,9 @@ function page_manager_save_task_handler(&$handler) {
   }
 
   drupal_write_record('page_manager_handlers', $handler, $update);
-  db_query("DELETE FROM {page_manager_weights} WHERE name = '%s'", $handler->name);
+  db_delete('page_manager_weights')
+    ->condition('name', $handler->name)
+    ->execute();
 
   // If this was previously a default handler, we may have to write task handlers.
   if (!$update) {
@@ -585,8 +587,12 @@ function page_manager_delete_task_handler($handler) {
   if ($function = ctools_plugin_load_function('page_manager', 'task_handlers', $handler->handler, 'delete')) {
     $function($handler);
   }
-  db_query("DELETE FROM {page_manager_handlers} WHERE name = '%s'", $handler->name);
-  db_query("DELETE FROM {page_manager_weights} WHERE name = '%s'", $handler->name);
+  db_delete('page_manager_handlers')
+    ->condition('name', $handler->name)
+    ->execute();
+  db_delete('page_manager_weights')
+    ->condition('name', $handler->name)
+    ->execute();
 }
 
 /**
@@ -654,8 +660,15 @@ function page_manager_new_task_handler($plugin) {
  * to the database just because they have their weight changed.
  */
 function page_manager_update_task_handler_weight($handler, $weight) {
-  db_query("DELETE FROM {page_manager_weights} WHERE name = '%s'", $handler->name);
-  db_query("INSERT INTO {page_manager_weights} (name, weight) VALUES ('%s', %d)", $handler->name, $weight);
+  db_delete('page_manager_weights')
+    ->condition('name', $handler->name)
+    ->execute();
+  db_insert('page_manager_weights')
+    ->fields(array(
+      'name' => $handler->name,
+      'weight' => $weight,
+    ))
+    ->execute();
 }
 
 
@@ -1006,7 +1019,7 @@ function page_manager_menu_link_alter(&$item, $menu) {
     }
     else {
       // Since we didn't already see an mlid, let's check the database for one.
-      $mlid = db_result(db_query("SELECT mlid FROM {menu_links} WHERE router_path = '%s'", $item['parent_path']));
+      $mlid = db_query('SELECT mlid FROM {menu_links} WHERE router_path = :path', array('path' => $item['parent_path']))->fetchField();
       if ($mlid) {
         $item['plid'] = $mlid;
       }
@@ -1058,7 +1071,7 @@ function page_manager_page_manager_pages_to_hook_code($names = array(), $name = 
   $objects = ctools_export_load_object('page_manager_pages', 'names', array_values($names));
   if ($objects) {
     $code = "/**\n";
-    $code .= " * Implementation of hook_{$export['default hook']}()\n";
+    $code .= " * Implements hook_{$export['default hook']}()\n";
     $code .= " */\n";
     $code .= "function " . $name . "_{$export['default hook']}() {\n";
     foreach ($objects as $object) {

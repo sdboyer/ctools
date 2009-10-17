@@ -113,7 +113,7 @@
 /**
  * Administrative form for access control.
  */
-function ctools_access_admin_form(&$form_state) {
+function ctools_access_admin_form($form, &$form_state) {
   ctools_include('context');
   $argument = isset($form_state['callback argument']) ? $form_state['callback argument'] : '';
   $fragment = $form_state['module'];
@@ -387,7 +387,7 @@ function ctools_access_ajax_edit($fragment = NULL, $id = NULL) {
 /**
  * From to edit the settings of an access test.
  */
-function ctools_access_ajax_edit_item(&$form_state) {
+function ctools_access_ajax_edit_item($form, &$form_state) {
   $test = &$form_state['test'];
   $plugin = &$form_state['plugin'];
 
@@ -411,7 +411,7 @@ function ctools_access_ajax_edit_item(&$form_state) {
 /**
  * Validate handler for argument settings.
  */
-function ctools_access_ajax_edit_item_validate(&$form, &$form_state) {
+function ctools_access_ajax_edit_item_validate($form, &$form_state) {
   if ($function = ctools_plugin_get_function($form_state['plugin'], 'settings form validate')) {
     $function($form, $form_state);
   }
@@ -420,7 +420,7 @@ function ctools_access_ajax_edit_item_validate(&$form, &$form_state) {
 /**
  * Submit handler for argument settings.
  */
-function ctools_access_ajax_edit_item_submit(&$form, &$form_state) {
+function ctools_access_ajax_edit_item_submit($form, &$form_state) {
   if ($function = ctools_plugin_get_function($form_state['plugin'], 'settings form submit')) {
     $function($form, $form_state);
   }
