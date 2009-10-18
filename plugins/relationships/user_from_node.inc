@@ -32,7 +32,7 @@ function ctools_user_from_node_context($context, $conf) {
   if (isset($context->data->uid)) {
     // Load the user that is the author of the node.
     $uid = $context->data->uid;
-    $account = user_load(array('uid' => $uid));
+    $account = user_load($uid);
 
     // Send it to ctools.
     return ctools_context_create('user', $account);

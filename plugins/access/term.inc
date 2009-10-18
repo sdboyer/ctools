@@ -140,7 +140,7 @@ function ctools_term_ctools_access_summary($conf, $context) {
   else {
     $terms = array();
     foreach ($conf[$vocab->vid] as $tid) {
-      $term = taxonomy_get_term($tid);
+      $term = taxonomy_term_load($tid);
       $terms[] = $term->name;
     }
   }

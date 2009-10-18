@@ -36,9 +36,9 @@ define('PAGE_MANAGER_CHANGED_STATUS', 0x08);
 // Drupal hooks
 
 /**
- * Implements hook_perm().
+ * Implements hook_permission().
  */
-function page_manager_perm() {
+function page_manager_permission() {
   return array('use page manager', 'administer page manager');
 }
 
@@ -602,7 +602,7 @@ function page_manager_delete_task_handler($handler) {
 function page_manager_export_task_handler($handler, $indent = '') {
   ctools_include('export');
   ctools_include('plugins');
-  $handler = drupal_clone($handler);
+  $handler = clone $handler;
 
   $append = '';
   if ($function = ctools_plugin_load_function('page_manager', 'task_handlers', $handler->handler, 'export')) {
@@ -1004,7 +1004,7 @@ function page_manager_edit_url($task_name, $trail = array()) {
 /**
  * Watch menu links during the menu rebuild, and re-parent things if we need to.
  */
-function page_manager_menu_link_alter(&$item, $menu) {
+function page_manager_menu_link_alter(&$item) {
   return;
 /** -- disabled, concept code --
   static $mlids = array();

@@ -122,8 +122,8 @@ function ctools_block_content_type_render($subtype, $conf) {
       $regexp     = '/^('. preg_replace(array('/(\r\n?|\n)/', '/\\\\\*/', '/(^|\|)\\\\<front\\\\>($|\|)/'), array('|', '.*', '\1'. preg_quote(variable_get('site_frontpage', 'node'), '/') .'\2'), preg_quote($block_visibility->pages, '/')) .')$/';
       $page_match = !($block_visibility->visibility xor preg_match($regexp, $path));
     }
-    else {
-      $page_match = drupal_eval($block_visibility->pages);
+    else if (module_exists('php')) {
+      $page_match = php_eval($block_visibility->pages);
     }
   }
   else {

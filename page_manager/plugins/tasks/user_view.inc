@@ -2,6 +2,9 @@
 // $Id$
 
 /**
+ * @file
+ * Overrides the user profile display at user/%user.
+ *
  * Specialized implementation of hook_page_manager_task_tasks(). See api-task.html for
  * more information.
  */

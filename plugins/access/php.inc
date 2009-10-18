@@ -42,7 +42,7 @@ function ctools_php_ctools_access_settings(&$form, &$form_state, $conf) {
     '#default_value' => $conf['php'],
     '#description' =>  t('Access will be granted if the following PHP code returns <code>TRUE</code>. Do not include &lt;?php ?&gt;. Note that executing incorrect PHP-code can break your Drupal site. All contexts will be available in the <em>$contexts</em> variable.'),
   );
-  if (!user_access('use PHP for block visibility')) {
+  if (!user_access('use PHP for settings')) {
     $form['settings']['php']['#disabled'] = TRUE;
     $form['settings']['php']['#value'] = $conf['php'];
     $form['settings']['php']['#description'] .= ' ' . t('You do not have sufficient permissions to edit PHP code.');
