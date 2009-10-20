@@ -113,7 +113,7 @@ function views_content_views_content_type_render($subtype, $conf, $panel_args, $
 
   $view = _views_content_views_update_conf($conf, $subtype);
 
-  if (empty($view)) {
+  if (empty($view) || empty($view->display_handler)) {
     return;
   }
 
@@ -508,6 +508,7 @@ function _views_content_views_update_conf(&$conf, $subtype) {
     }
   }
   else {
+    $name = $subtype;
     $view = views_get_view($subtype);
     $display = isset($conf['display']) ? $conf['display'] : 'default';
   }

@@ -142,12 +142,14 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
   }
 
   $view->set_display($display);
-  if (!$view->display_handler->access($GLOBALS['user'])) {
+  if (!$view->display_handler->access($GLOBALS['user']) || !$view->display_handler->panel_pane_display) {
     return;
   }
 
+
   $args = array();
   $arguments = $view->display_handler->get_option('arguments');
+
 
   $context_keys = array_keys($contexts);
   foreach ($view->display_handler->get_argument_input() as $id => $argument) {
