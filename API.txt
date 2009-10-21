@@ -2,10 +2,7 @@ API.txt: $Id$
 
 This file contains a log of changes to the API.
 
-API version 1.1.1:
-  Introduce ctools_plugin_get_class() and ctools_plugin_load_class()
-  Introduce ctools_ajax_command_attr().
-  Introduce ctools_set_page_token().
+API version 1.2:
   Introduce ctools_set_variable_token().
   Introduce ctools_set_callback_token().
   Introduce cleanstring tool. See cleanstring.inc
@@ -15,6 +12,11 @@ API version 1.1.1:
   Introduce ctools_ajax_command_submit().
   Introduce ctools_static().
   Introduce ctools_modal_command_loading().
+
+API version 1.1.1:
+  Introduce ctools_plugin_get_class() and ctools_plugin_load_class()
+  Introduce ctools_ajax_command_attr().
+  Introduce ctools_set_page_token().
 
 API version 1.1.0:
   delegator module destroyed, replaced by page manager. All 'task' and 'task_handler' plugins 

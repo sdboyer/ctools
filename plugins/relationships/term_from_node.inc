@@ -18,6 +18,7 @@ function ctools_term_from_node_ctools_relationships() {
     'context' => 'ctools_term_from_node_context',
     'settings form' => 'ctools_term_from_node_settings_form',
     'settings form validate' => 'ctools_term_from_node_settings_form_validate',
+    'defaults' => array('vid' => ''),
   );
   return $args;
 }
