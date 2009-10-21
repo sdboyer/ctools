@@ -3,6 +3,7 @@ Current API VERSION: 1.1.1. See API.txt for more information.
 ctools 6.x-1.x-dev
 ==================
 #605990 by johnskulski: Prevent Views PHP error if display was removed.
+#605968 by johnskulski: Show more information in the collapsible for Views Panes.
 
 ctools 6.x-1.1
 ==============
