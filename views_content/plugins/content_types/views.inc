@@ -113,7 +113,7 @@ function views_content_views_content_type_render($subtype, $conf, $panel_args, $
 
   $view = _views_content_views_update_conf($conf, $subtype);
 
-  if (empty($view) || empty($view->display_handler)) {
+  if (empty($view) || !is_object($view) || empty($view->display_handler)) {
     return;
   }
 
@@ -245,7 +245,7 @@ function views_content_views_content_type_edit_form(&$form, &$form_state) {
   $conf = $form_state['conf'];
   $view = _views_content_views_update_conf($conf, $form_state['subtype_name']);
 
-  if (empty($view)) {
+  if (empty($view) || !is_object($view)) {
     $form['markup'] = array('#value' => t('Broken/missing/deleted view.'));
     return;
   }
@@ -390,7 +390,7 @@ function views_content_views_content_type_edit_form_submit(&$form, &$form_state)
 function views_content_views_content_type_admin_title($subtype, $conf) {
   $view = _views_content_views_update_conf($conf, $subtype);
 
-  if (is_string($view)) {
+  if (!is_object($view)) {
     return t('Deleted/missing view @view', array('@view' => $view));
   }
   return t('View: @name', array('@name' => $view->name));
@@ -402,7 +402,7 @@ function views_content_views_content_type_admin_title($subtype, $conf) {
 function views_content_views_content_type_admin_info($subtype, $conf, $contexts) {
   $view = _views_content_views_update_conf($conf, $subtype);
 
-  if (is_string($view)) {
+  if (!is_object($view)) {
     return t('Deleted/missing view @view', array('@view' => $view));
   }
 
