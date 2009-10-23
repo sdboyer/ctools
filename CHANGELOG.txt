@@ -1,7 +1,8 @@
-Current API VERSION: 1.1.1. See API.txt for more information.
+Current API VERSION: 1.2. See API.txt for more information.
 
 ctools 6.x-1.x-dev
 ==================
+#612850: Fix crash bug with panes referencing deleted/missing views.
 
 ctools 6.x-1.2
 ==============
