@@ -543,7 +543,7 @@ function ctools_plugin_get_class($plugin, $class_name) {
   else {
     $class = $plugin[$class_name];
   }
-  
+
   // If we didn't explicitly include a file above, try autoloading a file
   // based on the class' name.
   if (!isset($file) && file_exists($plugin['path'] . "/$class.class.php")) {
