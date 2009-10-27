@@ -43,7 +43,7 @@
       $.ajax({
         type: "POST",
         url: url,
-        data: '',
+        data: 'js=1',
         global: true,
         success: Drupal.CTools.AJAX.respond,
         error: function() {
@@ -85,7 +85,7 @@
         $.ajax({
           type: "POST",
           url: url,
-          data: '',
+          data: 'js=1',
           global: true,
           success: Drupal.CTools.AJAX.respond,
           error: function() {
@@ -104,7 +104,7 @@
         $(form).ajaxSubmit({
           type: "POST",
           url: url,
-          data: '',
+          data: 'js=1',
           global: true,
           success: Drupal.CTools.AJAX.respond,
           error: function() {

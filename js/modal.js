@@ -143,7 +143,7 @@
       var ajaxOptions = {
         type: 'POST',
         url: url,
-        data: '',
+        data: 'js=1',
         global: true,
         success: Drupal.CTools.AJAX.respond,
         error: function() {
