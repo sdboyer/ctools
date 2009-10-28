@@ -47,11 +47,16 @@
 function ctools_jump_menu($form_state, $select, $options = array()) {
   $options += array(
     'button' => t('Go'),
+    'choose' => t('- Choose -'),
     'inline' => TRUE,
     'hide' => TRUE,
   );
 
   ctools_add_js('jump-menu');
+
+  if (!empty($options['choose'])) {
+    $select = array('' => $options['choose']) + $select;
+  }
 
   $form['jump'] = array(
     '#type' => 'select',
