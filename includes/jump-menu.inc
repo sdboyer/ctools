@@ -10,21 +10,6 @@
  * should go to. With javascript, the page is immediately redirected. Without
  * javascript, the form is submitted and a drupal_goto() is given.
  *
- * @code
- * ctools_include('jump-menu');
- * $output = drupal_get_form('ctools_jump_menu', $targets, $options);
- * @endcode
- *
- * $options may be an array with the following options:
- * - 'title': The text to display for the #title attribute.
- * - 'description': The text to display for the #description attribute.
- * - 'default_value': The text to display for the #default_value attribute.
- * - 'hide': If TRUE the go button will be set to hide via javascript and
- *   will submit on change.
- * - 'button': The text to display on the button.
- * - 'image': If set, an image button will be used instead, and the image
- *   set to this.
- * - 'inline': If set to TRUE (default) the display will be forced inline.
  */
 
 /**
@@ -36,6 +21,28 @@
  *
  * One note: Do not use #tree = TRUE or it will be unable to find the
  * proper value.
+ *
+ * @code
+ * ctools_include('jump-menu');
+ * $output = drupal_get_form('ctools_jump_menu', $targets, $options);
+ * @endcode
+ *
+ * @param $select
+ *   An array suitable for use as the #options. The keys will be the direct
+ *   URLs that will be jumped to, so you absolutely must encode these using
+ *   url() in order for them to work reliably.
+ *
+ * @param $options
+ *   $options may be an array with the following options:
+ *   - 'title': The text to display for the #title attribute.
+ *   - 'description': The text to display for the #description attribute.
+ *   - 'default_value': The text to display for the #default_value attribute.
+ *   - 'hide': If TRUE the go button will be set to hide via javascript and
+ *     will submit on change.
+ *   - 'button': The text to display on the button.
+ *   - 'image': If set, an image button will be used instead, and the image
+ *     set to this.
+ *   - 'inline': If set to TRUE (default) the display will be forced inline.
  */
 function ctools_jump_menu($form_state, $select, $options = array()) {
   $options += array(

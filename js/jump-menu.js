@@ -11,7 +11,7 @@
       .change(function() {
         var loc = $(this).val();
         if (loc) {
-          location.href = Drupal.settings.basePath + loc;
+          location.href = loc;
         }
         return false;
       });
@@ -25,7 +25,7 @@
         var $select = $(this).parents('form').find('.ctools-jump-menu-select');
         var loc = $select.val();
         if (loc) {
-          location.href = Drupal.settings.basePath + loc;
+          location.href = loc;
         }
         return false;
       });
