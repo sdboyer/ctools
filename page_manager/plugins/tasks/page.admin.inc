@@ -81,13 +81,15 @@ function page_manager_page_menu(&$items, $task) {
         // placholder. This will allow to_args.
         if (!empty($subtask->arguments[$name])) {
           ctools_include('context');
-          $plugin = ctools_get_argument($subtask->arguments[$name]['name']);
-          if (isset($plugin['path placeholder'])) {
-            if (function_exists($plugin['path placeholder'])) {
-              $placeholder = $plugin['path placeholder']($subtask->arguments[$name]);
-            }
-            else {
-              $placeholder = $plugin['path placeholder'];
+          if (!empty($subtask->arguments[$name]['name'])) {
+            $plugin = ctools_get_argument($subtask->arguments[$name]['name']);
+            if (isset($plugin['path placeholder'])) {
+              if (function_exists($plugin['path placeholder'])) {
+                $placeholder = $plugin['path placeholder']($subtask->arguments[$name]);
+              }
+              else {
+                $placeholder = $plugin['path placeholder'];
+              }
             }
           }
         }
