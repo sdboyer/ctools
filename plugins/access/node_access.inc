@@ -7,23 +7,22 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_access().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_node_access_ctools_access() {
-  return array(
-    'title' => t("Node: accessible"),
-    'description' => t('Control access with built in Drupal node access test.'),
-    'callback' => 'ctools_node_access_ctools_access_check',
-    'default' => array('type' => 'view'),
-    'settings form' => 'ctools_node_access_ctools_access_settings',
-    'settings form submit' => 'ctools_node_access_ctools_access_settings_submit',
-    'summary' => 'ctools_node_access_ctools_access_summary',
-    'required context' => array(
-      new ctools_context_required(t('User'), 'user'),
-      new ctools_context_required(t('Node'), 'node'),
-    ),
-  );
-}
+$plugin = array(
+  'title' => t("Node: accessible"),
+  'description' => t('Control access with built in Drupal node access test.'),
+  'callback' => 'ctools_node_access_ctools_access_check',
+  'default' => array('type' => 'view'),
+  'settings form' => 'ctools_node_access_ctools_access_settings',
+  'settings form submit' => 'ctools_node_access_ctools_access_settings_submit',
+  'summary' => 'ctools_node_access_ctools_access_summary',
+  'required context' => array(
+    new ctools_context_required(t('User'), 'user'),
+    new ctools_context_required(t('Node'), 'node'),
+  ),
+);
 
 /**
  * Settings form for the 'by node_access' access plugin

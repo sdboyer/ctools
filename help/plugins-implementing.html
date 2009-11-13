@@ -45,29 +45,15 @@ plugins[module][type] = directory
 
 <h3>How to structure the .inc file</h3>
 
-The actual plugin .inc file must be named carefully; the name of the file will conform to the name of the plugin. This name must be unique, so you should try to include your module name at the beginning to make sure you don't bump into other modules trying to create a plugin with the same name.
+The top of the .inc file should contain an array that defines the plugin. This array is simply defined in the global namespace of the file and does not need a function. Note that previous versions of this plugin system required a specially named function. While this function will still work, its use is now discouraged, as it is annoying to name properly.
 
-This file must contain a specially named function: 
-
+This array should look something like this:
 <pre>
-function YOURMODULE_PLUGINNAME_OWNERMODULE_PLUGINTYPE()
-</pre>
-
-So for example, for module 'example' to implement a 'layout' named 'mine' for the 'panels' module:
-<pre>
-  function example_mine_panels_layouts() {
-
-  }
-</pre>
-
-Finally, your plugin should return an array of data, like this:
-
-<pre>
-function YOURMODULE_PLUGINNAME_OWNERMODULE_PLUGINTYPE() {
-  return array(
-    'key' => 'value',
-  );
-}
+$plugin = array(
+  'key' => 'value',
+);
 </pre>
 
 Several values will be filled in for you automatically, but you can override them if necessary. They include 'name', 'path', 'file' and 'module'. Additionally, the plugin can owner can provide other defaults as well.
+
+After this array, if your plugin needs functions, they can be declared. Different plugin types have different needs here, so exactly what else will be needed will change from type to type.

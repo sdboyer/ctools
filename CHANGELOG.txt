@@ -5,6 +5,7 @@ ctools 6.x-1.x-dev
 #612850: Fix crash bug with panes referencing deleted/missing views.
 #595442: Fix AJAX problems with mod_security enabled.
 Introduce a "jump menu" tool which can be used to provide jump menus with a select.
+Change plugins to no longer need magic function. Can now use $plugin = array(...) instead.
 
 ctools 6.x-1.2
 ==============

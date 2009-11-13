@@ -7,20 +7,19 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_access().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_term_vocabulary_ctools_access() {
-  return array(
-    'title' => t("Taxonomy: vocabulary"),
-    'description' => t('Control access by term vocabulary.'),
-    'callback' => 'ctools_term_vocabulary_ctools_access_check',
-    'default' => array('vids' => array()),
-    'settings form' => 'ctools_term_vocabulary_ctools_access_settings',
-    'settings form submit' => 'ctools_term_vocabulary_ctools_access_settings_submit',
-    'summary' => 'ctools_term_vocabulary_ctools_acesss_summary',
-    'required context' => new ctools_context_required(t('Term'), array('term', 'terms')),
-  );
-}
+$plugin = array(
+  'title' => t("Taxonomy: vocabulary"),
+  'description' => t('Control access by term vocabulary.'),
+  'callback' => 'ctools_term_vocabulary_ctools_access_check',
+  'default' => array('vids' => array()),
+  'settings form' => 'ctools_term_vocabulary_ctools_access_settings',
+  'settings form submit' => 'ctools_term_vocabulary_ctools_access_settings_submit',
+  'summary' => 'ctools_term_vocabulary_ctools_acesss_summary',
+  'required context' => new ctools_context_required(t('Term'), array('term', 'terms')),
+);
 
 /**
  * Settings form for the 'by term_vocabulary' access plugin

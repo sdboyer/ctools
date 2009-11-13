@@ -7,19 +7,18 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_access().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_php_ctools_access() {
-  return array(
-    'title' => t("PHP Code"),
-    'description' => t('Control access through arbitrary PHP code.'),
-    'callback' => 'ctools_php_ctools_access_check',
-    'default' => array('description' => '', 'php' => ''),
-    'settings form' => 'ctools_php_ctools_access_settings',
-    'summary' => 'ctools_php_ctools_acesss_summary',
-    'all contexts' => TRUE,
-  );
-}
+$plugin = array(
+  'title' => t("PHP Code"),
+  'description' => t('Control access through arbitrary PHP code.'),
+  'callback' => 'ctools_php_ctools_access_check',
+  'default' => array('description' => '', 'php' => ''),
+  'settings form' => 'ctools_php_ctools_access_settings',
+  'summary' => 'ctools_php_ctools_acesss_summary',
+  'all contexts' => TRUE,
+);
 
 /**
  * Settings form for the 'by perm' access plugin
