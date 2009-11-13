@@ -7,20 +7,19 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_access().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_site_language_ctools_access() {
-  if (module_exists('locale')) {
-    return array(
-      'title' => t("User: language"),
-      'description' => t('Control access by the language the user or site currently uses.'),
-      'callback' => 'ctools_site_language_ctools_access_check',
-      'default' => array('language' => array()),
-      'settings form' => 'ctools_site_language_ctools_access_settings',
-      'settings form submit' => 'ctools_site_language_ctools_access_settings_submit',
-      'summary' => 'ctools_site_language_ctools_acesss_summary',
-    );
-  }
+if (module_exists('locale')) {
+  $plugin = array(
+    'title' => t("User: language"),
+    'description' => t('Control access by the language the user or site currently uses.'),
+    'callback' => 'ctools_site_language_ctools_access_check',
+    'default' => array('language' => array()),
+    'settings form' => 'ctools_site_language_ctools_access_settings',
+    'settings form submit' => 'ctools_site_language_ctools_access_settings_submit',
+    'summary' => 'ctools_site_language_ctools_acesss_summary',
+  );
 }
 
 /**

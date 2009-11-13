@@ -26,6 +26,7 @@ Show a LOCK icon on the page list when pages are locked for editing either by th
 #605968 by johnskulski: Show more information in the collapsible for Views Panes.
 #609024: Fix improper validation of views introduced in #547686.
 #612850: Fix crash bug with panes referencing deleted/missing views.
+Change plugins to no longer need magic function. Can now use $plugin = array(...) instead.
 
 ctools 6.x-1.x-dev
 ==================

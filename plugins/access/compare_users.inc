@@ -7,24 +7,23 @@
  */
 
 /**
- * Implement specially named hook_ctools_access().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_compare_users_ctools_access() {
-  return array(
-    'title' => t("User: compare"),
-    'description' => t('Compare two users (logged-in user and user being viewed, for example)'),
-    'callback' => 'ctools_compare_users_access_check',
-    'default' => array(
-      'equality' => 1,
-    ),
-    'settings form' => 'ctools_compare_users_settings',
-    'summary' => 'ctools_compare_users_ctools_access_summary',
-    'required context' => array(
-      new ctools_context_required(t('First User'), 'user'),
-      new ctools_context_required(t("Second User"), 'user')
-    ),
-  );
-}
+$plugin = array(
+  'title' => t("User: compare"),
+  'description' => t('Compare two users (logged-in user and user being viewed, for example)'),
+  'callback' => 'ctools_compare_users_access_check',
+  'default' => array(
+    'equality' => 1,
+  ),
+  'settings form' => 'ctools_compare_users_settings',
+  'summary' => 'ctools_compare_users_ctools_access_summary',
+  'required context' => array(
+    new ctools_context_required(t('First User'), 'user'),
+    new ctools_context_required(t("Second User"), 'user')
+  ),
+);
 
 /**
  * Settings form for the 'by perm' access plugin

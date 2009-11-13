@@ -7,21 +7,20 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_access().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_node_type_ctools_access() {
-  return array(
-    'title' => t("Node: type"),
-    'description' => t('Control access by node_type.'),
-    'callback' => 'ctools_node_type_ctools_access_check',
-    'default' => array('type' => array()),
-    'settings form' => 'ctools_node_type_ctools_access_settings',
-    'settings form submit' => 'ctools_node_type_ctools_access_settings_submit',
-    'summary' => 'ctools_node_type_ctools_access_summary',
-    'required context' => new ctools_context_required(t('Node'), 'node'),
-    'restrictions' => 'ctools_node_type_ctools_access_restrictions',
-  );
-}
+$plugin = array(
+  'title' => t("Node: type"),
+  'description' => t('Control access by node_type.'),
+  'callback' => 'ctools_node_type_ctools_access_check',
+  'default' => array('type' => array()),
+  'settings form' => 'ctools_node_type_ctools_access_settings',
+  'settings form submit' => 'ctools_node_type_ctools_access_settings_submit',
+  'summary' => 'ctools_node_type_ctools_access_summary',
+  'required context' => new ctools_context_required(t('Node'), 'node'),
+  'restrictions' => 'ctools_node_type_ctools_access_restrictions',
+);
 
 /**
  * Settings form for the 'by node_type' access plugin

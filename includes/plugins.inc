@@ -246,12 +246,19 @@ function ctools_plugin_load_includes($info, $file = NULL) {
       }
       else {
         // Parse a hook.
+        $plugin = NULL; // ensure that we don't have something leftover from earlier.
         require_once DRUPAL_ROOT . '/' . $file->uri;
+
         // .inc files have a special format for the hook identifier.
         // For example, 'foo.inc' in the module 'mogul' using the plugin
         // whose hook is named 'borg_type' should have a function named (deep breath)
         // mogul_foo_borg_type()
-        $result = ctools_plugin_process($info, $module, $module . '_' . $file->name, dirname($file->uri), basename($file->uri), $file->name);
+
+        // If, however, the .inc file set the quasi-global $plugin array, we
+        // can use that and not even call a function. Set the $identifier
+        // appropriately and ctools_plugin_process() will handle it.
+        $identifier = isset($plugin) ? $plugin : $module . '_' . $file->name;
+        $result = ctools_plugin_process($info, $module, $identifier, dirname($file->uri), basename($file->uri), $file->name);
       }
       if (is_array($result)) {
         $plugins = array_merge($plugins, $result);
@@ -338,13 +345,18 @@ function ctools_plugin_load_hooks($info) {
  *   implementors.
  */
 function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL, $base = NULL) {
-  $function = $identifier . '_' . $info['hook'];
-  if (!function_exists($function)) {
-    return NULL;
+  if (is_array($identifier)) {
+    $result = $identifier;
   }
-  $result = $function();
-  if (!isset($result) || !is_array($result)) {
-    return NULL;
+  else {
+    $function = $identifier . '_' . $info['hook'];
+    if (!function_exists($function)) {
+      return NULL;
+    }
+    $result = $function();
+    if (!isset($result) || !is_array($result)) {
+      return NULL;
+    }
   }
 
   // Automatically convert to the proper format that lets plugin implementations
