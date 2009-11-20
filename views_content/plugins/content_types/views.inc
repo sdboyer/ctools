@@ -393,7 +393,9 @@ function views_content_views_content_type_admin_title($subtype, $conf) {
   if (!is_object($view)) {
     return t('Deleted/missing view @view', array('@view' => $view));
   }
-  return t('View: @name', array('@name' => $view->name));
+
+  $title = $view->display[$view->current_display]->display_title;
+  return t('View: @name', array('@name' => $view->name . '-' . $title));
 }
 
 /**
