@@ -292,15 +292,107 @@ function ctools_plugin_get_directories($info) {
   }
 
   if (!empty($info['load themes'])) {
-    $themes = list_themes();
+    $themes = _ctools_list_themes();
+    // $themes = list_themes();
     foreach ($themes as $name => $theme) {
-      if (!empty($theme->status) && !empty($theme->info['plugins'][$info['module']][$info['type']])) {
+      if (!empty($theme->info['plugins'][$info['module']][$info['type']])) {
         $directories[$name] = drupal_get_path('theme', $name) . '/' . $theme->info['plugins'][$info['module']][$info['type']];
       }
     }
   }
   return $directories;
 }
+
+/**
+ * Helper function to build a ctools-friendly list of themes capable of
+ * providing plugins.
+ *
+ * @return array $themes
+ *   A list of themes that can act as plugin providers, sorted parent-first with
+ *   the active theme placed last.
+ */
+function _ctools_list_themes() {
+  static $themes;
+  if (is_null($themes)) {
+    $current = variable_get('theme_default', FALSE);
+    $themes = $active = array();
+    $all_themes = list_themes();
+    foreach ($all_themes as $name => $theme) {
+      // Only search from active themes
+      if (empty($theme->status) && $theme->name != $current) {
+        continue;
+      }
+      $active[$name] = $theme;
+      // Prior to drupal 6.14, $theme->base_themes does not exist. Build it.
+      if (!isset($theme->base_themes) && !empty($theme->base_theme)) {
+        $active[$name]->base_themes = ctools_find_base_themes($all_themes, $name);
+      }
+    }
+
+    // Construct a parent-first list of all themes
+    foreach ($active as $name => $theme) {
+      $base_themes = isset($theme->base_themes) ? $theme->base_themes : array();
+      $themes = array_merge($themes, $base_themes, array($name => $theme->info['name']));
+    }
+    // Put the actual theme info objects into the array
+    foreach (array_keys($themes) as $name) {
+      $themes[$name] = $all_themes[$name];
+    }
+
+    // Make sure the current theme always gets the last word
+    if ($current) {
+      $themes += array_splice($themes, $current, 1);
+    }
+  }
+  return $themes;
+}
+
+
+/**
+ * Find all the base themes for the specified theme.
+ *
+ * Themes can inherit templates and function implementations from earlier themes.
+ *
+ * NOTE: this is a verbatim copy of system_find_base_themes(), which was not
+ * implemented until 6.14. It is included here only as a fallback for outdated
+ * versions of drupal core.
+ *
+ * @param $themes
+ *   An array of available themes.
+ * @param $key
+ *   The name of the theme whose base we are looking for.
+ * @param $used_keys
+ *   A recursion parameter preventing endless loops.
+ * @return
+ *   Returns an array of all of the theme's ancestors; the first element's value
+ *   will be NULL if an error occurred.
+ */
+function ctools_find_base_themes($themes, $key, $used_keys = array()) {
+  $base_key = $themes[$key]->info['base theme'];
+  // Does the base theme exist?
+  if (!isset($themes[$base_key])) {
+    return array($base_key => NULL);
+  }
+
+  $current_base_theme = array($base_key => $themes[$base_key]->info['name']);
+
+  // Is the base theme itself a child of another theme?
+  if (isset($themes[$base_key]->info['base theme'])) {
+    // Do we already know the base themes of this theme?
+    if (isset($themes[$base_key]->base_themes)) {
+      return $themes[$base_key]->base_themes + $current_base_theme;
+    }
+    // Prevent loops.
+    if (!empty($used_keys[$base_key])) {
+      return array($base_key => NULL);
+    }
+    $used_keys[$base_key] = TRUE;
+    return ctools_find_base_themes($themes, $base_key, $used_keys) + $current_base_theme;
+  }
+  // If we get here, then this is our parent theme.
+  return $current_base_theme;
+}
+
 
 /**
  * Load plugin info for the provided hook; this is handled separately from
