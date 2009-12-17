@@ -457,25 +457,6 @@ function page_manager_page_delete($page) {
     }
   }
   db_query("DELETE FROM {page_manager_pages} WHERE name = '%s'", $page->name);
-
-  // Check to see if this was the site frontpage. If so, reset the site
-  // frontpage to default.
-  $frontpage = variable_get('site_frontpage', 'node');
-
-  $path = array();
-  if ($page->path) {
-    foreach (explode('/', $page->path) as $bit) {
-      if ($bit[0] != '!') {
-        $path[] = $bit;
-      }
-    }
-  }
-
-  $path = implode('/', $path);
-  if ($path == $frontpage) {
-    variable_del('site_frontpage');
-  }
-
   menu_rebuild();
 }
 
