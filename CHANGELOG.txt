@@ -7,6 +7,7 @@ ctools 6.x-1.x-dev
 Introduce a "jump menu" tool which can be used to provide jump menus with a select.
 Change plugins to no longer need magic function. Can now use $plugin = array(...) instead.
 #652236 by alevine: Preserve pre-existing class when adding ajax functionality to form widgets.
+#588246 by brynbellomy: Add "context exists" access plugin.
 
 ctools 6.x-1.2
 ==============
