@@ -28,6 +28,7 @@ function ctools_string_length_ctools_access_settings(&$form, &$form_state, $conf
       '>' => t('Greater than'),
       '>=' => t('Greater than or equal to'),
       '=' => t('Equal to'),
+      '!=' => t('Not equal to'),
       '<' => t('Less than'),
       '<=' => t('Less than or equal to'),
     ),
@@ -60,6 +61,8 @@ function ctools_string_length_ctools_access_check($conf, $context) {
       return $length <= $conf['length'];
     case '==':
       return $length == $conf['length'];
+    case '!=':
+      return $length != $conf['length'];
     case '>':
       return $length > $conf['length'];
     case '>=':
@@ -71,5 +74,5 @@ function ctools_string_length_ctools_access_check($conf, $context) {
  * Provide a summary description based upon the checked roles.
  */
 function ctools_string_length_ctools_access_summary($conf, $context) {
-  return t('String must be @comp @length characters', array('@comp' => $conf['operator'], '@length' => $conf['length']));
+  return t('@identifier must be @comp @length characters', array('@identifier' => $context->identifier, '@comp' => $conf['operator'], '@length' => $conf['length']));
 }

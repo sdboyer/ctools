@@ -10,6 +10,7 @@ Change plugins to no longer need magic function. Can now use $plugin = array(...
 #657474: Allows clean exporting for task handlers set to be the homepage. 
 #588246 by brynbellomy: Add "context exists" access plugin.
 #618194 by brynbellomy: Add "string length" access plugin.
+#618204 by brynbellomy: Add "string comparison" access plugin.
 
 ctools 6.x-1.2
 ==============
