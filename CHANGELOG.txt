@@ -12,6 +12,7 @@ Change plugins to no longer need magic function. Can now use $plugin = array(...
 #618194 by brynbellomy: Add "string length" access plugin.
 #618204 by brynbellomy: Add "string comparison" access plugin.
 #621444 by hefox: contact pages should only show up if contact module is active.
+#649144 by neclimdul: Expand ctools_include() to work for other modules. Move API version to 1.3.1
 
 ctools 6.x-1.2
 ==============

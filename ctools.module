@@ -10,7 +10,7 @@
  * must be implemented in the module file.
  */
 
-define('CTOOLS_API_VERSION', '1.3');
+define('CTOOLS_API_VERSION', '1.3.1');
 
 /**
  * Test the CTools API version.
@@ -76,12 +76,36 @@ function ctools_api_version($minimum, $maximum = NULL) {
 }
 
 /**
- * Include ctools .inc files as necessary.
+ * Include .inc files as necessary.
+ *
+ * This fuction is helpful for including .inc files for your module. The
+ * general case is including ctools funcitonality like this:
+ *
+ * @code
+ * ctools_include('plugins');
+ * @endcode
+ *
+ * Similar funcitonality can be used for other modules by providing the $module
+ * and $dir arguments like this:
+ *
+ * @code
+ * // include mymodule/includes/import.inc
+ * ctools_include('import', 'mymodule');
+ * // include mymodule/plugins/foobar.inc
+ * ctools_include('foobar', 'mymodule', 'plugins');
+ * @endcode
+ *
+ * @param $file
+ *   The base file name to be included.
+ * @param $module
+ *   Optional module containing the include.
+ * @param $dir
+ *   Optional subdirectory containing the include file.
  */
-function ctools_include($file) {
+function ctools_include($file, $module = 'ctools', $dir = 'includes') {
   static $used = array();
-  if (!isset($used[$file])) {
-    require_once './' . drupal_get_path('module', 'ctools') . "/includes/$file.inc";
+  if (!isset($used[$module][$dir][$file])) {
+    require_once './' . drupal_get_path('module', $module) . "/$dir/$file.inc";
   }
 
   $used[$file] = TRUE;
