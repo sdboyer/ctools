@@ -6,6 +6,9 @@
  * more information.
  */
 function page_manager_contact_user_page_manager_tasks() {
+  if (!module_exists('contact')) {
+    return;
+  }
   return array(
     // This is a 'page' task and will fall under the page admin UI
     'task type' => 'page',

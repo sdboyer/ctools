@@ -11,6 +11,7 @@ Change plugins to no longer need magic function. Can now use $plugin = array(...
 #588246 by brynbellomy: Add "context exists" access plugin.
 #618194 by brynbellomy: Add "string length" access plugin.
 #618204 by brynbellomy: Add "string comparison" access plugin.
+#621444 by hefox: contact pages should only show up if contact module is active.
 
 ctools 6.x-1.2
 ==============
