@@ -27,6 +27,7 @@ function ctools_string_equal_ctools_access_settings(&$form, &$form_state, $conf)
       '=' => t('Equal'),
       '!=' => t('Not equal'),
       'regex' => t('Regular expression'),
+      '!regex' => t('Not equal to regular expression'),
     ),
     '#default_value' => $conf['operator'],
     '#description' => t('If using a regular expression, you should enclose the pattern in slashes like so: <em>/foo/</em>. If you need to compare against slashes you can use another character to enclose the pattern, such as @. See <a href="http://www.php.net/manual/en/reference.pcre.pattern.syntax.php">PHP regex documentation</a> for more.'),
@@ -69,6 +70,8 @@ function ctools_string_equal_ctools_access_check($conf, $context) {
       return $string !== $value;
     case 'regex':
       return preg_match($value, $string);
+    case '!regex':
+      return !preg_match($value, $string);
   }
 }
 
@@ -84,6 +87,8 @@ function ctools_string_equal_ctools_access_summary($conf, $context) {
       return t('@identifier is not "@value"', $values);
     case 'regex':
       return t('@identifier matches "@value"', $values);
+    case '!regex':
+      return t('@identifier does not match "@value"', $values);
   }
 }
 

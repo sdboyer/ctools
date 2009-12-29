@@ -35,7 +35,7 @@ function ctools_context_exists_ctools_access_check($conf, $context) {
   // xor returns false if the two bools are the same, and true if they are not.
   // i.e, if we asked for context_exists and it does, return true.
   // If we asked for context does not exist and it does, return false.
-  return (empty($context->data) xor empty($conf['context_exists']));
+  return (empty($context->data) xor !empty($conf['context_exists']));
 }
 
 /**
