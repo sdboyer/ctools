@@ -103,11 +103,11 @@ Typically, there will be two load functions. A 'single' load, to load just one o
 /**
 * Load a single myobj.
 */
-function mymodule_myobj_load($oid) {
+function mymodule_myobj_load($name) {
   ctools_include('export');
-  $result = ctools_export_load_object('mymodule_myobjs', 'names', array($oid));
-  if (isset($result[$oid])) {
-    return $result[$oid];
+  $result = ctools_export_load_object('mymodule_myobjs', 'names', array($name));
+  if (isset($result[$name])) {
+    return $result[$name];
   }
 }
 </pre>
