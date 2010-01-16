@@ -293,7 +293,6 @@ function ctools_plugin_get_directories($info) {
 
   if (!empty($info['load themes'])) {
     $themes = _ctools_list_themes();
-    // $themes = list_themes();
     foreach ($themes as $name => $theme) {
       if (!empty($theme->info['plugins'][$info['module']][$info['type']])) {
         $directories[$name] = drupal_get_path('theme', $name) . '/' . $theme->info['plugins'][$info['module']][$info['type']];
@@ -339,9 +338,9 @@ function _ctools_list_themes() {
       $themes[$name] = $all_themes[$name];
     }
 
-    // Make sure the current theme always gets the last word
-    if ($current) {
-      $themes += array_splice($themes, $current, 1);
+    // Make sure the current default theme always gets the last word
+    if ($current_key = array_search($current, array_keys($themes))) {
+      $themes += array_splice($themes, $current_key, 1);
     }
   }
   return $themes;
