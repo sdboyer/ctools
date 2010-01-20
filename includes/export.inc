@@ -455,7 +455,7 @@ function ctools_export_get_schema($table) {
 }
 
 /**
- * Gets the schemas for all tables with ctools object metdata.
+ * Gets the schemas for all tables with ctools object metadata.
  */
 function ctools_export_get_schemas($for_export = FALSE) {
   static $export_tables;
