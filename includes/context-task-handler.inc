@@ -295,6 +295,10 @@ function ctools_context_handler_edit_criteria(&$form, &$form_state) {
   }
 
   ctools_include('context');
+  ctools_include('modal');
+  ctools_include('ajax');
+  ctools_modal_add_plugin_js(ctools_get_access_plugins());
+  ctools_include('context-access-admin');
   $form_state['module'] = 'page_manager_task_handler';
   // Encode a bunch of info into the argument so we can get our cache later
   $form_state['callback argument'] = $form_state['task_name'] . '*' . $form_state['handler']->name;
@@ -302,7 +306,6 @@ function ctools_context_handler_edit_criteria(&$form, &$form_state) {
   $form_state['no buttons'] = TRUE;
   $form_state['contexts'] = ctools_context_handler_get_all_contexts($form_state['task'], $form_state['subtask'], $form_state['handler']);
 
-  ctools_include('context-access-admin');
   $form['markup'] = array(
     '#value' => '<div class="description">' .
     t('If there is more than one variant on a page, when the page is visited each variant is given an opportunity to be displayed. Starting from the first variant and working to the last, each one tests to see if its selection rules will pass. The first variant that its criteria (as specified below) will be used.') .
