@@ -5,6 +5,9 @@
  * Callback function to supply a list of content types.
  */
 function ctools_search_result_ctools_content_types() {
+  if (!module_exists('search')) {
+    return;
+  }
   return array(
     'single' => TRUE,
     'title' => t('Search results'),

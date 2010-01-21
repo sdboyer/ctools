@@ -144,18 +144,21 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
     }
 
     $path = array();
-    foreach (explode('/', $task['admin path']) as $bit) {
-      if ($bit[0] != '!') {
-        $path[] = $bit;
+    $visible_path = '';
+    if (!empty($task['admin path'])) {
+      foreach (explode('/', $task['admin path']) as $bit) {
+        if ($bit[0] != '!') {
+          $path[] = $bit;
+        }
       }
-    }
 
-    $path = implode('/', $path);
-    if (empty($task['disabled']) && strpos($path, '%') === FALSE) {
-      $visible_path = l('/' . $task['admin path'], $path);
-    }
-    else {
-      $visible_path = '/' . $task['admin path'];
+      $path = implode('/', $path);
+      if (empty($task['disabled']) && strpos($path, '%') === FALSE) {
+        $visible_path = l('/' . $task['admin path'], $path);
+      }
+      else {
+        $visible_path = '/' . $task['admin path'];
+      }
     }
 
     $row = array('data' => array(), 'class' => $class, 'title' => strip_tags($task['admin description']));
@@ -1732,8 +1735,8 @@ function page_manager_enable_page($disable, $js, $page) {
 
       // We want to re-cache this if it's changed so that status is properly
       // updated on the changed form.
-      if (!empty($cache->changed)) {
-        page_manager_set_page_cache($cache);
+      if (!empty($page->changed)) {
+        page_manager_set_page_cache($page);
       }
     }
   }

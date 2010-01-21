@@ -106,7 +106,7 @@ function ctools_context_node_edit_form_settings_form($conf) {
   if (!empty($conf['nid'])) {
     $info = db_query('SELECT * FROM {node} WHERE nid = :nid', array(':nid' => $conf['nid']))->fetchObject();
     if ($info) {
-      $link = l(t("'%title' [node id %nid]", array('%title' => $info->title, '%nid' => $info->nid)), "node/$info->nid", array('target' => '_blank', 'title' => t('Open in new window')));
+      $link = l(t("'%title' [node id %nid]", array('%title' => $info->title, '%nid' => $info->nid)), "node/$info->nid", array('attributes' => array('target' => '_blank', 'title' => t('Open in new window')), 'html' => TRUE));
       $form['node']['#description'] = t('Currently set to !link', array('!link' => $link));
     }
   }
@@ -155,9 +155,6 @@ function ctools_context_node_edit_form_settings_form_validate($form, &$form_valu
   }
   else {
     $node = db_query('SELECT nid FROM {node} WHERE LOWER(title) = LOWER(:title)', array(':title' => $nid))->fetchObject();
-    if ($node) {
-      form_set_value($form['nid'], $node->nid, $form_state);
-    }
   }
 
   if (!$node) {

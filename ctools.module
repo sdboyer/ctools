@@ -76,12 +76,36 @@ function ctools_api_version($minimum, $maximum = NULL) {
 }
 
 /**
- * Include ctools .inc files as necessary.
+ * Include .inc files as necessary.
+ *
+ * This fuction is helpful for including .inc files for your module. The
+ * general case is including ctools funcitonality like this:
+ *
+ * @code
+ * ctools_include('plugins');
+ * @endcode
+ *
+ * Similar funcitonality can be used for other modules by providing the $module
+ * and $dir arguments like this:
+ *
+ * @code
+ * // include mymodule/includes/import.inc
+ * ctools_include('import', 'mymodule');
+ * // include mymodule/plugins/foobar.inc
+ * ctools_include('foobar', 'mymodule', 'plugins');
+ * @endcode
+ *
+ * @param $file
+ *   The base file name to be included.
+ * @param $module
+ *   Optional module containing the include.
+ * @param $dir
+ *   Optional subdirectory containing the include file.
  */
-function ctools_include($file) {
+function ctools_include($file, $module = 'ctools', $dir = 'includes') {
   static $used = array();
-  if (!isset($used[$file])) {
-    require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'ctools') . "/includes/$file.inc";
+  if (!isset($used[$module][$dir][$file])) {
+    require_once DRUPAL_ROOT . '/' . drupal_get_path('module', $module) . "/$dir/$file.inc";
   }
 
   $used[$file] = TRUE;
@@ -113,6 +137,56 @@ function ctools_add_js($file) {
  */
 function ctools_init() {
   ctools_add_css('ctools');
+}
+
+/**
+ * Central static variable storage. Modeled after Drupal 7's drupal_static().
+ *
+ * @param $name
+ *   Globally unique name for the variable. For a function with only one static,
+ *   variable, the function name (e.g. via the PHP magic __FUNCTION__ constant)
+ *   is recommended. For a function with multiple static variables add a
+ *   distinguishing suffix to the function name for each one.
+ * @param $default_value
+ *   Optional default value.
+ * @return $reset
+ *   TRUE to reset a specific named variable, or all variables if $name is NULL.
+ *   Resetting every variable should only be used, for example, for running unit
+ *   tests with a clean environment. Should be used only though via function
+ *   ctools_static_reset().
+ */
+function &ctools_static($name, $default_value = NULL, $reset = FALSE) {
+  static $data = array();
+
+  // Reset a single value, or all values.
+  if ($reset) {
+    if (isset($name)) {
+      unset($data[$name]);
+    }
+    else {
+      $data = array();
+    }
+    // We must return a reference to a variable.
+    $dummy = NULL;
+    return $dummy;
+  }
+
+  if (!isset($data[$name])) {
+    $data[$name] = $default_value;
+  }
+
+  return $data[$name];
+}
+
+/**
+ * Reset one or all centrally stored static variable(s).
+ * Modeled after Drupal 7's drupal_static_reset().
+ *
+ * @param $name
+ *   Name of the static variable to reset. Omit to reset all variables.
+ */
+function ctools_static_reset($name) {
+  ctools_static($name, NULL, TRUE);
 }
 
 /**

@@ -81,13 +81,15 @@ function page_manager_page_menu(&$items, $task) {
         // placholder. This will allow to_args.
         if (!empty($subtask->arguments[$name])) {
           ctools_include('context');
-          $plugin = ctools_get_argument($subtask->arguments[$name]['name']);
-          if (isset($plugin['path placeholder'])) {
-            if (function_exists($plugin['path placeholder'])) {
-              $placeholder = $plugin['path placeholder']($subtask->arguments[$name]);
-            }
-            else {
-              $placeholder = $plugin['path placeholder'];
+          if (!empty($subtask->arguments[$name]['name'])) {
+            $plugin = ctools_get_argument($subtask->arguments[$name]['name']);
+            if (isset($plugin['path placeholder'])) {
+              if (function_exists($plugin['path placeholder'])) {
+                $placeholder = $plugin['path placeholder']($subtask->arguments[$name]);
+              }
+              else {
+                $placeholder = $plugin['path placeholder'];
+              }
             }
           }
         }
@@ -420,12 +422,12 @@ function page_manager_page_form_basic(&$form, &$form_state) {
       '#type' => 'checkbox',
       '#default_value' => !empty($page->make_frontpage),
       '#title' => t('Make this your site home page.'),
-      '#description' => t('To set this panel as your home page you must create a unique path name with no % placeholders in the path. The current site home page is set to %homepage.', array('%homepage' => '/' . $frontpage)),
+      '#description' => t('To set this panel as your home page you must create a unique path name with no % placeholders in the path. The site home page is currently set to %homepage on the !siteinfo configuration form.', array('!siteinfo' => l('Site Information', 'admin/settings/site-information'), '%homepage' => '/' . $frontpage)),
     );
   }
   else if ($path == $frontpage) {
     $form['frontpage_markup'] = array(
-      '#value' => '<b>' . t('This page is currently set to be your site home page.') . '</b>',
+      '#value' => '<b>' . t('This page is currently set to be your site home page. This can be modified on the !siteinfo configuration form.', array('!siteinfo' => l('Site Information', 'admin/settings/site-information'))) . '</b>',
     );
 
     $form['frontpage'] = array(

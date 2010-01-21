@@ -432,7 +432,7 @@ function views_content_views_panes_content_type_admin_info($subtype, $conf, $con
   $view->set_display($display_name);
 
   // Add arguments first
-  if ($conf['arguments']) {
+  if (!empty($conf['arguments'])) {
     $keys = array_keys($conf['arguments']);
     $values = array_values($conf['arguments']);
     $argument_input = $view->display_handler->get_option('argument_input');
@@ -452,6 +452,7 @@ function views_content_views_panes_content_type_admin_info($subtype, $conf, $con
   }
   else {
     $block->title = $view->display_handler->get_option('pane_description');
+    $block->content = '';
   }
   return $block;
 }

@@ -143,11 +143,11 @@
       var ajaxOptions = {
         type: 'POST',
         url: url,
-        data: '',
+        data: 'js=1',
         global: true,
         success: Drupal.CTools.AJAX.respond,
-        error: function() {
-          alert("An error occurred while attempting to process " + url);
+        error: function(xhr) {
+          Drupal.CTools.AJAX.handleErrors(xhr, url);
         },
         complete: function() {
           object.removeClass('ctools-ajaxing');

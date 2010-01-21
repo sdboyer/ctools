@@ -83,7 +83,10 @@ function page_manager_user_view($account) {
     module_load_include('inc', 'user', 'user.pages');
     $output = user_view($account);
   }
-
+  else {
+    //fire off "view" op so that triggers still work
+    module_invoke_all('user', 'view', array(), $account);
+  }
   return $output;
 }
 

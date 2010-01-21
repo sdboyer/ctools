@@ -1,4 +1,4 @@
-Current API VERSION: 1.1.1. See API.txt for more information.
+Current API VERSION: 1.3. See API.txt for more information.
 
 ctools 7.x-1.x-dev
 ==================
@@ -30,6 +30,30 @@ Change plugins to no longer need magic function. Can now use $plugin = array(...
 
 ctools 6.x-1.x-dev
 ==================
+#612850: Fix crash bug with panes referencing deleted/missing views.
+#595442: Fix AJAX problems with mod_security enabled.
+Introduce a "jump menu" tool which can be used to provide jump menus with a select.
+Change plugins to no longer need magic function. Can now use $plugin = array(...) instead.
+#652236 by alevine: Preserve pre-existing class when adding ajax functionality to form widgets.
+#657474: Allows clean exporting for task handlers set to be the homepage. 
+#588246 by brynbellomy: Add "context exists" access plugin.
+#618194 by brynbellomy: Add "string length" access plugin.
+#618204 by brynbellomy: Add "string comparison" access plugin.
+#621444 by hefox: contact pages should only show up if contact module is active.
+#649144 by neclimdul: Expand ctools_include() to work for other modules. Move API version to 1.3.1
+#646944 by DamienMcKenna: Fix wrong variable name in page_manager_enable_page().
+Allow "admin path" to be empty for tasks to support Panels Everywhere.
+Introduce 'export callback' to individual fields in export.inc. Add some documentation to export.html -- much of it borrowed from stella!
+#686826 by dagmar: Improve AJAX error notifications.
+
+ctools 6.x-1.2
+==============
+#605990 by johnskulski: Prevent Views PHP error if display was removed.
+#605968 by johnskulski: Show more information in the collapsible for Views Panes.
+#609024: Fix improper validation of views introduced in #547686.
+
+ctools 6.x-1.1
+==============
 
 Fix problem with ctools_set_page_token()
 Add a couple of support functions for ctools_set_page_token that are meant to be used by themes.
@@ -62,6 +86,15 @@ Add a couple of support functions for ctools_set_page_token that are meant to be
 #556870: Node edit settings form context autocomplete was not working correctly.
 #491884 by ayalon: Provide blank substitutions for optional contexts that do not appear.
 #599136 by alex_b: Fix incorrect references to object unique name in export.inc.
+Allow the string argument to accept the entire path tail.
+#578410: Search path override, plus search form and search result content types.
+#567778: Allow override of contact and user contact pages.
+Allow override of blog and user blog pages.
+Allow override of poll page.
+#596450 by Scott Reynolds: Provide an ajax command response to reset the modal to the 'loading' state.
+#554678: Do not allow % or ! by itself as part of a path, as that breaks arguments.
+#599428: Enable and Disable variant buttons led to "Operation trail does not exist."
+Show a LOCK icon on the page list when pages are locked for editing either by the current user or another user.
 
 ctools 6.x-1.0
 ==============

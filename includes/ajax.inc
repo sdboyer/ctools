@@ -473,7 +473,13 @@ function ctools_ajax_associate_url_to_element(&$form, &$form_element, $dest, $ty
     //Create a unique ID to associate $form_element and hidden elements since we dont have an ID
     $form_element['#id'] = uniqid('ctools-ajax-url-');
 
-    $form_element['#attributes']['class'] = array($type);
+    // FIXME bad merge?
+    if (empty($form_element['#attributes']['class'])) {
+      $form_element['#attributes']['class'] = array($type);
+    }
+    else {
+      $form_element['#attributes']['class'][] = $type;
+    }
   }
 
   //Add hidden form element to hold base URL
