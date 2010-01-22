@@ -43,7 +43,7 @@
       $.ajax({
         type: "POST",
         url: url,
-        data: 'js=1',
+        data: { 'js': 1, 'ctools_ajax': 1 },
         global: true,
         success: Drupal.CTools.AJAX.respond,
         error: function(xhr) {
@@ -85,7 +85,7 @@
         $.ajax({
           type: "POST",
           url: url,
-          data: 'js=1',
+          data: { 'js': 1, 'ctools_ajax': 1 },
           global: true,
           success: Drupal.CTools.AJAX.respond,
           error: function(xhr) {
@@ -104,7 +104,7 @@
         $(form).ajaxSubmit({
           type: "POST",
           url: url,
-          data: 'js=1',
+          data: { 'js': 1, 'ctools_ajax': 1 },
           global: true,
           success: Drupal.CTools.AJAX.respond,
           error: function(xhr) {
@@ -173,7 +173,7 @@
         $.ajax({
           type: "POST",
           url: url,
-          data: {'ctools_changed' : $(this).val()},
+          data: {'ctools_changed': $(this).val(), 'js': 1, 'ctools_ajax': 1 },
           global: true,
           success: Drupal.CTools.AJAX.respond,
           error: function(xhr) {
