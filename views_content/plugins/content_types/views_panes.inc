@@ -201,6 +201,9 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
 
   $allow = $view->display_handler->get_option('allow');
 
+  if (!empty($conf['path'])) {
+    $conf['path'] = ctools_context_keyword_substitute($conf['path'], array(), $contexts);
+  }
   if ($allow['path_override'] && !empty($conf['path'])) {
     $view->override_path = $conf['path'];
   }
@@ -273,6 +276,7 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
  */
 function views_content_views_panes_content_type_edit_form(&$form, &$form_state) {
   $conf = $form_state['conf'];
+  $contexts = $form_state['contexts'];
   // This allows older content to continue to work, where we used to embed
   // the display directly.
   list($name, $display_id) = explode('-', $form_state['subtype_name']);
@@ -311,7 +315,6 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
       );
     }
   }
-  if ($view->display_handler->has_path()) {
     if ($allow['link_to_view'] ) {
       $form['link_to_view'] = array(
         '#type' => 'checkbox',
@@ -326,7 +329,6 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
         '#title' => t('Provide a "more" link.'),
       );
     }
-  }
 
   if (!empty($allow['feed_icons'])) {
     $form['feed_icons'] = array(
@@ -382,6 +384,33 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
       '#size' => 30,
       '#description' => t('If this is set, override the View URL path; this can sometimes be useful to set to the panel URL.'),
     );
+    if (!empty($contexts)) {
+      $form['path']['#description'] .= ' ' . t('You may use substitutions in this path.');
+
+      // We have to create a manual fieldset because fieldsets do not support IDs.
+      // Use 'hidden' instead of 'markup' so that the process will run.
+      $form['contexts_prefix'] = array(
+        '#type' => 'hidden',
+        '#id' => 'edit-path-substitutions',
+        '#prefix' => '<div><fieldset id="edit-path-substitutions" class="collapsed collapsible"><legend>' . t('Substitutions') . '</legend>',
+      );
+
+      $rows = array();
+      foreach ($contexts as $context) {
+        foreach (ctools_context_get_converters('%' . check_plain($context->keyword) . ':', $context) as $keyword => $title) {
+          $rows[] = array(
+            check_plain($keyword),
+            t('@identifier: @title', array('@title' => $title, '@identifier' => $context->identifier)),
+          );
+        }
+      }
+
+      $header = array(t('Keyword'), t('Value'));
+      $form['contexts']['context'] = array('#value' => theme('table', $header, $rows));
+      $form['contexts_suffix'] = array(
+        '#value' => '</fieldset></div>',
+      );
+    }
   }
 }
 
