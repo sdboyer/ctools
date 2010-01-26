@@ -137,6 +137,41 @@ function ctools_add_js($file) {
  */
 function ctools_init() {
   ctools_add_css('ctools');
+  // If we are sure that CTools' AJAX is in use, change the error handling.
+  if (!empty($_REQUEST['ctools_ajax'])) {
+    ini_set('display_errors', 0);
+    register_shutdown_function('ctools_shutdown_handler');
+  }
+}
+
+/**
+ * Shutdown handler used during ajax operations to help catch fatal errors.
+ */
+function ctools_shutdown_handler() {
+  if ($error = error_get_last()){
+    switch($error['type']){
+      case E_ERROR:
+      case E_CORE_ERROR:
+      case E_COMPILE_ERROR:
+      case E_USER_ERROR:
+        // Do this manually because including files here is dangerous.
+        $commands = array(
+          array(
+            'command' => 'alert',
+            'title' => t('Error'),
+            'text' => t('Unable to complete operation. Fatal error in @file on line @line: @message', array(
+              '@file' => $error['file'],
+              '@line' => $error['line'],
+              '@message' => $error['message'],
+            )),
+          ),
+        );
+
+        // Change the status code so that the client will read the AJAX returned.
+        header('HTTP/1.1 200 OK');
+        drupal_json($commands);
+    }
+  }
 }
 
 /**
