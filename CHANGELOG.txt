@@ -30,6 +30,7 @@ Change plugins to no longer need magic function. Can now use $plugin = array(...
 
 ctools 6.x-1.x-dev
 ==================
+Added support for context keyword substitutions on override paths in content panes provided by views_content.
 #612850: Fix crash bug with panes referencing deleted/missing views.
 #595442: Fix AJAX problems with mod_security enabled.
 Introduce a "jump menu" tool which can be used to provide jump menus with a select.
