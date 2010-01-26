@@ -145,7 +145,7 @@
       // Fix end lines
       error_text = error_text.replace(/[\n]+\s+/g,"\n");
     }
-    if (xhr.status == 500) {
+    else if (xhr.status == 500) {
       error_text = xhr.status + ': ' + Drupal.t("Internal server error. Please see server or PHP logs for error information.");
     }
     else {
