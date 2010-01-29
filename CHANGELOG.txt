@@ -20,6 +20,8 @@ Introduce 'export callback' to individual fields in export.inc. Add some documen
 #686826 by dagmar: Improve AJAX error notifications.
 #625696 by dmmckenna: Bulk exporter did not define empty array at beginning in code it creates for you.
 #651852 by coreyp_1: Add caching to content subtypes to save some queries. This means developers will need to clear caches when changing content type code.
+#630982 by Roi Danton: Dependent javascript failed to work properly if radios being depended on had no value at all.
+#661332 by yhahn: Allow export.inc to export stdClass objects by exporting them as an array and casting them to an object.
 
 ctools 6.x-1.2
 ==============
