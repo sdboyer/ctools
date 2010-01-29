@@ -257,7 +257,7 @@ function ctools_theme_registry_alter(&$registry) {
     ) + $registry['menu_local_tasks'];
   }
 
-  if ($registry['help']['function'] == 'theme_help') {
+  if (isset($registry['help']['function']) && $registry['help']['function'] == 'theme_help') {
     $registry['help'] = array(
       'function' => 'ctools_menu_help',
       'path' => drupal_get_path('module', 'ctools') . '/includes',
