@@ -26,6 +26,9 @@
  */
 
 function ctools_plugin_example_default_page_manager_pages() {
+
+  // begin exported panel.
+
   $page = new stdClass;
   $page->disabled = FALSE; /* Edit this to true to make a default page disabled initially */
   $page->api_version = 1;
@@ -110,6 +113,7 @@ function ctools_plugin_example_default_page_manager_pages() {
   $display->cache = array();
   $display->title = 'CTools plugin example panel';
   $display->hide_title = FALSE;
+  $display->title_pane = 1;
   $display->content = array();
   $display->panels = array();
   $pane = new stdClass;
@@ -284,6 +288,30 @@ function ctools_plugin_example_default_page_manager_pages() {
   $display->panels['middle'][1] = 'new-5';
   $pane = new stdClass;
   $pane->pid = 'new-6';
+  $pane->panel = 'middle';
+  $pane->type = 'custom';
+  $pane->subtype = 'custom';
+  $pane->shown = TRUE;
+  $pane->access = array();
+  $pane->configuration = array(
+    'admin_title' => 'Simplecontext keyword usage',
+    'title' => 'Simplecontext keyword usage',
+    'body' => 'Demonstrating context keyword usage:
+    item1 is %sc:item1
+    item2 is %sc:item2
+    description is %sc:description',
+    'format' => '1',
+    'substitute' => 1,
+  );
+  $pane->cache = array();
+  $pane->style = array();
+  $pane->css = array();
+  $pane->extras = array();
+  $pane->position = 2;
+  $display->content['new-6'] = $pane;
+  $display->panels['middle'][2] = 'new-6';
+  $pane = new stdClass;
+  $pane->pid = 'new-7';
   $pane->panel = 'right';
   $pane->type = 'relcontext_content_type';
   $pane->subtype = 'relcontext_content_type';
@@ -324,10 +352,10 @@ function ctools_plugin_example_default_page_manager_pages() {
   $pane->css = array();
   $pane->extras = array();
   $pane->position = 0;
-  $display->content['new-6'] = $pane;
-  $display->panels['right'][0] = 'new-6';
+  $display->content['new-7'] = $pane;
+  $display->panels['right'][0] = 'new-7';
   $pane = new stdClass;
-  $pane->pid = 'new-7';
+  $pane->pid = 'new-8';
   $pane->panel = 'top';
   $pane->type = 'custom';
   $pane->subtype = 'custom';
@@ -337,7 +365,7 @@ function ctools_plugin_example_default_page_manager_pages() {
     'title' => 'Demonstrating ctools plugins',
     'body' => 'The CTools Plugin Example module (and this panel page) are just here to demonstrate how to build CTools plugins.
 
-        ',
+            ',
     'format' => '2',
     'substitute' => 1,
   );
@@ -346,13 +374,15 @@ function ctools_plugin_example_default_page_manager_pages() {
   $pane->css = array();
   $pane->extras = array();
   $pane->position = 0;
-  $display->content['new-7'] = $pane;
-  $display->panels['top'][0] = 'new-7';
+  $display->content['new-8'] = $pane;
+  $display->panels['top'][0] = 'new-8';
   $handler->conf['display'] = $display;
   $page->default_handlers[$handler->name] = $handler;
 
+  // end of exported panel.
   $pages['ctools_plugin_example_demo_page'] = $page;
-  /* ---------------------------- */
+
+  // begin exported panel
 
   $page = new stdClass;
   $page->disabled = FALSE; /* Edit this to true to make a default page disabled initially */
@@ -414,6 +444,8 @@ function ctools_plugin_example_default_page_manager_pages() {
   $display->panels['middle'][0] = 'new-1';
   $handler->conf['display'] = $display;
   $page->default_handlers[$handler->name] = $handler;
+  // end exported panel.
+
   $pages['base_page'] = $page;
 
   return $pages;

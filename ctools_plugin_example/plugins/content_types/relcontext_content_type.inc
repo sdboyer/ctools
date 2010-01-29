@@ -11,26 +11,27 @@
  */
 
 /**
- * Hook to supply a list of content types.
- * The hook is:
- * <modulename>_<content_type>_ctools_content_types()
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_plugin_example_relcontext_content_type_ctools_content_types() {
-  return array(
-    // Unknown where this is used
-    'title' => t('CTools example relcontext content type'),
-    'admin info' => 'ctools_plugin_example_relcontext_content_type_admin_info',
-    'content_types' => 'relcontext_content_type',
-    'single' => TRUE,
-    'render callback' => 'relcontext_content_type_render',
-    // Icon goes in the directory with the content type. Here, in panels/content_types.
-    'icon' => 'icon_example.png',
-    'description' => t('Relcontext content type - works with relcontext context.'),
-    'required context' => new ctools_context_required(t('Relcontext'), 'relcontext'),
-    'category' => array(t('CTools Examples'), -9),
-    'edit form' => 'relcontext_edit_form',
-  );
-}
+$plugin = array(
+  // Used in add content dialogs.
+  'title' => t('CTools example relcontext content type'),
+  'admin info' => 'ctools_plugin_example_relcontext_content_type_admin_info',
+  'content_types' => 'relcontext_content_type',
+  'single' => TRUE,
+  'render callback' => 'relcontext_content_type_render',
+  // Icon goes in the directory with the content type. Here, in plugins/content_types.
+  'icon' => 'icon_example.png',
+  'description' => t('Relcontext content type - works with relcontext context.'),
+  'required context' => new ctools_context_required(t('Relcontext'), 'relcontext'),
+  'category' => array(t('CTools Examples'), -9),
+  'edit form' => 'relcontext_edit_form',
+
+  // this example does not provide 'admin info', which would populate the
+  // panels builder page preview.
+
+);
 
 /**
  * Run-time rendering of the body of the blcok

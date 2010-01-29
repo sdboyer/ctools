@@ -14,29 +14,29 @@
  */
 
 /**
- * Hook to supply a list of content types.
- * The hook is:
- * <modulename>_<content_type>_ctools_content_types()
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_plugin_example_simplecontext_content_type_ctools_content_types() {
-  return array(
-    'title' => t('Simplecontext content type'),
-    'content_types' => 'simplecontext_content_type',
-    // 'single' means not to be subtyped.
-    'single' => TRUE,
-    // Name of a function which will render the block.
-    'render callback' => 'simplecontext_content_type_render',
+$plugin = array(
+  'title' => t('Simplecontext content type'),
+  'content_types' => 'simplecontext_content_type',
+  // 'single' means not to be subtyped.
+  'single' => TRUE,
+  // Name of a function which will render the block.
+  'render callback' => 'simplecontext_content_type_render',
 
-    // Icon goes in the directory with the content type.
-    'icon' => 'icon_example.png',
-    'description' => t('Simplecontext content type - works with a simplecontext context.'),
-    'required context' => new ctools_context_required(t('Simplecontext'), 'simplecontext'),
-    'edit form' => 'simplecontext_content_type_edit_form',
-    'admin title' => 'ctools_plugin_example_simplecontext_content_type_admin_title',
-    'admin info' => 'ctools_plugin_example_simplecontext_content_type_admin_info',
-    'category' => array(t('CTools Examples'), -9),
-  );
-}
+  // Icon goes in the directory with the content type.
+  'icon' => 'icon_example.png',
+  'description' => t('Simplecontext content type - works with a simplecontext context.'),
+  'required context' => new ctools_context_required(t('Simplecontext'), 'simplecontext'),
+  'edit form' => 'simplecontext_content_type_edit_form',
+  'admin title' => 'ctools_plugin_example_simplecontext_content_type_admin_title',
+
+  // presents a block which is used in the preview of the data.
+  // Pn Panels this is the preview pane shown on the panels building page.
+  'admin info' => 'ctools_plugin_example_simplecontext_content_type_admin_info',
+  'category' => array(t('CTools Examples'), -9),
+);
 
 function ctools_plugin_example_simplecontext_content_type_admin_title($subtype, $conf, $context = NULL) {
   $output = t('Simplecontext');
@@ -47,15 +47,17 @@ function ctools_plugin_example_simplecontext_content_type_admin_title($subtype, 
 }
 
 /**
- * Callback to provide administrative info. In this case we'll render the
- * content as long as it's not PHP, which is too risky to render here.
+ * Callback to provide administrative info (the preview in panels when building
+ * a panel).
+ *
+ * In this case we'll render the content with a dummy argument and
+ * a dummy context.
  */
 function ctools_plugin_example_simplecontext_content_type_admin_info($subtype, $conf, $context = NULL) {
-  $block = new stdClass();
-  $block->title = !empty($conf['title']) ? check_plain($conf['title']) : '';
-  if (!empty($context) && !empty($context->data->description)) {
-    $block->content = check_plain($context->data->description);
-  }
+  $context = new stdClass();
+  $context->data = new stdClass();
+  $context->data->description = t("no real context");
+  $block = simplecontext_content_type_render($subtype, $conf, array("Example"), $context);
   return $block;
 }
 
@@ -88,7 +90,7 @@ function simplecontext_content_type_render($subtype, $conf, $args, $context) {
     and it's configured with:
     ");
   if (!empty($conf)) {
-    $block->content .= '<div style="border: 1px solid red;">' . print_r($conf['config_item_1'], TRUE) . '</div>';
+    $block->content .= '<div style="border: 1px solid red;">' . print_r(filter_xss_admin($conf['config_item_1']), TRUE) . '</div>';
   }
   if (!empty($context)) {
     $block->content .= '<br />The args ($args) were <div style="border: 1px solid yellow;" >' .

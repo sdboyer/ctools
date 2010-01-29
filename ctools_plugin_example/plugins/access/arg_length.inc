@@ -8,18 +8,17 @@
  */
 
 /**
- * Implementation of specially named ctools_plugin_example_arg_length_ctools_access().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_plugin_example_arg_length_ctools_access() {
-  return array(
-    'title' => t("Arg length"),
-    'description' => t('Control access by length of simplecontext argument.'),
-    'callback' => 'ctools_plugin_example_arg_length_ctools_access_check',
-    'settings form' => 'ctools_plugin_example_arg_length_ctools_access_settings',
-    'summary' => 'ctools_plugin_example_arg_length_ctools_acesss_summary',
-    'required context' => new ctools_context_required(t('Simplecontext'), 'simplecontext'),
-  );
-}
+$plugin = array(
+  'title' => t("Arg length"),
+  'description' => t('Control access by length of simplecontext argument.'),
+  'callback' => 'ctools_plugin_example_arg_length_ctools_access_check',
+  'settings form' => 'ctools_plugin_example_arg_length_ctools_access_settings',
+  'summary' => 'ctools_plugin_example_arg_length_ctools_acesss_summary',
+  'required context' => new ctools_context_required(t('Simplecontext'), 'simplecontext'),
+);
 
 /**
  * Settings form for the 'by role' access plugin.
