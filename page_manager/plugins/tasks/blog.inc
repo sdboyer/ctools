@@ -73,7 +73,7 @@ function page_manager_blog() {
 
   ctools_include('context');
   ctools_include('context-task-handler');
-  $output = ctools_context_handler_render($task, '', array(), '');
+  $output = ctools_context_handler_render($task, '', array(), array());
   if ($output !== FALSE) {
     return $output;
   }
