@@ -18,6 +18,7 @@ Change plugins to no longer need magic function. Can now use $plugin = array(...
 Allow "admin path" to be empty for tasks to support Panels Everywhere.
 Introduce 'export callback' to individual fields in export.inc. Add some documentation to export.html -- much of it borrowed from stella!
 #686826 by dagmar: Improve AJAX error notifications.
+#625696 by dmmckenna: Bulk exporter did not define empty array at beginning in code it creates for you.
 
 ctools 6.x-1.2
 ==============

@@ -596,11 +596,12 @@ function ctools_export_to_hook_code(&$code, $table, $names = array(), $name = 'f
       $output .= " * Implementation of hook_{$export['default hook']}()\n";
       $output .= " */\n";
       $output .= "function " . $name . "_{$export['default hook']}() {\n";
+      $output .= "  \${$export['identifier']}s = array();\n\n";
       foreach ($objects as $object) {
         $output .= $export['export callback']($object, '  '); // if this function does not exist, better to error out than fail silently
         $output .= "  \${$export['identifier']}s['" . check_plain($object->$export['key']) . "'] = \${$export['identifier']};\n\n";
       }
-      $output .= " return \${$export['identifier']}s;\n";
+      $output .= "  return \${$export['identifier']}s;\n";
       $output .= "}\n";
     }
   }
