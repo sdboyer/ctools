@@ -121,7 +121,7 @@
                 Drupal.CTools.dependent.activeBindings[id] = {};
               }
 
-              if (Drupal.CTools.dependent.inArray(Drupal.settings.CTools.dependent[id].values[bind_id], val)) {
+              if (val != null && Drupal.CTools.dependent.inArray(Drupal.settings.CTools.dependent[id].values[bind_id], val)) {
                 Drupal.CTools.dependent.activeBindings[id][bind_id] = 'bind';
               }
               else {
