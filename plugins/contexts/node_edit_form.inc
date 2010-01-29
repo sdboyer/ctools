@@ -22,6 +22,8 @@ $plugin = array(
   'defaults' => array('nid' => ''),
   'keyword' => 'node_edit',
   'context name' => 'node_edit_form',
+  'convert list' => 'ctools_context_node_edit_convert_list',
+  'convert' => 'ctools_context_node_edit_convert',
   'placeholder form' => array(
     '#type' => 'textfield',
     '#description' => t('Enter the node ID of a node for this argument:'),
@@ -173,4 +175,22 @@ function ctools_context_node_edit_form_settings_form_submit($form, &$form_values
 
   // Don't let this be stored.
   unset($form_values['set_identifier']);
+}
+
+/**
+ * Provide a list of ways that this context can be converted to a string.
+ */
+function ctools_context_node_convert_edit_list() {
+  // Pass through to the "node" context convert list.
+  $plugin = ctools_get_context('node');
+  return ctools_context_node_convert_list();
+}
+
+/**
+ * Convert a context into a string.
+ */
+function ctools_context_node_convert($context, $type) {
+  // Pass through to the "node" context convert list.
+  $plugin = ctools_get_context('node');
+  return ctools_context_node_convert($context, $type);
 }
