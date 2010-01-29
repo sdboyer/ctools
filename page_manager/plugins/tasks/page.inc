@@ -459,6 +459,10 @@ function page_manager_page_delete($page) {
   db_delete('page_manager_pages')
     ->condition('name', $page->name)
     ->execute();
+  // Make sure that the cache is reset so that the menu rebuild does not
+  // rebuild this page again.
+  ctools_include('export');
+  ctools_export_load_object_reset('page_manager_pages');
   menu_rebuild();
 }
 
