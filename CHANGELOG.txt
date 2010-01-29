@@ -19,6 +19,7 @@ Allow "admin path" to be empty for tasks to support Panels Everywhere.
 Introduce 'export callback' to individual fields in export.inc. Add some documentation to export.html -- much of it borrowed from stella!
 #686826 by dagmar: Improve AJAX error notifications.
 #625696 by dmmckenna: Bulk exporter did not define empty array at beginning in code it creates for you.
+#651852 by coreyp_1: Add caching to content subtypes to save some queries. This means developers will need to clear caches when changing content type code.
 
 ctools 6.x-1.2
 ==============
