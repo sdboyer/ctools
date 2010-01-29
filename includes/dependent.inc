@@ -11,18 +11,21 @@
  *
  * For a simple use, setting an item to be dependent upon a select box, if
  * any of the listed values are selected, the item will be visible. Otherwise,
- * the item will be visible.
+ * the item will be invisible.
  *
  * If dependent upon multiple items, use #dependency_count = X to set the
  * number of items that must be set in order to make this item visible. This
  * defaults to 1. If set to 2, then at least 2 form items in the list must
  * have their items set for the item to become visible.
  *
- * Checkboxes don't have their own id, so you need to add one in a div
- * around the checkboxes via #prefix and #suffix. You actually need to add TWO
- * divs because it's the parent that gets hidden. Also be sure to retain the
- * 'expand_checkboxes' in the #process array, because the views process will
- * override it.
+ * When hiding checkboxes and radios you need to add their id in a div
+ * manually via #prefix and #suffix since they don't have their own id. You
+ * actually need to add TWO divs because it's the parent that gets hidden.
+ * Also be sure to retain the 'expand_checkboxes' in the #process array,
+ * because the views process will override it.
+ *
+ * Fieldsets can not be hidden by default. Adding '#input' => TRUE to the
+ * fieldset works around that.
  *
  * For radios, because they are selected a little bit differently, instead of
  * using the CSS id, use: radio:NAME where NAME is the #name of the property.
@@ -73,8 +76,45 @@
  *    '#dependency' => array('radio:menu[type]' => array('normal', 'tab', 'default tab')),
  *   );
  *
- *  $form['menu']['title']['#process'] = array('ctools_dependent_process');
- *  $form['menu']['title']['#dependency'] =  array('radio:menu[type]' => array('normal', 'tab', 'default tab'));
+ *  return system_settings_form($form);
+ *}
+ * @endcode
+ *
+ * An example for hiding checkboxes using #prefix and #suffix:
+ * @code
+ *function ctools_dependent_example_checkbox() {
+ *  $form = array();
+ *  $form['object'] = array(
+ *    '#type' => 'fieldset',
+ *    '#title' => t('Select object type'),
+ *    '#tree' => TRUE,
+ *  );
+ *  $form['object']['type'] = array(
+ *    '#title' => t('Object type'),
+ *    '#type' => 'radios',
+ *    '#options' => array(
+ *      'view' => t('View'),
+ *      'node' => t('Node'),
+ *      'field' => t('Field'),
+ *      'term' => t('Term'),
+ *    ),
+ *    '#default_value' => 'view',
+ *  );
+ *
+ *  $form['object']['elements'] = array(
+ *    '#title' => t('Select the elements to load from the node.'),
+ *    '#type' => 'checkboxes',
+ *    '#prefix' => '<div id="edit-elements-wrapper"><div id="edit-elements">',
+ *    '#suffix' => '</div></div>',
+ *    '#process' => array('ctools_dependent_process', 'expand_checkboxes'),
+ *    '#dependency' => array('radio:menu[type]' => array('node')),
+ *    '#options' => array(
+ *      'body' => t('Body'),
+ *      'fields' => t('Fields'),
+ *      'taxonomy' => t('Taxonomy'),
+ *    ),
+ *    '#default_value' => array('body', 'fields'),
+ *   );
  *
  *  return system_settings_form($form);
  *}
