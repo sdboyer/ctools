@@ -61,10 +61,10 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
 
   // Don't load anything we've already cached.
   if ($type == 'names' && !empty($args)) {
-    foreach ($args as $name) {
+    foreach ($args as $id => $name) {
       if (isset($cache[$table][$name])) {
         $return[$name] = $cache[$table][$name];
-        unset($args[$name]);
+        unset($args[$id]);
       }
     }
 
