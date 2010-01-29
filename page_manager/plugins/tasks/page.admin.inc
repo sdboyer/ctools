@@ -525,7 +525,7 @@ function page_manager_page_form_basic_validate(&$form, &$form_state) {
   $result = db_query("SELECT * FROM {menu_router} WHERE path = '%s'", $path);
   while ($router = db_fetch_object($result)) {
     if ($router->page_callback != 'page_manager_page_execute') {
-      form_error($form['path'], t('That path is already in used. This system cannot override existing paths.'));
+      form_error($form['path'], t('That path is already in use. This system cannot override existing paths.'));
     }
   }
 
