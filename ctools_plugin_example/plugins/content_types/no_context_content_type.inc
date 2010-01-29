@@ -10,33 +10,33 @@
  */
 
 /**
- * Hook to define the content type.
- * The hook is:
- * <modulename>_<content_type>_ctools_content_types()
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_plugin_example_no_context_content_type_ctools_content_types() {
-  return array(
-    'title' => t('CTools example no context content type'),
-    'description' => t('No context content type - requires and uses no context.'),
+$plugin = array(
+  'title' => t('CTools example no context content type'),
+  'description' => t('No context content type - requires and uses no context.'),
 
-    // 'single' => TRUE means has no subtypes.
-    'single' => TRUE,
-    // Constructor.
-    'content_types' => array('no_context_content_type'),
-    // Name of a function which will render the block.
-    'render callback' => 'no_context_content_type_render',
-    // The default context.
-    'defaults' => array(),
+  // 'single' => TRUE means has no subtypes.
+  'single' => TRUE,
+  // Constructor.
+  'content_types' => array('no_context_content_type'),
+  // Name of a function which will render the block.
+  'render callback' => 'no_context_content_type_render',
+  // The default context.
+  'defaults' => array(),
 
-    // This explicitly declares the config form. Without this line, the func would be
-    // ctools_plugin_example_no_context_content_type_edit_form.
-    'edit form' => 'no_context_content_type_edit_form',
+  // This explicitly declares the config form. Without this line, the func would be
+  // ctools_plugin_example_no_context_content_type_edit_form.
+  'edit form' => 'no_context_content_type_edit_form',
 
-    // Icon goes in the directory with the content type.
-    'icon' => 'icon_example.png',
-    'category' => array(t('CTools Examples'), -9),
-  );
-}
+  // Icon goes in the directory with the content type.
+  'icon' => 'icon_example.png',
+  'category' => array(t('CTools Examples'), -9),
+
+  // this example does not provide 'admin info', which would populate the
+  // panels builder page preview.
+);
 
 /**
  * Run-time rendering of the body of the block.
@@ -60,7 +60,7 @@ function no_context_content_type_render($subtype, $conf, $args, $context) {
   // The title actually used in rendering
   $block->title = check_plain("No-context content type");
   $block->content = t("
-  <div>Welcome to the CTools Plugin Example demonstration panel.
+  <div>Welcome to the CTools Plugin Example demonstration content type.
 
   This block is a content type which requires no context at all. It's like a custom block,
   but not even that sophisticated.

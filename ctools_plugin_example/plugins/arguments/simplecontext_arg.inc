@@ -6,7 +6,7 @@
  *
  * Sample plugin to provide an argument handler for a simplecontext.
  *
- * Given any argument to the panels page, simplecontext will get it
+ * Given any argument to the page, simplecontext will get it
  * and turn it into a piece of data (a "context") just by adding some text to it.
  * Normally, the argument would be a key into some database (like the node
  * database, for example, and the result of using the argument would be to load
@@ -14,30 +14,24 @@
  */
 
 /**
- * Return settings for the simplecontext_arg.
- * Name construction of the function:
- *  <mymodule>_<arg_name>_ctools_arguments()
- *
- * @return
- *   Array defining the plugin
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_plugin_example_simplecontext_arg_ctools_arguments() {
-  return array(
-    'title' => t("Simplecontext arg"),
-    // keyword to use for %substitution
-    'keyword' => 'simplecontext',
-    'description' => t('Creates a "simplecontext" from the arg.'),
-    'context' => 'simplecontext_arg_context',
-    // 'settings form' => 'simplecontext_arg_settings_form',
+$plugin = array(
+  'title' => t("Simplecontext arg"),
+  // keyword to use for %substitution
+  'keyword' => 'simplecontext',
+  'description' => t('Creates a "simplecontext" from the arg.'),
+  'context' => 'simplecontext_arg_context',
+  // 'settings form' => 'simplecontext_arg_settings_form',
 
-    // placeholder_form is used in panels preview, for example, so we can
-    // preview without getting the arg from a URL
-    'placeholder form' => array(
-      '#type' => 'textfield',
-      '#description' => t('Enter the simplecontext arg'),
-    ),
-  );
-}
+  // placeholder_form is used in panels preview, for example, so we can
+  // preview without getting the arg from a URL
+  'placeholder form' => array(
+    '#type' => 'textfield',
+    '#description' => t('Enter the simplecontext arg'),
+  ),
+);
 
 /**
  * Get the simplecontext context using the arg. In this case we're just going

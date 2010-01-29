@@ -12,18 +12,17 @@
  */
 
 /**
- * Definition of the plugin.
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_plugin_example_relcontext_from_simplecontext_ctools_relationships() {
-  return array(
-    'title' => t("Relcontext from simplecontext"),
-    'keyword' => 'relcontext',
-    'description' => t('Adds a relcontext from existing simplecontext.'),
-    'required context' => new ctools_context_required(t('Simplecontext'), 'simplecontext'),
-    'context' => 'ctools_relcontext_from_simplecontext_context',
-    'settings form' => 'ctools_relcontext_from_simplecontext_settings_form',
-  );
-}
+$plugin = array(
+  'title' => t("Relcontext from simplecontext"),
+  'keyword' => 'relcontext',
+  'description' => t('Adds a relcontext from existing simplecontext.'),
+  'required context' => new ctools_context_required(t('Simplecontext'), 'simplecontext'),
+  'context' => 'ctools_relcontext_from_simplecontext_context',
+  'settings form' => 'ctools_relcontext_from_simplecontext_settings_form',
+);
 
 /**
  * Return a new context based on an existing context.
