@@ -161,13 +161,19 @@ function ctools_context_node_settings_form_submit($form, &$form_values, &$form_s
  * Provide a list of ways that this context can be converted to a string.
  */
 function ctools_context_node_convert_list() {
-  return array(
+  $list = array(
     'nid' => t('Node ID'),
     'vid' => t('Node revision ID'),
     'title' => t('Node title'),
     'uid' => t('Author UID'),
     'type' => t('Node type'),
   );
+
+  if (module_exists('token')) {
+    $list += reset(token_get_list(array('node')));
+  }
+
+  return $list;
 }
 
 /**
@@ -185,5 +191,11 @@ function ctools_context_node_convert($context, $type) {
       return $context->data->uid;
     case 'type':
       return $context->data->type;
+  }
+  if (module_exists('token')) {
+    $values = token_get_values('node', $context->data);
+    if ($key = array_search($type, $values->tokens)) {
+      return $values->values[$key];
+    }
   }
 }
