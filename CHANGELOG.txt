@@ -29,6 +29,7 @@ Show a LOCK icon on the page list when pages are locked for editing either by th
 Change plugins to no longer need magic function. Can now use $plugin = array(...) instead.
 #651852 by coreyp_1: Add caching to content subtypes to save some queries. This means developers will need to clear caches when changing content type code.
 #630982 by Roi Danton: Dependent javascript failed to work properly if radios being depended on had no value at all.
+#661332 by yhahn: Allow export.inc to export stdClass objects by exporting them as an array and casting them to an object.
 
 ctools 6.x-1.x-dev
 ==================
