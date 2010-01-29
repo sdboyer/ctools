@@ -2,18 +2,17 @@
 // $Id$
 
 /**
- * Callback function to supply a list of content types.
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_user_profile_ctools_content_types() {
-  return array(
-    'single' => TRUE,
-    'title' => t('User profile'),
-    'icon' => 'icon_user.png',
-    'description' => t('The profile of a user.'),
-    'required context' => new ctools_context_required(t('User'), 'user'),
-    'category' => t('User'),
-  );
-}
+$plugin = array(
+  'single' => TRUE,
+  'title' => t('User profile'),
+  'icon' => 'icon_user.png',
+  'description' => t('The profile of a user.'),
+  'required context' => new ctools_context_required(t('User'), 'user'),
+  'category' => t('User'),
+);
 
 /**
  * Render the user profile content type.

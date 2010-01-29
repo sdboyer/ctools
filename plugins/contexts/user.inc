@@ -8,25 +8,24 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_contexts().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_user_ctools_contexts() {
-  return array(
-    'title' => t("User"),
-    'description' => t('A single user object.'),
-    'context' => 'ctools_context_create_user',
-    'settings form' => 'ctools_context_user_settings_form',
-    'settings form validate' => 'ctools_context_user_settings_form_validate',
-    'keyword' => 'user',
-    'no ui' => TRUE,
-    'context name' => 'user',
-    'convert list' => array(
-      'uid' => t('User ID'),
-      'name' => t('User name'),
-    ),
-    'convert' => 'ctools_context_user_convert',
-  );
-}
+$plugin = array(
+  'title' => t("User"),
+  'description' => t('A single user object.'),
+  'context' => 'ctools_context_create_user',
+  'settings form' => 'ctools_context_user_settings_form',
+  'settings form validate' => 'ctools_context_user_settings_form_validate',
+  'keyword' => 'user',
+  'no ui' => TRUE,
+  'context name' => 'user',
+  'convert list' => array(
+    'uid' => t('User ID'),
+    'name' => t('User name'),
+  ),
+  'convert' => 'ctools_context_user_convert',
+);
 
 /**
  * It's important to remember that $conf is optional here, because contexts

@@ -1,26 +1,24 @@
 <?php
 // $Id$
 
-/**
- * Plugin declaration function - returns a plugin definition array that
- * describes the content type.
- */
-function ctools_node_comments_ctools_content_types() {
-  if (module_exists('comment')) {
-    return array(
-      'single' => TRUE,
-      'title' => t('Node comments'),
-      'icon' => 'icon_node.png',
-      'description' => t('The comments of the referenced node.'),
-      'required context' => new ctools_context_required(t('Node'), 'node'),
-      'category' => t('Node'),
-      'defaults' => array(
-        'mode' => variable_get('comment_default_mode', COMMENT_MODE_THREADED_EXPANDED),
-        'order' => variable_get('comment_default_order', COMMENT_ORDER_NEWEST_FIRST),
-        'comments_per_page' => variable_get('comment_default_per_page', '50'),
-      ),
-    );
-  }
+if (module_exists('comment')) {
+  /**
+   * Plugins are described by creating a $plugin array which will be used
+   * by the system that includes this file.
+   */
+  $plugin = array(
+    'single' => TRUE,
+    'title' => t('Node comments'),
+    'icon' => 'icon_node.png',
+    'description' => t('The comments of the referenced node.'),
+    'required context' => new ctools_context_required(t('Node'), 'node'),
+    'category' => t('Node'),
+    'defaults' => array(
+      'mode' => variable_get('comment_default_mode', COMMENT_MODE_THREADED_EXPANDED),
+      'order' => variable_get('comment_default_order', COMMENT_ORDER_NEWEST_FIRST),
+      'comments_per_page' => variable_get('comment_default_per_page', '50'),
+    ),
+  );
 }
 
 function ctools_node_comments_content_type_render($subtype, $conf, $panel_args, $context) {

@@ -1,27 +1,26 @@
 <?php
 // $Id$
 
-
 /**
- * Callback function to supply a list of content types.
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_node_links_ctools_content_types() {
-  return array(
-    'single' => TRUE,
-    'title' => t('Node links'),
-    'icon' => 'icon_node.png',
-    'description' => t('Node links of the referenced node.'),
-    'required context' => new ctools_context_required(t('Node'), 'node'),
-    'category' => t('Node'),
-    'defaults' => array(
-      'override_title' => FALSE,
-      'override_title_text' => '',
-      'teaser' => TRUE,
-      'identifier' => '',
-      'link' => TRUE,
-    ),
-  );
-}
+$plugin = array(
+  'single' => TRUE,
+  'title' => t('Node links'),
+  'icon' => 'icon_node.png',
+  'description' => t('Node links of the referenced node.'),
+  'required context' => new ctools_context_required(t('Node'), 'node'),
+  'category' => t('Node'),
+  'defaults' => array(
+    'override_title' => FALSE,
+    'override_title_text' => '',
+    'teaser' => TRUE,
+    'identifier' => '',
+    'link' => TRUE,
+  ),
+);
+
 /**
  * Output function for the 'node' content type. Outputs a node
  * based on the module and delta supplied in the configuration.

@@ -2,21 +2,20 @@
 // $Id$
 
 /**
- * Callback function to supply a list of content types.
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_node_author_ctools_content_types() {
-  return array(
-    'single' => TRUE,
-    'title' => t('Node author'),
-    'icon' => 'icon_node.png',
-    'description' => t('The author of the referenced node.'),
-    'required context' => new ctools_context_required(t('Node'), 'node'),
-    'category' => t('Node'),
-    'defaults' => array(
-      'link' => TRUE,
-    ),
-  );
-}
+$plugin = array(
+  'single' => TRUE,
+  'title' => t('Node author'),
+  'icon' => 'icon_node.png',
+  'description' => t('The author of the referenced node.'),
+  'required context' => new ctools_context_required(t('Node'), 'node'),
+  'category' => t('Node'),
+  'defaults' => array(
+    'link' => TRUE,
+  ),
+);
 
 /**
  * Render the custom content type.

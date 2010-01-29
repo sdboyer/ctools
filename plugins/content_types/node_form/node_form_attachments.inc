@@ -1,20 +1,19 @@
 <?php
 // $Id$
 
-/**
- * Implementation of specially named hook_ctools_content_types()
- */
-function ctools_node_form_attachments_ctools_content_types() {
-  if (module_exists('upload')) {
-    return array(
-      'single' => TRUE,
-      'icon' => 'icon_node_form.png',
-      'title' => t('Node form file attachments'),
-      'description' => t('File attachments on the Node form.'),
-      'required context' => new ctools_context_required(t('Form'), 'node_form'),
-      'category' => t('Form'),
-    );
-  }
+if (module_exists('upload')) {
+  /**
+   * Plugins are described by creating a $plugin array which will be used
+   * by the system that includes this file.
+   */
+  $plugin = array(
+    'single' => TRUE,
+    'icon' => 'icon_node_form.png',
+    'title' => t('Node form file attachments'),
+    'description' => t('File attachments on the Node form.'),
+    'required context' => new ctools_context_required(t('Form'), 'node_form'),
+    'category' => t('Form'),
+  );
 }
 
 function ctools_node_form_attachments_content_type_render($subtype, $conf, $panel_args, &$context) {

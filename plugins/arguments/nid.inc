@@ -8,20 +8,19 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_arguments().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_nid_ctools_arguments() {
-  return array(
-    'title' => t("Node: ID"),
-    'keyword' => 'node',
-    'description' => t('Creates a node context from a node ID argument.'),
-    'context' => 'ctools_argument_nid_context',
-    'placeholder form' => array(
-      '#type' => 'textfield',
-      '#description' => t('Enter the node ID of a node for this argument'),
-    ),
-  );
-}
+$plugin = array(
+  'title' => t("Node: ID"),
+  'keyword' => 'node',
+  'description' => t('Creates a node context from a node ID argument.'),
+  'context' => 'ctools_argument_nid_context',
+  'placeholder form' => array(
+    '#type' => 'textfield',
+    '#description' => t('Enter the node ID of a node for this argument'),
+  ),
+);
 
 /**
  * Discover if this argument gives us the node we crave.

@@ -1,21 +1,20 @@
 <?php
 // $Id$
 
-/**
- * Callback function to supply a list of content types.
- */
-function ctools_vocabulary_terms_ctools_content_types() {
-  if (module_exists('taxonomy')) {
-    return array(
-      'single' => TRUE,
-      'title' => t('Vocabulary terms'),
-      'icon' => 'icon_vocabulary.png',
-      'description' => t('All the terms in a vocabulary.'),
-      'required context' => new ctools_context_required(t('Vocabulary'), 'vocabulary'),
-      'category' => t('Vocabulary'),
-      'defaults' => array('max_depth' => 0, 'tree' => 1),
-    );
-  }
+if (module_exists('taxonomy')) {
+  /**
+   * Plugins are described by creating a $plugin array which will be used
+   * by the system that includes this file.
+   */
+  $plugin = array(
+    'single' => TRUE,
+    'title' => t('Vocabulary terms'),
+    'icon' => 'icon_vocabulary.png',
+    'description' => t('All the terms in a vocabulary.'),
+    'required context' => new ctools_context_required(t('Vocabulary'), 'vocabulary'),
+    'category' => t('Vocabulary'),
+    'defaults' => array('max_depth' => 0, 'tree' => 1),
+  );
 }
 
 /**

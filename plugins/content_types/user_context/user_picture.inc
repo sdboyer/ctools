@@ -2,18 +2,17 @@
 // $Id$
 
 /**
- * Callback function to supply a list of content types.
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_user_picture_ctools_content_types() {
-  return array(
-    'single' => TRUE,
-    'title' => t('User picture'),
-    'icon' => 'icon_user.png',
-    'description' => t('The picture of a user.'),
-    'required context' => new ctools_context_required(t('User'), 'user'),
-    'category' => t('User'),
-  );
-}
+$plugin = array(
+  'single' => TRUE,
+  'title' => t('User picture'),
+  'icon' => 'icon_user.png',
+  'description' => t('The picture of a user.'),
+  'required context' => new ctools_context_required(t('User'), 'user'),
+  'category' => t('User'),
+);
 
 function ctools_user_picture_content_type_render($subtype, $conf, $panel_args, $context) {
   $account = isset($context->data) ? clone($context->data) : NULL;

@@ -8,26 +8,25 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_contexts().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_node_edit_form_ctools_contexts() {
-  return array(
-    'title' => t("Node edit form"),
-    'description' => t('A node edit form.'),
-    'context' => 'ctools_context_create_node_edit_form',
-    'settings form' => 'ctools_context_node_edit_form_settings_form',
-    'settings form validate' => 'ctools_context_node_edit_form_settings_form_validate',
-    'settings form validate' => 'ctools_context_node_edit_form_settings_form_validate',
-    'settings form submit' => 'ctools_context_node_edit_form_settings_form_submit',
-    'defaults' => array('nid' => ''),
-    'keyword' => 'node_edit',
-    'context name' => 'node_edit_form',
-    'placeholder form' => array(
-      '#type' => 'textfield',
-      '#description' => t('Enter the node ID of a node for this argument:'),
-    ),
-  );
-}
+$plugin = array(
+  'title' => t("Node edit form"),
+  'description' => t('A node edit form.'),
+  'context' => 'ctools_context_create_node_edit_form',
+  'settings form' => 'ctools_context_node_edit_form_settings_form',
+  'settings form validate' => 'ctools_context_node_edit_form_settings_form_validate',
+  'settings form validate' => 'ctools_context_node_edit_form_settings_form_validate',
+  'settings form submit' => 'ctools_context_node_edit_form_settings_form_submit',
+  'defaults' => array('nid' => ''),
+  'keyword' => 'node_edit',
+  'context name' => 'node_edit_form',
+  'placeholder form' => array(
+    '#type' => 'textfield',
+    '#description' => t('Enter the node ID of a node for this argument:'),
+  ),
+);
 
 /**
  * It's important to remember that $conf is optional here, because contexts

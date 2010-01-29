@@ -9,27 +9,26 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_contexts().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_node_ctools_contexts() {
-  return array(
-    'title' => t("Node"),
-    'description' => t('A node object.'),
-    'context' => 'ctools_context_create_node',
-    'settings form' => 'ctools_context_node_settings_form',
-    'settings form validate' => 'ctools_context_node_settings_form_validate',
-    'settings form submit' => 'ctools_context_node_settings_form_submit',
-    'defaults' => array('nid' => ''),
-    'keyword' => 'node',
-    'context name' => 'node',
-    'convert list' => 'ctools_context_node_convert_list',
-    'convert' => 'ctools_context_node_convert',
-    'placeholder form' => array(
-      '#type' => 'textfield',
-      '#description' => t('Enter the node ID of a node for this context.'),
-    ),
-  );
-}
+$plugin = array(
+  'title' => t("Node"),
+  'description' => t('A node object.'),
+  'context' => 'ctools_context_create_node',
+  'settings form' => 'ctools_context_node_settings_form',
+  'settings form validate' => 'ctools_context_node_settings_form_validate',
+  'settings form submit' => 'ctools_context_node_settings_form_submit',
+  'defaults' => array('nid' => ''),
+  'keyword' => 'node',
+  'context name' => 'node',
+  'convert list' => 'ctools_context_node_convert_list',
+  'convert' => 'ctools_context_node_convert',
+  'placeholder form' => array(
+    '#type' => 'textfield',
+    '#description' => t('Enter the node ID of a node for this context.'),
+  ),
+);
 
 /**
  * It's important to remember that $conf is optional here, because contexts

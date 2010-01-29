@@ -7,20 +7,18 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_relationships().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_book_parent_ctools_relationships() {
-  return array(
-    'title' => t('Book parent'),
-    'keyword' => 'book_parent',
-    'description' => t('Adds a book parent from a node context.'),
-    'required context' => new ctools_context_required(t('Node'), 'node'),
-    'context' => 'ctools_book_parent_context',
-    'settings form' => 'ctools_book_parent_settings_form',
-    'settings form validate' => 'ctools_book_parent_settings_form_validate',
-  );
-  return $args;
-}
+$plugin = array(
+  'title' => t('Book parent'),
+  'keyword' => 'book_parent',
+  'description' => t('Adds a book parent from a node context.'),
+  'required context' => new ctools_context_required(t('Node'), 'node'),
+  'context' => 'ctools_book_parent_context',
+  'settings form' => 'ctools_book_parent_settings_form',
+  'settings form validate' => 'ctools_book_parent_settings_form_validate',
+);
 
 /**
  * Return a new context based on an existing context.

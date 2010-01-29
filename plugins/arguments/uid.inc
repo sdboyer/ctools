@@ -8,24 +8,23 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_arguments().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_uid_ctools_arguments() {
-  return array(
-    'title' => t("User: ID"),
-    // keyword to use for %substitution
-    'keyword' => 'user',
-    'description' => t('Creates a user context from a user ID argument.'),
-    'context' => 'ctools_argument_uid_context',
-    'placeholder form' => array(
-      '#type' => 'textfield',
-      '#description' => t('Enter the user ID of a user for this argument'),
-    ),
-    'default' => array('to_arg' => TRUE),
-    'path placeholder' => '%pm_uid_arg', // This is in pagemanager.
-    'path placeholder to_arg' => TRUE,
-  );
-}
+$plugin = array(
+  'title' => t("User: ID"),
+  // keyword to use for %substitution
+  'keyword' => 'user',
+  'description' => t('Creates a user context from a user ID argument.'),
+  'context' => 'ctools_argument_uid_context',
+  'placeholder form' => array(
+    '#type' => 'textfield',
+    '#description' => t('Enter the user ID of a user for this argument'),
+  ),
+  'default' => array('to_arg' => TRUE),
+  'path placeholder' => '%pm_uid_arg', // This is in pagemanager.
+  'path placeholder to_arg' => TRUE,
+);
 
 /**
  * Discover if this argument gives us the user we crave.

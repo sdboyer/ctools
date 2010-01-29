@@ -2,18 +2,17 @@
 // $Id$
 
 /**
- * Implementation of specially named hook_ctools_content_types()
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_node_attachments_ctools_content_types() {
-  return array(
-    'single' => TRUE,
-    'title' => t('Attached files'),
-    'icon' => 'icon_node.png',
-    'description' => t('A list of files attached to the node.'),
-    'required context' => new ctools_context_required(t('Node'), 'node'),
-    'category' => t('Node'),
-  );
-}
+$plugin = array(
+  'single' => TRUE,
+  'title' => t('Attached files'),
+  'icon' => 'icon_node.png',
+  'description' => t('A list of files attached to the node.'),
+  'required context' => new ctools_context_required(t('Node'), 'node'),
+  'category' => t('Node'),
+);
 
 function ctools_node_attachments_content_type_render($subtype, $conf, $panel_args, $context) {
   $node = isset($context->data) ? clone($context->data) : NULL;

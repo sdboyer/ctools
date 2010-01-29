@@ -2,19 +2,18 @@
 // $Id$
 
 /**
- * Callback function to supply a list of content types.
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_term_list_ctools_content_types() {
-  return array(
-    'single' => TRUE,
-    'title' => t('List of related terms'),
-    'icon' => 'icon_term.png',
-    'description' => t('Terms related to an existing term; may be child, siblings or top level.'),
-    'required context' => new ctools_context_required(t('Term'), 'term'),
-    'category' => t('Taxonomy term'),
-    'defaults' => array('title' => '', 'type' => 'child', 'list_type' => 'ul'),
-  );
-}
+$plugin = array(
+  'single' => TRUE,
+  'title' => t('List of related terms'),
+  'icon' => 'icon_term.png',
+  'description' => t('Terms related to an existing term; may be child, siblings or top level.'),
+  'required context' => new ctools_context_required(t('Term'), 'term'),
+  'category' => t('Taxonomy term'),
+  'defaults' => array('title' => '', 'type' => 'child', 'list_type' => 'ul'),
+);
 
 function ctools_term_list_content_type_render($subtype, $conf, $panel_args, $context) {
   $term = isset($context->data) ? clone($context->data) : NULL;

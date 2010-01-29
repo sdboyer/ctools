@@ -1,15 +1,12 @@
 <?php
 // $Id$
 
-/**
- * Callback function to supply a list of content types.
- */
-function ctools_contact_ctools_content_types() {
-  if (!module_exists('contact')) {
-    return;
-  }
-
-  return array(
+if (module_exists('contact')) {
+  /**
+   * Plugins are described by creating a $plugin array which will be used
+   * by the system that includes this file.
+   */
+  $plugin = array(
     'single' => TRUE,
     'title' => t('Contact form'),
     'icon' => 'icon_contact.png',

@@ -8,21 +8,20 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_arguments().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_user_name_ctools_arguments() {
-  return array(
-    'title' => t("User: name"),
-    // keyword to use for %substitution
-    'keyword' => 'user',
-    'description' => t('Creates a user context from a user name.'),
-    'context' => 'ctools_argument_user_name_context',
-    'placeholder form' => array(
-      '#type' => 'textfield',
-      '#description' => t('Enter the username of a user for this argument'),
-    ),
-  );
-}
+$plugin = array(
+  'title' => t("User: name"),
+  // keyword to use for %substitution
+  'keyword' => 'user',
+  'description' => t('Creates a user context from a user name.'),
+  'context' => 'ctools_argument_user_name_context',
+  'placeholder form' => array(
+    '#type' => 'textfield',
+    '#description' => t('Enter the username of a user for this argument'),
+  ),
+);
 
 /**
  * Discover if this argument gives us the user we crave.
