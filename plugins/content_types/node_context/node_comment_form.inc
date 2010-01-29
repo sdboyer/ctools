@@ -1,20 +1,19 @@
 <?php
 // $Id$
 
-/**
- * Implementation of specially named hook_ctools_content_types()
- */
-function ctools_node_comment_form_ctools_content_types() {
-  if (module_exists('comment')) {
-    return array(
-      'single' => TRUE,
-      'title' => t('Comment form'),
-      'icon' => 'icon_node.png',
-      'description' => t('A form to add a new comment.'),
-      'required context' => new ctools_context_required(t('Node'), 'node'),
-      'category' => t('Node'),
-    );
-  }
+if (module_exists('comment')) {
+  /**
+   * Plugins are described by creating a $plugin array which will be used
+   * by the system that includes this file.
+   */
+  $plugin = array(
+    'single' => TRUE,
+    'title' => t('Comment form'),
+    'icon' => 'icon_node.png',
+    'description' => t('A form to add a new comment.'),
+    'required context' => new ctools_context_required(t('Node'), 'node'),
+    'category' => t('Node'),
+  );
 }
 
 function ctools_node_comment_form_content_type_render($subtype, $conf, $panel_args, $context) {

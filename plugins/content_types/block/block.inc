@@ -12,15 +12,14 @@
  */
 
 /**
- * Callback function to supply a list of content types.
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_block_ctools_content_types() {
-  return array(
-    // And this is just the administrative title.
-    // All our callbacks are named according to the standard pattern and can be deduced.
-    'title' => t('Block'),
-  );
-}
+$plugin = array(
+  // And this is just the administrative title.
+  // All our callbacks are named according to the standard pattern and can be deduced.
+  'title' => t('Block'),
+);
 
 /**
  * Return all block content types available.

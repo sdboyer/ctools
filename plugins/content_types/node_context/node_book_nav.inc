@@ -1,20 +1,19 @@
 <?php
 // $Id$
 
-/**
- * Implementation of specially named hook_ctools_content_types()
- */
-function ctools_node_book_nav_ctools_content_types() {
-  if (module_exists('book')) {
-    return array(
-      'single' => TRUE,
-      'title' => t('Book navigation'),
-      'icon' => 'icon_node.png',
-      'description' => t('The navigation menu the book the node belongs to.'),
-      'required context' => new ctools_context_required(t('Node'), 'node'),
-      'category' => t('Node'),
-    );
-  }
+if (module_exists('book')) {
+  /**
+   * Plugins are described by creating a $plugin array which will be used
+   * by the system that includes this file.
+   */
+  $plugin = array(
+    'single' => TRUE,
+    'title' => t('Book navigation'),
+    'icon' => 'icon_node.png',
+    'description' => t('The navigation menu the book the node belongs to.'),
+    'required context' => new ctools_context_required(t('Node'), 'node'),
+    'category' => t('Node'),
+  );
 }
 
 function ctools_node_book_nav_content_type_render($subtype, $conf, $panel_args, $context) {

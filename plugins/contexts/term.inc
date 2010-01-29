@@ -8,27 +8,26 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_contexts().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_term_ctools_contexts() {
-  return array(
-    'title' => t("Taxonomy term"),
-    'description' => t('A single taxonomy term object.'),
-    'context' => 'ctools_context_create_term',
-    'settings form' => 'ctools_context_term_settings_form',
-    'settings form validate' => 'ctools_context_term_settings_form_validate',
-    'settings form submit' => 'ctools_context_term_settings_form_submit',
-    'keyword' => 'term',
-    'context name' => 'term',
-    'convert list' => array(
-      'tid' => t('Term ID'),
-      'name' => t('Term name'),
-      'vid' => t('Vocabulary ID'),
-    ),
-    'convert' => 'ctools_context_term_convert',
-    'js' => array('misc/autocomplete.js'),
-  );
-}
+$plugin = array(
+  'title' => t("Taxonomy term"),
+  'description' => t('A single taxonomy term object.'),
+  'context' => 'ctools_context_create_term',
+  'settings form' => 'ctools_context_term_settings_form',
+  'settings form validate' => 'ctools_context_term_settings_form_validate',
+  'settings form submit' => 'ctools_context_term_settings_form_submit',
+  'keyword' => 'term',
+  'context name' => 'term',
+  'convert list' => array(
+    'tid' => t('Term ID'),
+    'name' => t('Term name'),
+    'vid' => t('Vocabulary ID'),
+  ),
+  'convert' => 'ctools_context_term_convert',
+  'js' => array('misc/autocomplete.js'),
+);
 
 /**
  * It's important to remember that $conf is optional here, because contexts

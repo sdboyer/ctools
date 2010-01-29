@@ -7,21 +7,19 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_relationships().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_term_from_node_ctools_relationships() {
-  return array(
-    'title' => t('Term from node'),
-    'keyword' => 'term',
-    'description' => t('Adds a taxonomy term from a node context; if multiple terms are selected, this will get the "first" term only.'),
-    'required context' => new ctools_context_required(t('Node'), 'node'),
-    'context' => 'ctools_term_from_node_context',
-    'settings form' => 'ctools_term_from_node_settings_form',
-    'settings form validate' => 'ctools_term_from_node_settings_form_validate',
-    'defaults' => array('vid' => ''),
-  );
-  return $args;
-}
+$plugin = array(
+  'title' => t('Term from node'),
+  'keyword' => 'term',
+  'description' => t('Adds a taxonomy term from a node context; if multiple terms are selected, this will get the "first" term only.'),
+  'required context' => new ctools_context_required(t('Node'), 'node'),
+  'context' => 'ctools_term_from_node_context',
+  'settings form' => 'ctools_term_from_node_settings_form',
+  'settings form validate' => 'ctools_term_from_node_settings_form_validate',
+  'defaults' => array('vid' => ''),
+);
 
 /**
  * Return a new context based on an existing context.

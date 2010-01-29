@@ -8,24 +8,23 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_contexts().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_node_add_form_ctools_contexts() {
-  return array(
-    'title' => t("Node add form"),
-    'description' => t('A node add form.'),
-    'context' => 'ctools_context_create_node_add_form',
-    'settings form' => 'ctools_context_node_add_form_settings_form',
-    'keyword' => 'node_add',
-    'context name' => 'node_add_form',
-    'convert list' => array('type' => t('Node type')),
-    'convert' => 'ctools_context_node_add_form_convert',
-    'placeholder form' => array(
-      '#type' => 'textfield',
-      '#description' => t('Enter the node type this context.'),
-    ),
-  );
-}
+$plugin = array(
+  'title' => t("Node add form"),
+  'description' => t('A node add form.'),
+  'context' => 'ctools_context_create_node_add_form',
+  'settings form' => 'ctools_context_node_add_form_settings_form',
+  'keyword' => 'node_add',
+  'context name' => 'node_add_form',
+  'convert list' => array('type' => t('Node type')),
+  'convert' => 'ctools_context_node_add_form_convert',
+  'placeholder form' => array(
+    '#type' => 'textfield',
+    '#description' => t('Enter the node type this context.'),
+  ),
+);
 
 /**
  * It's important to remember that $conf is optional here, because contexts

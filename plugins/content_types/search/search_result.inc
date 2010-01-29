@@ -1,15 +1,12 @@
 <?php
 // $Id$
 
-/**
- * Callback function to supply a list of content types.
- */
-function ctools_search_result_ctools_content_types() {
-  if (!module_exists('search')) {
-    return;
-  }
-
-  return array(
+if (module_exists('search')) {
+  /**
+   * Plugins are described by creating a $plugin array which will be used
+   * by the system that includes this file.
+   */
+  $plugin = array(
     'single' => TRUE,
     'title' => t('Search results'),
     'icon' => 'icon_search.png',

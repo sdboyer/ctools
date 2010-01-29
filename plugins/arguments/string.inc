@@ -6,25 +6,23 @@
  *
  * Plugin to provide an argument handler for a raw string
  */
-
 /**
- * Implementation of specially named hook_ctools_arguments().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_string_ctools_arguments() {
-  return array(
-    'title' => t("String"),
-    // keyword to use for %substitution
-    'keyword' => 'string',
-    'description' => t('A string is a minimal context that simply holds a string that can be used for some other purpose.'),
-    'settings form' => 'ctools_string_settings_form',
-    'context' => 'ctools_string_context',
-    'placeholder form' => array(
-      '#type' => 'textfield',
-      '#description' => t('Enter a value for this argument'),
-    ),
-    'path placeholder' => 'ctools_string_path_placeholder', // This is in pagemanager.
-  );
-}
+$plugin = array(
+  'title' => t("String"),
+  // keyword to use for %substitution
+  'keyword' => 'string',
+  'description' => t('A string is a minimal context that simply holds a string that can be used for some other purpose.'),
+  'settings form' => 'ctools_string_settings_form',
+  'context' => 'ctools_string_context',
+  'placeholder form' => array(
+    '#type' => 'textfield',
+    '#description' => t('Enter a value for this argument'),
+  ),
+  'path placeholder' => 'ctools_string_path_placeholder', // This is in pagemanager.
+);
 
 /**
  * Discover if this argument gives us the term we crave.

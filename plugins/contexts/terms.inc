@@ -1,7 +1,6 @@
 <?php
 // $Id$
 
-
 /**
  * @file
  *
@@ -9,28 +8,27 @@
  */
 
 /**
- * Implementation of specially named hook_ctools_contexts().
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_terms_ctools_contexts() {
-  return array(
-    'title' => t("Taxonomy terms"),
-    'description' => t('Multiple taxonomy terms, as a group.'),
-    'context' => 'ctools_context_create_terms',
-    'settings form' => 'ctools_context_terms_settings_form',
-    'settings form validate' => 'ctools_context_terms_settings_form_validate',
-    'keyword' => 'terms',
-    'no ui' => TRUE,
-    'context name' => 'terms',
-    'convert list' => array(
-      'tid' => t('Term ID of first term'),
-      'tids' => t('Term ID of all term, separated by + or ,'),
-      'name' => t('Term name of first term'),
-      'names' => t('Term name of all terms, separated by + or ,'),
-      'vid' => t('Vocabulary ID of first term'),
-    ),
-    'convert' => 'ctools_context_terms_convert',
-  );
-}
+$plugin = array(
+  'title' => t("Taxonomy terms"),
+  'description' => t('Multiple taxonomy terms, as a group.'),
+  'context' => 'ctools_context_create_terms',
+  'settings form' => 'ctools_context_terms_settings_form',
+  'settings form validate' => 'ctools_context_terms_settings_form_validate',
+  'keyword' => 'terms',
+  'no ui' => TRUE,
+  'context name' => 'terms',
+  'convert list' => array(
+    'tid' => t('Term ID of first term'),
+    'tids' => t('Term ID of all term, separated by + or ,'),
+    'name' => t('Term name of first term'),
+    'names' => t('Term name of all terms, separated by + or ,'),
+    'vid' => t('Vocabulary ID of first term'),
+  ),
+  'convert' => 'ctools_context_terms_convert',
+);
 
 /**
  * It's important to remember that $conf is optional here, because contexts

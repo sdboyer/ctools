@@ -8,27 +8,26 @@
  */
 
 /**
- * Implementation of hook_ctools_content_types()
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_node_ctools_content_types() {
-  return array(
-    'title' => t('Node'),
-    'single' => TRUE,
-    'defaults' => array(
-      'nid' => '',
-      'teaser' => TRUE,
-      'links' => TRUE,
-      'leave_node_title' => FALSE,
-      'identifier' => '',
-    ),
-    'title' => t('Existing node'),
-    'icon' => 'icon_node.png',
-    'description' => t('Add a node from your site as content.'),
-    'category' => t('Custom'),
-    'top level' => TRUE,
-    'js' => array('misc/autocomplete.js'),
-  );
-}
+$plugin = array(
+  'title' => t('Node'),
+  'single' => TRUE,
+  'defaults' => array(
+    'nid' => '',
+    'teaser' => TRUE,
+    'links' => TRUE,
+    'leave_node_title' => FALSE,
+    'identifier' => '',
+  ),
+  'title' => t('Existing node'),
+  'icon' => 'icon_node.png',
+  'description' => t('Add a node from your site as content.'),
+  'category' => t('Custom'),
+  'top level' => TRUE,
+  'js' => array('misc/autocomplete.js'),
+);
 
 /**
  * Output function for the 'node' content type.

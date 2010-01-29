@@ -1,23 +1,21 @@
 <?php
 // $Id$
 
-
-/**
- * Callback function to supply a list of content types.
- */
-function ctools_profile_fields_ctools_content_types() {
-  if (module_exists('profile') && !is_null(profile_categories())) {
-    return array(
-      'single' => TRUE,
-      'title' => t('Profile category'),
-      'icon' => 'icon_user.png',
-      'description' => t('Contents of a single profile category.'),
-      'required context' => new ctools_context_required(t('User'), 'user'),
-      'category' => t('User'),
-      'defaults' => array('category' => '', 'empty' => ''),
-      'hook theme' => 'ctools_profile_fields_content_type_theme',
-    );
-  }
+if (module_exists('profile') && !is_null(profile_categories())) {
+  /**
+   * Plugins are described by creating a $plugin array which will be used
+   * by the system that includes this file.
+   */
+  $plugin = array(
+    'single' => TRUE,
+    'title' => t('Profile category'),
+    'icon' => 'icon_user.png',
+    'description' => t('Contents of a single profile category.'),
+    'required context' => new ctools_context_required(t('User'), 'user'),
+    'category' => t('User'),
+    'defaults' => array('category' => '', 'empty' => ''),
+    'hook theme' => 'ctools_profile_fields_content_type_theme',
+  );
 }
 
 /**

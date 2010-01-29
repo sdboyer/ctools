@@ -8,17 +8,16 @@
  */
 
 /**
- * Implementation of hook_ctools_content_types()
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_page_footer_message_ctools_content_types() {
-  return array(
-    'single' => TRUE,
-    'title' => t('Page footer message'),
-    'icon' => 'icon_page.png',
-    'description' => t('Add the page footer message as content.'),
-    'category' => t('Page elements'),
-  );
-}
+$plugin = array(
+  'single' => TRUE,
+  'title' => t('Page footer message'),
+  'icon' => 'icon_page.png',
+  'description' => t('Add the page footer message as content.'),
+  'category' => t('Page elements'),
+);
 
 /**
  * Output function for the 'page_footer_message' content type.

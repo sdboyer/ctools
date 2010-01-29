@@ -11,26 +11,25 @@
  */
 
 /**
- * Callback function to supply a list of content types.
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_custom_ctools_content_types() {
-  return array(
-    'single' => TRUE,
-    'no title override' => TRUE,
-    'title' => t('New custom content'),
-    'icon' => 'icon_block_custom.png',
-    'description' => t('Create a completely custom piece of HTML content.'),
-    // Make this a top level category so it appears higher in UIs that support
-    // that.
-    'top level' => TRUE,
-    'category' => t('Custom'),
-    'defaults' => array('admin_title' => '', 'title' => '', 'body' => '', 'format' => FILTER_FORMAT_DEFAULT, 'substitute' => TRUE),
-    // render callback is automatically deduced:
-    // 'render callback' => 'ctools_custom_content_type_render',
-    'js' => array('misc/autocomplete.js', 'misc/textarea.js', 'misc/collapse.js'),
-    'all contexts' => TRUE,
-  );
-}
+$plugin = array(
+  'single' => TRUE,
+  'no title override' => TRUE,
+  'title' => t('New custom content'),
+  'icon' => 'icon_block_custom.png',
+  'description' => t('Create a completely custom piece of HTML content.'),
+  // Make this a top level category so it appears higher in UIs that support
+  // that.
+  'top level' => TRUE,
+  'category' => t('Custom'),
+  'defaults' => array('admin_title' => '', 'title' => '', 'body' => '', 'format' => FILTER_FORMAT_DEFAULT, 'substitute' => TRUE),
+  // render callback is automatically deduced:
+  // 'render callback' => 'ctools_custom_content_type_render',
+  'js' => array('misc/autocomplete.js', 'misc/textarea.js', 'misc/collapse.js'),
+  'all contexts' => TRUE,
+);
 
 /**
  * Output function for the 'custom' content type. Outputs a custom
