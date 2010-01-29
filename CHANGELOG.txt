@@ -33,6 +33,7 @@ Change plugins to no longer need magic function. Can now use $plugin = array(...
 #654218 by Roi Danton: Improve documentation of dependent.inc to talk about annoyances with checkboxes, radios and fieldsets.
 #538092: Add converters to the node edit form context so node fields can be available.
 #662242: Page Manager was not removing menu items when pages were deleted due to caching.
+#639548: export.inc cache was not properly respected when loading individual items, leading to multiple redundant queries.
 
 ctools 6.x-1.x-dev
 ==================
