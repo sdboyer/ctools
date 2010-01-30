@@ -34,6 +34,7 @@ Change plugins to no longer need magic function. Can now use $plugin = array(...
 #538092: Add converters to the node edit form context so node fields can be available.
 #662242: Page Manager was not removing menu items when pages were deleted due to caching.
 #639548: export.inc cache was not properly respected when loading individual items, leading to multiple redundant queries.
+#544438: Extend user context to allow selection of user, including "logged in user".
 
 ctools 6.x-1.x-dev
 ==================
