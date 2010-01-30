@@ -56,6 +56,13 @@ function page_manager_ctools_plugin_directory($module, $plugin) {
  * Delegated implementation of hook_menu().
  */
 function page_manager_menu() {
+  // For some reason, some things can activate modules without satisfying
+  // dependencies. I don't know how, but this helps prevent things from
+  // whitescreening when this happens.
+  if (!module_exists('ctools')) {
+    return;
+  }
+
   $items = array();
   $base = array(
     'access arguments' => array('use page manager'),
@@ -128,6 +135,13 @@ function page_manager_menu() {
  * Get a list of all tasks and delegate to them.
  */
 function page_manager_menu_alter(&$items) {
+  // For some reason, some things can activate modules without satisfying
+  // dependencies. I don't know how, but this helps prevent things from
+  // whitescreening when this happens.
+  if (!module_exists('ctools')) {
+    return;
+  }
+
   $tasks = page_manager_get_tasks();
 
   foreach ($tasks as $task) {
@@ -149,6 +163,13 @@ function page_manager_menu_alter(&$items) {
  * Implementation of hook_theme()
  */
 function page_manager_theme() {
+  // For some reason, some things can activate modules without satisfying
+  // dependencies. I don't know how, but this helps prevent things from
+  // whitescreening when this happens.
+  if (!module_exists('ctools')) {
+    return;
+  }
+
   $base = array(
     'path' => drupal_get_path('module', 'page_manager') . '/theme',
     'file' => 'page_manager.theme.inc',

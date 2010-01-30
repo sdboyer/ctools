@@ -27,6 +27,7 @@ Introduce 'export callback' to individual fields in export.inc. Add some documen
 #484340: Support for token module in the context keywords.
 #662242: Page Manager was not removing menu items when pages were deleted due to caching.
 #639548: export.inc cache was not properly respected when loading individual items, leading to multiple redundant queries.
+#573646: Attempt to make sure page manager does not try to respond to menu/theme hooks when CTools is not enabled.
 
 ctools 6.x-1.2
 ==============
