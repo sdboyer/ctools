@@ -17,11 +17,13 @@ $plugin = array(
   'context' => 'ctools_context_create_user',
   'settings form' => 'ctools_context_user_settings_form',
   'settings form validate' => 'ctools_context_user_settings_form_validate',
+  'settings form submit' => 'ctools_context_user_settings_form_submit',
   'keyword' => 'user',
-  'no ui' => TRUE,
+  'defaults' => array('type' => 'select', 'uid' => ''),
   'context name' => 'user',
   'convert list' => 'ctools_context_user_convert_list',
   'convert' => 'ctools_context_user_convert',
+  'js' => array('misc/autocomplete.js'),
 );
 
 /**
@@ -37,7 +39,13 @@ function ctools_context_create_user($empty, $data = NULL, $conf = FALSE) {
   }
 
   if ($conf) {
-    $data = user_load(array('uid' => $data['uid']));
+    if ($data['type'] == 'current') {
+      global $user;
+      $data = $user;
+    }
+    else {
+      $data = user_load(array('uid' => $data['uid']));
+    }
   }
 
   if (!empty($data)) {
@@ -49,8 +57,86 @@ function ctools_context_create_user($empty, $data = NULL, $conf = FALSE) {
 }
 
 function ctools_context_user_settings_form($conf) {
-  $form = array();
+  ctools_include('dependent');
+  $form['type'] = array(
+    '#title' => t('Enter the context type'),
+    '#type' => 'radios',
+    '#options' => array(
+      'select' => t('Select a user'),
+      'current' => t('Logged in user'),
+    ),
+    '#default_value' => $conf['type'],
+  );
+
+  $form['user'] = array(
+    '#title' => t('Enter a user name'),
+    '#type' => 'textfield',
+    '#maxlength' => 512,
+    '#autocomplete_path' => 'user/autocomplete',
+    '#process' => array('ctools_dependent_process'),
+    '#dependency' => array('radio:context[context_settings][type]' => array('select')),
+  );
+
+  if (!empty($conf['uid'])) {
+    $info = user_load($conf['uid']);
+    if ($info) {
+      $form['user']['#description'] = t('Currently set to !link', array('!link' => theme('username', $info)));
+    }
+  }
+
+  $form['uid'] = array(
+    '#type' => 'value',
+    '#value' => $conf['uid'],
+  );
+
+  $form['set_identifier'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => FALSE,
+    '#title' => t('Reset identifier to username'),
+    '#description' => t('If checked, the identifier will be reset to the user name of the selected user.'),
+    '#process' => array('ctools_dependent_process'),
+    '#dependency' => array('radio:context[context_settings][type]' => array('select')),
+  );
+
   return $form;
+}
+
+/**
+ * Validate a user.
+ */
+function ctools_context_user_settings_form_validate($form, &$form_values, &$form_state) {
+  if ($form_values['type'] != 'select') {
+    return;
+  }
+
+  // Validate the autocomplete
+  if (empty($form_values['uid']) && empty($form_values['user'])) {
+    form_error($form['user'], t('You must select a user.'));
+    return;
+  }
+
+  if (empty($form_values['user'])) {
+    return;
+  }
+
+  $account = user_load(array('name' => $form_values['user']));
+
+  if (!$account) {
+    form_error($form['user'], t('Invalid user selected.'));
+  }
+  else {
+    form_set_value($form['uid'], $account->uid, $form_state);
+  }
+}
+
+function ctools_context_user_settings_form_submit($form, &$form_values, &$form_state) {
+  if ($form_values['set_identifier']) {
+    $account = user_load($form_values['uid']);
+    $form_state['values']['context']['identifier'] = $account->name;
+  }
+
+  // Don't let this be stored.
+  unset($form_values['set_identifier']);
 }
 
 /**
