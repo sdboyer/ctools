@@ -189,6 +189,11 @@ function page_manager_page_menu_item($task, $menu, $access_arguments, $page_argu
  */
 function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
   $task = page_manager_get_task('page');
+  $task_handler_plugins = page_manager_get_task_handler_plugins($task);
+  if (empty($task_handler_plugins)) {
+    drupal_set_message(t('There are currently no variants available and a page may not be added. Perhaps you need to install the Panels module to get a variant?'), 'error');
+    return ' ';
+  }
 
   $form_info = array(
     'id' => 'page_manager_add_page',

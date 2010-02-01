@@ -35,6 +35,7 @@ Change plugins to no longer need magic function. Can now use $plugin = array(...
 #662242: Page Manager was not removing menu items when pages were deleted due to caching.
 #639548: export.inc cache was not properly respected when loading individual items, leading to multiple redundant queries.
 #544438: Extend user context to allow selection of user, including "logged in user".
+#604976: Prevent Page Manager from throwing errors when no modules that provide variants are available.
 
 ctools 6.x-1.x-dev
 ==================
