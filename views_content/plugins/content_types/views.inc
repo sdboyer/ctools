@@ -408,10 +408,11 @@ function views_content_views_content_type_admin_info($subtype, $conf, $contexts)
     return t('Deleted/missing view @view', array('@view' => $view));
   }
 
+  $display = empty($conf['display']) ? $view->current_display : $conf['display'];
   $block->title = t('View information');
 
   $block->content = '<ul>';
-  $block->content .= '<li>' . t('Using display @display.', array('@display' => $view->display[$conf['display']]->display_title)) . '</li>';
+  $block->content .= '<li>' . t('Using display @display.', array('@display' => $view->display[$display]->display_title)) . '</li>';
 
   if (!empty($conf['context']) && $arguments = $view->display_handler->get_handlers('argument')) {
     $argument = reset($arguments);
