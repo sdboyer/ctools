@@ -237,6 +237,9 @@ function ctools_block_content_type_admin_title($subtype, $conf) {
 function ctools_block_content_type_admin_info($subtype, $conf) {
   list($module, $delta) = _ctools_block_get_module_delta($subtype, $conf);
   $block = (object) module_invoke($module, 'block', 'view', $delta);
+
+  // Sanitize the block because <script> tags can hose javascript up:
+  $block->content = filter_xss_admin($block->content);
   if (!empty($block) && !empty($block->subject)) {
     $block->title = $block->subject;
     return $block;
@@ -269,7 +272,7 @@ function ctools_default_block_info($module, $delta, &$info) {
   }
 }
 
-// These are all on behalf of modules that don't implement ctools but we that
+// These are all on behalf of modules that don't implement ctools but that
 // we care about.
 function menu_ctools_block_info($module, $delta, &$info) {
   $info['icon'] = 'icon_core_block_menu.png';

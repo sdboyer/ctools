@@ -37,6 +37,7 @@ Change plugins to no longer need magic function. Can now use $plugin = array(...
 #544438: Extend user context to allow selection of user, including "logged in user".
 #604976: Prevent Page Manager from throwing errors when no modules that provide variants are available.
 Add 'Update and save' button to reduce the number of needed steps to do basic content editing.
+#693742: Sanitize block admin output (to Panels drag & drop for example) to get rid of script tags.
 
 ctools 6.x-1.x-dev
 ==================
