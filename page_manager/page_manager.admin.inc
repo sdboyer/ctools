@@ -1306,6 +1306,12 @@ function page_manager_handler_add_cancel(&$form_state) {
 function page_manager_handler_add_form(&$form, $form_state, $features = array()) {
   $task = $form_state['task'];
   $task_handler_plugins = page_manager_get_task_handler_plugins($task);
+  if (empty($task_handler_plugins)) {
+    drupal_set_message(t('There are currently no variants available and a page may not be added. Perhaps you need to install the Panels module to get a variant?'), 'error');
+    $form['buttons']['return']['#disabled'] = TRUE;
+    return;
+  }
+
   foreach ($task_handler_plugins as $id => $plugin) {
     $options[$id] = $plugin['title'];
     if (isset($plugin['add features'])) {

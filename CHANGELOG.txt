@@ -29,6 +29,7 @@ Introduce 'export callback' to individual fields in export.inc. Add some documen
 #639548: export.inc cache was not properly respected when loading individual items, leading to multiple redundant queries.
 #573646: Attempt to make sure page manager does not try to respond to menu/theme hooks when CTools is not enabled.
 #544438: Extend user context to allow selection of user, including "logged in user".
+#604976: Prevent Page Manager from throwing errors when no modules that provide variants are available.
 
 ctools 6.x-1.2
 ==============
