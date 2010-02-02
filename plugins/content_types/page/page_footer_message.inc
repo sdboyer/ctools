@@ -17,6 +17,7 @@ $plugin = array(
   'icon' => 'icon_page.png',
   'description' => t('Add the page footer message as content.'),
   'category' => t('Page elements'),
+  'render last' => TRUE,
 );
 
 /**
@@ -25,11 +26,8 @@ $plugin = array(
  * Outputs the page footer message of the current page.
  */
 function ctools_page_footer_message_content_type_render($subtype, $conf, $panel_args) {
-  $token = '<!-- ctools-page-footer-message -->';
-  ctools_set_page_token($token, 'variable', 'footer_message');
-
   $block = new stdClass();
-  $block->content = $token;
+  $block->content = filter_xss_admin(variable_get('site_footer', FALSE));
 
   return $block;
 }

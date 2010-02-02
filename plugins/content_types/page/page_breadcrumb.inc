@@ -17,6 +17,7 @@ $plugin = array(
   'icon' => 'icon_page.png',
   'description' => t('Add the breadcrumb trail as content.'),
   'category' => t('Page elements'),
+  'render last' => TRUE,
 );
 
 /**
@@ -25,11 +26,8 @@ $plugin = array(
  * Outputs the breadcrumb for the current page.
  */
 function ctools_page_breadcrumb_content_type_render($subtype, $conf, $panel_args) {
-  $token = '<!-- ctools-page-breadcrumb -->';
-  ctools_set_page_token($token, 'variable', 'breadcrumb');
-
   $block = new stdClass();
-  $block->content = $token;
+  $block->content = theme('breadcrumb', drupal_get_breadcrumb());
 
   return $block;
 }

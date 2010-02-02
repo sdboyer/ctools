@@ -241,7 +241,10 @@ function ctools_block_content_type_admin_info($subtype, $conf) {
   $block = (object) module_invoke($module, 'block', 'view', $delta);
 
   // Sanitize the block because <script> tags can hose javascript up:
-  $block->content = filter_xss_admin($block->content);
+  if (!empty($block->content)) {
+    $block->content = filter_xss_admin($block->content);
+  }
+
   if (!empty($block) && !empty($block->subject)) {
     $block->title = $block->subject;
     return $block;

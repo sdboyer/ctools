@@ -1,5 +1,9 @@
 Current API VERSION: 1.3.2. See API.txt for more information.
 
+ctools 6.x-dev
+==============
+#686764: Update page tokens to use actual page rendering mechanism rather than the tokens which causes them to appear as having content even when empty.
+
 ctools 6.x-1.3 (2010-Feb-01)
 ==============
 Added support for context keyword substitutions on override paths in content panes provided by views_content.

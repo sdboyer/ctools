@@ -12,22 +12,22 @@
  * by the system that includes this file.
  */
 $plugin = array(
-  'title' => t('Tabs'),
+  'title' => t('Secondary navigation links'),
   'single' => TRUE,
   'icon' => 'icon_page.png',
-  'description' => t('Add the tabs (local tasks) as content.'),
+  'description' => t('Add the secondary_links (local tasks) as content.'),
   'category' => t('Page elements'),
   'render last' => TRUE,
 );
 
 /**
- * Output function for the 'page_tabs' content type.
+ * Output function for the 'page_secondary_links' content type.
  *
- * Outputs the tabs (local tasks) of the current page.
+ * Outputs the secondary_links (local tasks) of the current page.
  */
-function ctools_page_tabs_content_type_render($subtype, $conf, $panel_args) {
+function ctools_page_secondary_links_content_type_render($subtype, $conf, $panel_args) {
   $block = new stdClass();
-  $block->content = theme('menu_local_tasks');
+  $block->content = theme('links', menu_secondary_links(), array('class' => 'links secondary-links'));
 
   return $block;
 }
