@@ -31,4 +31,3 @@ function ctools_page_breadcrumb_content_type_render($subtype, $conf, $panel_args
 
   return $block;
 }
-
