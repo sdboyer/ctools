@@ -1,6 +1,8 @@
 API.txt: $Id$
 
 This file contains a log of changes to the API.
+API version 1.4:
+  Allow themes to provide APIs which includes default pages of all types.
 
 API version 1.3.2:
   Introduce 'export callback' to individual fields in export.inc

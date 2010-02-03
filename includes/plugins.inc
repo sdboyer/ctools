@@ -74,6 +74,28 @@ function ctools_plugin_api_info($owner, $api, $minimum_version, $current_version
         $cache[$owner][$api][$module] = $info;
       }
     }
+
+    // And allow themes to implement these as well.
+    $themes = _ctools_list_themes();
+    foreach ($themes as $name => $theme) {
+      if (!empty($theme->info['api'][$owner][$api])) {
+        $info = $theme->info['api'][$owner][$api];
+        if (!isset($info['version'])) {
+          continue;
+        }
+
+        // Only process if version is between minimum and current, inclusive.
+        if ($info['version'] >= $minimum_version && $info['version'] <= $current_version) {
+          if (!isset($info['path'])) {
+            $info['path'] = '';
+          }
+          // Because themes can't easily specify full path, we add it here
+          // even though we do not for modules:
+          $info['path'] = drupal_get_path('theme', $name) . '/' . $info['path'];
+          $cache[$owner][$api][$name] = $info;
+        }
+      }
+    }
   }
 
   return $cache[$owner][$api];
