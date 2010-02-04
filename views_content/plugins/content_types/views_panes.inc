@@ -146,6 +146,7 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
     return;
   }
 
+  $view->display_handler->set_pane_conf($conf);
 
   $args = array();
   $arguments = $view->display_handler->get_option('arguments');
@@ -221,13 +222,16 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
   }
 
   // more link
-  if (($allow['more_link'] && !empty($conf['more_link'])) ||
-      (!$allow['more_link'] && $view->display_handler->get_option('more_link'))) {
-    $block->more = array('href' => $view->get_url());
-    $view->display_handler->set_option('use_more', FALSE);
-    // make sure the view runs the count query so we know whether or not the more link
-    // applies.
-    $view->get_total_rows = TRUE;
+  if ($allow['more_link']) {
+    if (empty($conf['more_link'])) {
+      $view->display_handler->set_option('use_more', FALSE);
+    }
+    else {
+      $view->display_handler->set_option('use_more', TRUE);
+      // make sure the view runs the count query so we know whether or not the
+      // more link applies.
+      $view->get_total_rows = TRUE;
+    }
   }
 
   if ($allow['use_pager']) {
@@ -315,20 +319,21 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
       );
     }
   }
-    if ($allow['link_to_view'] ) {
-      $form['link_to_view'] = array(
-        '#type' => 'checkbox',
-        '#default_value' => isset($conf['link_to_view']) ? $conf['link_to_view'] : $view->display_handler->get_option('link_to_view'),
-        '#title' => t('Link title to page'),
-      );
-    }
-    if ($allow['more_link']) {
-      $form['more_link'] = array(
-        '#type' => 'checkbox',
-        '#default_value' => isset($conf['more_link']) ? $conf['more_link'] : $view->display_handler->get_option('more_link'),
-        '#title' => t('Provide a "more" link.'),
-      );
-    }
+  if ($allow['link_to_view'] ) {
+    $form['link_to_view'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => isset($conf['link_to_view']) ? $conf['link_to_view'] : $view->display_handler->get_option('link_to_view'),
+      '#title' => t('Link title to page'),
+    );
+  }
+  if ($allow['more_link']) {
+    $form['more_link'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => isset($conf['more_link']) ? $conf['more_link'] : $view->display_handler->get_option('use_more'),
+      '#description' => t('The text of this link will be "@more". This setting can only be modified on the View configuration.', array('@more' => $view->display_handler->use_more_text())),
+      '#title' => t('Provide a "more" link.'),
+    );
+  }
 
   if (!empty($allow['feed_icons'])) {
     $form['feed_icons'] = array(

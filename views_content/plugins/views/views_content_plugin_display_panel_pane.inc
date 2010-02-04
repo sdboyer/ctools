@@ -10,6 +10,7 @@ class views_content_plugin_display_panel_pane extends views_plugin_display {
    * this variable so that other modules can create alternate pane displays.
    */
   var $panel_pane_display = TRUE;
+  var $has_pane_conf = NULL;
 
   function option_definition() {
     $options = parent::option_definition();
@@ -41,6 +42,15 @@ class views_content_plugin_display_panel_pane extends views_plugin_display {
     $options['inherit_panels_path'] = array('default' => 0);
 
     return $options;
+  }
+
+  function has_pane_conf() {
+    return isset($this->has_pane_conf);
+  }
+
+  function set_pane_conf($conf = array()) {
+    $this->set_option('pane_conf', $conf);
+    $this->has_pane_conf = TRUE;
   }
 
   /**
@@ -354,6 +364,22 @@ class views_content_plugin_display_panel_pane extends views_plugin_display {
     }
 
     return $output;
+  }
+
+  function use_more() {
+    $allow = $this->get_option('allow');
+    if (!$allow['more_link'] || !$this->has_pane_conf()) {
+      return parent::use_more();
+    }
+    $conf = $this->get_option('pane_conf');
+    return (bool) $conf['more_link'];
+  }
+
+  function get_path() {
+    if (empty($this->view->override_path)) {
+      return parent::get_path();
+    }
+    return $this->view->override_path;
   }
 }
 
