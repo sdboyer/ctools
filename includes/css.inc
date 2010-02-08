@@ -44,7 +44,7 @@
  * Then later on:
  * @code
  *   $filename = ctools_css_retrieve($id);
- *   drupal_add_css($filename);
+ *   ctools_css_add_css($filename);
  * @endcode
  *
  * The CSS that was generated will be stored in the database, so even if the
@@ -122,13 +122,12 @@ function ctools_css_clear($id) {
   db_query("DELETE FROM {ctools_css_cache} WHERE cid = '%s'", $id);
 }
 
-
 /**
  * Write a chunk of CSS to a temporary cache file and return the file name.
  *
  * This function optionally filters the CSS (always compressed, if so) and
  * generates a unique filename based upon md5. It returns that filename that
- * can be used with drupal_add_css. Note that as a cache file, technically
+ * can be used with ctools_css_add_css(). Note that as a cache file, technically
  * this file is volatile so it should be checked before it is used to ensure
  * that it exists.
  *
@@ -172,6 +171,31 @@ function ctools_css_cache($css, $filter = TRUE) {
   $filename = file_save_data($css, $filename);
 
   return $filename;
+}
+
+/**
+ * Add a CTools CSS file to the page.
+ *
+ * Because drupal_add_css() does not handle files that it cannot stat, it
+ * can't add files that are stored in a private file system. This will
+ * will check to see if we're using the private file system and use
+ * drupal_set_html_head() instead if that is the case.
+ *
+ * Sadly that will preclude aggregation of any sort, but there doesn't seem to
+ * be any ways around that. Also it will screw with stylesheet order. Again,
+ * sorry.
+ */
+function ctools_css_add_css($filename = NULL, $type = 'module', $media = 'all', $preprocess = TRUE) {
+  switch (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC)) {
+    case FILE_DOWNLOADS_PUBLIC:
+      drupal_add_css($filename, $type, $media, $preprocess);
+      break;
+    case FILE_DOWNLOADS_PRIVATE:
+      $url = file_create_url($filename);
+      $output = '<link type="text/css" rel="stylesheet" media="' . $media . '" href="' . $url . '" />'."\n";
+      drupal_set_html_head($output);
+  }
+
 }
 
 /**

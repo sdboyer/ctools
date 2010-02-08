@@ -119,14 +119,14 @@ function ctools_image_path($image) {
 }
 
 /**
- * Include views .css files.
+ * Include CTools .css files.
  */
 function ctools_add_css($file) {
   drupal_add_css(drupal_get_path('module', 'ctools') . "/css/$file.css");
 }
 
 /**
- * Include views .js files.
+ * Include CTools.js files.
  */
 function ctools_add_js($file) {
   drupal_add_js(drupal_get_path('module', 'ctools') . "/js/$file.js");
