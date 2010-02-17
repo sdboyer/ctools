@@ -1386,7 +1386,7 @@ function ctools_stylizer_border_selector_form(&$form, &$form_state, $label, $set
       'dotted' => t('Dotted'),
       'dashed' => t('Dashed'),
       'double' => t('Double'),
-      'grove' => t('Grove'),
+      'groove' => t('Groove'),
       'ridge' => t('Ridge'),
       'inset' => t('Inset'),
       'outset' => t('Outset'),

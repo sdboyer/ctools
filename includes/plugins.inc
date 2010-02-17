@@ -253,6 +253,11 @@ function ctools_plugin_load_includes($info, $file = NULL) {
   else {
     $extension = 'inc';
   }
+
+  if (!empty($file)) {
+    $file = '^' . $file;
+  }
+
   foreach ($directories as $module => $path) {
     $file_list[$module] = drupal_system_listing("$file." . $extension . '$', $path, 'name', 0);
   }
