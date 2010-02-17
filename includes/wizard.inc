@@ -87,13 +87,13 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
   // This tells ctools_build_form to apply our wrapper to the form. It
   // will give it buttons and the like.
   $form_state['wrapper callback'] = 'ctools_wizard_wrapper';
-  $form_state['re_render'] = FALSE;
+  $form_state['rerender'] = FALSE;
   $form_state['no_redirect'] = TRUE;
 
   ctools_include('form');
   $output = ctools_build_form($info['form id'], $form_state);
 
-  if (empty($form_state['executed'])) {
+  if (empty($form_state['executed']) || !empty($form_state['rerender'])) {
     if (!empty($form_state['ajax render'])) {
       // Any include files should already be included by this point:
       return $form_state['ajax render']($form_state, $output);
@@ -124,7 +124,7 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
       }
 
       // If the modal is in use, some special code for it:
-      if (!empty($form_state['modal'])) {
+      if (!empty($form_state['modal']) && empty($form_state['modal return'])) {
         if ($type != 'next') {
           // Automatically dismiss the modal if we're not going to another form.
           ctools_include('modal');

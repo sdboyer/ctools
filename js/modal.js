@@ -151,7 +151,7 @@
         },
         complete: function() {
           object.removeClass('ctools-ajaxing');
-          $('.ctools-ajaxing', object).removeClass('ctools-ajaxing');
+          $('div.ctools-ajaxing-temporary').remove();
         },
         dataType: 'json'
       };
@@ -172,7 +172,7 @@
     catch (err) {
       alert("An error occurred while attempting to process " + url);
       $(this).removeClass('ctools-ajaxing');
-      $('div.ctools-ajaxing', this).remove();
+      $('div.ctools-ajaxing-temporary').remove();
       return false;
     }
     return false;
@@ -218,7 +218,7 @@
           // Make sure it knows our button.
           if (!$(this.form).hasClass('ctools-ajaxing')) {
             this.form.clk = this;
-            $(this).after('<div class="ctools-ajaxing"> &nbsp; </div>');
+            $(this).after('<div class="ctools-ajaxing ctools-ajaxing-temporary"> &nbsp; </div>');
           }
         });
 
@@ -241,6 +241,7 @@
    */
   Drupal.CTools.AJAX.commands.modal_dismiss = function(command) {
     Drupal.CTools.Modal.dismiss();
+    $('link.ctools-temporary-css').remove();
   }
 
   /**

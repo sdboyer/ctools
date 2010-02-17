@@ -99,7 +99,6 @@ function ctools_build_form($form_id, &$form_state) {
     // altering the $form_state variable, which is passed into them by
     // reference.
     ctools_process_form($form_id, $form, $form_state);
-
     // If we were told not to redirect, but not told to re-render, return
     // here.
     if (!empty($form_state['executed']) && empty($form_state['rerender'])) {

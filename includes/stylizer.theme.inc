@@ -1,4 +1,3 @@
-
 <?php
 // $Id$
 
@@ -12,22 +11,20 @@
  * necessary.
  */
 function ctools_stylizer_theme(&$theme) {
-  ctools_include('stylizer');
+  $theme['ctools_stylizer_color_scheme_form'] = array(
+    'arguments' => array('form' => NULL),
+    'file' => 'includes/stylizer.inc',
+  );
 
-  $plugins = ctools_get_style_bases();
-  foreach ($plugins as $plugin) {
-    if (!empty($plugin['theme'])) {
-      $theme[$plugin['theme']] = array(
-        'arguments' => array('settings' => NULL, 'classes' => NULL, 'content' => NULL),
-        'path' => $plugin['path'],
-      );
+  $theme['ctools_stylizer_preview_form'] = array(
+    'arguments' => array('form' => NULL),
+    'file' => 'includes/stylizer.inc',
+  );
 
-      // if no theme function exists, assume template.
-      if (!function_exists("theme_$plugin[theme]")) {
-        $theme[$plugin['theme']]['template'] = str_replace('_', '-', $plugin['theme']);
-        $theme[$plugin['theme']]['file'] = $plugin['file']; // for preprocess.
-      }
-    }
-  }
+  $theme['ctools_style_icon'] = array(
+    'arguments' => array('image' => NULL, 'title' => NULL),
+    'file' => 'includes/stylizer.inc',
+  );
+
 }
 

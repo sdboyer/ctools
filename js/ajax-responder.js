@@ -9,6 +9,8 @@
   Drupal.CTools = Drupal.CTools || {};
   Drupal.CTools.AJAX = Drupal.CTools.AJAX || {};
   Drupal.CTools.AJAX.commands = Drupal.CTools.AJAX.commands || {};
+  Drupal.CTools.AJAX.scripts = {};
+  Drupal.CTools.AJAX.css = {};
 
   /**
    * Success callback for an ajax request.
@@ -286,8 +288,52 @@
     $(data.selector).css(data.argument);
   };
 
+  Drupal.CTools.AJAX.commands.css_files = function(data) {
+    // Build a list of scripts already loaded:
+
+    $('link:not(.ctools-temporary-css)').each(function () {
+      if ($(this).attr('type') == 'text/css') {
+        Drupal.CTools.AJAX.css[$(this).attr('href')] = $(this).attr('href');
+      }
+    });
+
+    var html = '';
+    for (i in data.argument) {
+      if (!Drupal.CTools.AJAX.css[data.argument[i].file]) {
+//        Drupal.CTools.AJAX.css[data.argument[i].file] = data.argument[i].file;
+        html += '<link class="ctools-temporary-css" type="text/css" rel="stylesheet" media="' + data.argument[i].media +
+          '" href="' + data.argument[i].file + '" />';
+      }
+    }
+
+    if (html) {
+      $('link.ctools-temporary-css').remove();
+      $('body').append($(html));
+    }
+  };
+
   Drupal.CTools.AJAX.commands.settings = function(data) {
     $.extend(Drupal.settings, data.argument);
+  };
+
+  Drupal.CTools.AJAX.commands.scripts = function(data) {
+    // Build a list of scripts already loaded:
+    var scripts = {};
+    $('script').each(function () {
+      Drupal.CTools.AJAX.scripts[$(this).attr('src')] = $(this).attr('src');
+    });
+
+    var html = '';
+    for (i in data.argument) {
+      if (!Drupal.CTools.AJAX.scripts[data.argument[i]]) {
+        Drupal.CTools.AJAX.scripts[data.argument[i]] = data.argument[i];
+        html += '<script type="text/javascript" src="' + data.argument[i] + '"></script>';
+      }
+    }
+
+    if (html) {
+      $('body').append($(html));
+    }
   };
 
   Drupal.CTools.AJAX.commands.data = function(data) {
@@ -344,4 +390,5 @@
        .addClass('ctools-use-ajax-processed')
        .change(Drupal.CTools.AJAX.changeAJAX);
   };
+
 })(jQuery);
