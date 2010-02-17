@@ -987,8 +987,13 @@ function page_manager_edit_page_finish(&$form_state) {
   // If the 'Update and Save' button was selected, write our cache out.
   if (!empty($form_state['clicked_button']['#save'])) {
     page_manager_save_page_cache($form_state['page']);
-    $form_state['page']->changed = FALSE;
-//    $form_state['page'] = page_manager_get_page_cache($form_state['task_name']);
+    page_manager_clear_page_cache($form_state['page']->task_name);
+    $form_state['page'] = page_manager_get_page_cache($form_state['page']->task_name);
+    if (empty($form_state['new trail'])) {
+      // force a rerender to get rid of old form items that may have changed
+      // during save.
+      $form_state['new trail'] = $form_state['trail'];
+    }
   }
   else {
     if (empty($form_state['do not cache'])) {

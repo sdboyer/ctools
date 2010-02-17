@@ -87,7 +87,10 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
   // This tells ctools_build_form to apply our wrapper to the form. It
   // will give it buttons and the like.
   $form_state['wrapper callback'] = 'ctools_wizard_wrapper';
-  $form_state['rerender'] = FALSE;
+  if (!isset($form_state['rerender'])) {
+    $form_state['rerender'] = FALSE;
+  }
+
   $form_state['no_redirect'] = TRUE;
 
   ctools_include('form');
@@ -110,7 +113,8 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
       $form_state['commands'] = ctools_modal_form_render($form_state, $output);
     }
   }
-  else  {
+
+  if (!empty($form_state['executed'])) {
     // We use the plugins get_function format because it's powerful and
     // not limited to just functions.
     ctools_include('plugins');
