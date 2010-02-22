@@ -9,6 +9,7 @@
   Drupal.CTools = Drupal.CTools || {};
   Drupal.CTools.AJAX = Drupal.CTools.AJAX || {};
   Drupal.CTools.AJAX.commands = Drupal.CTools.AJAX.commands || {};
+  Drupal.CTools.AJAX.commandCache = Drupal.CTools.AJAX.comandCache || {} ;
   Drupal.CTools.AJAX.scripts = {};
   Drupal.CTools.AJAX.css = {};
 
@@ -24,6 +25,72 @@
     for (i in data) {
       if (data[i]['command'] && Drupal.CTools.AJAX.commands[data[i]['command']]) {
         Drupal.CTools.AJAX.commands[data[i]['command']](data[i]);
+      }
+    }
+  };
+
+  /**
+   * Grab the response from the server and store it.
+   */
+  Drupal.CTools.AJAX.warmCache = function () {
+    // Store this expression for a minor speed improvement.
+    $this = $(this);
+    var old_url = $this.attr('href');
+    // If we are currently fetching, or if we have fetched this already which is
+    // ideal for things like pagers, where the previous page might already have
+    // been seen in the cache.
+    if ($this.hasClass('ctools-fetching') || Drupal.CTools.AJAX.commandCache[old_url]) {
+      return false;
+    }
+
+    // Grab all the links that match this url and add the fetching class.
+    // This allows the caching system to grab each url once and only once
+    // instead of grabbing the url once per <a>.
+    var $objects = $('a[href=' + old_url + ']')
+    $objects.addClass('ctools-fetching');
+    try {
+      url = old_url.replace(/nojs/g, 'ajax');
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: { 'js': 1, 'ctools_ajax': 1 },
+        global: true,
+        success: function (data) {
+          Drupal.CTools.AJAX.commandCache[old_url] = data;
+          $objects.addClass('ctools-cache-warmed').trigger('ctools-cache-warm', [data]);
+        },
+        complete: function() {
+          $objects.removeClass('ctools-fetching');
+        },
+        dataType: 'json'
+      });
+    }
+    catch (err) {
+      $objects.removeClass('ctools-fetching');
+      return false;
+    }
+
+    return false;
+  };
+
+  /**
+   * Cachable click handler to fetch the commands out of the cache or from url.
+   */
+  Drupal.CTools.AJAX.clickAJAXCacheLink = function () {
+    $this = $(this);
+    if ($this.hasClass('ctools-fetching')) {
+      $this.bind('ctools-cache-warm', function (event, data) {
+        Drupal.CTools.AJAX.respond(data);
+      });
+      return false;
+    }
+    else {
+      if ($this.hasClass('ctools-cache-warmed') && Drupal.CTools.AJAX.commandCache[$this.attr('href')]) {
+        Drupal.CTools.AJAX.respond(Drupal.CTools.AJAX.commandCache[$this.attr('href')]);
+        return false;
+      }
+      else {
+        return Drupal.CTools.AJAX.clickAJAXLink.apply(this);
       }
     }
   };
@@ -375,9 +442,20 @@
    */
   Drupal.behaviors.CToolsAJAX = function(context) {
     // Bind links
+
+    // Note that doing so in this order means that the two classes can be
+    // used together safely.
+    $('a.ctools-use-ajax-cache:not(.ctools-use-ajax-processed)', context)
+      .addClass('ctools-use-ajax-processed')
+      .click(Drupal.CTools.AJAX.clickAJAXCacheLink)
+      .each(function () {
+        Drupal.CTools.AJAX.warmCache.apply(this);
+      });
+
     $('a.ctools-use-ajax:not(.ctools-use-ajax-processed)', context)
       .addClass('ctools-use-ajax-processed')
       .click(Drupal.CTools.AJAX.clickAJAXLink);
+
 
     // Bind buttons
     $('input.ctools-use-ajax:not(.ctools-use-ajax-processed), button.ctools-use-ajax:not(.ctools-use-ajax-processed)', context)

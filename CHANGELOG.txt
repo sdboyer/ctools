@@ -8,6 +8,7 @@ Allow themes to provide default pages so that Panels Everywhere enabled themes c
 Initial inclusion of the stylizer plugin to create user customizable styles from pre-configured base styles.
 #708154: Update and Save would leave forms in an older state, causing some forms to lose data (particularly the Panels content form).
 #467948 by hefox: Allow the vocabulary context to be used by the vocabulary selector access plugin.
+#686052 by Scott Reynolds: Allow for cache warming. (See API.txt)
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============

@@ -94,10 +94,18 @@
   };
 
   /**
+   * Click function for modals that can be cached.
+   */
+  Drupal.CTools.Modal.clickAjaxCacheLink = function () {
+    Drupal.CTools.Modal.show();
+    return Drupal.CTools.AJAX.clickAJAXCacheLink.apply(this);
+  };
+
+  /**
    * Generic replacement click handler to open the modal with the destination
    * specified by the href of the link.
    */
-  Drupal.CTools.Modal.clickAjaxLink = function() {
+  Drupal.CTools.Modal.clickAjaxLink = function () {
     // show the empty dialog right away.
     Drupal.CTools.Modal.show();
     Drupal.CTools.AJAX.clickAJAXLink.apply(this);
@@ -191,6 +199,15 @@
    */
   Drupal.behaviors.CToolsModal = function(context) {
     // Bind links
+    // Note that doing so in this order means that the two classes can be
+    // used together safely.
+    $('a.ctools-use-modal-cache:not(.ctools-use-modal-processed)', context)
+      .addClass('ctools-use-modal-processed')
+      .click(Drupal.CTools.Modal.clickAjaxCacheLink)
+      .each(function () {
+        Drupal.CTools.AJAX.warmCache.apply(this);
+      });
+
     $('a.ctools-use-modal:not(.ctools-use-modal-processed)', context)
       .addClass('ctools-use-modal-processed')
       .click(Drupal.CTools.Modal.clickAjaxLink);
