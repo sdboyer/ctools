@@ -1344,7 +1344,7 @@ function ctools_access_group_summary($access, $contexts) {
     $descriptions[] = ctools_access_summary($plugin, $contexts, $test);
   }
 
-  $separator = $access['logic'] == 'AND' ? t(', and ') : t(', or ');
+  $separator = $access['logic'] == 'and' ? t(', and ') : t(', or ');
   return implode($separator, $descriptions);
 }
 
