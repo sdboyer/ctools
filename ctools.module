@@ -148,7 +148,7 @@ function ctools_init() {
  * Shutdown handler used during ajax operations to help catch fatal errors.
  */
 function ctools_shutdown_handler() {
-  if ($error = error_get_last()){
+  if (function_exists('error_get_last') AND ($error = error_get_last())){
     switch($error['type']){
       case E_ERROR:
       case E_CORE_ERROR:
