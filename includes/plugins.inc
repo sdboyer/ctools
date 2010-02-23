@@ -557,7 +557,7 @@ function ctools_plugin_get_info($module, $type) {
  * Get a function from a plugin, if it exists. If the plugin is not already
  * loaded, try ctools_plugin_load_function() instead.
  *
- * @param $plugin
+ * @param $plugin_definition
  *   The loaded plugin type.
  * @param $function_name
  *   The identifier of the function. For example, 'settings form'.
@@ -566,34 +566,34 @@ function ctools_plugin_get_info($module, $type) {
  *   The actual name of the function to call, or NULL if the function
  *   does not exist.
  */
-function ctools_plugin_get_function($plugin, $function_name) {
+function ctools_plugin_get_function($plugin_definition, $function_name) {
   // If cached the .inc file may not have been loaded. require_once is quite safe
   // and fast so it's okay to keep calling it.
-  if (isset($plugin['file'])) {
+  if (isset($plugin_definition['file'])) {
     // Plugins that are loaded from info files have the info file as
     // $plugin['file'].  Don't try to run those.
-    $info = ctools_plugin_get_info($plugin['plugin module'], $plugin['plugin type']);
+    $info = ctools_plugin_get_info($plugin_definition['plugin module'], $plugin_definition['plugin type']);
     if (empty($info['info file'])) {
-      require_once './' . $plugin['path'] . '/' . $plugin['file'];
+      require_once './' . $plugin_definition['path'] . '/' . $plugin_definition['file'];
     }
   }
 
-  if (!isset($plugin[$function_name])) {
+  if (!isset($plugin_definition[$function_name])) {
     return;
   }
 
-  if (is_array($plugin[$function_name]) && isset($plugin[$function_name]['function'])) {
-    $function = $plugin[$function_name]['function'];
-    if (isset($plugin[$function_name]['file'])) {
-      $file = $plugin[$function_name]['file'];
-      if (isset($plugin[$function_name]['path'])) {
-        $file = $plugin[$function_name]['path'] . '/' . $file;
+  if (is_array($plugin_definition[$function_name]) && isset($plugin_definition[$function_name]['function'])) {
+    $function = $plugin_definition[$function_name]['function'];
+    if (isset($plugin_definition[$function_name]['file'])) {
+      $file = $plugin_definition[$function_name]['file'];
+      if (isset($plugin_definition[$function_name]['path'])) {
+        $file = $plugin_definition[$function_name]['path'] . '/' . $file;
       }
       require_once './' . $file;
     }
   }
   else {
-    $function = $plugin[$function_name];
+    $function = $plugin_definition[$function_name];
   }
 
   if (function_exists($function)) {
@@ -627,7 +627,7 @@ function ctools_plugin_load_function($module, $type, $id, $function_name) {
  * Get a class from a plugin, if it exists. If the plugin is not already
  * loaded, try ctools_plugin_load_class() instead.
  *
- * @param $plugin
+ * @param $plugin_definition
  *   The loaded plugin type.
  * @param $class_name
  *   The identifier of the class. For example, 'handler'.
@@ -635,44 +635,44 @@ function ctools_plugin_load_function($module, $type, $id, $function_name) {
  * @return
  *   The actual name of the class to call, or NULL if the class does not exist.
  */
-function ctools_plugin_get_class($plugin, $class_name) {
+function ctools_plugin_get_class($plugin_definition, $class_name) {
   // If cached the .inc file may not have been loaded. require_once is quite safe
   // and fast so it's okay to keep calling it.
-  if (isset($plugin['file'])) {
+  if (isset($plugin_definition['file'])) {
     // Plugins that are loaded from info files have the info file as
     // $plugin['file'].  Don't try to run those.
-    $info = ctools_plugin_get_info($plugin['plugin module'], $plugin['plugin type']);
+    $info = ctools_plugin_get_info($plugin_definition['plugin module'], $plugin_definition['plugin type']);
     if (empty($info['info file'])) {
-      require_once './' . $plugin['path'] . '/' . $plugin['file'];
+      require_once './' . $plugin_definition['path'] . '/' . $plugin_definition['file'];
     }
   }
 
-  if (!isset($plugin[$class_name])) {
+  if (!isset($plugin_definition[$class_name])) {
     return;
   }
 
-  if (is_array($plugin[$class_name]) && isset($plugin[$class_name]['class'])) {
-    if (isset($plugin[$class_name]['parent'])) {
+  if (is_array($plugin_definition[$class_name]) && isset($plugin_definition[$class_name]['class'])) {
+    if (isset($plugin_definition[$class_name]['parent'])) {
       // Make sure parents are included.
-      ctools_plugin_load_class($plugin['plugin module'], $plugin['plugin type'], $plugin[$class_name]['parent'], $class_name);
+      ctools_plugin_load_class($plugin_definition['plugin module'], $plugin_definition['plugin type'], $plugin_definition[$class_name]['parent'], $class_name);
     }
-    $class = $plugin[$class_name]['class'];
-    if (isset($plugin[$class_name]['file'])) {
-      $file = $plugin[$class_name]['file'];
-      if (isset($plugin[$class_name]['path'])) {
-        $file = $plugin[$class_name]['path'] . '/' . $file;
+    $class = $plugin_definition[$class_name]['class'];
+    if (isset($plugin_definition[$class_name]['file'])) {
+      $file = $plugin_definition[$class_name]['file'];
+      if (isset($plugin_definition[$class_name]['path'])) {
+        $file = $plugin_definition[$class_name]['path'] . '/' . $file;
       }
       require_once './' . $file;
     }
   }
   else {
-    $class = $plugin[$class_name];
+    $class = $plugin_definition[$class_name];
   }
 
   // If we didn't explicitly include a file above, try autoloading a file
   // based on the class' name.
-  if (!isset($file) && file_exists($plugin['path'] . "/$class.class.php")) {
-    require_once $plugin['path'] . "/$class.class.php";
+  if (!isset($file) && file_exists($plugin_definition['path'] . "/$class.class.php")) {
+    require_once $plugin_definition['path'] . "/$class.class.php";
   }
 
   if (class_exists($class)) {
