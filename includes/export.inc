@@ -266,12 +266,15 @@ function _ctools_export_get_defaults($table, $export) {
       foreach ($modules as $module) {
         $function = $module . '_' . $export['default hook'];
         if (function_exists($function)) {
-          if (empty($export['api'])) {
-            $cache[$table] += (array) $function($export);
-          }
-          else {
-            foreach ((array) $function($export) as $name => $object) {
-              // If version checking is enabled, ensure that the object can be used.
+          foreach ((array) $function($export) as $name => $object) {
+            // Record the module that provides this exportable.
+            $object->export_module = $module;
+
+            if (empty($export['api'])) {
+              $cache[$table][$name] = $object;
+            }
+            else {
+	             // If version checking is enabled, ensure that the object can be used.
               if (isset($object->api_version) &&
                 $object->api_version >= $export['api']['minimum_version'] &&
                 $object->api_version <= $export['api']['current_version']) {
