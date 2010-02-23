@@ -41,7 +41,8 @@ function ctools_context_token_convert_list() {
  */
 function ctools_context_token_convert($context, $token) {
   $values = token_get_values();
-  if ($key = array_search($token, $values->tokens)) {
+  $key = array_search($token, $values->tokens);
+  if ($key !== FALSE) {
     return $values->values[$key];
   }
 }
