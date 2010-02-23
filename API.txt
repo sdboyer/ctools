@@ -9,6 +9,9 @@ API version 1.4:
     'ctools-use-modal-cache'. Doing so will cause content to be fetched
     via AJAX on page load and kept warm in a cache for instant responses
     to clicks.
+  Generalized ctools_add_css().
+  Generalized ctools_add_js().
+  Generalized ctools_image_path().
 
 API version 1.3.2:
   Introduce 'export callback' to individual fields in export.inc

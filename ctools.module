@@ -112,24 +112,54 @@ function ctools_include($file, $module = 'ctools', $dir = 'includes') {
 }
 
 /**
- * Provide the proper path to a CTools image
+ * Provide the proper path to an image as necessary.
+ *
+ * This helper function is used by ctools but can also be used in other 
+ * modules in the same way as explained in the comments of ctools_include. 
+ *
+ * @param $image 
+ *   The base file name (with extension)  of the image to be included.
+ * @param $module
+ *   Optional module containing the include.
+ * @param $dir
+ *   Optional subdirectory containing the include file.
  */
-function ctools_image_path($image) {
-  return drupal_get_path('module', 'ctools') . '/images/' . $image;
+function ctools_image_path($image, $module = 'ctools', $dir = 'images') {
+  return drupal_get_path('module', $module) . "/$dir/" . $image;
 }
 
 /**
- * Include CTools .css files.
+ * Include css files as necessary.
+ *
+ * This helper function is used by ctools but can also be used in other 
+ * modules in the same way as explained in the comments of ctools_include. 
+ *
+ * @param $file
+ *   The base file name to be included.
+ * @param $module
+ *   Optional module containing the include.
+ * @param $dir
+ *   Optional subdirectory containing the include file.
  */
-function ctools_add_css($file) {
-  drupal_add_css(drupal_get_path('module', 'ctools') . "/css/$file.css");
+function ctools_add_css($file, $module = 'ctools', $dir = 'css') {
+  drupal_add_css(drupal_get_path('module', $module) . "/$dir/$file.css");
 }
 
 /**
- * Include CTools.js files.
+ * Include js files as necessary.
+ *
+ * This helper function is used by ctools but can also be used in other 
+ * modules in the same way as explained in the comments of ctools_include. 
+ *
+ * @param $file
+ *   The base file name to be included.
+ * @param $module
+ *   Optional module containing the include.
+ * @param $dir
+ *   Optional subdirectory containing the include file.
  */
-function ctools_add_js($file) {
-  drupal_add_js(drupal_get_path('module', 'ctools') . "/js/$file.js");
+function ctools_add_js($file, $module = 'ctools', $dir = 'js') {
+  drupal_add_js(drupal_get_path('module', $module) . "/$dir/$file.js");
 }
 
 /**
