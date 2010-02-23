@@ -56,7 +56,7 @@
  *   need. This should be in the documentation for that particular API.
  */
 function ctools_plugin_api_info($owner, $api, $minimum_version, $current_version) {
-  static $cache = array();
+  $cache = &ctools_static(__FUNCTION__, array());
   if (!isset($cache[$owner][$api])) {
     $cache[$owner][$api] = array();
     foreach (module_implements('ctools_plugin_api') as $module) {
