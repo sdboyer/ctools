@@ -20,6 +20,7 @@ Initial inclusion of the stylizer plugin to create user customizable styles from
 #703040 by neclimudul: Harden plugin loading against accidental variable overwriting.
 #710490 by thsutton: Fix use of error_get_last() which only appears in PHP 5.2.
 #716288 by alex_b: Clear more caches when clearing static caches for install/deployment purposes.
+#715118 by neclimdul: Add abstract hints to the classes in plugins.inc.
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============

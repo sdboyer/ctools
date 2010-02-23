@@ -631,11 +631,13 @@ function ctools_plugin_load_function($module, $type, $id, $function_name) {
  *   The loaded plugin type.
  * @param $class_name
  *   The identifier of the class. For example, 'handler'.
+ * @param $abstract
+ *   If true, will return abstract classes. Otherwise, parents will be included but nothing will be returned.
  *
  * @return
  *   The actual name of the class to call, or NULL if the class does not exist.
  */
-function ctools_plugin_get_class($plugin_definition, $class_name) {
+function ctools_plugin_get_class($plugin_definition, $class_name, $abstract = FALSE) {
   // If cached the .inc file may not have been loaded. require_once is quite safe
   // and fast so it's okay to keep calling it.
   if (isset($plugin_definition['file'])) {
@@ -675,7 +677,8 @@ function ctools_plugin_get_class($plugin_definition, $class_name) {
     require_once $plugin_definition['path'] . "/$class.class.php";
   }
 
-  if (class_exists($class)) {
+  if (class_exists($class) &&
+    (empty($plugin_definition[$class_name]['abstract']) || $abstract)) {
     return $class;
   }
 }
@@ -692,11 +695,13 @@ function ctools_plugin_get_class($plugin_definition, $class_name) {
  *   The id of the specific plugin to load.
  * @param $class_name
  *   The identifier of the class. For example, 'handler'.
+ * @param $abstract
+ *   If true, will tell ctools_plugin_get_class to allow the return of abstract classes.
  *
  * @return
  *   The actual name of the class to call, or NULL if the class does not exist.
  */
-function ctools_plugin_load_class($module, $type, $id, $class_name) {
+function ctools_plugin_load_class($module, $type, $id, $class_name, $abstract = FALSE) {
   $plugin = ctools_get_plugins($module, $type, $id);
-  return ctools_plugin_get_class($plugin, $class_name);
+  return ctools_plugin_get_class($plugin, $class_name, $abstract);
 }
