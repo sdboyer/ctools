@@ -16,6 +16,7 @@ Initial inclusion of the stylizer plugin to create user customizable styles from
 #709874 by thsutton: Fix improper test in context exists.
 #711664 by neclimdul: Deprecate the plugin hook which should no longer be used; all plugins should be file based.
 #707826 by marcvangend: Add a relationship to get multiple terms from a node.
+#711922 by jonskulski: Do not print empty H1 tag if no title in page_title content.
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============

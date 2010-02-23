@@ -26,9 +26,15 @@ $plugin = array(
  * Outputs the page title of the current page.
  */
 function ctools_page_title_content_type_render($subtype, $conf, $panel_args) {
+
   $block = new stdClass();
-  // TODO: This should have a setting or something for the markup.
-  $block->content = '<h1>' . drupal_get_title() . '</h1>';
+
+  $title = drupal_get_title();
+  if ($title) { 
+    // TODO: This should have a setting or something for the markup.
+    $block->content = '<h1>'. $title .'</h1>';
+  }
 
   return $block;
+
 }
