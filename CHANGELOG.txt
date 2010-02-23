@@ -14,6 +14,7 @@ Initial inclusion of the stylizer plugin to create user customizable styles from
 #709754 by yhahn: Add export_module flag to all default objects so that we can tell where they came from.
 #709840 by thsutton: Improper test of AND when displaying access summaries.
 #709874 by thsutton: Fix improper test in context exists.
+#711664 by neclimdul: Deprecate the plugin hook which should no longer be used; all plugins should be file based.
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============
