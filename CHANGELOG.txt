@@ -13,6 +13,7 @@ Initial inclusion of the stylizer plugin to create user customizable styles from
 #484340 by catch: Fix bug in token integration.
 #709754 by yhahn: Add export_module flag to all default objects so that we can tell where they came from.
 #709840 by thsutton: Improper test of AND when displaying access summaries.
+#709874 by thsutton: Fix improper test in context exists.
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============
