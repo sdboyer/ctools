@@ -167,6 +167,14 @@ function ctools_get_plugins($module, $type, $id = NULL) {
   static $setup = array();
   static $info = array();
 
+  if (!isset($plugins[$module])) {
+    $plugins[$module] = array();
+  }
+
+  if (!isset($plugins[$module][$type])) {
+    $plugins[$module][$type] = array();
+  }
+
   if (!isset($info[$module][$type])) {
     $info[$module][$type] = ctools_plugin_get_info($module, $type);
   }
@@ -194,7 +202,7 @@ function ctools_get_plugins($module, $type, $id = NULL) {
   if ((!$id || $info[$module][$type]['cache']) && empty($setup[$module][$type])) {
     $setup[$module][$type] = TRUE;
     $plugins[$module][$type] = array();
-    if ($info['use hooks']) {
+    if (!empty($info['use hooks'])) {
       $plugins[$module][$type] = ctools_plugin_load_hooks($info[$module][$type]);
     }
     $plugins[$module][$type] = array_merge($plugins[$module][$type], ctools_plugin_load_includes($info[$module][$type]));
