@@ -164,7 +164,8 @@ function ctools_plugin_api_include($owner, $api, $minimum_version, $current_vers
  */
 function ctools_get_plugins($module, $type, $id = NULL) {
   static $plugins = array();
-  static $setup = array();
+  static $all_hooks = array();
+  static $all_files = array();
   static $info = array();
 
   if (!isset($plugins[$module])) {
@@ -185,26 +186,32 @@ function ctools_get_plugins($module, $type, $id = NULL) {
     // with content updates is convenient.
     $cache = cache_get("plugins:$module:$type", $info[$module][$type]['cache table']);
 
+    // if cache load successful, set $all_hooks and $all_files to true.
     if (!empty($cache->data)) {
-      // Cache loaded successfuly.
-      $plugins[$module][$type] = $cache->data;
-      // Set $setup to true so we know things where loaded.
-      $setup[$module][$type]   = TRUE;
+      $plugins[$module][$type]   = $cache->data;
+      $all_hooks[$module][$type] = TRUE;
+      $all_files[$module][$type] = TRUE;
     }
     else {
-      // Cache load failed so store that we need to write cache later.
       $write_cache = TRUE;
     }
   }
 
-  // See if we should load plugins. We only do this if we want a list of all
-  // plugins or the cache missed.
-  if ((!$id || $info[$module][$type]['cache']) && empty($setup[$module][$type])) {
-    $setup[$module][$type] = TRUE;
-    $plugins[$module][$type] = array();
-    if (!empty($info['use hooks'])) {
-      $plugins[$module][$type] = ctools_plugin_load_hooks($info[$module][$type]);
-    }
+  // Always load all hooks if we need them.
+  if (!isset($all_hooks[$module][$type])) {
+    $all_hooks[$module][$type] = TRUE;
+    $plugins[$module][$type] = ctools_plugin_load_hooks($info[$module][$type]);
+  }
+
+  // First, see if it's in our hooks before we even bother.
+  if ($id && array_key_exists($id, $plugins[$module][$type])) {
+    return $plugins[$module][$type][$id];
+  }
+
+  // Then see if we should load all files. We only do this if we
+  // want a list of all plugins.
+  if ((!$id || $info[$module][$type]['cache']) && empty($all_files[$module][$type])) {
+    $all_files[$module][$type] = TRUE;
     $plugins[$module][$type] = array_merge($plugins[$module][$type], ctools_plugin_load_includes($info[$module][$type]));
   }
 
@@ -425,8 +432,6 @@ function ctools_find_base_themes($themes, $key, $used_keys = array()) {
  * Load plugin info for the provided hook; this is handled separately from
  * plugins from files.
  *
- * @deprecated plugin includes should be used in favor of this method.
- *
  * @param $info
  *   The info array about the plugin as created by ctools_plugin_get_info()
  *
@@ -501,7 +506,6 @@ function _ctools_process_data($result, $info, $module, $path, $file) {
       'name' => $name,
       'path' => $path,
       'file' => $file,
-      'use hooks' => FALSE, // Use deprecated hook definitions.
       'plugin module' => $info['module'],
       'plugin type' => $info['type'],
     );

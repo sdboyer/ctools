@@ -14,7 +14,6 @@ Initial inclusion of the stylizer plugin to create user customizable styles from
 #709754 by yhahn: Add export_module flag to all default objects so that we can tell where they came from.
 #709840 by thsutton: Improper test of AND when displaying access summaries.
 #709874 by thsutton: Fix improper test in context exists.
-#711664 by neclimdul: Deprecate the plugin hook which should no longer be used; all plugins should be file based.
 #707826 by marcvangend: Add a relationship to get multiple terms from a node.
 #711922 by jonskulski: Do not print empty H1 tag if no title in page_title content.
 #703040 by neclimudul: Harden plugin loading against accidental variable overwriting.
