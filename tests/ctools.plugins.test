@@ -94,9 +94,9 @@ class CtoolsPluginsGetInfoTestCase extends DrupalWebTestCase {
     $class = ctools_plugin_load_class($module, $type, 'plugin_array', 'handler');
     $object = new $class();
     $this->assertTrue(is_a($object, $base . 'PluginArray'), "Object for $type using plugin array definition retrieved.");
-    $class = ctools_plugin_load_class($module, $type . '_hook', 'test1', 'handler');
-    $object = new $class();
     // @todo finish setting this up.
+//    $class = ctools_plugin_load_class($module, $type . '_hook', 'test1', 'handler');
+//    $object = new $class();
 //    $this->assertEqual("ctools_plugin_test_hook_${type}_test", $func, "Function for $type using hook definition retrieved.");
 
     // Check that our cache is stored
