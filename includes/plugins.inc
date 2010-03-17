@@ -146,6 +146,8 @@ function ctools_get_plugins($module, $type, $id = NULL) {
   static $all_files = array();
   static $info = array();
 
+  // Request metadata/defaults for this plugin from the declaring module. This
+  // is done once per page request, upon a request being made for that plugin.
   if (!isset($info[$module][$type])) {
     $info[$module][$type] = ctools_plugin_get_info($module, $type);
   }
