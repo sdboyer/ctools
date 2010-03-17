@@ -172,6 +172,8 @@ function ctools_get_plugins($module, $type, $id = NULL) {
     $plugins[$module] = array();
   }
 
+  // Request metadata/defaults for this plugin from the declaring module. This
+  // is done once per page request, upon a request being made for that plugin.
   if (!isset($plugins[$module][$type])) {
     $plugins[$module][$type] = array();
   }
