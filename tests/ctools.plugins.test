@@ -1,0 +1,126 @@
+<?php
+// $Id$
+/**
+ * @file
+ * Tests for different parts of the ctools plugin system.
+ */
+
+/**
+ * Test menu links depending on user permissions.
+ */
+class CtoolsPluginsGetInfoTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Get plugin info',
+      'description' => 'Verify that plugin type definitions can properly set and overide values.',
+      'group' => 'Chaos Tools Suite',
+    );
+  }
+
+  function setUp() {
+    // Additionally enable contact module.
+    parent::setUp('ctools', 'ctools_plugin_test');
+  }
+
+  /**
+   * Helper function that builds a list of default values we want to recieve for plugin information.
+   *
+   * @param $module
+   * Module name
+   * @param $type
+   * Plugin type
+   * @return
+   * Default plugin array.
+   */
+  function buildDefaults($module, $type) {
+    return array(
+      'module' => $module,
+      'type' => $type,
+      'cache' => FALSE,
+      'cache table' => 'cache',
+      'use hooks' => FALSE,
+      'defaults' => array(),
+      'hook' => $module . '_' . $type,
+      'load themes' => FALSE,
+    );
+  }
+
+  /**
+   * Test that get plugin info works properly.
+   */
+  function testGetInfo() {
+
+    ctools_include('plugins');
+
+	$module = 'ctools_plugin_test';
+
+	// Check that plugins without a hook get expected defaults.
+    $info = ctools_plugin_get_info($module, 'defaults');
+    $defaults = $this->buildDefaults($module, 'defaults');
+    $this->assertEqual($info, $defaults, 'Default values properly set for plugins without definition hooks.');
+
+    // Check that defaults are correctly added to definitions.
+    $info = ctools_plugin_get_info($module, 'extra_defaults');
+    $extra = ctools_plugin_test_ctools_plugin_extra_defaults();
+    $extra += $this->buildDefaults($module, 'extra_defaults');
+    $this->assertEqual($info, $extra, 'Extras are properly added to plugin definitions.');
+  }
+
+  /**
+   * Helper function that runs some generalized tests for plugin loading.
+   *
+   * @param $cached
+   * Toggles whether the tests are run against a cached api or uncached api.
+   */
+  function PluginLoadingTests($cached = true) {
+
+    ctools_include('plugins');
+    $module = 'ctools_plugin_test';
+    $type = $cached ? 'cached' : 'not_cached';
+
+    // Test function retrieval for plugins using different definition methods.
+    $func = ctools_plugin_load_function($module, $type, 'magic_func', 'function');
+    $this->assertEqual("ctools_plugin_test_magic_func_${type}_test", $func, "Function for $type using magic function definition retrieved.");
+    $func = ctools_plugin_load_function($module, $type, 'plugin_array', 'function');
+    $this->assertEqual("ctools_plugin_test_plugin_array_${type}_test", $func, "Function for $type using plugin array definition retrieved.");
+    $func = ctools_plugin_load_function($module, $type . '_hook', 'test1', 'function');
+    $this->assertEqual("ctools_plugin_test_hook_${type}_test", $func, "Function for $type using hook definition retrieved.");
+
+    // Test function retrieval for plugins using different definition methods.
+    $base = $cached ? 'ctoolsCached' : 'ctoolsNotCached';
+    $class = ctools_plugin_load_class($module, $type, 'magic_func', 'handler');
+    $object = new $class();
+    $this->assertTrue(is_a($object, $base . 'MagicFunc'), "Object for $type using magic function definition retrieved.");
+    $class = ctools_plugin_load_class($module, $type, 'plugin_array', 'handler');
+    $object = new $class();
+    $this->assertTrue(is_a($object, $base . 'PluginArray'), "Object for $type using plugin array definition retrieved.");
+    $class = ctools_plugin_load_class($module, $type . '_hook', 'test1', 'handler');
+    $object = new $class();
+    // @todo finish setting this up.
+//    $this->assertEqual("ctools_plugin_test_hook_${type}_test", $func, "Function for $type using hook definition retrieved.");
+
+    // Check that our cache is stored
+    $cache = cache_get("plugins:$module:$type");
+    $test = !empty($cache->data)
+      && sizeof($cache->data) == 2;
+    $this->assertEqual($test, $cached, 'Plugins from includes are being cached properly.');
+    $cache = cache_get("plugins:$module:${type}_hook");
+    $test = !empty($cache->data)
+      && sizeof($cache->data) == 1;
+    $this->assertEqual($test, $cached, 'Plugins from hooks are being cached properly.');
+  }
+
+  /**
+   * Test that cached plugins are loaded correctly.
+   */
+  function testPluginLoadingCached() {
+    $this->PluginLoadingTests(TRUE);
+  }
+
+  /**
+   * Test that uncached plugins are loaded correctly.
+   */
+  function testPluginLoadingUncached() {
+    $this->PluginLoadingTests(FALSE);
+  }
+}
