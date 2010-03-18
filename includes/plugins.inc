@@ -207,6 +207,8 @@ function ctools_get_plugins($module, $type, $id = NULL) {
 
   // First, see if it's in our hooks before we even bother.
   if ($id && array_key_exists($id, $plugins[$module][$type])) {
+    // FIXME returning at this point means plugin data from hooks is sometimes
+    // cached (if a requested plugin is not hook-defined), sometimes not. Ick.
     return $plugins[$module][$type][$id];
   }
 
@@ -670,6 +672,10 @@ function ctools_plugin_get_class($plugin_definition, $class_name, $abstract = FA
   if (is_array($plugin_definition[$class_name]) && isset($plugin_definition[$class_name]['class'])) {
     if (isset($plugin_definition[$class_name]['parent'])) {
       // Make sure parents are included.
+      // TODO parent-loading needs to be better documented; the 'parent' designated
+      // on the plugin actually corresponds not to the name of the parent CLASS,
+      // but the name of the parent PLUGIN (and it then loads loads whatever
+      // class is in the same $class_name slot). Initially unintuitive.
       ctools_plugin_load_class($plugin_definition['plugin module'], $plugin_definition['plugin type'], $plugin_definition[$class_name]['parent'], $class_name);
     }
     $class = $plugin_definition[$class_name]['class'];
