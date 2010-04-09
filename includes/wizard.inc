@@ -316,7 +316,21 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
   }
 
   if (!empty($form_state['ajax'])) {
-    $form['#action'] = url(ctools_wizard_get_path($form_state['form_info'], $form_state['step']));
+    $params = ctools_wizard_get_path($form_state['form_info'], $form_state['step']);
+    if (count($params) > 1) {
+      $url = array_shift($params);
+      $options = array();
+      
+      $keys = array(0 => 'query', 1 => 'fragment');
+      foreach ($params as $key => $value) {
+        if (isset($keys[$key]) && isset($value)) {
+          $options[$keys[$key]] = $value;
+        }
+      }
+      
+      $params = array($url, $options);
+    }
+    $form['#action'] =  call_user_func_array('url', $params);
   }
 
   if (isset($info['wrapper']) && function_exists($info['wrapper'])) {
@@ -362,7 +376,15 @@ function ctools_wizard_submit(&$form, &$form_state) {
  * Create a path from the form info and a given step.
  */
 function ctools_wizard_get_path($form_info, $step) {
-  return str_replace('%step', $step, $form_info['path']);
+  if (is_array($form_info['path'])) {
+    foreach ($form_info['path'] as $id => $part) {
+      $form_info['path'][$id] = str_replace('%step', $step, $form_info['path'][$id]);
+    }    
+    return $form_info['path'];
+  }
+  else {
+    return array(str_replace('%step', $step, $form_info['path']));
+  }
 }
 
 /**
