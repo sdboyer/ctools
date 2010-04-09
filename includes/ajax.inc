@@ -449,30 +449,34 @@ function ctools_ajax_command_submit($selector) {
 function ctools_ajax_render($commands = array()) {
   // Automatically extract any 'settings' added via drupal_add_js() and make
   // them the first command.
-
   $query_string = '?'. substr(variable_get('css_js_query_string', '0'), 0, 1);
 
   $scripts = drupal_add_js(NULL, NULL);
+  $cached_scripts = cache_get($_POST['page_id'], 'cache')->data;
+
   foreach ($scripts as $type => $data) {
     switch ($type) {
       case 'setting':
         $settings = $data;
         break;
       case 'inline':
-        // presently we ignore inline javascript.
+      case 'theme':
+        // Presently we ignore inline javascript.
+        // Theme JS is already added and because of admin themes, this could add
+        // improper JS to the page.
         break;
       default:
         // If JS preprocessing is off, we still need to output the scripts.
         // Additionally, go through any remaining scripts if JS preprocessing is on and output the non-cached ones.
         foreach ($data as $path => $info) {
-          $js_files[] = base_path() . $path . ($info['cache'] ? $query_string : '?' . time());
+          if (!isset($cached_scripts['js'][$path])) {
+            $js_files[] = base_path() . $path . ($info['cache'] ? $query_string : '?' . time());
+          }
         }
     }
   }
 
-
   $css = drupal_add_css();
-
   foreach ($css as $media => $types) {
     // If CSS preprocessing is off, we still need to output the styles.
     // Additionally, go through any remaining styles if CSS preprocessing is on and output the non-cached ones.
@@ -484,20 +488,24 @@ function ctools_ajax_render($commands = array()) {
           $theme_styles[] = basename($theme_style);
         }
       }
-      foreach ($types[$type] as $file => $preprocess) {
-        // If the theme supplies its own style using the name of the module style, skip its inclusion.
-        // This includes any RTL styles associated with its main LTR counterpart.
-        if ($type == 'module' && in_array(str_replace('-rtl.css', '.css', basename($file)), $theme_styles)) {
-          // Unset the file to prevent its inclusion when CSS aggregation is enabled.
-          unset($types[$type][$file]);
-          continue;
-        }
-        // Only include the stylesheet if it exists.
-        if (file_exists($file)) {
-          $css_files[] = array(
-            'file' => base_path() . $file . $query_string,
-            'media' => $media,
-          );
+      // The theme stuff should already be added and because of admin themes,
+      // this could cause different CSS to be added.
+      if ($type != 'theme') {
+        foreach ($types[$type] as $file => $preprocess) {
+          // If the theme supplies its own style using the name of the module style, skip its inclusion.
+          // This includes any RTL styles associated with its main LTR counterpart.
+          if ($type == 'module' && in_array(str_replace('-rtl.css', '.css', basename($file)), $theme_styles)) {
+            // Unset the file to prevent its inclusion when CSS aggregation is enabled.
+            unset($types[$type][$file]);
+            continue;
+          }
+          // Only include the stylesheet if it exists.
+          if (file_exists($file) && !isset($cached_scripts['css'][$file])) {
+            $css_files[] = array(
+              'file' => base_path() . $file . $query_string,
+              'media' => $media,
+            );
+          }
         }
       }
     }

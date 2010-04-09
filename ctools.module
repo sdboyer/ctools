@@ -114,10 +114,10 @@ function ctools_include($file, $module = 'ctools', $dir = 'includes') {
 /**
  * Provide the proper path to an image as necessary.
  *
- * This helper function is used by ctools but can also be used in other 
- * modules in the same way as explained in the comments of ctools_include. 
+ * This helper function is used by ctools but can also be used in other
+ * modules in the same way as explained in the comments of ctools_include.
  *
- * @param $image 
+ * @param $image
  *   The base file name (with extension)  of the image to be included.
  * @param $module
  *   Optional module containing the include.
@@ -131,8 +131,8 @@ function ctools_image_path($image, $module = 'ctools', $dir = 'images') {
 /**
  * Include css files as necessary.
  *
- * This helper function is used by ctools but can also be used in other 
- * modules in the same way as explained in the comments of ctools_include. 
+ * This helper function is used by ctools but can also be used in other
+ * modules in the same way as explained in the comments of ctools_include.
  *
  * @param $file
  *   The base file name to be included.
@@ -148,8 +148,8 @@ function ctools_add_css($file, $module = 'ctools', $dir = 'css') {
 /**
  * Include js files as necessary.
  *
- * This helper function is used by ctools but can also be used in other 
- * modules in the same way as explained in the comments of ctools_include. 
+ * This helper function is used by ctools but can also be used in other
+ * modules in the same way as explained in the comments of ctools_include.
  *
  * @param $file
  *   The base file name to be included.
@@ -163,6 +163,18 @@ function ctools_add_js($file, $module = 'ctools', $dir = 'js') {
 }
 
 /**
+ * Simple function to add a page id to Drupal.settings.CTools.
+ */
+function ctools_add_page_id() {
+  static $page_id = NULL;
+  if (!isset($page_id)) {
+    $page_id = 'page-' . md5(mt_rand());
+    drupal_add_js(array('CTools' => array('pageId' => $page_id)), 'setting');
+  }
+  return $page_id;
+}
+
+/**
  * Implement hook_init to keep our global CSS at the ready.
  */
 function ctools_init() {
@@ -171,6 +183,10 @@ function ctools_init() {
   if (!empty($_REQUEST['ctools_ajax'])) {
     ini_set('display_errors', 0);
     register_shutdown_function('ctools_shutdown_handler');
+  }
+  else {
+    // Add a setting into the JS that identifies this page.
+    ctools_add_page_id();
   }
 }
 
@@ -526,6 +542,57 @@ function ctools_preprocess_page(&$variables) {
     }
     $variables['content'] = strtr($variables['content'], $tokens);
   }
+
+  // Go through all the JS files being added to the page and catalog them.
+  $js_files = array();
+  foreach (drupal_add_js() as $type => $data) {
+    if ($type != 'inline' && $type != 'setting') {
+      foreach ($data as $path => $info) {
+        $js_files[$path] = TRUE;
+      }
+    }
+  }
+
+  // Go through all CSS files that are being added to the page and catalog them.
+  $css_files = array();
+  $css = drupal_add_css();
+  foreach ($css as $media => $types) {
+    // If CSS preprocessing is off, we still need to output the styles.
+    // Additionally, go through any remaining styles if CSS preprocessing is on and output the non-cached ones.
+    foreach ($types as $type => $files) {
+      if ($type == 'module') {
+        // Setup theme overrides for module styles.
+        $theme_styles = array();
+        foreach (array_keys($css[$media]['theme']) as $theme_style) {
+          $theme_styles[] = basename($theme_style);
+        }
+      }
+      foreach ($types[$type] as $file => $preprocess) {
+        // If the theme supplies its own style using the name of the module style, skip its inclusion.
+        // This includes any RTL styles associated with its main LTR counterpart.
+        if ($type == 'module' && in_array(str_replace('-rtl.css', '.css', basename($file)), $theme_styles)) {
+          // Unset the file to prevent its inclusion when CSS aggregation is enabled.
+          unset($types[$type][$file]);
+          continue;
+        }
+        // Only include the stylesheet if it exists.
+        if (file_exists($file)) {
+          $css_files[$file] = TRUE;
+        }
+      }
+    }
+  }
+
+  // Cache the cataloged JS and CSS so they can be found by an ajax request.
+  $page_id = ctools_add_page_id();
+  $expire = CACHE_TEMPORARY;
+
+  // If the page cache is enabled, respect its cache lifetime.
+  // @TODO: do this for only user_is_anonymous()?
+  if (variable_get('cache', CACHE_DISABLED) != CACHE_DISABLED) {
+    $expire = variable_get('cache_lifetime', 0);
+  }
+  cache_set($page_id, array('js' => $js_files, 'css' => $css_files), 'cache', $expire);
 }
 
 /**

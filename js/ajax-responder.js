@@ -13,6 +13,15 @@
   Drupal.CTools.AJAX.scripts = {};
   Drupal.CTools.AJAX.css = {};
 
+  Drupal.CTools.AJAX.getPageId = function() {
+    var page_id = '';
+    if (Drupal.settings.CTools && Drupal.settings.CTools.pageId) {
+      page_id = Drupal.settings.CTools.pageId;
+    }
+
+    return page_id;
+  }
+
   /**
    * Success callback for an ajax request.
    *
@@ -53,7 +62,7 @@
       $.ajax({
         type: "POST",
         url: url,
-        data: { 'js': 1, 'ctools_ajax': 1 },
+        data: { 'js': 1, 'ctools_ajax': 1, 'page_id': Drupal.CTools.AJAX.getPageId() },
         global: true,
         success: function (data) {
           Drupal.CTools.AJAX.commandCache[old_url] = data;
@@ -112,7 +121,7 @@
       $.ajax({
         type: "POST",
         url: url,
-        data: { 'js': 1, 'ctools_ajax': 1 },
+        data: { 'js': 1, 'ctools_ajax': 1, 'page_id': Drupal.CTools.AJAX.getPageId() },
         global: true,
         success: Drupal.CTools.AJAX.respond,
         error: function(xhr) {
@@ -125,6 +134,7 @@
       });
     }
     catch (err) {
+      console.log(err);
       alert("An error occurred while attempting to process " + url);
       $(this).removeClass('ctools-ajaxing');
       return false;
@@ -154,7 +164,7 @@
         $.ajax({
           type: "POST",
           url: url,
-          data: { 'js': 1, 'ctools_ajax': 1 },
+          data: { 'js': 1, 'ctools_ajax': 1, 'page_id': Drupal.CTools.AJAX.getPageId() },
           global: true,
           success: Drupal.CTools.AJAX.respond,
           error: function(xhr) {
@@ -173,7 +183,7 @@
         $(form).ajaxSubmit({
           type: "POST",
           url: url,
-          data: { 'js': 1, 'ctools_ajax': 1 },
+          data: { 'js': 1, 'ctools_ajax': 1, 'page_id': Drupal.CTools.AJAX.getPageId() },
           global: true,
           success: Drupal.CTools.AJAX.respond,
           error: function(xhr) {
