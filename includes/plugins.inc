@@ -163,65 +163,61 @@ function ctools_plugin_api_include($owner, $api, $minimum_version, $current_vers
  *   of the array are specific to the plugin.
  */
 function ctools_get_plugins($module, $type, $id = NULL) {
-  static $plugins = array();
-  static $all_hooks = array();
-  static $all_files = array();
+  // Store local caches of plugins and plugin info so we don't have to do full
+  // lookups everytime.
   static $info = array();
+  static $plugins = array();
 
-  if (!isset($plugins[$module])) {
-    $plugins[$module] = array();
-  }
+  // Store the status of plugin loading. If a module plugin type pair is true,
+  // then it is fully loaded and no searching or setup needs to be done.
+  static $setup = array();
 
   // Request metadata/defaults for this plugin from the declaring module. This
   // is done once per page request, upon a request being made for that plugin.
-  if (!isset($plugins[$module][$type])) {
+  if (!isset($info[$module][$type])) {
+    $info[$module][$type] = ctools_plugin_get_info($module, $type);
+    // Also, initialize the local plugin cache.
     $plugins[$module][$type] = array();
   }
 
-  if (!isset($info[$module][$type])) {
-    $info[$module][$type] = ctools_plugin_get_info($module, $type);
-  }
+  // We assume we don't need to build a cache.
+  $build_cache = FALSE;
 
   // If the plugin info says this can be cached, check cache first.
-  if ($info[$module][$type]['cache'] && !isset($plugins['cache'])) {
+  if ($info[$module][$type]['cache'] && empty($setup[$module][$type])) {
     // @todo Maybe this should use our own table but free wiping
     // with content updates is convenient.
     $cache = cache_get("plugins:$module:$type", $info[$module][$type]['cache table']);
 
-    // if cache load successful, set $all_hooks and $all_files to true.
     if (!empty($cache->data)) {
+      // Cache load succeeded so use the cached plugin list.
       $plugins[$module][$type]   = $cache->data;
-      $all_hooks[$module][$type] = TRUE;
-      $all_files[$module][$type] = TRUE;
+      // Set $setup to true so we know things where loaded.
+      $setup[$module][$type]     = TRUE;
     }
     else {
-      $write_cache = TRUE;
+      // Cache load failed so store that we need to build and write the cache.
+      $build_cache = TRUE;
     }
   }
 
-  // Always load all hooks if we need them.
-  if (!isset($all_hooks[$module][$type])) {
-    $all_hooks[$module][$type] = TRUE;
+  // Always load all hooks if we need them. Note we only need them now if the
+  // plugin asks for them. We can assume that if we have plugins we've already
+  // called the global hook.
+  if (!empty($info[$module][$type]['use hooks']) && empty($plugins[$module][$type])) {
     $plugins[$module][$type] = ctools_plugin_load_hooks($info[$module][$type]);
   }
 
-  // First, see if it's in our hooks before we even bother.
-  if ($id && array_key_exists($id, $plugins[$module][$type])) {
-    // FIXME returning at this point means plugin data from hooks is sometimes
-    // cached (if a requested plugin is not hook-defined), sometimes not. Ick.
-    return $plugins[$module][$type][$id];
-  }
-
   // Then see if we should load all files. We only do this if we
-  // want a list of all plugins.
-  if ((!$id || $info[$module][$type]['cache']) && empty($all_files[$module][$type])) {
-    $all_files[$module][$type] = TRUE;
+  // want a list of all plugins or there was a cache miss.
+  if (empty($setup[$module][$type]) && ($build_cache || !$id)) {
+    $setup[$module][$type] = TRUE;
     $plugins[$module][$type] = array_merge($plugins[$module][$type], ctools_plugin_load_includes($info[$module][$type]));
   }
 
   // If we were told earlier that this is cacheable and the cache was
   // empty, give something back.
-  if (!empty($write_cache)) {
+  if ($build_cache) {
     cache_set("plugins:$module:$type", $plugins[$module][$type], $info[$module][$type]['cache table']);
   }
 
@@ -561,6 +557,7 @@ function ctools_plugin_get_info($module, $type) {
     'type' => $type,
     'cache' => FALSE,
     'cache table' => 'cache',
+    'use hooks' => FALSE,
     'defaults' => array(),
     'hook' => $module . '_' . $type,
     'load themes' => FALSE,
