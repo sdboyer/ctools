@@ -453,6 +453,9 @@ function ctools_ajax_render($commands = array()) {
 
   $scripts = drupal_add_js(NULL, NULL);
   $cached_scripts = cache_get($_POST['page_id'], 'cache')->data;
+  // Get replacements that are going to be made by contrib modules and take
+  // them into account so we don't double-load scripts.
+  $replacements = module_invoke_all('js_replacements');
 
   foreach ($scripts as $type => $data) {
     switch ($type) {
@@ -470,7 +473,9 @@ function ctools_ajax_render($commands = array()) {
         // Additionally, go through any remaining scripts if JS preprocessing is on and output the non-cached ones.
         foreach ($data as $path => $info) {
           if (!isset($cached_scripts['js'][$path])) {
-            $js_files[] = base_path() . $path . ($info['cache'] ? $query_string : '?' . time());
+            // If the script is being replaced, take that replacment into account.
+            $final_path = isset($replacements[$type][$path]) ? $replacements[$type][$path] : $path;
+            $js_files[] = base_path() . $final_path . ($info['cache'] ? $query_string : '?' . time());
           }
         }
     }

@@ -371,6 +371,29 @@ function ctools_ctools_plugin_directory($module, $plugin) {
 }
 
 /**
+ * Implementation of hook_js_replacements().
+ * This is a hook that is not a standard yet. We hope jquery_update and others
+ * will expose this hook to inform modules which scripts they are modifying
+ * in the theme layer.
+ * The return format is $scripts[$type][$old_path] = $new_path.
+ */
+function ctools_js_replacements() {
+  $replacements = array();
+  // Until jquery_update is released with its own replacement hook, we will
+  // take those replacements into account here.
+  if (module_exists('jquery_update')) {
+    $replacements = array_merge_recursive($replacements, jquery_update_get_replacements());
+    foreach ($replacements as $type => $type_replacements) {
+      foreach ($type_replacements as $old_path => $new_filename) {
+        $replacements[$type][$old_path] = JQUERY_UPDATE_REPLACE_PATH . "/$new_filename";
+      }
+    }
+    $replacements['core']['misc/jquery.js'] = jquery_update_jquery_path();
+  }
+  return $replacements;
+}
+
+/**
  * Get a list of roles in the system.
  */
 function ctools_get_roles() {
