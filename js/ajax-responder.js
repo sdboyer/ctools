@@ -134,7 +134,6 @@
       });
     }
     catch (err) {
-      console.log(err);
       alert("An error occurred while attempting to process " + url);
       $(this).removeClass('ctools-ajaxing');
       return false;
