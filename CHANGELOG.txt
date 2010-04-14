@@ -31,6 +31,7 @@ Initial inclusion of the stylizer plugin to create user customizable styles from
 #747588 by mikeker: Add taxonomy description to context tokens.
 #741588 by Jody Lynn: add db_rewrite_sql() to comments pane query to match core.
 #531366 by mikeker: Move token substitutions to prior to filtering in custom content type. This could have some effects on existing installs.
+#718028 by redben: Improved documentation for wizard.inc
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============
