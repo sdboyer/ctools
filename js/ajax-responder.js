@@ -58,7 +58,7 @@
     var $objects = $('a[href=' + old_url + ']')
     $objects.addClass('ctools-fetching');
     try {
-      url = old_url.replace(/nojs/g, 'ajax');
+      url = old_url.replace(/\/nojs(\/|$)/g, '/ajax$1');
       $.ajax({
         type: "POST",
         url: url,
@@ -117,7 +117,7 @@
     var object = $(this);
     $(this).addClass('ctools-ajaxing');
     try {
-      url = url.replace(/nojs/g, 'ajax');
+      url = url.replace(/\/nojs(\/|$)/g, '/ajax$1');
       $.ajax({
         type: "POST",
         url: url,
@@ -159,7 +159,7 @@
     var object = $(this);
     try {
       if (url) {
-        url = url.replace('/nojs/', '/ajax/');
+        url = url.replace(/\/nojs(\/|$)/g, '/ajax$1');
         $.ajax({
           type: "POST",
           url: url,
@@ -178,7 +178,7 @@
       else {
         var form = this.form;
         url = $(form).attr('action');
-        url = url.replace('/nojs/', '/ajax/');
+        url = url.replace(/\/nojs(\/|$)/g, '/ajax$1');
         $(form).ajaxSubmit({
           type: "POST",
           url: url,
@@ -247,7 +247,7 @@
     var form_id = $(object).parents('form').get(0).id;
     try {
       if (url) {
-        url = url.replace('/nojs/', '/ajax/');
+        url = url.replace(/\/nojs(\/|$)/g, '/ajax$1');
         $.ajax({
           type: "POST",
           url: url,

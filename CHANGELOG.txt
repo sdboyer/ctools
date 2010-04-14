@@ -26,6 +26,7 @@ Initial inclusion of the stylizer plugin to create user customizable styles from
 #745468 by alevine and Scott Reynolds: Make ajax better able to know what .js/.css was already on the page.
 #722246: Search tabs not quite right, particularly with retaining keywords across tabs. This mostly fixes.
 #709754 followup by yhahn: Improved documentation for export.inc
+#565808 by cha0s, zroger and davereid: Backport nojs handling from D7.
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============

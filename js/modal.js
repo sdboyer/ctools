@@ -146,7 +146,7 @@
     $(this).addClass('ctools-ajaxing');
     var object = $(this);
     try {
-      url.replace('/nojs/', '/ajax/');
+      url.replace(/\/nojs(\/|$)/g, '/ajax$1');
 
       var ajaxOptions = {
         type: 'POST',
