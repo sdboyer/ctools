@@ -24,7 +24,7 @@ function ctools_node_form_book_content_type_render($subtype, $conf, $panel_args,
   $block->delta = 'book-options';
 
   if (isset($context->form)) {
-    if (!empty($context->form->form_id)) {
+    if (!empty($context->form['form_id'])) {
       $block->content = '';
       if ($context->form['parent']['#type'] != 'value') {
         $block->content .= drupal_render($context->form['parent']);

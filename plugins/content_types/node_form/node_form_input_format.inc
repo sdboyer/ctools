@@ -22,7 +22,7 @@ function ctools_node_form_input_format_content_type_render($subtype, $conf, $pan
   $block->delta = 'format-options';
 
   if (isset($context->form)) {
-    if (!empty($context->form->form_id) && !empty($context->form['body_filter']['format'])) {
+    if (!empty($context->form['form_id']) && !empty($context->form['body_filter']['format'])) {
       // remove the fieldset
       unset($context->form['body_filter']['format']['#type']);
       $block->content = drupal_render($context->form['body_filter']['format']);

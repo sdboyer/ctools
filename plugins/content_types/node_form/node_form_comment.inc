@@ -24,7 +24,7 @@ function ctools_node_form_comment_content_type_render($subtype, $conf, $panel_ar
   $block->delta = 'comment-options';
 
   if (isset($context->form)) {
-    if (!empty($context->form->form_id) && !empty($context->form['comment_settings']['#access'])) {
+    if (!empty($context->form['form_id']) && !empty($context->form['comment_settings']['#access'])) {
       // remove the fieldset
       unset($context->form['comment_settings']['#type']);
       $block->content = drupal_render($context->form['comment_settings']);

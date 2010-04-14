@@ -22,7 +22,7 @@ function ctools_node_form_author_content_type_render($subtype, $conf, $panel_arg
   $block->delta = 'author-options';
 
   if (isset($context->form)) {
-    if (!empty($context->form->form_id) && !empty($context->form['author']['#access'])) {
+    if (!empty($context->form['form_id']) && !empty($context->form['author']['#access'])) {
       // remove the fieldset
       unset($context->form['author']['#type']);
       $context->form['author']['name']['#size'] /= 2;
