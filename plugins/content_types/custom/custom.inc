@@ -41,12 +41,14 @@ function ctools_custom_content_type_render($subtype, $conf, $args, $contexts) {
   $block          = new stdClass();
   $block->subtype = ++$delta;
   $block->title   = filter_xss_admin($conf['title']);
-  $block->content = check_markup($conf['body'], $conf['format'], FALSE);
 
   // Add keyword substitutions if we were configured to do so.
+  $content = $conf['body'];
   if (!empty($contexts) && !empty($conf['substitute'])) {
-    $block->content = ctools_context_keyword_substitute($block->content, array(), $contexts);
+    $content = ctools_context_keyword_substitute($content, array(), $contexts);
   }
+
+  $block->content = check_markup($content, $conf['format'], FALSE);
   return $block;
 }
 

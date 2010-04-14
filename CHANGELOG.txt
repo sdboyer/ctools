@@ -30,6 +30,7 @@ Initial inclusion of the stylizer plugin to create user customizable styles from
 #704132 by killes: Allow access/selection rule based on whether taxonomy term has a parent.
 #747588 by mikeker: Add taxonomy description to context tokens.
 #741588 by Jody Lynn: add db_rewrite_sql() to comments pane query to match core.
+#531366 by mikeker: Move token substitutions to prior to filtering in custom content type. This could have some effects on existing installs.
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============
