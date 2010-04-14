@@ -452,7 +452,14 @@ function ctools_ajax_render($commands = array()) {
   $query_string = '?'. substr(variable_get('css_js_query_string', '0'), 0, 1);
 
   $scripts = drupal_add_js(NULL, NULL);
-  $cached_scripts = cache_get($_POST['page_id'], 'cache')->data;
+  $cached_scripts = array();
+  if (!empty($_POST['page_id'])) {
+    $cache = cache_get($_POST['page_id'], 'cache');
+    if (!empty($cache->data)) {
+      $cached_scripts = $cache->data;
+    }
+  }
+
   // Get replacements that are going to be made by contrib modules and take
   // them into account so we don't double-load scripts.
   $replacements = module_invoke_all('js_replacements');
