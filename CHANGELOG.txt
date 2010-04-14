@@ -35,6 +35,7 @@ Initial inclusion of the stylizer plugin to create user customizable styles from
 #750004 by jhedstrom: Comment pane ignores node comment display setting.
 #752960 by mgriego: Redirect destination on 'delete' in admin links could be wrong.
 #754234 by killes: Node form content types not showing up due to logic error.
+#754594 by lavamind: Add a "book children" content type.
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============
