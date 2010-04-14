@@ -60,8 +60,10 @@ function ctools_node_content_content_type_render($subtype, $conf, $panel_args, $
       'title' => t('Edit node'),
       'alt' => t("Edit this node"),
       'href' => "node/$node->nid/edit",
-      'query' => drupal_get_destination(),
     );
+    if (isset($_REQUEST['destination'])) {
+      $block->admin_links['update']['query'] = drupal_get_destination();
+    }
   }
 
   if (!empty($conf['link']) && $node) {
