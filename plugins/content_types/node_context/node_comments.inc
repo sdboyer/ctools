@@ -85,7 +85,7 @@ function ctools_node_comments_content_type_admin_title($subtype, $conf, $context
  */
 function ctools_comment_render($node, $conf) {
   $output = '';
-  if (!user_access('access comments')) {
+  if (!user_access('access comments') || !$node->comment) {
     return;
   }
 
