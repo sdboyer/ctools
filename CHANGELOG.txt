@@ -28,6 +28,7 @@ Initial inclusion of the stylizer plugin to create user customizable styles from
 #709754 followup by yhahn: Improved documentation for export.inc
 #565808 by cha0s, zroger and davereid: Backport nojs handling from D7.
 #704132 by killes: Allow access/selection rule based on whether taxonomy term has a parent.
+#747588 by mikeker: Add taxonomy description to context tokens.
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============
