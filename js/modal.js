@@ -41,8 +41,8 @@
     $('span.modal-title', Drupal.CTools.Modal.modal).html(Drupal.t('Loading...'));
     var opts = {
       // @todo this should be elsewhere.
-      opacity: '.55',
-      background: '#fff'
+      opacity: Drupal.settings.CToolsModal.backDropOpacity,
+      background: Drupal.settings.CToolsModal.backDropColor
     };
 
     Drupal.CTools.Modal.modalContent(Drupal.CTools.Modal.modal, opts);

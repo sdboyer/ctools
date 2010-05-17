@@ -52,6 +52,8 @@ function ctools_modal_add_js() {
     'closeText' => t('Close Window'),
     'closeImage' => theme('image', ctools_image_path('icon-close-window.png'), t('Close window'), t('Close window')),
     'throbber' => theme('image', ctools_image_path('throbber.gif'), t('Loading...'), t('Loading')),
+    'backDropOpacity' => '.55',
+    'backDropColor' => '#fff'
   ));
 
   drupal_add_js($settings, 'setting');
