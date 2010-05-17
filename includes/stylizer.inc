@@ -438,7 +438,7 @@ class ctools_stylizer_image_processor {
     imagesavealpha($this->workspace, TRUE);
 
     // If PHP 5 use the nice imagefilter which is faster.
-    if (!empty($whole_image) && version_compare(phpversion(), '5.2.5', '>=')) {
+    if (!empty($whole_image) && version_compare(phpversion(), '5.2.5', '>=') && function_exists('imagefilter')) {
       imagefilter($this->workspace, IMG_FILTER_COLORIZE, $c[0], $c[1], $c[2]);
     }
     else {
