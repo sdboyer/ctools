@@ -34,10 +34,10 @@ function ctools_block_content_type_content_types() {
     $module_blocks = module_invoke($module, 'block', 'list');
     if ($module_blocks) {
       foreach ($module_blocks as $delta => $block) {
-        // strip_tags used because it goes through check_plain and that
-        // just looks bad.
+        // The block description reported by hook_block() is plain text, but the
+        // title reported by this hook should be HTML.
         $info = array(
-          'title' => strip_tags($block['info']),
+          'title' => check_plain($block['info']),
         );
 
         // Ask around for further information by invoking the hook_block() extension.
@@ -73,8 +73,13 @@ function ctools_block_content_type_render($subtype, $conf) {
   $block->module = $module;
   $block->delta = $delta;
 
-  if ($module == 'block' && empty($conf['override_title'])) {
-    $block->subject = db_result(db_query("SELECT title FROM {blocks} WHERE module = '%s' AND delta = '%s'", 'block', $delta));
+  // $block->title is not set for the blocks returned by block_block() (the
+  // Block module adds the title in block_list() instead), so we look it up
+  // manually, unless the title is overridden and does not use the %title
+  // placeholder.
+  if ($module == 'block' && (empty($conf['override_title']) || strpos($conf['override_title_text'], '%title') !== FALSE)) {
+    // {block}.title is plain text, but this hook should return an HTML title.
+    $block->subject = check_plain(db_result(db_query("SELECT title FROM {blocks} WHERE module = '%s' AND delta = '%s'", 'block', $delta)));
   }
 
   if (isset($block->subject)) {
@@ -110,7 +115,8 @@ function ctools_block_content_type_render($subtype, $conf) {
   $block_visibility = db_fetch_object($result);
 
   if ($block->module == 'block') {
-    $block->title = $block_visibility->title;
+    // {block}.title is plain text, but this hook should return an HTML title.
+    $block->title = check_plain($block_visibility->title);
   }
 
   if (empty($conf['block_visibility'])) {
@@ -228,7 +234,9 @@ function ctools_block_content_type_admin_title($subtype, $conf) {
     return t('Deleted/missing block @module-@delta', array('@module' => $module, '@delta' => $delta));
   }
 
-  $title = filter_xss_admin($block[$delta]['info']);
+  // The block description reported by hook_block() is plain text, but the title
+  // reported by this hook should be HTML.
+  $title = check_plain($block[$delta]['info']);
   return $title;
 }
 
