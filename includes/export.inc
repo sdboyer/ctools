@@ -355,9 +355,9 @@ function ctools_var_export($var, $prefix = '') {
     else {
       $output = "array(\n";
       foreach ($var as $key => $value) {
-        $output .= "  '$key' => " . ctools_var_export($value, '  ') . ",\n";
+        $output .= $prefix . "  '$key' => " . ctools_var_export($value, $prefix . '  ') . ",\n";
       }
-      $output .= ')';
+      $output .= $prefix . ')';
     }
   }
   else if (is_object($var) && get_class($var) === 'stdClass') {
@@ -372,10 +372,6 @@ function ctools_var_export($var, $prefix = '') {
   }
   else {
     $output = var_export($var, TRUE);
-  }
-
-  if ($prefix) {
-    $output = str_replace("\n", "\n$prefix", $output);
   }
 
   return $output;
