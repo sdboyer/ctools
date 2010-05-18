@@ -792,7 +792,7 @@ function ctools_edit_relationship_form_submit($form, &$form_state) {
   $relationship = $form_state['info'];
 
   if (isset($relationship['settings form submit']) && function_exists($relationship['settings form submit'])) {
-    $relationship['settings form submit']($form, $form_state['values']['relationship_settings'], $form_state);
+    $relationship['settings form submit']($form, $form_state['values']['relationship']['relationship_settings'], $form_state);
   }
 
   $form_state['ref'][$form_state['position']] = $form_state['values']['relationship'];
