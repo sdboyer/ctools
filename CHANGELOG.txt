@@ -36,6 +36,12 @@ Initial inclusion of the stylizer plugin to create user customizable styles from
 #752960 by mgriego: Redirect destination on 'delete' in admin links could be wrong.
 #754234 by killes: Node form content types not showing up due to logic error.
 #754594 by lavamind: Add a "book children" content type.
+Ensure imagefilter() exists before use, as it may not depending on how PHP was built.
+#798526 by jasonn1234: expand server-side control over modal js settings to include background opacity and color.
+#742832 by c960657: cache file system scans in ctools_plugin_load_includes().
+#758750 by mgriego, snufkin: Fix extra whitespace being added to exported scalars.
+#789598 by c960657: Pass block titles through check_plain().
+#754086 by nrambeck: statically cache block listings to alleviate stress on sites with large numbers of blocks.
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============
