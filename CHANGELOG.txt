@@ -44,6 +44,7 @@ Ensure imagefilter() exists before use, as it may not depending on how PHP was b
 #754086 by nrambeck: statically cache block listings to alleviate stress on sites with large numbers of blocks.
 #780734 by c960657: Clean up node_comment_form plugin's form_comment_form_alter() implementation.
 Fix user_view task to use variable instead of value on hook invocation to avoid warnings on PHP5.3
+#771132: Move object cache system over to ctools_static() and introduce static var resets when locks are cleared.
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============
