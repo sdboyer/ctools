@@ -75,7 +75,7 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
   }
 
   // Build the query
-  $query = db_select($table);
+  $query = db_select($table)->fields($table);
   $conditions = array();
   $query_args = array();
 
