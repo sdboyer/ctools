@@ -249,6 +249,19 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
     $view->display_handler->set_option('offset', $conf['offset']);
   }
 
+  $view->init_style();
+  if ($allow['fields_override'] && $view->style_plugin->uses_fields()) {
+    $fields = $view->get_items('field');
+    if ($conf['fields_override']) {
+      foreach ($conf['fields_override'] as $field => $display) {
+        if ($conf['fields_override'][$field] == 0) {
+          $fields[$field]['exclude'] = 1;
+          $view->set_item($view->current_display, 'field', $field, $fields[$field]);
+        }
+      }
+    }
+  }
+
   $stored_feeds = drupal_add_feed();
 
   $block->content = $view->preview();
@@ -306,6 +319,7 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
     $conf['offset'] = $view->display_handler->get_option('offset');
     $conf['path_override'] = FALSE;
     $conf['path'] = $view->get_path();
+    $conf['fields_override'] = $view->display_handler->get_option('fields_override');
   }
 
   $form['arguments']['#tree'] = TRUE;
@@ -341,6 +355,28 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
       '#default_value' => !empty($conf['feed_icons']),
       '#title' => t('Display feed icons'),
     );
+  }
+
+  $view->init_style();
+  if ($allow['fields_override'] && $view->style_plugin->uses_fields()) {
+    $form['fields_override'] = array(
+      '#type' => 'fieldset',
+      '#title' => 'Fields to display',
+      '#collapsible' => TRUE,
+      '#tree' => TRUE,
+    );
+    foreach ($view->display_handler->get_handlers('field') as $field => $handler) {
+      $title = $handler->ui_name();
+      if ($handler->options['label']) {
+        $title .= ' ('. $handler->options['label'] .')';
+      }
+
+      $form['fields_override'][$field] = array(
+        '#type' => 'checkbox',
+        '#title' => $title,
+        '#default_value' => isset($conf['fields_override'][$field]) ? $conf['fields_override'][$field] : TRUE,
+      );
+    }
   }
 
   ctools_include('dependent');
@@ -425,7 +461,7 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
 function views_content_views_panes_content_type_edit_form_submit(&$form, &$form_state) {
   // Copy everything from our defaults.
   $keys = array('link_to_view', 'more_link', 'feed_icons', 'use_pager',
-    'pager_id', 'items_per_page', 'offset', 'path_override', 'path', 'arguments');
+    'pager_id', 'items_per_page', 'offset', 'path_override', 'path', 'arguments', 'fields_override');
 
   foreach ($keys as $key) {
     if (isset($form_state['values'][$key])) {
