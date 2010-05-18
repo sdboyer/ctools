@@ -55,10 +55,8 @@ function ctools_node_comment_form_content_type_edit_form(&$form, &$form_state) {
  */
 function ctools_form_comment_form_alter(&$form, &$form_state) {
   if (!empty($form_state['ctools comment alter'])) {
-    $node =
-    // force the form to post back to wherever we are.
-    $url = parse_url($_GET['q']);
-    $form['#action'] = url($url['path'], array('fragment' => 'comment-form'));
+    // Force the form to post back to wherever we are.
+    $form['#action'] = url($_GET['q'], array('fragment' => 'comment-form'));
     if (empty($form['#submit'])) {
       $form['#submit'] = array('comment_form_submit');
     }
