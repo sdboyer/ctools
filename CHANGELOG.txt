@@ -41,7 +41,6 @@ Ensure imagefilter() exists before use, as it may not depending on how PHP was b
 #742832 by c960657: cache file system scans in ctools_plugin_load_includes().
 #758750 by mgriego, snufkin: Fix extra whitespace being added to exported scalars.
 #789598 by c960657: Pass block titles through check_plain().
-#754086 by nrambeck: statically cache block listings to alleviate stress on sites with large numbers of blocks.
 #780734 by c960657: Clean up node_comment_form plugin's form_comment_form_alter() implementation.
 Fix user_view task to use variable instead of value on hook invocation to avoid warnings on PHP5.3
 #771132: Move object cache system over to ctools_static() and introduce static var resets when locks are cleared.

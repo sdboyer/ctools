@@ -29,31 +29,28 @@ $plugin = array(
  * of the form "$module . '_ctools_block_info'".
  */
 function ctools_block_content_type_content_types() {
-  static $types = NULL;
-  if (!is_array($types)) {
-    $types = array();
-    foreach (module_list() as $module) {
-      $module_blocks = module_invoke($module, 'block', 'list');
-      if ($module_blocks) {
-        foreach ($module_blocks as $delta => $block) {
-          // The block description reported by hook_block() is plain text, but the
-          // title reported by this hook should be HTML.
-          $info = array(
-            'title' => check_plain($block['info']),
-          );
+  $types = array();
+  foreach (module_list() as $module) {
+    $module_blocks = module_invoke($module, 'block', 'list');
+    if ($module_blocks) {
+      foreach ($module_blocks as $delta => $block) {
+        // The block description reported by hook_block() is plain text, but the
+        // title reported by this hook should be HTML.
+        $info = array(
+          'title' => check_plain($block['info']),
+        );
 
-          // Ask around for further information by invoking the hook_block() extension.
-          $function = $module . '_ctools_block_info';
-          if (!function_exists($function)) {
-            $function = 'ctools_default_block_info';
-          }
-          $function($module, $delta, $info);
+        // Ask around for further information by invoking the hook_block() extension.
+        $function = $module . '_ctools_block_info';
+        if (!function_exists($function)) {
+          $function = 'ctools_default_block_info';
+        }
+        $function($module, $delta, $info);
 
-          // this check means modules can remove their blocks; particularly useful
-          // if they offer the block some other way (like we do for views)
-          if ($info) {
-            $types["$module-$delta"] = $info;
-          }
+        // this check means modules can remove their blocks; particularly useful
+        // if they offer the block some other way (like we do for views)
+        if ($info) {
+          $types["$module-$delta"] = $info;
         }
       }
     }
