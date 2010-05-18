@@ -248,32 +248,44 @@ function ctools_get_plugins($module, $type, $id = NULL) {
  * @return
  *   An array of information created for this plugin.
  */
-function ctools_plugin_load_includes($info, $file = NULL) {
-  // Load all our plugins.
-  $directories = ctools_plugin_get_directories($info);
-  $file_list = array();
-  if (isset($info['extension'])) {
-    $extension = $info['extension'];
+function ctools_plugin_load_includes($info, $filename = NULL) {
+  static $cache;
+  if (!isset($cache)) {
+    $cache = (object)cache_get('ctools_plugin_includes');
   }
-  else if (isset($info['info file'])) {
-    $extension = 'info';
+
+  if (isset($cache->data[$info['module']][$info['type']])) {
+    $file_list = $cache->data[$info['module']][$info['type']];
   }
   else {
-    $extension = 'inc';
+    // Load all our plugins.
+    $directories = ctools_plugin_get_directories($info);
+    $file_list = array();
+    if (isset($info['extension'])) {
+      $extension = $info['extension'];
+    }
+    else if (isset($info['info file'])) {
+      $extension = 'info';
+    }
+    else {
+      $extension = 'inc';
+    }
+    $file_list = array();
+    foreach ($directories as $module => $path) {
+      $file_list[$module] = drupal_system_listing('\.' . $extension . '$', $path, 'name', 0);
+    }
+    $cache->data[$info['module']][$info['type']] = $file_list;
+    cache_set('ctools_plugin_includes', $cache->data);
   }
 
-  if (!empty($file)) {
-    $file = '^' . $file;
-  }
-
-  foreach ($directories as $module => $path) {
-    $file_list[$module] = drupal_system_listing("$file." . $extension . '$', $path, 'name', 0);
-  }
   $plugins = array();
 
   // Iterate through all the plugin .inc files, load them and process the hook
   // that should now be available.
   foreach (array_filter($file_list) as $module => $files) {
+    if ($filename) {
+      $files = isset($files[$filename]) ? array($filename => $files[$filename]) : array();
+    }
     foreach ($files as $file) {
       if (isset($info['info file'])) {
         // Parse a .info file
