@@ -47,6 +47,7 @@ Fix user_view task to use variable instead of value on hook invocation to avoid 
 #762996 by jonskulski: Allow views_content panes to selectively show/hide their view's fields.
 #789524 by c960657: Implement "content type" hook on block content_type plugin.
 #782070: Relationship form submits were being passed an invalid part of $form_state.
+#767952 by aosodoev: Fix ctools_css_assemble() burping on multiple selectors by switching in str_replace() for preg_replace().
 
 ctools 6.x-1.3 (2010-Feb-01)
 ==============
