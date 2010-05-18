@@ -19,7 +19,19 @@ $plugin = array(
   // And this is just the administrative title.
   // All our callbacks are named according to the standard pattern and can be deduced.
   'title' => t('Block'),
+  'content type' => 'ctools_block_content_type_content_type',
 );
+
+/**
+ * Return the block content types with the specified $subtype_id.
+ */
+function ctools_block_content_type_content_type($subtype_id) {
+  list($module, $delta) = explode('-', $subtype_id, 2);
+  $module_blocks = module_invoke($module, 'block', 'list');
+  if (isset($module_blocks[$delta])) {
+    return _ctools_block_content_type_content_type($module, $delta, $module_blocks[$delta]);
+  }
+}
 
 /**
  * Return all block content types available.
@@ -34,19 +46,7 @@ function ctools_block_content_type_content_types() {
     $module_blocks = module_invoke($module, 'block', 'list');
     if ($module_blocks) {
       foreach ($module_blocks as $delta => $block) {
-        // The block description reported by hook_block() is plain text, but the
-        // title reported by this hook should be HTML.
-        $info = array(
-          'title' => check_plain($block['info']),
-        );
-
-        // Ask around for further information by invoking the hook_block() extension.
-        $function = $module . '_ctools_block_info';
-        if (!function_exists($function)) {
-          $function = 'ctools_default_block_info';
-        }
-        $function($module, $delta, $info);
-
+        $info = _ctools_block_content_type_content_type($module, $delta, $block);
         // this check means modules can remove their blocks; particularly useful
         // if they offer the block some other way (like we do for views)
         if ($info) {
@@ -56,6 +56,26 @@ function ctools_block_content_type_content_types() {
     }
   }
   return $types;
+}
+
+/**
+ * Return an info array for a specific block.
+ */
+function _ctools_block_content_type_content_type($module, $delta, $block) {
+  // strip_tags used because it goes through check_plain and that
+  // just looks bad.
+  $info = array(
+    'title' => strip_tags($block['info']),
+  );
+
+  // Ask around for further information by invoking the hook_block() extension.
+  $function = $module . '_ctools_block_info';
+  if (!function_exists($function)) {
+    $function = 'ctools_default_block_info';
+  }
+  $function($module, $delta, $info);
+
+  return $info;
 }
 
 /**
