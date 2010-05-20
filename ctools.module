@@ -450,6 +450,31 @@ function ctools_access_menu($access) {
 }
 
 /**
+ * Determine if the current user has access via checks to multiple different
+ * permissions.
+ *
+ * This function is a thin wrapper around user_access that allows multiple
+ * permissions to be easily designated for use on, for example, a menu callback.
+ *
+ * @param ...
+ *   An indexed array of zero or more permission strings to be checked by
+ *   user_access().
+ *
+ * @return
+ *   Iff all checks pass will this function return TRUE. If an invalid argument
+ *   is passed (e.g., not a string), this function errs on the safe said and
+ *   returns FALSE.
+ */
+function ctools_access_multiperm() {
+  foreach (func_get_args() as $arg) {
+    if (!is_string($arg) || !user_access($arg)) {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+/**
  * Implementation of hook_cron. Clean up old caches.
  */
 function ctools_cron() {

@@ -199,12 +199,14 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
         $operations[] = array(
           'title' => t('Enable'),
           'href' => 'admin/build/pages/nojs/enable/' . $task_name,
+          'query' => array('token' => drupal_get_token($task_name)),
         );
       }
       else {
         $operations[] = array(
           'title' => t('Disable'),
           'href' => 'admin/build/pages/nojs/disable/' . $task_name,
+          'query' => array('token' => drupal_get_token($task_name)),
         );
       }
     }
@@ -558,11 +560,14 @@ function page_manager_get_operations($page, $operations = NULL) {
     ),
   );
 
-  $result['actions']['children']['import'] = array(
-    'title' => t('Import variant'),
-    'description' => t('Add a new variant to this page from code exported from another page.'),
-    'form' => 'page_manager_handler_import',
-  );
+  // Restrict variant import to users who can already execute arbitrary PHP
+  if (user_access('use PHP for block visibility')) {
+    $result['actions']['children']['import'] = array(
+      'title' => t('Import variant'),
+      'description' => t('Add a new variant to this page from code exported from another page.'),
+      'form' => 'page_manager_handler_import',
+    );
+  }
 
   if (count($page->handlers) > 1) {
     $result['actions']['children']['rearrange'] = array(
@@ -1403,17 +1408,30 @@ function page_manager_handler_import(&$form, &$form_state) {
     '#description' => t('Enter the name of the new variant.'),
   );
 
-  $form['object'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Paste variant code here'),
-    '#rows' => 15,
-  );
+  if (user_access('use PHP for block visibility')) {
+    $form['object'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Paste variant code here'),
+      '#rows' => 15,
+    );
+  }
+  // Users ordinarily can't get here without the PHP block visibility perm.
+  // In case they somehow do, though, disable the form widget for extra safety.
+  else {
+    $form['shoveoff'] = array(
+      '#value' => '<div>' . t('You do not have sufficient permissions to perform this action.') . '</div>',
+    );
+  }
 }
 
 /**
  * Make sure that an import actually provides a handler.
  */
 function page_manager_handler_import_validate($form, &$form_state) {
+  if (!user_access('use PHP for block visibility')) {
+    form_error($form['shoveoff'], t('You account permissions do not permit you to import.'));
+    return;
+  }
   ob_start();
   eval($form_state['values']['object']);
   ob_end_clean();
@@ -1758,6 +1776,9 @@ function page_manager_page_summary(&$form, &$form_state) {
  * Menu callback to enable or disable a page
  */
 function page_manager_enable_page($disable, $js, $page) {
+  if (!isset($_GET['token']) || !drupal_valid_token($_GET['token'], $page->task_name)) {
+    return MENU_ACCESS_DENIED;
+  }
   if ($page->locked) {
     if ($disable) {
       drupal_set_message(t('Unable to disable due to lock.'));

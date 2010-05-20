@@ -138,7 +138,8 @@ function ctools_context_node_settings_form_validate($form, &$form_values, &$form
     $node = db_fetch_object(db_query(db_rewrite_sql("SELECT n.nid FROM {node} n WHERE LOWER(n.title) = LOWER('%s')"), $nid));
   }
 
-  if (!$node) {
+  // Do not allow unpublished nodes to be selected by unprivileged users
+  if (!$node || (empty($node->status) && !(user_access('administer nodes')))) {
     form_error($form['node'], t('Invalid node selected.'));
   }
   else {

@@ -37,6 +37,10 @@ function page_manager_page_menu(&$items, $task) {
     'page arguments' => array('page_manager_page_import_subtask', 'page'),
     'type' => MENU_LOCAL_TASK,
   ) + $base;
+  if ($access_callback == 'user_access') {
+    $items['admin/build/pages/import']['access callback'] = 'ctools_access_multiperm';
+    $items['admin/build/pages/import']['access arguments'][] = 'use PHP for block visibility';
+  }
 
   // AJAX callbacks for argument modal.
   $items['admin/build/pages/argument'] = array(

@@ -38,6 +38,10 @@ function ctools_content_autocomplete_node($string) {
       $arg = $string;
       $where = "LOWER(n.title) LIKE LOWER('%%%s%%')";
     }
+    if (!user_access('administer nodes')) {
+      $where .= ' AND n.status = 1';
+    }
+
     $result = db_query_range(db_rewrite_sql("SELECT n.nid, n.title, u.name FROM {node} n INNER JOIN {users} u ON u.uid = n.uid WHERE $where"), $arg, 0, 10);
 
     $matches = array();
