@@ -2,6 +2,10 @@ Current API VERSION: 1.4. See API.txt for more information.
 
 ctools 6.x-dev
 ==============
+
+
+ctools 6.x-1.4 (2010-May-19)
+==============
 #686764: Update page tokens to use actual page rendering mechanism rather than the tokens which causes them to appear as having content even when empty.
 Retool the page elements to render last and not use the token method.
 Allow themes to provide default pages so that Panels Everywhere enabled themes can provide layout variants for the site template.
