@@ -2,7 +2,7 @@ Current API VERSION: 1.4. See API.txt for more information.
 
 ctools 6.x-dev
 ==============
-
+#804198: CTools AJAX framework did not work properly with javascript aggregation.
 
 ctools 6.x-1.4 (2010-May-19)
 ==============
