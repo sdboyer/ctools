@@ -44,7 +44,7 @@ function ctools_context_handler_render($task, $subtask, $contexts, $args, $page 
   foreach ($handlers as $handler) {
     if ($function = page_manager_get_renderer($handler)) {
       if ($info = $function($handler, $contexts, $args)) {
-        drupal_alter('ctools_render', $info, $page, $args, $contexts, $task, $subtask);
+        drupal_alter('ctools_render', $info, $page, $args, $contexts, $task, $subtask, $handler);
         // If we don't own the page, let the caller deal with rendering.
         if (!$page) {
           return $info;

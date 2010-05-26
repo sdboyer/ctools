@@ -453,6 +453,7 @@ function ctools_ajax_render($commands = array()) {
 
   $scripts = drupal_add_js(NULL, NULL);
   $cached_scripts = array();
+
   if (!empty($_POST['page_id'])) {
     $cache = cache_get($_POST['page_id'], 'cache');
     if (!empty($cache->data)) {

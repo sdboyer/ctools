@@ -4,6 +4,7 @@ ctools 6.x-dev
 ==============
 #804198: CTools AJAX framework did not work properly with javascript aggregation.
 Handle forms passing through required contexts properly.
+Add operation alter tooks to let modules add items to Page Manager pages.
 
 ctools 6.x-1.4 (2010-May-19)
 ==============

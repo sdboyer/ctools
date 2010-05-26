@@ -623,6 +623,7 @@ function page_manager_get_operations($page, $operations = NULL) {
     );
   }
 
+  drupal_alter('page_manager_operations', $result, $page);
   return $result;
 }
 
@@ -733,6 +734,8 @@ function page_manager_get_handler_operations(&$page) {
         ),
       );
     }
+
+    drupal_alter('page_manager_variant_operations', $operations[$id], $handler);
   }
   if (empty($operations)) {
     $operations['empty'] = array(
