@@ -218,7 +218,10 @@ function views_content_views_select_display(&$form, &$form_state) {
 
   $displays = array();
   foreach ($view->display as $id => $display) {
-    $displays[$id] = $display->display_title;
+    // Content pane views should never be used this way.
+    if ($display->display_plugin != 'panel_pane') {
+      $displays[$id] = $display->display_title;
+    }
   }
 
   $form['display'] = array(
