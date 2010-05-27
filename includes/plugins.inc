@@ -542,8 +542,7 @@ function _ctools_process_data($result, $info, $module, $path, $file) {
 
 
 /**
- * Process an info file for plugin information, rather than
- * a hook.
+ * Process an info file for plugin information, rather than a hook.
  */
 function ctools_plugin_process_info($info, $module, $file) {
   $result = drupal_parse_info_file($file->filename);
