@@ -359,9 +359,6 @@ function ctools_context_handler_edit_context(&$form, &$form_state) {
     '#value' => theme('ctools_context_list', $cache, t('Summary of contexts')),
   );
 
-  // @todo -- this CSS is actually dependent upon the plugins which means
-  // the plugins need to be able to add it.
-  drupal_add_css(panels_get_path('css/panels_admin.css'));
   $form_state['context_object'] = &$cache;
 }
 
