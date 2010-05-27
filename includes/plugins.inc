@@ -569,7 +569,7 @@ function ctools_plugin_get_info($module, $type) {
     'type' => $type,
     'cache' => FALSE,
     'cache table' => 'cache',
-    'use hooks' => FALSE,
+    'use hooks' => TRUE, // TODO will default to FALSE in next major version
     'defaults' => array(),
     'hook' => $module . '_' . $type,
     'load themes' => FALSE,
