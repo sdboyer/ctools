@@ -3,6 +3,9 @@ Current API VERSION: 1.4. See API.txt for more information.
 ctools 6.x-dev
 ==============
 
+ctools 6.x-1.6 (2010-June-1)
+==============
+(No changes - 1.5 release was improperly tagged)
 
 ctools 6.x-1.5 (2010-May-28)
 ==============
