@@ -361,7 +361,7 @@ function ctools_menu() {
 }
 
 /**
- * Implementation of hook_ctools_plugin_dierctory() to let the system know
+ * Implementation of hook_ctools_plugin_directory() to let the system know
  * we implement task and task_handler plugins.
  */
 function ctools_ctools_plugin_directory($module, $plugin) {
