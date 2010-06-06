@@ -362,11 +362,11 @@ function ctools_menu() {
 
 /**
  * Implementation of hook_ctools_plugin_directory() to let the system know
- * we implement task and task_handler plugins.
+ * where all our own plugins are.
  */
-function ctools_ctools_plugin_directory($module, $plugin) {
-  if ($module == 'ctools') {
-    return 'plugins/' . $plugin;
+function ctools_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools') {
+    return 'plugins/' . $plugin_type;
   }
 }
 

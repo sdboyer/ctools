@@ -44,11 +44,11 @@ function page_manager_perm() {
 
 /**
  * Implementation of hook_ctools_plugin_directory() to let the system know
- * we implement task and task_handler plugins.
+ * where our task and task_handler plugins are.
  */
-function page_manager_ctools_plugin_directory($module, $plugin) {
-  if ($module == 'page_manager') {
-    return 'plugins/' . $plugin;
+function page_manager_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'page_manager') {
+    return 'plugins/' . $plugin_type;
   }
 }
 

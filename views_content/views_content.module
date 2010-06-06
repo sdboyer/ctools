@@ -31,11 +31,11 @@ function views_content_menu() {
 
 /**
  * Implementation of hook_ctools_plugin_dierctory() to let the system know
- * we implement task and task_handler plugins.
+ * where our content_type plugins are.
  */
-function views_content_ctools_plugin_directory($module, $plugin) {
-  if ($module == 'ctools' && $plugin == 'content_types') {
-    return 'plugins/' . $plugin;
+function views_content_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return 'plugins/' . $plugin_type;
   }
 }
 
