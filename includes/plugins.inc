@@ -16,7 +16,7 @@
  * This will ask each module if they support the given API, and if they do
  * it will return an array of information about the modules that do.
  *
- * This function invokes hook_ctools_api. This invokation is statically
+ * This function invokes hook_ctools_api. This invocation is statically
  * cached, so feel free to call it as often per page run as you like, it
  * will cost very little.
  *
@@ -318,7 +318,7 @@ function ctools_plugin_load_includes($info, $filename = NULL) {
  * Get a list of directories to search for plugins of the given type.
  *
  * This utilizes hook_ctools_plugin_directory() to determine a complete list of
- * directories. Only modules that implement this hook and return a string
+* directories. Only modules that implement this hook and return a string
  * value will have their directories included.
  *
  * @param $info
@@ -511,7 +511,7 @@ function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL,
  * more plugins.
  */
 function _ctools_process_data($result, $info, $module, $path, $file) {
-  // Fill in defaults.
+  // Fill in global defaults.
   foreach ($result as $name => $plugin) {
     $result[$name] += array(
       'module' => $module,
@@ -522,7 +522,7 @@ function _ctools_process_data($result, $info, $module, $path, $file) {
       'plugin type' => $info['type'],
     );
 
-    // Fill in plugin specific defaults, if they exist.
+    // Fill in plugin-specific defaults, if they exist.
     if (!empty($info['defaults'])) {
       if (is_array($info['defaults'])) {
         $result[$name] += $info['defaults'];
