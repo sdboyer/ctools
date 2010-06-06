@@ -2,6 +2,7 @@ Current API VERSION: 1.4. See API.txt for more information.
 
 ctools 6.x-dev
 ==============
+Deprecated the callback-based 'defaults' in favor of the identical 'process' (plugin system). Consequently, moved the content_type plugin over to use 'process' instead of the 'defaults' callback.
 
 ctools 6.x-1.6 (2010-June-1)
 ==============

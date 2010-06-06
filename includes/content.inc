@@ -18,7 +18,7 @@
 function ctools_ctools_plugin_content_types() {
   return array(
     'cache' => FALSE,
-    'defaults' => 'ctools_content_defaults',
+    'process' => 'ctools_content_process',
   );
 }
 
@@ -28,7 +28,7 @@ function ctools_ctools_plugin_content_types() {
  * Currently we check for automatically named callbacks to make life a little
  * easier on the developer.
  */
-function ctools_content_defaults($info, &$plugin) {
+function ctools_content_process(&$plugin, $info) {
   $function_base = $plugin['module'] . '_' . $plugin['name'] . '_content_type_';
 
   if (empty($plugin['render callback']) && function_exists($function_base . 'render')) {
