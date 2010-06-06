@@ -318,7 +318,7 @@ function ctools_plugin_load_includes($info, $filename = NULL) {
  * Get a list of directories to search for plugins of the given type.
  *
  * This utilizes hook_ctools_plugin_directory() to determine a complete list of
-* directories. Only modules that implement this hook and return a string
+ * directories. Only modules that implement this hook and return a string
  * value will have their directories included.
  *
  * @param $info
