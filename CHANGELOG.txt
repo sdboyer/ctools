@@ -5,6 +5,7 @@ ctools 6.x-dev
 Deprecated the callback-based 'defaults' in favor of the identical 'process' (plugin system). Consequently, moved the content_type plugin over to use 'process' instead of the 'defaults' callback.
 Added a ctools.api.php file and began documenting some of our api/hooks there.
 Changed all hook_ctools_plugin_directory() implementations to use the more informative variable naming scheme.
+#817612 by elstudio: Fix validation error that was making it impossible to add 'Existing node' content_types.
 
 ctools 6.x-1.6 (2010-June-1)
 ==============
