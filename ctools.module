@@ -10,7 +10,7 @@
  * must be implemented in the module file.
  */
 
-define('CTOOLS_API_VERSION', '1.5');
+define('CTOOLS_API_VERSION', '1.7');
 
 /**
  * Test the CTools API version.
@@ -284,7 +284,7 @@ function _ctools_passthrough(&$items, $type = 'theme') {
     require_once './' . $file->filename;
     list($tool) = explode('.', $file->name, 2);
 
-    $function = 'ctools_' . $tool . '_' . $type;
+    $function = 'ctools_' . str_replace ('-', '_', $tool) . '_' . $type;
     if (function_exists($function)) {
       $function($items);
     }
@@ -759,4 +759,42 @@ function ctools_file_check_directory(&$directory, $mode = 0, $form_item = NULL) 
   }
 
   return TRUE;
+}
+
+/**
+ * Menu _load hook.
+ *
+ * This function will be called to load an object as a replacement for
+ * %ctools_export_ui in menu paths.
+ */
+function ctools_export_ui_load($item_name, $plugin_name) {
+  $return = &ctools_static(__FUNCTION__, FALSE);
+
+  if (!$return) {
+    ctools_include('export-ui');
+    $plugin = ctools_get_export_ui($plugin_name);
+
+    if ($plugin) {
+      // Get the load callback.
+      return ctools_export_crud_load($plugin['schema'], $item_name);
+    }
+  }
+
+  return $return;
+}
+
+/**
+ * Menu access callback for various tasks of export-ui.
+ */
+function ctools_export_ui_task_access($plugin_name, $op, $item = NULL) {
+  ctools_include('export-ui');
+  $plugin = ctools_get_export_ui($plugin_name);
+  $handler = ctools_export_ui_get_handler($plugin);
+
+  if ($handler) {
+    return $handler->access($op, $item);
+  }
+
+  // Deny access if the handler cannot be found.
+  return FALSE;
 }

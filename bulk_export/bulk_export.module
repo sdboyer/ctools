@@ -50,10 +50,14 @@ function bulk_export_export() {
   $exportables = $export_tables = array();
 
   foreach ($schemas as $table => $schema) {
-    if (function_exists($schema['export']['list callback'])) {
+    if (!empty($schema['export']['list callback']) && function_exists($schema['export']['list callback'])) {
       $exportables[$table] = $schema['export']['list callback']();
-      $export_tables[$table] = $schema['module'];
     }
+    else {
+      $exportables[$table] = ctools_export_default_list($table, $schema);
+    }
+    asort($exportables[$table]);
+    $export_tables[$table] = $schema['module'];
   }
   if ($exportables) {
     ctools_include('form');

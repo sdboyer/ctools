@@ -232,6 +232,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
         '#next' => $form_state['previous'],
         '#wizard type' => 'next',
         '#weight' => -2000,
+        '#skip validation' => TRUE,
         // hardcode the submit so that it doesn't try to save data.
         '#submit' => array('ctools_wizard_submit'),
         '#attributes' => $button_attributes,
@@ -320,14 +321,14 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     if (count($params) > 1) {
       $url = array_shift($params);
       $options = array();
-      
+
       $keys = array(0 => 'query', 1 => 'fragment');
       foreach ($params as $key => $value) {
         if (isset($keys[$key]) && isset($value)) {
           $options[$keys[$key]] = $value;
         }
       }
-      
+
       $params = array($url, $options);
     }
     $form['#action'] =  call_user_func_array('url', $params);
@@ -379,7 +380,7 @@ function ctools_wizard_get_path($form_info, $step) {
   if (is_array($form_info['path'])) {
     foreach ($form_info['path'] as $id => $part) {
       $form_info['path'][$id] = str_replace('%step', $step, $form_info['path'][$id]);
-    }    
+    }
     return $form_info['path'];
   }
   else {

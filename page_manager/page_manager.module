@@ -1051,21 +1051,8 @@ function page_manager_page_manager_handlers_list() {
   $handlers = ctools_export_load_object('page_manager_handlers');
   foreach ($handlers as $handler) {
     if (in_array($handler->task, $types)) {
-      $list[$handler->name] = "$handler->task: {$handler->conf['title']} ($handler->name)";
+      $list[$handler->name] = check_plain("$handler->task: " . $handler->conf['title'] . " ($handler->name)");
     }
-  }
-  return $list;
-}
-
-/**
- * Callback to list pages available for export.
- */
-function page_manager_page_manager_pages_list() {
-  $list = array();
-
-  $pages = ctools_export_load_object('page_manager_pages', 'all');
-  foreach ($pages as $page) {
-    $list[$page->name] = "$page->admin_title ($page->name)";
   }
   return $list;
 }

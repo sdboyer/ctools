@@ -303,6 +303,10 @@ function ctools_validate_form($form_id, $form, &$form_state) {
     }
   }
 
+  if (!empty($form_state['clicked_button']['#skip validation'])) {
+    return;
+  }
+
   _form_validate($form, $form_state, $form_id);
   $validated_forms[$form_id] = TRUE;
 }
