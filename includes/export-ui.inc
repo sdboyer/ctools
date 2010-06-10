@@ -368,7 +368,7 @@ function ctools_export_ui_get_handler($plugin) {
   if (empty($cache[$plugin['name']])) {
     // If a list class is not specified by the plugin, fall back to the
     // default ctools_export_ui plugin instead.
-    if (empty($plugin['list'])) {
+    if (empty($plugin['handler'])) {
       $default = ctools_get_export_ui('ctools_export_ui');
       $class = ctools_plugin_get_class($default, 'handler');
     }
