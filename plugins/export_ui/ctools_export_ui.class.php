@@ -554,6 +554,8 @@ class ctools_export_ui {
       'op' => 'add',
       'rerender' => TRUE,
       'no_redirect' => TRUE,
+      // Store these in case additional args are needed.
+      'function args' => func_get_args(),
     );
 
     $output = $this->edit_execute_form($form_state);
@@ -584,6 +586,8 @@ class ctools_export_ui {
       'op' => 'edit',
       'rerender' => TRUE,
       'no_redirect' => TRUE,
+      // Store these in case additional args are needed.
+      'function args' => func_get_args(),
     );
 
     $output = $this->edit_execute_form($form_state);
@@ -618,6 +622,8 @@ class ctools_export_ui {
       'op' => 'add',
       'rerender' => TRUE,
       'no_redirect' => TRUE,
+      // Store these in case additional args are needed.
+      'function args' => func_get_args(),
     );
 
     $output = $this->edit_execute_form($form_state);
@@ -851,11 +857,12 @@ class ctools_export_ui {
 
     $form_info = array(
       'id' => 'ctools_export_ui_import',
-      'path' => ctools_export_ui_plugin_base_path($this->plugin) . '/' . $this->plugin['menu']['items']['import']['path'] . '/%step',
+      'path' => ctools_export_ui_plugin_menu_path($this->plugin, 'import') . '/%step',
       'return path' => $this->plugin['redirect']['import'],
       'show trail' => TRUE,
       'show back' => TRUE,
       'show return' => FALSE,
+      'show cancel' => TRUE,
       'finish callback' => 'ctools_export_ui_import_finish',
       'cancel callback' => 'ctools_export_ui_import_cancel',
       'order' => array(
@@ -880,6 +887,8 @@ class ctools_export_ui {
       'object' => &$this,
       'export' => '',
       'overwrite' => FALSE,
+      // Store these in case additional args are needed.
+      'function args' => func_get_args(),
     );
 
     if ($step == 'code') {

@@ -712,6 +712,11 @@ function ctools_stylizer_edit_style(&$info, $js, $step = NULL) {
     $form_type = 'edit';
   }
 
+  if (!empty($info['form_type'])) {
+    // Allow this to override. Necessary to allow cloning properly.
+    $form_type = $info['form_type'];
+  }
+
   $plugin = NULL;
   if (!empty($settings['style_base'])) {
     $plugin = ctools_get_style_base($settings['style_base']);
