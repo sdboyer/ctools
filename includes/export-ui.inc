@@ -12,14 +12,14 @@
  */
 function ctools_ctools_plugin_export_ui() {
   return array(
-    'defaults' => 'ctools_export_ui_defaults',
+    'process' => 'ctools_export_ui_process',
   );
 }
 
 /**
- * Provide defaults for an export-ui plugin.
+ * Process an export-ui plugin to provide it with defaults.
  */
-function ctools_export_ui_defaults($info, &$plugin) {
+function ctools_export_ui_process(&$plugin, $info) {
   ctools_include('export');
 
   $plugin += array(
