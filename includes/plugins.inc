@@ -260,16 +260,7 @@ function ctools_plugin_load_includes($info, $filename = NULL) {
   else {
     // Load all our plugins.
     $directories = ctools_plugin_get_directories($info);
-    $file_list = array();
-    if (isset($info['extension'])) {
-      $extension = $info['extension'];
-    }
-    else if (isset($info['info file'])) {
-      $extension = 'info';
-    }
-    else {
-      $extension = 'inc';
-    }
+    $extension = empty($info['info file']) ? $info['extension'] : 'info';
     $file_list = array();
     foreach ($directories as $module => $path) {
       $file_list[$module] = drupal_system_listing('\.' . $extension . '$', $path, 'name', 0);
@@ -287,7 +278,7 @@ function ctools_plugin_load_includes($info, $filename = NULL) {
       $files = isset($files[$filename]) ? array($filename => $files[$filename]) : array();
     }
     foreach ($files as $file) {
-      if (isset($info['info file'])) {
+      if (!empty($info['info file'])) {
         // Parse a .info file
         $result = ctools_plugin_process_info($info, $module, $file);
       }
@@ -575,6 +566,9 @@ function ctools_plugin_get_info($module, $type) {
     'cache table' => 'cache',
     'use hooks' => TRUE, // TODO will default to FALSE in next major version
     'defaults' => array(),
+    'process' => '',
+    'extension' => 'inc',
+    'info file' => FALSE,
     'hook' => $module . '_' . $type,
     'load themes' => FALSE,
   );
