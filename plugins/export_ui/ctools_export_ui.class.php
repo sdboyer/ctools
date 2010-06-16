@@ -258,7 +258,7 @@ class ctools_export_ui {
     ctools_add_js('ajax-responder');
     ctools_add_js('auto-submit');
     drupal_add_js('misc/jquery.form.js');
-    ctools_add_js('export-ui-list.js');
+    ctools_add_js('export-ui-list');
 
     $form['#prefix'] = '<div class="clear-block">';
     $form['#suffix'] = '</div>';
