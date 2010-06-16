@@ -146,7 +146,7 @@ function ctools_custom_content_type_get_conf($subtype, $conf) {
  * based on the module and delta supplied in the configuration.
  */
 function ctools_custom_content_type_render($subtype, $conf, $args, $contexts) {
-  $settings = ctools_custom_content_type_get_conf($subtype, $conf);
+  $settings = ctools_custom_content_type_get_conf(ctools_custom_content_type_content_type($subtype), $conf);
 
   static $delta = 0;
 
