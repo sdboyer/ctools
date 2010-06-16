@@ -34,7 +34,7 @@ function ctools_requirements($phase) {
     }
 
     if (!function_exists('error_get_last')) {
-	  $requirements['ctools_php_52']['title'] = t('CTools PHP requirements');
+  	  $requirements['ctools_php_52']['title'] = t('CTools PHP requirements');
       $requirements['ctools_php_52']['description'] = t('CTools requires certain features only available in PHP 5.2.0 or higher.');
       $requirements['ctools_php_52']['severity'] = REQUIREMENT_WARNING;
       $requirements['ctools_php_52']['value'] = t('PHP !version', array('!version' => phpversion()));
@@ -62,9 +62,70 @@ function ctools_uninstall() {
  * Implementation of hook_schemea
  */
 function ctools_schema() {
-  // Currently, schema 1 is the only schema we have. As we make updates,
-  // we might either create a new schema 2 or make adjustments here.
-  return ctools_schema_2();
+  return ctools_schema_3();
+}
+
+/**
+ * Version 3 of the CTools schema.
+ */
+function ctools_schema_3() {
+  $schema = ctools_schema_2();
+
+  // DO NOT MODIFY THIS TABLE -- this definition is used to create the table.
+  // Changes to this table must be made in schema_3 or higher.
+  $schema['ctools_custom_content'] = array(
+    'description' => 'Contains exportable customized content for this site.',
+    'export' => array(
+      'identifier' => 'content',
+      'bulk export' => TRUE,
+      'primary key' => 'cid',
+      'api' => array(
+        'owner' => 'ctools',
+        'api' => 'ctools_content',
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
+    ),
+    'fields' => array(
+      'cid' => array(
+        'type' => 'serial',
+        'description' => 'A database primary key to ensure uniqueness',
+        'not null' => TRUE,
+        'no export' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => 'Unique ID for this content. Used to identify it programmatically.',
+      ),
+      'admin_title' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => 'Administrative title for this content.',
+      ),
+      'admin_description' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'Administrative description for this content.',
+        'object default' => '',
+      ),
+      'category' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => 'Administrative category for this content.',
+      ),
+      'settings' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'Serialized settings for the actual content to be used',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+    ),
+    'primary key' => array('cid'),
+  );
+
+  return $schema;
 }
 
 /**
@@ -207,5 +268,18 @@ function ctools_update_6004() {
   $ret = array();
   db_add_primary_key($ret, 'ctools_object_cache', array('sid', 'obj', 'name'));
   db_drop_index($ret, 'ctools_object_cache', 'sid_obj_name');
+  return $ret;
+}
+
+/**
+ * Add the new css cache table.
+ */
+function ctools_update_6005() {
+  $ret = array();
+
+  // Schema 3 is locked and should not be changed.
+  $schema = ctools_schema_3();
+
+  db_create_table($ret, 'ctools_custom_content', $schema['ctools_custom_content']);
   return $ret;
 }

@@ -191,6 +191,13 @@ function ctools_init() {
 }
 
 /**
+ * Implement hook_perm()
+ */
+function ctools_perm() {
+  return array('administer custom content');
+}
+
+/**
  * Shutdown handler used during ajax operations to help catch fatal errors.
  */
 function ctools_shutdown_handler() {

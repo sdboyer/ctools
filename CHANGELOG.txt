@@ -8,6 +8,7 @@ Changed all hook_ctools_plugin_directory() implementations to use the more infor
 #817612 by elstudio: Fix validation error that was making it impossible to add 'Existing node' content_types.
 #787644 by Amitaibu and merlinofchaos: Introduce export-ui and auto-submit. See API.txt for more.
 Update the plugin system documentation, and clean up plugin system logic.
+#827498: Allow the 'custom' content type to be re-usable and exportable.
 
 ctools 6.x-1.6 (2010-June-1)
 ==============

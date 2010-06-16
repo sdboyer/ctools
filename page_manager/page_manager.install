@@ -26,6 +26,7 @@ function page_manager_schema_1() {
       'identifier' => 'handler',
       'bulk export' => TRUE,
       'export callback' => 'page_manager_export_task_handler',
+      'primary key' => 'did',
       'api' => array(
         'owner' => 'page_manager',
         'api' => 'pages_default',

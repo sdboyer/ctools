@@ -528,12 +528,23 @@ function ctools_content_form($op, $form_info, &$form_state, $plugin, $subtype_na
   );
 
   // Turn the forms defined in the plugin into the format the wizard needs.
-  if ($op == 'add' && isset($plugin['add form'])) {
-    _ctools_content_create_form_info($form_info, $plugin['add form'], $plugin, $subtype, $op);
+  if ($op == 'add') {
+    if (!empty($subtype['add form'])) {
+      _ctools_content_create_form_info($form_info, $subtype['add form'], $subtype, $subtype, $op);
+    }
+    else if (!empty($plugin['add form'])) {
+      _ctools_content_create_form_info($form_info, $plugin['add form'], $plugin, $subtype, $op);
+    }
   }
-  // Use the edit form for the add form if add form was completely left off.
-  else if (isset($plugin['edit form'])) {
-    _ctools_content_create_form_info($form_info, $plugin['edit form'], $plugin, $subtype, $op);
+
+  if (empty($form_info['order'])) {
+    // Use the edit form for the add form if add form was completely left off.
+    if (!empty($subtype['edit form'])) {
+      _ctools_content_create_form_info($form_info, $subtype['edit form'], $subtype, $subtype, $op);
+    }
+    if (!empty($plugin['edit form'])) {
+      _ctools_content_create_form_info($form_info, $plugin['edit form'], $plugin, $subtype, $op);
+    }
   }
 
   if (empty($form_info['order'])) {
