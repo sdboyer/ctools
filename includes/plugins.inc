@@ -249,24 +249,13 @@ function ctools_get_plugins($module, $type, $id = NULL) {
  *   An array of information created for this plugin.
  */
 function ctools_plugin_load_includes($info, $filename = NULL) {
-  static $cache;
-  if (!isset($cache)) {
-    $cache = (object)cache_get('ctools_plugin_includes');
-  }
+  // Load all our plugins.
+  $directories = ctools_plugin_get_directories($info);
+  $extension = empty($info['info file']) ? $info['extension'] : 'info';
+  $file_list = array();
 
-  if (isset($cache->data[$info['module']][$info['type']])) {
-    $file_list = $cache->data[$info['module']][$info['type']];
-  }
-  else {
-    // Load all our plugins.
-    $directories = ctools_plugin_get_directories($info);
-    $extension = empty($info['info file']) ? $info['extension'] : 'info';
-    $file_list = array();
-    foreach ($directories as $module => $path) {
-      $file_list[$module] = drupal_system_listing('\.' . $extension . '$', $path, 'name', 0);
-    }
-    $cache->data[$info['module']][$info['type']] = $file_list;
-    cache_set('ctools_plugin_includes', $cache->data);
+  foreach ($directories as $module => $path) {
+    $file_list[$module] = drupal_system_listing('\.' . $extension . '$', $path, 'name', 0);
   }
 
   $plugins = array();
