@@ -11,6 +11,12 @@
  *  '#attributes' => array('class' => 'ctools-auto-submit'),
  * @endcode
  *
+ * If you want to have auto-submit for every form element,
+ * add the ctools-auto-submit-full-form to the form. With FAPI, add:
+ * @code
+ *   '#attributes' => array('class' => 'ctools-auto-submit-full-form'),
+ * @endcode
+ *
  * Finally, you have to identify which button you want clicked for autosubmit.
  * The behavior of this button will be honored if it's ajaxy or not:
  * @code
@@ -25,14 +31,14 @@ Drupal.behaviors.CToolsAutoSubmit = function() {
   var timeoutID = 0;
 
   // Bind to any select widgets that will be auto submitted.
-  $('select.ctools-auto-submit:not(.ctools-auto-submit-processed)')
+  $('select.ctools-auto-submit:not(.ctools-auto-submit-processed),.ctools-auto-submit-full-form select:not(.ctools-auto-submit-processed)')
     .addClass('.ctools-auto-submit-processed')
     .change(function() {
       $(this.form).find('.ctools-auto-submit-click').click();
     });
 
   // Bind to any textfield widgets that will be auto submitted.
-  $('input[type=text].ctools-auto-submit:not(.ctools-auto-submit-processed)')
+  $('input[type=text].ctools-auto-submit:not(.ctools-auto-submit-processed),.ctools-auto-submit-full-form input[type=text]:not(.ctools-auto-submit-processed)')
     .addClass('.ctools-auto-submit-processed')
     .keyup(function(e) {
       var form = this.form;

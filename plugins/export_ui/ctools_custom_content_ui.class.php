@@ -59,7 +59,6 @@ class ctools_custom_content_ui extends ctools_export_ui {
       '#options' => $options,
       '#default_value' => 'all',
       '#weight' => -10,
-      '#attributes' => array('class' => 'ctools-auto-submit'),
     );
   }
 

@@ -207,7 +207,6 @@ class ctools_export_ui {
         t('Overridden') => t('Overridden'),
       ),
       '#default_value' => 'all',
-      '#attributes' => array('class' => 'ctools-auto-submit'),
     );
 
     $form['top row']['disabled'] = array(
@@ -218,13 +217,11 @@ class ctools_export_ui {
         '1' => t('Disabled')
       ),
       '#default_value' => 'all',
-      '#attributes' => array('class' => 'ctools-auto-submit'),
     );
 
     $form['top row']['search'] = array(
       '#type' => 'textfield',
       '#title' => t('Search'),
-      '#attributes' => array('class' => 'ctools-auto-submit'),
     );
 
     $form['bottom row']['order'] = array(
@@ -232,7 +229,6 @@ class ctools_export_ui {
       '#title' => t('Sort by'),
       '#options' => $this->list_sort_options(),
       '#default_value' => 'disabled',
-      '#attributes' => array('class' => 'ctools-auto-submit'),
     );
 
     $form['bottom row']['sort'] = array(
@@ -243,7 +239,6 @@ class ctools_export_ui {
         'desc' => t('Down'),
       ),
       '#default_value' => 'asc',
-      '#attributes' => array('class' => 'ctools-auto-submit'),
     );
 
     $form['bottom row']['submit'] = array(
@@ -267,6 +262,7 @@ class ctools_export_ui {
 
     $form['#prefix'] = '<div class="clear-block">';
     $form['#suffix'] = '</div>';
+    $form['#attributes'] = array('class' => 'ctools-auto-submit-full-form');
   }
 
   /**
