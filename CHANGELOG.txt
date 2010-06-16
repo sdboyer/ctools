@@ -10,6 +10,7 @@ Changed all hook_ctools_plugin_directory() implementations to use the more infor
 Update the plugin system documentation, and clean up plugin system logic.
 #827498: Allow the 'custom' content type to be re-usable and exportable.
 #827370 by dereine: Allow the new auto-submit.js to allow a single class that causes every element in the form to auto-submit.
+#717036: Add a check to prevent CSS cache files from being cleared on a cron run.
 
 ctools 6.x-1.6 (2010-June-1)
 ==============

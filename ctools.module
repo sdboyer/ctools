@@ -552,6 +552,14 @@ function ctools_preprocess_node(&$vars) {
  * Ensure the CTools CSS cache is flushed whenever hook_flush_caches is invoked.
  */
 function ctools_flush_caches() {
+  // Do not actually flush caches if running on cron. Drupal uses this hook
+  // in an inconsistent fashion and it does not necessarily mean to *flush*
+  // caches when running from cron. Instead it's just getting a list of cache
+  // tables and may not do any flushing.
+  if (variable_get('cron_semaphore', FALSE)) {
+    return;
+  }
+
   ctools_include('css');
   ctools_css_flush_caches();
 }
