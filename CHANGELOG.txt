@@ -14,6 +14,7 @@ Update the plugin system documentation, and clean up plugin system logic.
 Partial reversion of #742832.
 #767046: Current theme selection rule was broken.
 Improve the "Edit panel" tab so that Panels Everywhere can use a different name for site template, and Panels can direct it to the most appropriate tab in the editor.
+#828352: Recent improvement to allow selection of fields to display in pane caused summary styles to break.
 
 ctools 6.x-1.6 (2010-June-1)
 ==============
