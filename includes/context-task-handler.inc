@@ -114,9 +114,22 @@ function ctools_context_handler_pre_render($handler, $contexts, $args) {
   if (user_access('administer page manager') && isset($handler->task)) {
     // Provide a tab to edit this context:
     ctools_include('menu');
+    $task = page_manager_get_task($handler->task);
+
+    $title = !empty($task['tab title']) ? $task['tab title'] : t('Edit @type', array('@type' => $plugin['title']));
+    $trail = array();
+    if (!empty($plugin['tab operation'])) {
+      if (is_array($plugin['tab operation'])) {
+        $trail = $plugin['tab operation'];
+      }
+      else if (function_exists($plugin['tab operation'])) {
+        $trail = $plugin['tab operation']($handler, $contexts, $args);
+      }
+    }
+
     ctools_menu_add_tab(array(
-      'title' => t('Edit @type', array('@type' => $plugin['title'])),
-      'href' => page_manager_edit_url(page_manager_make_task_name($handler->task, $handler->subtask)),
+      'title' => $title,
+      'href' => page_manager_edit_url(page_manager_make_task_name($handler->task, $handler->subtask), $trail),
     ));
   }
 }

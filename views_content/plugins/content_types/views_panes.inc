@@ -249,17 +249,21 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
     $view->display_handler->set_option('offset', $conf['offset']);
   }
 
-  $view->init_style();
-  if ($allow['fields_override'] && $view->style_plugin->uses_fields()) {
-    $fields = $view->get_items('field');
-    if ($conf['fields_override']) {
-      foreach ($conf['fields_override'] as $field => $display) {
-        if ($conf['fields_override'][$field] == 0) {
-          $fields[$field]['exclude'] = 1;
-          $view->set_item($view->current_display, 'field', $field, $fields[$field]);
+  if ($allow['fields_override']) {
+    $clone = $view->clone_view();
+    $clone->init_style();
+    if ($clone->style_plugin->uses_fields()) {
+      $fields = $view->get_items('field');
+      if ($conf['fields_override']) {
+        foreach ($conf['fields_override'] as $field => $display) {
+          if ($conf['fields_override'][$field] == 0) {
+            $fields[$field]['exclude'] = 1;
+            $view->set_item($view->current_display, 'field', $field, $fields[$field]);
+          }
         }
       }
     }
+    $clone->destroy();
   }
 
   $stored_feeds = drupal_add_feed();

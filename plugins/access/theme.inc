@@ -41,7 +41,17 @@ function ctools_theme_ctools_access_settings(&$form, &$form_state, $conf) {
  * Check for access.
  */
 function ctools_theme_ctools_access_check($conf, $context) {
-  return $conf['theme'] == $GLOBALS['theme'];
+  if (!empty($GLOBALS['theme'])) {
+    $theme = $GLOBALS['theme'];
+  }
+  else if (!empty($GLOBALS['custom_theme'])) {
+    $theme = $GLOBALS['custom_theme'];
+  }
+  else {
+    $theme = variable_get('theme_default', 'garland');
+  }
+
+  return $conf['theme'] == $theme;
 }
 
 /**
