@@ -41,11 +41,6 @@ function ctools_theme_ctools_access_settings(&$form, &$form_state, $conf) {
  * Check for access.
  */
 function ctools_theme_ctools_access_check($conf, $context) {
-  // As far as I know there should always be a context at this point, but this
-  // is safe.
-  if (empty($context) || empty($context->data)) {
-    return FALSE;
-  }
   return $conf['theme'] == $GLOBALS['theme'];
 }
 
