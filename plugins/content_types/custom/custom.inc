@@ -295,7 +295,7 @@ function ctools_custom_content_type_edit_form(&$form, &$form_state) {
   $form['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Machine name'),
-    '#description' => t('The machine readable name of this page. It must be unique, and it must contain only alphanumeric characters and underscores. Once created, you will not be able to change this value!'),
+    '#description' => t('The machine readable name of this content. It must be unique, and it must contain only alphanumeric characters and underscores. Once created, you will not be able to change this value!'),
     '#process' => array('ctools_dependent_process'),
     '#dependency' => array('edit-reusable' => array(1)),
   );
@@ -311,7 +311,7 @@ function ctools_custom_content_type_edit_form(&$form, &$form_state) {
   $form['admin_description'] = array(
     '#type' => 'textarea',
     '#title' => t('Administrative description'),
-    '#description' => t('A description of what this style is, does or is for, for administrative use.'),
+    '#description' => t('A description of what this content is, does or is for, for administrative use.'),
     '#process' => array('ctools_dependent_process'),
     '#dependency' => array('edit-reusable' => array(1)),
   );
