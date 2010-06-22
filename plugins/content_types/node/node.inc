@@ -43,7 +43,9 @@ function ctools_node_content_type_render($subtype, $conf, $panel_args) {
   }
 
   foreach ($panel_args as $id => $arg) {
-    $nid = str_replace("@$id", $arg, $nid);
+    if (is_string($arg)) {
+      $nid = str_replace("@$id", $arg, $nid);
+    }
   }
 
   // Support node translation
