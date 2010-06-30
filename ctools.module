@@ -10,7 +10,7 @@
  * must be implemented in the module file.
  */
 
-define('CTOOLS_API_VERSION', '1.7');
+define('CTOOLS_API_VERSION', '1.7.1');
 
 /**
  * Test the CTools API version.

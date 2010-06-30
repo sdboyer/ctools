@@ -1,6 +1,11 @@
 API.txt: $Id$
 
 This file contains a log of changes to the API.
+API version 1.7.1
+  Introduce 'modal return' and 'ajax return' to wizard.inc to allow
+    wizard owners to process their own ajax/modal output.
+  Introduce math-expr.inc to allow simple math expression parsing.
+
 API version 1.7
   Introduce the export-ui plugin. This introduces new keys to the 'export'
     section of schema: 'primary key', 'key name'.
