@@ -285,6 +285,7 @@ function ctools_custom_content_type_edit_form(&$form, &$form_state) {
 
   // Make the other form items dependent upon it.
   ctools_include('dependent');
+  ctools_add_js('dependent');
 
   $form['reusable'] = array(
     '#type' => 'checkbox',

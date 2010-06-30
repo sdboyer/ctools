@@ -175,6 +175,21 @@ function ctools_stylizer_recursive_delete($path) {
 }
 
 /**
+ * Get a safe name for the settings.
+ *
+ * This uses an md5 of the palette if the name is temporary so
+ * that multiple temporary styles on the same page can coexist
+ * safely.
+ */
+function ctools_stylizer_get_settings_name($settings) {
+  if ($settings['name'] != '_temporary') {
+    return $settings['name'];
+  }
+
+  return $settings['name'] . '-' . md5(serialize($settings['palette']));
+}
+
+/**
  * Get the path where images will be stored for a given style plugin and settings.
  *
  * This function will make sure the path exists.
@@ -210,7 +225,7 @@ function ctools_stylizer_get_css_id($plugin, $settings) {
  */
 function ctools_stylizer_get_css_class($plugin, $settings) {
   ctools_include('cleanstring');
-  return ctools_cleanstring($plugin['name'] . '-' . $settings['name']);
+  return ctools_cleanstring($plugin['name'] . '-' . ctools_stylizer_get_settings_name($settings));
 }
 
 class ctools_stylizer_image_processor {
@@ -792,7 +807,7 @@ function ctools_stylizer_edit_style(&$info, $js, $step = NULL) {
     return ctools_stylizer_edit_style($info, $js, $form_state['clicked_button']['#next']);
   }
 
-  return $output;
+  ajax_render($form_state['commands'] = ctools_modal_form_render($form_state, $output));
 }
 
 /**

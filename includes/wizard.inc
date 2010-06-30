@@ -97,17 +97,18 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
   $output = ctools_build_form($info['form id'], $form_state);
 
   if (empty($form_state['executed']) || !empty($form_state['rerender'])) {
+    if (empty($form_state['title']) && !empty($info['title'])) {
+      $form_state['title'] = $info['title'];
+    }
+
     if (!empty($form_state['ajax render'])) {
       // Any include files should already be included by this point:
       return $form_state['ajax render']($form_state, $output);
     }
 
     // Automatically use the modal tool if set to true.
-    if (!empty($form_state['modal'])) {
+    if (!empty($form_state['modal']) && !empty($form_state['modal return'])) {
       ctools_include('modal');
-      if (empty($form_state['title'])) {
-        $form_state['title'] = $info['title'];
-      }
 
       // This overwrites any previous commands.
       $form_state['commands'] = ctools_modal_form_render($form_state, $output);
@@ -159,7 +160,7 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
   }
 
   // Render ajax commands if we have any.
-  if (isset($form_state['ajax']) && isset($form_state['commands'])) {
+  if (isset($form_state['ajax']) && !empty($form_state['commands'])) {
     return ctools_ajax_render($form_state['commands']);
   }
 
