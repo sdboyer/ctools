@@ -21,6 +21,7 @@ $plugin = array(
   // Make sure the edit form is only used for some subtypes.
   'edit form' => '',
   'add form' => '',
+  'edit text' => t('Edit'),
 );
 
 /**

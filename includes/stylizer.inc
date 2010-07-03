@@ -807,7 +807,7 @@ function ctools_stylizer_edit_style(&$info, $js, $step = NULL) {
     return ctools_stylizer_edit_style($info, $js, $form_state['clicked_button']['#next']);
   }
 
-  ajax_render($form_state['commands'] = ctools_modal_form_render($form_state, $output));
+  $form_state['commands'] = ctools_modal_form_render($form_state, $output);
 }
 
 /**
