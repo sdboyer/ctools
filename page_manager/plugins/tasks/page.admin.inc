@@ -1006,7 +1006,7 @@ function page_manager_page_subtask_argument_ajax($step = NULL, $task_name = NULL
 
   // With 'modal' and 'ajax' true, rendering automatically happens here so
   // we do nothing with the result.
-  ctools_wizard_multistep_form($form_info, $step, $form_state);
+  $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
 }
 
 /**

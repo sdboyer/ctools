@@ -16,6 +16,7 @@ Partial reversion of #742832.
 Improve the "Edit panel" tab so that Panels Everywhere can use a different name for site template, and Panels can direct it to the most appropriate tab in the editor.
 #828352: Recent improvement to allow selection of fields to display in pane caused summary styles to break.
 #764006 by drifter: Fix warning when using Panels Everywhere and views content panes together.
+#467898 by mikeker: Allow taxonomy term argument to be restricted to a particular set of vocabularies.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
