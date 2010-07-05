@@ -177,7 +177,7 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
         break;
 
       case 'user':
-        $args[] = isset($conf['arguments'][$id]) ? $conf['arguments'][$id] : NULL;
+        $args[] = (isset($conf['arguments'][$id])  && $conf['arguments'][$id] !== '') ? $conf['arguments'][$id] : NULL;
         break;
 
      case 'wildcard':
