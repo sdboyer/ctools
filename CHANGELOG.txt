@@ -33,6 +33,8 @@ Improve the "Edit panel" tab so that Panels Everywhere can use a different name 
 #842882 by Amitaibu: Safer handling of determing if an object is new or updated when using ctools_export_crud_save().
 #826074 by Amitaibu: Provide more defaults in schema for new Export UI settings.
 #715546 by jsfwd: Term list content type didn't get proper first/last classes.
+#731950: Prevent warning if task has invalid subtasks callback.
+#831592: Context: Taxonomy vocabulary would not save vocabulary value.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

@@ -726,6 +726,8 @@ function page_manager_get_task_subtasks($task) {
   if ($function = ctools_plugin_get_function($task, 'subtasks callback')) {
     return $function($task);
   }
+
+  return array();
 }
 
 /**
