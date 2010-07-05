@@ -18,7 +18,7 @@ function ctools_node_form_author_content_type_render($subtype, $conf, $panel_arg
   $block = new stdClass();
   $block->module = t('node_form');
 
-  $block->title = $block->content = t('Authoring information');
+  $block->title = t('Authoring information');
   $block->delta = 'author-options';
 
   if (isset($context->form)) {
