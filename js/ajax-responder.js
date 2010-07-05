@@ -468,11 +468,11 @@
        .change(Drupal.CTools.AJAX.changeAJAX);
 
     // Add information about loaded CSS and JS files.
-    if (Drupal.settings.CTools.css) {
-      $.extend(Drupal.CTools.AJAX.css, Drupal.settings.CTools.css);
+    if (Drupal.settings.CToolsAJAX.css) {
+      $.extend(Drupal.CTools.AJAX.css, Drupal.settings.CToolsAJAX.css);
     }
-    if (Drupal.settings.CTools.scripts) {
-      $.extend(Drupal.CTools.AJAX.scripts, Drupal.settings.CTools.scripts);
+    if (Drupal.settings.CToolsAJAX.scripts) {
+      $.extend(Drupal.CTools.AJAX.scripts, Drupal.settings.CToolsAJAX.scripts);
     }
   };
 })(jQuery);

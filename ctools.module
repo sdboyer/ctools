@@ -642,7 +642,7 @@ function ctools_preprocess_page(&$variables) {
   // For inline Javascript to validate as XHTML, all Javascript containing
   // XHTML needs to be wrapped in CDATA. To make that backwards compatible
   // with HTML 4, we need to comment out the CDATA-tag.
-  $loaded = array('CTools' => array('scripts' => $js_files, 'css' => $css_files));
+  $loaded = array('CToolsAJAX' => array('scripts' => $js_files, 'css' => $css_files));
   $embed_prefix = "\n<!--//--><![CDATA[//><!--\n";
   $embed_suffix = "\n//--><!]]>\n";
   $variables['closure'].= '<script type="text/javascript">' . $embed_prefix . 'jQuery.extend(Drupal.settings, ' . drupal_to_js($loaded) . ");" . $embed_suffix . "</script>\n";
