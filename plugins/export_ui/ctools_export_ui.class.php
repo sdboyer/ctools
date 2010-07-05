@@ -1109,7 +1109,7 @@ function ctools_export_ui_import_finish(&$form_state) {
   // This indicates that overwrite was allowed, so we should delete the
   // original item.
   if ($form_state['op'] == 'edit') {
-    ctools_export_crud_delete($this->plugin['schema'], $form_state['item']);
+    ctools_export_crud_delete($form_state['plugin']['schema'], $form_state['item']);
   }
 
   $form_state['object']->edit_save_form($form_state);
