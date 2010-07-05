@@ -584,10 +584,12 @@ function ctools_preprocess_page(&$variables) {
           break;
         case 'callback':
           if (is_string($argument) && function_exists($argument)) {
-            $tokens[$token] = $argument();
+            $tokens[$token] = $argument($variables);
           }
           if (is_array($argument) && function_exists($argument[0])) {
-            $tokens[$token] = call_user_func_array($argument);
+            $function = array_shift($argument);
+            $argument = array_merge(array(&$variables), $argument);
+            $tokens[$token] = call_user_func_array($function, $argument);
           }
           break;
       }
