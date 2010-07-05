@@ -272,7 +272,7 @@ function ctools_update_6004() {
 }
 
 /**
- * Add the new css cache table.
+ * Add the new custom content table, which holds customized exportable content.
  */
 function ctools_update_6005() {
   $ret = array();
