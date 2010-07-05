@@ -151,7 +151,7 @@
       var ajaxOptions = {
         type: 'POST',
         url: url,
-        data: { 'js': 1, 'ctools_ajax': 1, 'page_id': Drupal.CTools.AJAX.getPageId() },
+        data: { 'js': 1, 'ctools_ajax': 1},
         global: true,
         success: Drupal.CTools.AJAX.respond,
         error: function(xhr) {

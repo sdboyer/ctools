@@ -454,13 +454,6 @@ function ctools_ajax_render($commands = array()) {
   $scripts = drupal_add_js(NULL, NULL);
   $cached_scripts = array();
 
-  if (!empty($_POST['page_id'])) {
-    $cache = cache_get($_POST['page_id'], 'cache');
-    if (!empty($cache->data)) {
-      $cached_scripts = $cache->data;
-    }
-  }
-
   // Get replacements that are going to be made by contrib modules and take
   // them into account so we don't double-load scripts.
   $replacements = module_invoke_all('js_replacements');
@@ -480,11 +473,9 @@ function ctools_ajax_render($commands = array()) {
         // If JS preprocessing is off, we still need to output the scripts.
         // Additionally, go through any remaining scripts if JS preprocessing is on and output the non-cached ones.
         foreach ($data as $path => $info) {
-          if (!isset($cached_scripts['js'][$path])) {
-            // If the script is being replaced, take that replacment into account.
-            $final_path = isset($replacements[$type][$path]) ? $replacements[$type][$path] : $path;
-            $js_files[] = base_path() . $final_path . ($info['cache'] ? $query_string : '?' . time());
-          }
+          // If the script is being replaced, take that replacment into account.
+          $final_path = isset($replacements[$type][$path]) ? $replacements[$type][$path] : $path;
+          $js_files[] = base_path() . $final_path . ($info['cache'] ? $query_string : '?' . time());
         }
     }
   }
@@ -513,7 +504,7 @@ function ctools_ajax_render($commands = array()) {
             continue;
           }
           // Only include the stylesheet if it exists.
-          if (file_exists($file) && !isset($cached_scripts['css'][$file])) {
+          if (file_exists($file)) {
             $css_files[] = array(
               'file' => base_path() . $file . $query_string,
               'media' => $media,

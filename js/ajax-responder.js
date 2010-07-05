@@ -13,10 +13,6 @@
   Drupal.CTools.AJAX.scripts = {};
   Drupal.CTools.AJAX.css = {};
 
-  Drupal.CTools.AJAX.getPageId = function() {
-    return Drupal.CTools.pageId;
-  }
-
   /**
    * Success callback for an ajax request.
    *
@@ -57,7 +53,7 @@
       $.ajax({
         type: "POST",
         url: url,
-        data: { 'js': 1, 'ctools_ajax': 1, 'page_id': Drupal.CTools.AJAX.getPageId() },
+        data: { 'js': 1, 'ctools_ajax': 1},
         global: true,
         success: function (data) {
           Drupal.CTools.AJAX.commandCache[old_url] = data;
@@ -116,7 +112,7 @@
       $.ajax({
         type: "POST",
         url: url,
-        data: { 'js': 1, 'ctools_ajax': 1, 'page_id': Drupal.CTools.AJAX.getPageId() },
+        data: { 'js': 1, 'ctools_ajax': 1},
         global: true,
         success: Drupal.CTools.AJAX.respond,
         error: function(xhr) {
@@ -158,7 +154,7 @@
         $.ajax({
           type: "POST",
           url: url,
-          data: { 'js': 1, 'ctools_ajax': 1, 'page_id': Drupal.CTools.AJAX.getPageId() },
+          data: { 'js': 1, 'ctools_ajax': 1},
           global: true,
           success: Drupal.CTools.AJAX.respond,
           error: function(xhr) {
@@ -177,7 +173,7 @@
         $(form).ajaxSubmit({
           type: "POST",
           url: url,
-          data: { 'js': 1, 'ctools_ajax': 1, 'page_id': Drupal.CTools.AJAX.getPageId() },
+          data: { 'js': 1, 'ctools_ajax': 1},
           global: true,
           success: Drupal.CTools.AJAX.respond,
           error: function(xhr) {
@@ -361,7 +357,6 @@
 
   Drupal.CTools.AJAX.commands.css_files = function(data) {
     // Build a list of scripts already loaded:
-
     $('link:not(.ctools-temporary-css)').each(function () {
       if ($(this).attr('type') == 'text/css') {
         Drupal.CTools.AJAX.css[$(this).attr('href')] = $(this).attr('href');
@@ -471,17 +466,13 @@
        .filter('.ctools-use-ajax-onchange:not(.ctools-use-ajax-processed)')
        .addClass('ctools-use-ajax-processed')
        .change(Drupal.CTools.AJAX.changeAJAX);
-  };
 
-  /**
-   * Use the ready() method to copy the page ID out of settings, because the
-   * the settings can get overwritten and the page ID can get lost.
-   */
-  $(function () {
-    Drupal.CTools.pageId = '';
-    if (Drupal.settings.CTools && Drupal.settings.CTools.pageId) {
-      Drupal.CTools.pageId = Drupal.settings.CTools.pageId;
+    // Add information about loaded CSS and JS files.
+    if (Drupal.settings.CTools.css) {
+      $.extend(Drupal.CTools.AJAX.css, Drupal.settings.CTools.css);
     }
-  });
-
+    if (Drupal.settings.CTools.scripts) {
+      $.extend(Drupal.CTools.AJAX.scripts, Drupal.settings.CTools.scripts);
+    }
+  };
 })(jQuery);
