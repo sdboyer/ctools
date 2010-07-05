@@ -32,6 +32,7 @@ Improve the "Edit panel" tab so that Panels Everywhere can use a different name 
 #635730 by dereine and merlinofchaos: Fix page title pane to show actual title. Allow the tag and tag class and id to be specified in pane settings.
 #842882 by Amitaibu: Safer handling of determing if an object is new or updated when using ctools_export_crud_save().
 #826074 by Amitaibu: Provide more defaults in schema for new Export UI settings.
+#715546 by jsfwd: Term list content type didn't get proper first/last classes.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
