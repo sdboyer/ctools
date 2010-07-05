@@ -19,6 +19,7 @@ Improve the "Edit panel" tab so that Panels Everywhere can use a different name 
 #467898 by mikeker: Allow taxonomy term argument to be restricted to a particular set of vocabularies.
 #829582 by dmitrig01: apostrophes as data keys in exports would not properly be escaped, breaking the export.
 #845540 by Dave Reid: cleanstring.inc had accidental dependency on pathauto.
+#755954 by killes: Add relationship plugin to get node edit form context from node context.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
