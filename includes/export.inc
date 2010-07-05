@@ -708,10 +708,25 @@ function ctools_export_get_schema($table) {
       'default hook' => 'default_' . $table,
       'can disable' => TRUE,
       'identifier' => $table,
+      'primary key' => !empty($schema['primary key']) ? $schema['primary key'][0] : '',
       'bulk export' => TRUE,
       'list callback' => "$schema[module]_{$table}_list",
       'to hook code callback' => "$schema[module]_{$table}_to_hook_code",
+      'api' => array(),
     );
+
+    $schema['export']['api'] += array(
+      'owner' => $table,
+      'api' => $table,
+      'minimum_version' => 1,
+      'current_version' => 1,
+    );
+
+    // If the export definition doesn't have the "primary key" then the CRUD
+    // save callback won't work.
+    if (empty($schema['export']['primary key']) && user_access('administer site configuration')) {
+      drupal_set_message(t('The export definition of @table is missing the "primary key" property.', array('@table' => $table)), 'error');
+    }
 
     // Notes:
     // The following callbacks may be defined to override default behavior
