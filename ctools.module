@@ -804,3 +804,16 @@ function ctools_export_ui_task_access($plugin_name, $op, $item = NULL) {
   // Deny access if the handler cannot be found.
   return FALSE;
 }
+
+/**
+ * Create callback for creating a new CTools custom content type.
+ *
+ * This ensures we get proper defaults from the plugin for its settings.
+ */
+function ctools_content_type_new($set_defaults) {
+  $item = ctools_export_new_object('ctools_custom_content', $set_defaults);
+  ctools_include('content');
+  $plugin = ctools_get_content_type('custom');
+  $item->settings = ctools_content_get_defaults($plugin, array());
+  return $item;
+}

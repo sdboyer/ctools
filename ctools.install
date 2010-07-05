@@ -85,6 +85,7 @@ function ctools_schema_3() {
         'minimum_version' => 1,
         'current_version' => 1,
       ),
+      'create callback' => 'ctools_content_type_new',
     ),
     'fields' => array(
       'cid' => array(
