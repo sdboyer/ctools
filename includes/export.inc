@@ -595,7 +595,7 @@ function ctools_var_export($var, $prefix = '') {
     else {
       $output = "array(\n";
       foreach ($var as $key => $value) {
-        $output .= $prefix . "  '$key' => " . ctools_var_export($value, $prefix . '  ') . ",\n";
+        $output .= $prefix . "  " . ctools_var_export($key) . " => " . ctools_var_export($value, $prefix . '  ') . ",\n";
       }
       $output .= $prefix . ')';
     }
