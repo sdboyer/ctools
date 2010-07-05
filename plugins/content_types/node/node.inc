@@ -78,11 +78,17 @@ function ctools_node_content_type_render($subtype, $conf, $panel_args) {
   $block->module = 'node';
   $block->delta = $node->nid;
 
-  $block->title = check_plain($node->title);
+  if (!empty($conf['link_node_title'])) {
+    $block->title = l($node->title, 'node/' . $node->nid);
+  }
+  else {
+    $block->title = check_plain($node->title);
+  }
 
   if (empty($conf['leave_node_title'])) {
     $node->title = NULL;
   }
+
   if (!empty($conf['identifier'])) {
     $node->panel_identifier = $conf['identifier'];
   }
@@ -107,6 +113,14 @@ function ctools_node_content_type_edit_form(&$form, &$form_state) {
     '#title' => t('Leave node title'),
     '#description' => t('Advanced: if checked, do not touch the node title; this can cause the node title to appear twice unless your theme is aware of this.'),
   );
+
+  $form['link_node_title'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => !empty($conf['link_node_title']),
+    '#title' => t('Link the node title to the node'),
+    '#description' => t('Check this box if you would like your pane title to link to the node.'),
+  );
+
 
   if ($form_state['op'] == 'add') {
     $form['nid'] = array(
@@ -187,7 +201,7 @@ function  ctools_node_content_type_edit_form_validate(&$form, &$form_state) {
  * Validate the node selection.
  */
 function ctools_node_content_type_edit_form_submit(&$form, &$form_state) {
-  foreach (array('nid', 'teaser', 'links', 'leave_node_title', 'identifier') as $key) {
+  foreach (array('nid', 'teaser', 'links', 'leave_node_title', 'link_node_title', 'identifier') as $key) {
     $form_state['conf'][$key] = $form_state['values'][$key];
   }
 }
