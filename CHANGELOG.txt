@@ -20,6 +20,7 @@ Improve the "Edit panel" tab so that Panels Everywhere can use a different name 
 #829582 by dmitrig01: apostrophes as data keys in exports would not properly be escaped, breaking the export.
 #845540 by Dave Reid: cleanstring.inc had accidental dependency on pathauto.
 #755954 by killes: Add relationship plugin to get node edit form context from node context.
+#755988 by killes: Render form id, build id and token as part of the form buttons context.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

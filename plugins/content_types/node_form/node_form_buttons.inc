@@ -23,6 +23,9 @@ function ctools_node_form_buttons_content_type_render($subtype, $conf, $panel_ar
 
   if (isset($context->form)) {
     $block->content = drupal_render($context->form['buttons']);
+    $block->content .= drupal_render($context->form['form_token']);
+    $block->content .= drupal_render($context->form['form_build_id']);
+    $block->content .= drupal_render($context->form['form_id']);
   }
   else {
     $block->content = t('Node form buttons.');
