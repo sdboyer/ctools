@@ -106,9 +106,8 @@ function ctools_include($file, $module = 'ctools', $dir = 'includes') {
   static $used = array();
   if (!isset($used[$module][$dir][$file])) {
     require_once './' . drupal_get_path('module', $module) . "/$dir/$file.inc";
-  }
-
-  $used[$file] = TRUE;
+    $used[$module][$dir][$file] = true;
+  }  
 }
 
 /**
