@@ -807,7 +807,12 @@ function ctools_stylizer_edit_style(&$info, $js, $step = NULL) {
     return ctools_stylizer_edit_style($info, $js, $form_state['clicked_button']['#next']);
   }
 
-  $form_state['commands'] = ctools_modal_form_render($form_state, $output);
+  if ($js) {
+    return ctools_modal_form_render($form_state, $output);
+  }
+  else {
+    return $output;
+  }
 }
 
 /**
