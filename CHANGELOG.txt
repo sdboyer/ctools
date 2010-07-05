@@ -30,6 +30,7 @@ Improve the "Edit panel" tab so that Panels Everywhere can use a different name 
 #843280 by Amitaibu: Export UI would WSOD on delete.
 #728486 by elliotttf: Fix PHP 5.3 compatibility.
 #635730 by dereine and merlinofchaos: Fix page title pane to show actual title. Allow the tag and tag class and id to be specified in pane settings.
+#842882 by Amitaibu: Safer handling of determing if an object is new or updated when using ctools_export_crud_save().
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

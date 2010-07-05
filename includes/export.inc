@@ -145,7 +145,15 @@ function ctools_export_crud_save($table, &$object) {
     }
 
     $key = $export['primary key'];
-    $update = (isset($object->{$key})) ? array($key) : array();
+    if ($export->export_type & EXPORT_IN_DATABASE) {
+      // Existing record.
+      $update = array($key);
+    }
+    else {
+      // New record.
+      $update = array();
+      $object->export_type = EXPORT_IN_DATABASE;
+    }
     return drupal_write_record($table, $object, $update);
   }
 }
@@ -246,8 +254,8 @@ function ctools_export_crud_import($table, $code) {
 
     $item = ${$export['identifier']};
 
-    // Set these defaults just the same way that ctools_export_new_object sets them.
-    $item->export_type = EXPORT_IN_DATABASE;
+    // Set these defaults just the same way that ctools_export_new_object sets
+    // them.
     $item->type = t('Local');
 
     return $item;
@@ -823,7 +831,8 @@ function ctools_export_form(&$form_state, $code, $title = '') {
  *
  * Because 'default' has ambiguous meaning on some fields, we will actually
  * use 'object default' to fill in default values if default is not set
- * That's a little safer to use as it won't cause weird database default situations.
+ * That's a little safer to use as it won't cause weird database default
+ * situations.
  */
 function ctools_export_new_object($table, $set_defaults = TRUE) {
   $schema = ctools_export_get_schema($table);
@@ -844,7 +853,9 @@ function ctools_export_new_object($table, $set_defaults = TRUE) {
 
   if ($set_defaults) {
     // Set some defaults so this data always exists.
-    $object->export_type = EXPORT_IN_DATABASE;
+    // We don't set the export_type property here, as this object is not saved
+    // yet. We do give it NULL so we don't generate notices trying to read it.
+    $object->export_type = NULL;
     $object->type = t('Local');
   }
   return $object;
