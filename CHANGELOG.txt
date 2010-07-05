@@ -26,6 +26,7 @@ Improve the "Edit panel" tab so that Panels Everywhere can use a different name 
 #749398 by harijari: Properly support new column added for signatures in Drupal 6.13.
 #815164 by DeFR: Replace fragile server side cache of aggregated .js and .css with more robust embedded .js communicating this information.
 #667504 by Jen Lampton: Allow node title to be linked to the node.
+#830274 by Amitaibu: Wrong value passed to ctools_export_crud_load_all() by the default UI plugin.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

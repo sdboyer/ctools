@@ -99,7 +99,7 @@ class ctools_export_ui {
    * unless the listing mechanism is going to be highly specialized.
    */
   function list_page($js, $input) {
-    $this->items = ctools_export_crud_load_all($this->plugin['schema'], !$js);
+    $this->items = ctools_export_crud_load_all($this->plugin['schema'], $js);
 
     // Respond to a reset command by clearing session and doing a drupal goto
     // back to the base URL.
