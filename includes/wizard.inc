@@ -107,7 +107,7 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
     }
 
     // Automatically use the modal tool if set to true.
-    if (!empty($form_state['modal']) && !empty($form_state['modal return'])) {
+    if (!empty($form_state['modal']) && empty($form_state['modal return'])) {
       ctools_include('modal');
 
       // This overwrites any previous commands.
