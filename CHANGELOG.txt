@@ -23,6 +23,7 @@ Improve the "Edit panel" tab so that Panels Everywhere can use a different name 
 #755988 by killes: Render form id, build id and token as part of the form buttons context.
 #756118 by killes: node_form_author.inc sets content regardless of content being present.
 #783408 by hefox: Make sure empty arguments are properly translated to NULL when passed to Views.
+#749398 by harijari: Properly support new column added for signatures in Drupal 6.13.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
