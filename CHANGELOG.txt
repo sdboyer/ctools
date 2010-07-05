@@ -17,6 +17,8 @@ Improve the "Edit panel" tab so that Panels Everywhere can use a different name 
 #828352: Recent improvement to allow selection of fields to display in pane caused summary styles to break.
 #764006 by drifter: Fix warning when using Panels Everywhere and views content panes together.
 #467898 by mikeker: Allow taxonomy term argument to be restricted to a particular set of vocabularies.
+#829582 by dmitrig01: apostrophes as data keys in exports would not properly be escaped, breaking the export.
+#845540 by Dave Reid: cleanstring.inc had accidental dependency on pathauto.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
