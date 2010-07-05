@@ -107,7 +107,7 @@ function ctools_include($file, $module = 'ctools', $dir = 'includes') {
   if (!isset($used[$module][$dir][$file])) {
     require_once './' . drupal_get_path('module', $module) . "/$dir/$file.inc";
     $used[$module][$dir][$file] = true;
-  }  
+  }
 }
 
 /**
@@ -781,7 +781,8 @@ function ctools_export_ui_load($item_name, $plugin_name) {
 
     if ($plugin) {
       // Get the load callback.
-      return ctools_export_crud_load($plugin['schema'], $item_name);
+      $item = ctools_export_crud_load($plugin['schema'], $item_name);
+      return empty($item) ? FALSE : $item;
     }
   }
 

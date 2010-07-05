@@ -733,7 +733,7 @@ class ctools_export_ui {
         '#type' => 'submit',
         '#value' => $item->export_type & EXPORT_IN_CODE ? t('Revert') : t('Delete'),
         '#access' => $form_state['op'] === 'edit' && $item->export_type & EXPORT_IN_DATABASE,
-        '#submit' => 'ctools_export_ui_edit_name_validate',
+        '#submit' => array('ctools_export_ui_edit_item_form_delete'),
       );
     }
   }
@@ -981,7 +981,7 @@ function ctools_export_ui_edit_item_form_submit(&$form, &$form_state) {
 function ctools_export_ui_edit_item_form_delete(&$form, &$form_state) {
   $export_key = $form_state['plugin']['export']['key'];
 
-  $form_state['redirect'] = ctools_export_ui_plugin_menu_path($form_state['plugin'], 'delete', $form_state['item']->{$export_key});
+  drupal_goto(ctools_export_ui_plugin_menu_path($form_state['plugin'], 'delete', $form_state['item']->{$export_key}), array('cancel_path' => $_GET['q']));
 }
 
 /**
@@ -1012,12 +1012,13 @@ function ctools_export_ui_delete_confirm_form(&$form_state) {
 
   $export_key = $plugin['export']['key'];
   $question = str_replace('%title', check_plain($item->{$export_key}), $plugin['strings']['confirmation'][$form_state['op']]['question']);
+  $path = empty($_REQUEST['cancel_path']) ? ctools_export_ui_plugin_base_path($plugin) : $_REQUEST['cancel_path'];
 
   $form = confirm_form($form,
     $question,
-    ctools_export_ui_plugin_base_path($plugin),
+    $path,
     $plugin['strings']['confirmation'][$form_state['op']]['information'],
-    drupal_ucfirst($plugin['allowed operations'][$form_state['op']]['title']), t('Cancel')
+    $plugin['allowed operations'][$form_state['op']]['title'], t('Cancel')
   );
   return $form;
 }
