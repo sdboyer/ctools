@@ -145,7 +145,7 @@ function ctools_export_crud_save($table, &$object) {
     }
 
     $key = $export['primary key'];
-    if ($export->export_type & EXPORT_IN_DATABASE) {
+    if ($object->export_type & EXPORT_IN_DATABASE) {
       // Existing record.
       $update = array($key);
     }
@@ -256,6 +256,7 @@ function ctools_export_crud_import($table, $code) {
 
     // Set these defaults just the same way that ctools_export_new_object sets
     // them.
+    $item->export_type = NULL;
     $item->type = t('Local');
 
     return $item;
