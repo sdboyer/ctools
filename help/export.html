@@ -16,7 +16,9 @@ To make your objects exportable, you do have to do a medium amount of work.
 <li>Create an import and export mechanism from the UI.</li>
 </ol>
 <h3>The export section of the schema file</h3>
+
 Exportable objects are created by adding definition to the schema in an 'export' section. For example:
+
 <pre>
 function mymodule_schema() {
   $schema['mymodule_myobj'] = array(
@@ -33,7 +35,38 @@ function mymodule_schema() {
         'minimum_version' => 1,
         'current_version' => 1,
       ),
+      // If the key is stored in a table that is joined in, specify it:
+      'key in table' => 'my_join_table',
     ),
+
+    // If your object's data is split up across multiple tables, you can
+    // specify additional tables to join. This is very useful when working
+    // with modules like exportables.module that has a special table for
+    // translating keys to local database IDs.
+    //
+    // The joined table must have its own schema definition.
+    'join' => array(
+      'exportables' => array(
+        // The following parameters will be used in this way:
+        // SELECT ... FROM {mymodule_myobj} t__0 INNER JOIN {my_join_table} t__1 ON t__0.id = t__1.id AND extras
+        'table' => 'my_join_table',
+        'left_key' => 'format',
+        'right_key' => 'id',
+        // Optionally you can define extra clauses to add to the INNER JOIN
+        'extras' => "AND extra_clauses",
+
+        // You must specify which fields will be loaded. These fields must
+        // exist in the schema definition of the joined table.
+        'load' => array(
+          'machine',
+        ),
+
+        // And finally you can define other tables to perform INNER JOINS
+        //'other_joins' => array(
+        //   'table' => ...
+        //),
+      ),
+    )
     'fields' => array(
       'name' => array(
         'type' => 'varchar',

@@ -37,6 +37,7 @@ Improve the "Edit panel" tab so that Panels Everywhere can use a different name 
 #831592: Context: Taxonomy vocabulary would not save vocabulary value.
 #836828 by jmiccolis: ctools_include() would try to include again even though it was trying to statically cache a list of files already included.
 #843042: export-ui delete button did not work.
+#847682 by dagmar: Allow export.inc controlled objects to have data that exists in sibling tables to enable integration with exportables.module.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

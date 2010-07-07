@@ -295,6 +295,7 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
   $cached_database = &ctools_static('ctools_export_load_object_all');
 
   $schema = ctools_export_get_schema($table);
+  $join_schemas = array();
   $export = $schema['export'];
 
   if (!isset($cache[$table])) {
@@ -324,13 +325,33 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
   }
 
   // Build the query
-  $query = "SELECT * FROM {" . $table . "}";
+  $query = "SELECT * FROM {" . $table . "} t__0";
+  $alias_count = 1;
+  if (!empty($schema['join'])) {
+    foreach ($schema['join'] as $join_key => $join) {
+      $join_schema = ctools_export_get_schema($join['table']);
+      if (!empty($join_schema)) {
+        $query .= ' INNER JOIN {' . $join['table'] . '} t__' . $alias_count . ' ON t__0.' . $join['left_key'] . ' = ' . 't__' . $alias_count . '.' . $join['right_key'];
+        $alias_count++;
+        $join_schemas[$join['table']] = $join_schema;
+        if (!empty($join['extra'])) {
+          $query .= ' ' . $join['extra'];
+        }
+      }
+    }
+  }
+
   $conditions = array();
   $query_args = array();
 
   // If they passed in names, add them to the query.
   if ($type == 'names') {
-    $conditions[] = "$export[key] IN (" . db_placeholders($args, $schema['fields'][$export['key']]['type']) . ")";
+    if (!isset($export['key in table'])) {
+      $conditions[] = "$export[key] IN (" . db_placeholders($args, $schema['fields'][$export['key']]['type']) . ")";
+    }
+    else {
+      $conditions[] = "$export[key] IN (" . db_placeholders($args, $join_schemas[$export['key in table']]['fields'][$export['key']]['type']) . ")";
+    }
     $query_args = $args;
   }
   else if ($type == 'conditions') {
@@ -528,7 +549,7 @@ function _ctools_export_get_defaults($table, $export) {
               $cache[$table][$name] = $object;
             }
             else {
-	             // If version checking is enabled, ensure that the object can be used.
+              // If version checking is enabled, ensure that the object can be used.
               if (isset($object->api_version) &&
                 $object->api_version >= $export['api']['minimum_version'] &&
                 $object->api_version <= $export['api']['current_version']) {
@@ -570,6 +591,18 @@ function _ctools_export_unpack_object($schema, $data, $object = 'stdClass') {
   // Go through our schema and build correlations.
   foreach ($schema['fields'] as $field => $info) {
     $object->$field = empty($info['serialize']) ? $data->$field : unserialize(db_decode_blob($data->$field));
+  }
+
+  if (isset($schema['join'])) {
+    foreach ($schema['join'] as $join_key => $join) {
+      $join_schema = ctools_export_get_schema($join['table']);
+      if (!empty($join['load'])) {
+        foreach ($join['load'] as $field) {
+          $info = $join_schema['fields'][$field];
+          $object->$field = empty($info['serialize']) ? $data->$field : unserialize(db_decode_blob($data->$field));
+        }
+      }
+    }
   }
 
   return $object;
