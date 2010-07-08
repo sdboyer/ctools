@@ -3,7 +3,7 @@ Most user interfaces for exportables are very similar, so CTools includes a tool
 
 <pre>
 function HOOK_ctools_plugin_directory($module, $plugin) {
-  if ($module == 'ctools' && $module == 'export_ui') {
+  if ($module == 'ctools' && $plugin == 'export_ui') {
     return 'plugins/' . $plugin;
   }
 }
