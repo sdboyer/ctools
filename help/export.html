@@ -27,7 +27,7 @@ function mymodule_schema() {
       'key' => 'name',
       'key name' => 'Name',
       'primary key' => 'oid',
-      'identifier' => 'obj', // Exports will be as $myobj
+      'identifier' => 'myobj', // Exports will be as $myobj
       'default hook' => 'default_mymodule_myobj',  // Function hook name.
       'api' => array(
         'owner' => 'mymodule',
@@ -101,7 +101,7 @@ function mymodule_schema() {
 <dd>Objects should contain a primary key which is a database identifier primarily used to determine if an object has been written or not. This is required for the default CRUD save callback to work.</dd>
 
 <dt>object</dt>
-<dd>The class the object should be created ass. Defaults as stdClass.</dd>
+<dd>The class the object should be created as. Defaults as stdClass.</dd>
 
 <dt>can disable</dt>
 <dd>Control whether or not the exportable objects can be disabled. All this does is cause the 'disabled' field on the object to always be set appropriately, and a variable is kept to record the state. Changes made to this state must be handled by the owner of the object. Defaults to TRUE.</dd>
