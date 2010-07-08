@@ -682,8 +682,19 @@ function ctools_export_object($table, $object, $indent = '', $identifier = NULL,
     $output .= $indent . '$' . $identifier . '->' . $field . ' = ' . ctools_var_export($value, $indent) . ";\n";
   }
 
-  // Go through our schema and build correlations.
-  foreach ($schema['fields'] as $field => $info) {
+  $fields = $schema['fields'];
+  if (!empty($schema['join'])) {
+    foreach ($schema['join'] as $join) {
+      if (!empty($join['load'])) {
+        foreach ($join['load'] as $join_field) {
+          $fields[$join_field] = $join['fields'][$join_field];
+        }
+      }
+    }
+  }
+
+  // Go through our schema and joined tables and build correlations.
+  foreach ($fields as $field => $info) {
     if (!empty($info['no export'])) {
       continue;
     }
