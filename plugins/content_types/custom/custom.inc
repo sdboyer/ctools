@@ -22,6 +22,7 @@ $plugin = array(
   'edit form' => '',
   'add form' => '',
   'edit text' => t('Edit'),
+  'all contexts' => TRUE,
 );
 
 /**
@@ -67,6 +68,7 @@ function _ctools_default_content_type_content_type() {
     'category' => t('Custom'),
     'description' => t('Create a completely custom piece of HTML content.'),
     'edit form' => 'ctools_custom_content_type_edit_form',
+    'all contexts' => TRUE,
   );
 
   return $info;

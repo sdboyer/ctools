@@ -39,6 +39,7 @@ Improve the "Edit panel" tab so that Panels Everywhere can use a different name 
 #843042: export-ui delete button did not work.
 #847682 by dagmar: Allow export.inc controlled objects to have data that exists in sibling tables to enable integration with exportables.module.
 Allow Views to use their exposed filters as pane configuration. This is under the "Allow" settings in the Content pane display.
+#849418: "Custom" content type was accidentally losing context substitutions created when reusable custom content types went in.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
