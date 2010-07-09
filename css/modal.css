@@ -101,4 +101,7 @@ div.ctools-modal-content .container-inline .form-item {
   margin-right: 2em;
 }
 
-
+#views-exposed-pane-wrapper .form-item {
+  margin-top: 0;
+  margin-bottom: 0;
+}

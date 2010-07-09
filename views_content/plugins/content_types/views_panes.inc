@@ -266,6 +266,10 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
     $clone->destroy();
   }
 
+  if ($allow['exposed_form'] && !empty($conf['exposed'])) {
+    $view->set_exposed_input($conf['exposed']);
+  }
+
   $stored_feeds = drupal_add_feed();
 
   $block->content = $view->preview();
@@ -457,6 +461,50 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
       );
     }
   }
+
+  if (empty($conf['exposed'])) {
+    $conf['exposed'] = array();
+  }
+
+  if ($allow['exposed_form']) {
+    // If the exposed form is part of pane configuration, get the exposed
+    // form re-tool it for our use.
+    $exposed_form_state = array(
+      'view' => &$view,
+      'display' => &$view->display[$display_id],
+    );
+
+    $view->set_exposed_input($conf['exposed']);
+
+    // @TODO Views 3 will need this figured out
+//    $exposed_form_state['exposed_form_plugin'] = $this;
+    $view->init_handlers();
+    $exposed_form = views_exposed_form($exposed_form_state);
+
+    $form['exposed'] = array(
+      '#tree' => TRUE,
+    );
+
+    foreach ($exposed_form['#info'] as $id => $info) {
+      $form['exposed'][$id] = array(
+        '#type' => 'item',
+        '#id' => 'views-exposed-pane',
+      );
+
+      if (!empty($info['label'])) {
+        $form['exposed'][$id]['#title'] = $info['label'];
+      }
+
+      if (!empty($info['operator']) && !empty($exposed_form[$info['operator']])) {
+        $form['exposed'][$id][$info['operator']] = $exposed_form[$info['operator']];
+        $form['exposed'][$id][$info['operator']]['#parents'] = array('exposed', $info['operator']);
+        $form['exposed'][$id][$info['operator']]['#default_value'] = isset($conf['exposed'][$info['operator']]) ? $conf['exposed'][$info['operator']] : '';
+      }
+      $form['exposed'][$id][$info['value']] = $exposed_form[$info['value']];
+      $form['exposed'][$id][$info['value']]['#parents'] = array('exposed', $info['value']);
+      $form['exposed'][$id][$info['value']]['#default_value'] = isset($conf['exposed'][$info['value']]) ? $conf['exposed'][$info['value']] : '';
+    }
+  }
 }
 
 /**
@@ -465,7 +513,7 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
 function views_content_views_panes_content_type_edit_form_submit(&$form, &$form_state) {
   // Copy everything from our defaults.
   $keys = array('link_to_view', 'more_link', 'feed_icons', 'use_pager',
-    'pager_id', 'items_per_page', 'offset', 'path_override', 'path', 'arguments', 'fields_override');
+    'pager_id', 'items_per_page', 'offset', 'path_override', 'path', 'arguments', 'fields_override', 'exposed');
 
   foreach ($keys as $key) {
     if (isset($form_state['values'][$key])) {
