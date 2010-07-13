@@ -200,6 +200,20 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     }
 
     if (!empty($form_info['show trail'])) {
+      if (!empty($form_info['free trail'])) {
+        // ctools_wizard_get_path() returns results suitable for #redirect
+        // which can only be directly used in drupal_goto. We have to futz
+        // with it.
+        $path = ctools_wizard_get_path($form_info, $id);
+        $options = array();
+        if (!empty($path[1])) {
+          $options['query'] = $path[1];
+        }
+        if (!empty($path[2])) {
+          $options['fragment'] = $path[2];
+        }
+        $title = l($title, $path[0], $options);
+      }
       $trail[] = '<span class="' . $class . '">' . $title . '</span>';
     }
   }
@@ -245,11 +259,11 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     }
 
     // If there is a next form, place the next button.
-    if (isset($form_state['next'])) {
+    if (isset($form_state['next']) || !empty($form_info['free trail'])) {
       $form['buttons']['next'] = array(
         '#type' => 'submit',
         '#value' => $form_info['next text'],
-        '#next' => $form_state['next'],
+        '#next' => !empty($form_info['free trail']) ? $form_state['step'] : $form_state['next'],
         '#wizard type' => 'next',
         '#weight' => -1000,
         '#attributes' => $button_attributes,
@@ -272,7 +286,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
         '#attributes' => $button_attributes,
       );
     }
-    else if (empty($form_state['next'])) {
+    else if (empty($form_state['next']) || !empty($form_info['free trail'])) {
       $form['buttons']['return'] = array(
         '#type' => 'submit',
         '#value' => $form_info['finish text'],
@@ -288,6 +302,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
         '#value' => $form_info['cancel text'],
         '#wizard type' => 'cancel',
         // hardcode the submit so that it doesn't try to save data.
+        '#skip validation' => TRUE,
         '#submit' => array('ctools_wizard_submit'),
         '#attributes' => $button_attributes,
       );
@@ -399,6 +414,7 @@ function ctools_wizard_defaults(&$form_info) {
   $hook = $form_info['id'];
   $defaults = array(
     'show trail' => FALSE,
+    'free trail' => FALSE,
     'show back' => FALSE,
     'show cancel' => FALSE,
     'show return' => FALSE,
@@ -408,7 +424,13 @@ function ctools_wizard_defaults(&$form_info) {
     'finish text' => t('Finish'),
     'cancel text' => t('Cancel'),
   );
-  $form_info =  $form_info + $defaults;
+
+  if (!empty($form_info['free trail'])) {
+    $defaults['next text'] = t('Update');
+    $defaults['finish text'] = t('Save');
+  }
+
+  $form_info = $form_info + $defaults;
   // set form callbacks if they aren't defined
   foreach($form_info['forms'] as $step => $params) {
     if (!$params['form id']) {

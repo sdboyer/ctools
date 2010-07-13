@@ -309,7 +309,7 @@ function ctools_export_ui_process(&$plugin, $info) {
     'clone' => t('Clone @plugin %title', array('@plugin' => $plugin['title singular'])),
 
     'import' => t('Import @plugin', array('@plugin' => $plugin['title singular'])),
-    'export' => t('Export @plugin', array('@plugin' => $plugin['title singular'])),
+    'export' => t('Export @plugin %title', array('@plugin' => $plugin['title singular'])),
   );
 
   // Strings used in confirmation pages.

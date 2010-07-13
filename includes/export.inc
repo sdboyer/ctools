@@ -295,6 +295,10 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
   $cached_database = &ctools_static('ctools_export_load_object_all');
 
   $schema = ctools_export_get_schema($table);
+  if (empty($schema)) {
+    return array();
+  }
+
   $join_schemas = array();
   $export = $schema['export'];
 
@@ -742,6 +746,10 @@ function ctools_export_get_schema($table) {
 
     if (!isset($schema['export'])) {
       $schema['export'] = array();
+    }
+
+    if (empty($schema['module'])) {
+      return array();
     }
 
     // Add some defaults

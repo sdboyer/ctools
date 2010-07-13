@@ -126,6 +126,74 @@ function ctools_schema_3() {
     'primary key' => array('cid'),
   );
 
+  $schema['ctools_access_ruleset'] = array(
+    'description' => 'Contains exportable customized access rulesets.',
+    'export' => array(
+      'identifier' => 'ruleset',
+      'bulk export' => TRUE,
+      'primary key' => 'rsid',
+      'api' => array(
+        'owner' => 'ctools',
+        'api' => 'ctools_rulesets',
+        'minimum_version' => 1,
+        'current_version' => 1,
+      ),
+    ),
+    'fields' => array(
+      'rsid' => array(
+        'type' => 'serial',
+        'description' => 'A database primary key to ensure uniqueness',
+        'not null' => TRUE,
+        'no export' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => 'Unique ID for this ruleset. Used to identify it programmatically.',
+      ),
+      'admin_title' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'description' => 'Administrative title for this ruleset.',
+      ),
+      'admin_description' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'Administrative description for this ruleset.',
+        'object default' => '',
+      ),
+      'requiredcontexts' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'Any required contexts for this ruleset.',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+      'contexts' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'Any embedded contexts for this ruleset.',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+      'relationships' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'Any relationships for this ruleset.',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+      'access' => array(
+        'type' => 'text',
+        'size' => 'big',
+        'description' => 'The actual group of access plugins for this ruleset.',
+        'serialize' => TRUE,
+        'object default' => array(),
+      ),
+    ),
+    'primary key' => array('rsid'),
+  );
+
   return $schema;
 }
 
@@ -282,5 +350,18 @@ function ctools_update_6005() {
   $schema = ctools_schema_3();
 
   db_create_table($ret, 'ctools_custom_content', $schema['ctools_custom_content']);
+  return $ret;
+}
+
+/**
+ * Add the new access ruleset table, which holds customized exportable rulesets.
+ */
+function ctools_update_6006() {
+  $ret = array();
+
+  // Schema 3 is locked and should not be changed.
+  $schema = ctools_schema_3();
+
+  db_create_table($ret, 'ctools_access_ruleset', $schema['ctools_access_ruleset']);
   return $ret;
 }

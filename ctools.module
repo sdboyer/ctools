@@ -10,7 +10,7 @@
  * must be implemented in the module file.
  */
 
-define('CTOOLS_API_VERSION', '1.7.1');
+define('CTOOLS_API_VERSION', '1.7.2');
 
 /**
  * Test the CTools API version.
@@ -182,7 +182,10 @@ function ctools_init() {
  * Implement hook_perm()
  */
 function ctools_perm() {
-  return array('administer custom content');
+  return array(
+    'administer custom content',
+    'administer ctools rulesets',
+  );
 }
 
 /**
@@ -803,6 +806,85 @@ function ctools_export_ui_task_access($plugin_name, $op, $item = NULL) {
 
   // Deny access if the handler cannot be found.
   return FALSE;
+}
+
+/**
+ * Cache callback on behalf of ctools_export_ui.
+ */
+function ctools_export_ui_context_cache_get($plugin_name, $key) {
+  ctools_include('export-ui');
+  $plugin = ctools_get_export_ui($plugin_name);
+  $handler = ctools_export_ui_get_handler($plugin);
+  if ($handler) {
+    $item = $handler->edit_cache_get($key);
+    if (!$item) {
+      $item = ctools_export_crud_load($handler->plugin['schema'], $key);
+    }
+    return $item;
+  }
+}
+
+/**
+ * Cache callback on behalf of ctools_export_ui.
+ */
+function ctools_export_ui_context_cache_set($plugin_name, $key, $item) {
+  ctools_include('export-ui');
+  $plugin = ctools_get_export_ui($plugin_name);
+  $handler = ctools_export_ui_get_handler($plugin);
+  if ($handler) {
+    return $handler->edit_cache_set($item, $key == '$new$' ? 'add' : 'edit');
+  }
+}
+
+/**
+ * Callback for access control ajax form on behalf of export ui.
+ *
+ * Returns the cached access config and contexts used.
+ * Note that this is assuming that access will be in $item->access -- if it
+ * is not, an export UI plugin will have to make its own callbacks.
+ */
+function ctools_export_ui_ctools_access_get($argument) {
+  ctools_include('export-ui');
+  list($plugin_name, $key) = explode(':', $argument);
+
+  $plugin = ctools_get_export_ui($plugin_name);
+  $handler = ctools_export_ui_get_handler($plugin);
+
+  if ($handler) {
+    ctools_include('context');
+    $item = $handler->edit_cache_get($key);
+    if (!$item) {
+      $item = ctools_export_crud_load($handler->plugin['schema'], $key);
+    }
+
+    $contexts = ctools_context_load_contexts($item);
+    return array($item->access, $contexts);
+  }
+}
+
+/**
+ * Callback for access control ajax form on behalf of export ui
+ *
+ * Returns the cached access config and contexts used.
+ * Note that this is assuming that access will be in $item->access -- if it
+ * is not, an export UI plugin will have to make its own callbacks.
+ */
+function ctools_export_ui_ctools_access_set($argument, $access) {
+  ctools_include('export-ui');
+  list($plugin_name, $key) = explode(':', $argument);
+
+  $plugin = ctools_get_export_ui($plugin_name);
+  $handler = ctools_export_ui_get_handler($plugin);
+
+  if ($handler) {
+    ctools_include('context');
+    $item = $handler->edit_cache_get($key);
+    if (!$item) {
+      $item = ctools_export_crud_load($handler->plugin['schema'], $key);
+    }
+    $item->access = $access;
+    return $handler->edit_cache_set($item, $key == '$new$' ? 'add' : 'edit');
+  }
 }
 
 /**

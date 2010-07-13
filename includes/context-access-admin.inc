@@ -64,12 +64,12 @@
  * the original settings.
  *
  * The callbacks:
- * - $module . _ctools_access_cache_get($argument) -- get the 'access' settings
+ * - $module . _ctools_access_get($argument) -- get the 'access' settings
  *   from cache. Must return array($access, $contexts); This callback can
  *   perform access checking to make sure this URL is not being gamed.
- * - $module . _ctools_access_cache_set($argument, $access) -- set the 'access'
+ * - $module . _ctools_access_set($argument, $access) -- set the 'access'
  *   settings in cache.
- * - $module . _ctools_access_cache_clear($argument) -- clear the cache.
+ * - $module . _ctools_access_clear($argument) -- clear the cache.
  *
  * The ctools_object_cache is recommended for this purpose, but you can use
  * any caching mechanism you like. An example:
