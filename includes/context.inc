@@ -1327,7 +1327,7 @@ function ctools_access_summary($plugin, $contexts, $test) {
   if ($function = ctools_plugin_get_function($plugin, 'summary')) {
     $required_context = isset($plugin['required context']) ? $plugin['required context'] : array();
     $context          = isset($test['context']) ? $test['context'] : array();
-    $description      = $function($test['settings'], ctools_context_select($contexts, $required_context, $context));
+    $description      = $function($test['settings'], ctools_context_select($contexts, $required_context, $context), $plugin);
   }
   return $description;
 }
@@ -1389,7 +1389,7 @@ function ctools_access($settings, $contexts = array()) {
         $test_contexts = ctools_context_select($contexts, $required_context, $context);
       }
 
-      $pass = $function($test['settings'], $test_contexts);
+      $pass = $function($test['settings'], $test_contexts, $plugin);
     }
 
     if ($pass && $settings['logic'] == 'or') {

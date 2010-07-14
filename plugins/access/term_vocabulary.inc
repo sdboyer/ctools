@@ -17,7 +17,7 @@ $plugin = array(
   'default' => array('vids' => array()),
   'settings form' => 'ctools_term_vocabulary_ctools_access_settings',
   'settings form submit' => 'ctools_term_vocabulary_ctools_access_settings_submit',
-  'summary' => 'ctools_term_vocabulary_ctools_acesss_summary',
+  'summary' => 'ctools_term_vocabulary_ctools_access_summary',
   'required context' => new ctools_context_required(t('Vocabulary'), array('term', 'terms', 'vocabulary')),
 );
 
@@ -67,7 +67,7 @@ function ctools_term_vocabulary_ctools_access_check($conf, $context) {
 /**
  * Provide a summary description based upon the checked term_vocabularys.
  */
-function ctools_term_vocabulary_ctools_acesss_summary($conf, $context) {
+function ctools_term_vocabulary_ctools_access_summary($conf, $context) {
   if (!isset($conf['type'])) {
     $conf['type'] = array();
   }

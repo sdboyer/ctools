@@ -18,7 +18,7 @@ if (module_exists('locale')) {
     'default' => array('language' => array()),
     'settings form' => 'ctools_node_language_ctools_access_settings',
     'settings form submit' => 'ctools_node_language_ctools_access_settings_submit',
-    'summary' => 'ctools_node_language_ctools_acesss_summary',
+    'summary' => 'ctools_node_language_ctools_access_summary',
     'required context' => new ctools_context_required(t('Node'), 'node'),
   );
 }
@@ -88,7 +88,7 @@ function ctools_node_language_ctools_access_check($conf, $context) {
 /**
  * Provide a summary description based upon the checked node_languages.
  */
-function ctools_node_language_ctools_acesss_summary($conf, $context) {
+function ctools_node_language_ctools_access_summary($conf, $context) {
   $languages = array(
     'current' => t('Current site language'),
     'default' => t('Default site language'),

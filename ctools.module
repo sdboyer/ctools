@@ -392,6 +392,15 @@ function ctools_js_replacements() {
 }
 
 /**
+ * Inform CTools that the layout plugin can be loaded from themes.
+ */
+function ctools_ctools_plugin_access() {
+  return array(
+    'child plugins' => TRUE,
+  );
+}
+
+/**
  * Get a list of roles in the system.
  */
 function ctools_get_roles() {

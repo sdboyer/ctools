@@ -165,12 +165,18 @@ function ctools_plugin_api_include($owner, $api, $minimum_version, $current_vers
 function ctools_get_plugins($module, $type, $id = NULL) {
   // Store local caches of plugins and plugin info so we don't have to do full
   // lookups everytime.
-  static $info = array();
-  static $plugins = array();
+  $info = &ctools_static('ctools_plugin_info', array());
+  $plugins = &ctools_static('ctools_plugins', array());
+
+  // Attempt to shortcut this whole piece of code if we already have
+  // the requested plugin:
+  if ($id && isset($plugins[$module][$type]) && array_key_exists($id, $plugins[$module][$type])) {
+    return $plugins[$module][$type][$id];
+  }
 
   // Store the status of plugin loading. If a module plugin type pair is true,
   // then it is fully loaded and no searching or setup needs to be done.
-  static $setup = array();
+  $setup = &ctools_static('ctools_plugin_setup', array());
 
   // Request metadata/defaults for this plugin from the declaring module. This
   // is done once per page request, upon a request being made for that plugin.
@@ -185,8 +191,6 @@ function ctools_get_plugins($module, $type, $id = NULL) {
 
   // If the plugin info says this can be cached, check cache first.
   if ($info[$module][$type]['cache'] && empty($setup[$module][$type])) {
-    // @todo Maybe this should use our own table but free wiping
-    // with content updates is convenient.
     $cache = cache_get("plugins:$module:$type", $info[$module][$type]['cache table']);
 
     if (!empty($cache->data)) {
@@ -213,7 +217,23 @@ function ctools_get_plugins($module, $type, $id = NULL) {
   if (empty($setup[$module][$type]) && ($build_cache || !$id)) {
     $setup[$module][$type] = TRUE;
     $plugins[$module][$type] = array_merge($plugins[$module][$type], ctools_plugin_load_includes($info[$module][$type]));
+    // If the plugin can have child plugins, and we're loading all plugins,
+    // go through the list of plugins we have and find child plugins.
+    if (!$id && !empty($info[$module][$type]['child plugins'])) {
+      // If a plugin supports children, go through each plugin and ask.
+      $temp = array();
+      foreach ($plugins[$module][$type] as $name => $plugin) {
+        if (!empty($plugin['get children']) && function_exists($plugin['get children'])) {
+          $temp = array_merge($plugin['get children']($plugin, $name), $temp);
+        }
+        else {
+          $temp[$name] = $plugin;
+        }
+      }
+      $plugins[$module][$type] = $temp;
+    }
   }
+
 
   // If we were told earlier that this is cacheable and the cache was
   // empty, give something back.
@@ -228,9 +248,25 @@ function ctools_get_plugins($module, $type, $id = NULL) {
 
   // Check to see if we need to look for the file
   if (!array_key_exists($id, $plugins[$module][$type])) {
-    $result = ctools_plugin_load_includes($info[$module][$type], $id);
-    // Set to either what was returned or NULL.
-    $plugins[$module][$type][$id] = isset($result[$id]) ? $result[$id] : NULL;
+    // If we can have child plugins, check to see if the plugin name is in the
+    // format of parent:child and break it up if it is.
+    if (!empty($info[$module][$type]['child plugins']) && strpos($id, ':') !== FALSE) {
+      list($parent, $child) = explode(':', $id, 2);
+    }
+    else {
+      $parent = $id;
+    }
+
+    if (!array_key_exists($parent, $plugins[$module][$type])) {
+      $result = ctools_plugin_load_includes($info[$module][$type], $parent);
+      // Set to either what was returned or NULL.
+      $plugins[$module][$type][$parent] = isset($result[$parent]) ? $result[$parent] : NULL;
+    }
+
+    // If we are looking for a child, and have the parent, ask the parent for the child.
+    if (!empty($child) && !empty($plugins[$module][$type][$parent]) && function_exists($plugins[$module][$type][$parent]['get child'])) {
+      $plugins[$module][$type][$id] = $plugins[$module][$type][$parent]['get child']($plugins[$module][$type][$parent], $parent, $child);
+    }
   }
 
   // At this point we should either have the plugin, or a NULL.

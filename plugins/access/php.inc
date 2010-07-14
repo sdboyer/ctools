@@ -16,7 +16,7 @@ $plugin = array(
   'callback' => 'ctools_php_ctools_access_check',
   'default' => array('description' => '', 'php' => ''),
   'settings form' => 'ctools_php_ctools_access_settings',
-  'summary' => 'ctools_php_ctools_acesss_summary',
+  'summary' => 'ctools_php_ctools_access_summary',
   'all contexts' => TRUE,
 );
 
@@ -59,6 +59,6 @@ function ctools_php_ctools_access_check($__conf, $contexts) {
 /**
  * Provide a summary description based upon the checked roles.
  */
-function ctools_php_ctools_acesss_summary($conf, $contexts) {
+function ctools_php_ctools_access_summary($conf, $contexts) {
   return check_plain($conf['description']);
 }

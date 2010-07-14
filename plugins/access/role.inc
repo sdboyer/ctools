@@ -17,7 +17,7 @@ $plugin = array(
   'default' => array('rids' => array()),
   'settings form' => 'ctools_role_ctools_access_settings',
   'settings form submit' => 'ctools_role_ctools_access_settings_submit',
-  'summary' => 'ctools_role_ctools_acesss_summary',
+  'summary' => 'ctools_role_ctools_access_summary',
   'required context' => new ctools_context_required(t('User'), 'user'),
 );
 
@@ -59,7 +59,7 @@ function ctools_role_ctools_access_check($conf, $context) {
 /**
  * Provide a summary description based upon the checked roles.
  */
-function ctools_role_ctools_acesss_summary($conf, $context) {
+function ctools_role_ctools_access_summary($conf, $context) {
   if (!isset($conf['rids'])) {
     $conf['rids'] = array();
   }
