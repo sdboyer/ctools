@@ -45,6 +45,7 @@ Introduce ctools_access_ruleset module for customizable access rulesets.
 Introduce ctools_custom_content module for customizable content panes and move the associated UI code to the module.
 Restore a less aggressive plugin caching.
 #854190 by Amitaibu: Provide a nicer experience with stylizer if there are no stylizer-enabled modules running.
+#737602: Generic NOT checkbox for all access tests.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

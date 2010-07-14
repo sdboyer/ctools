@@ -1390,6 +1390,9 @@ function ctools_access($settings, $contexts = array()) {
       }
 
       $pass = $function($test['settings'], $test_contexts, $plugin);
+      if (!empty($test['settings']['not'])) {
+        $pass = !$pass;
+      }
     }
 
     if ($pass && $settings['logic'] == 'or') {

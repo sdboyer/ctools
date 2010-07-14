@@ -385,7 +385,7 @@ function ctools_access_ajax_edit($fragment = NULL, $id = NULL) {
 }
 
 /**
- * From to edit the settings of an access test.
+ * Form to edit the settings of an access test.
  */
 function ctools_access_ajax_edit_item(&$form_state) {
   $test = &$form_state['test'];
@@ -394,11 +394,16 @@ function ctools_access_ajax_edit_item(&$form_state) {
   if (isset($plugin['required context'])) {
     $form['context'] = ctools_context_selector($form_state['contexts'], $plugin['required context'], $test['context']);
   }
-
   $form['settings'] = array('#tree' => TRUE);
   if ($function = ctools_plugin_get_function($plugin, 'settings form')) {
     $function($form, $form_state, $test['settings']);
   }
+
+  $form['not'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Reverse (NOT)'),
+    '#default_value' => !empty($test['not']),
+  );
 
   $form['save'] = array(
     '#type' => 'submit',
@@ -429,6 +434,7 @@ function ctools_access_ajax_edit_item_submit(&$form, &$form_state) {
   if (isset($form_state['values']['context'])) {
     $form_state['test']['context'] = $form_state['values']['context'];
   }
+  $form_state['test']['not'] = !empty($form_state['values']['not']);
 }
 
 /**
