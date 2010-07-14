@@ -6,6 +6,17 @@
  */
 class stylizer_ui extends ctools_export_ui {
 
+  function access($op, $item) {
+    $access = parent::access($op, $item);
+    if ($op == 'add' & $access && empty($this->base_types)) {
+     // Make sure there are base styles defined.
+     $access = FALSE;
+     // Give a warning about the missing base styles.
+     drupal_set_message($this->plugin['strings']['message']['missing base type'], 'warning');
+    }
+    return $access;
+  }
+
   function list_form(&$form, &$form_state) {
     ctools_include('stylizer');
     parent::list_form($form, $form_state);

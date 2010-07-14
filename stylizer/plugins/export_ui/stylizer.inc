@@ -21,6 +21,12 @@ $plugin = array(
     'parent' => 'ctools_export_ui',
   ),
 
+  'strings' => array(
+    'message' => array(
+      'missing base type' => t('There are currently no style types available to add. You should enable a module that utilizes them, such as Panels.'),
+    ),
+  ),
+
   'use wizard' => TRUE,
   'form info' => array(
     'add order' => array(
