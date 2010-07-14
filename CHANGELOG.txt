@@ -43,6 +43,7 @@ Allow Views to use their exposed filters as pane configuration. This is under th
 Moved Panels stylizer UI to CTools. If you use Panels Stylizer, be sure to update Panels at the same time.
 Introduce ctools_access_ruleset module for customizable access rulesets.
 Introduce ctools_custom_content module for customizable content panes and move the associated UI code to the module.
+Restore a less aggressive plugin caching.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

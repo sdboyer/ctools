@@ -285,15 +285,41 @@ function ctools_get_plugins($module, $type, $id = NULL) {
  *   An array of information created for this plugin.
  */
 function ctools_plugin_load_includes($info, $filename = NULL) {
-  // Load all our plugins.
-  $directories = ctools_plugin_get_directories($info);
-  $extension = empty($info['info file']) ? $info['extension'] : 'info';
-  $file_list = array();
+  // Keep a static array so we don't hit drupal_system_listing more than necessary.
+  $all_files = &ctools_static(__FUNCTION__, array());
 
-  foreach ($directories as $module => $path) {
-    $file_list[$module] = drupal_system_listing('\.' . $extension . '$', $path, 'name', 0);
+  // If we're being asked for all plugins of a type, skip any caching
+  // we may have done because this is an admin task and it's ok to
+  // spend the extra time.
+  if (!isset($filename)) {
+    $all_files[$info['module']][$info['type']] = NULL;
   }
 
+  if (!isset($all_files[$info['module']][$info['type']])) {
+    // If a filename was set, we will try to load our list of files from
+    // cache. This is considered normal operation and we try to reduce
+    // the time spent finding files.
+    if (isset($filename)) {
+      $cache = cache_get("ctools_plugin_files:$info[module]:$info[type]");
+      if ($cache) {
+        $all_files[$info['module']][$info['type']] = $cache->data;
+      }
+    }
+
+    if (!isset($all_files[$info['module']][$info['type']])) {
+      $all_files[$info['module']][$info['type']] = array();
+      // Load all our plugins.
+      $directories = ctools_plugin_get_directories($info);
+      $extension = empty($info['info file']) ? $info['extension'] : 'info';
+
+      foreach ($directories as $module => $path) {
+        $all_files[$info['module']][$info['type']][$module] = drupal_system_listing('\.' . $extension . '$', $path, 'name', 0);
+      }
+
+      cache_set("ctools_plugin_files:$info[module]:$info[type]", $all_files[$info['module']][$info['type']]);
+    }
+  }
+  $file_list = $all_files[$info['module']][$info['type']];
   $plugins = array();
 
   // Iterate through all the plugin .inc files, load them and process the hook
