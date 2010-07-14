@@ -6,6 +6,7 @@ API version 1.7.2
   Moved the Panels Stylizer module into CTools so that the UI can be
     used to manage styles for modules other than Panels.
   Introduce ctools_access_ruleset module for customizable access rulesets.
+  Introduce ctools_custom_content module for customizable content panes.
   
 API version 1.7.1
   Introduce 'modal return' and 'ajax return' to wizard.inc to allow

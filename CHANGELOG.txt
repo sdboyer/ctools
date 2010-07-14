@@ -42,6 +42,7 @@ Allow Views to use their exposed filters as pane configuration. This is under th
 #849418: "Custom" content type was accidentally losing context substitutions created when reusable custom content types went in.
 Moved Panels stylizer UI to CTools. If you use Panels Stylizer, be sure to update Panels at the same time.
 Introduce ctools_access_ruleset module for customizable access rulesets.
+Introduce ctools_custom_content module for customizable content panes and move the associated UI code to the module.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

@@ -894,7 +894,10 @@ class ctools_export_ui {
   function edit_cache_set($item, $op = 'edit') {
     ctools_include('object-cache');
     $name = $this->edit_cache_get_key($item, $op);
+    return $this->edit_cache_set_key($item, $name);
+  }
 
+  function edit_cache_set_key($item, $name) {
     return ctools_object_cache_set('ctui_' . $this->plugin['name'], $name, $item);
   }
 

@@ -2,7 +2,7 @@
 // $Id$
 
 /**
- * Schema for Panels stylizer
+ * Schema for stylizer.
  */
 function stylizer_schema() {
   return stylizer_schema_1();

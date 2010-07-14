@@ -2,7 +2,7 @@
 // $Id$
 
 /**
- * Schema for Panels ctools_access_ruleset
+ * Schema for customizable access rulesets.
  */
 function ctools_access_ruleset_schema() {
   return ctools_access_ruleset_schema_1();

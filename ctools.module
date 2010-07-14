@@ -179,16 +179,6 @@ function ctools_init() {
 }
 
 /**
- * Implement hook_perm()
- */
-function ctools_perm() {
-  return array(
-    'administer custom content',
-    'administer ctools rulesets',
-  );
-}
-
-/**
  * Shutdown handler used during ajax operations to help catch fatal errors.
  */
 function ctools_shutdown_handler() {
@@ -841,7 +831,7 @@ function ctools_export_ui_context_cache_set($plugin_name, $key, $item) {
   $plugin = ctools_get_export_ui($plugin_name);
   $handler = ctools_export_ui_get_handler($plugin);
   if ($handler) {
-    return $handler->edit_cache_set($item, $key == '$new$' ? 'add' : 'edit');
+    return $handler->edit_cache_set_key($item, $key);
   }
 }
 
@@ -892,19 +882,6 @@ function ctools_export_ui_ctools_access_set($argument, $access) {
       $item = ctools_export_crud_load($handler->plugin['schema'], $key);
     }
     $item->access = $access;
-    return $handler->edit_cache_set($item, $key == '$new$' ? 'add' : 'edit');
+    return $handler->edit_cache_set_key($item, $key);
   }
-}
-
-/**
- * Create callback for creating a new CTools custom content type.
- *
- * This ensures we get proper defaults from the plugin for its settings.
- */
-function ctools_content_type_new($set_defaults) {
-  $item = ctools_export_new_object('ctools_custom_content', $set_defaults);
-  ctools_include('content');
-  $plugin = ctools_get_content_type('custom');
-  $item->settings = ctools_content_get_defaults($plugin, array());
-  return $item;
 }
