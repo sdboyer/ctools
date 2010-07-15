@@ -588,6 +588,13 @@ function page_manager_page_form_basic_submit(&$form, &$form_state) {
     $cache->subtask_id = $page->name;
     $plugin = page_manager_get_task_handler($cache->handler);
 
+    // If they created and went back, there might be old, dead handlers
+    // that are not going to be added.
+    //
+    // Remove them:
+    $cache->handlers = array();
+    $cache->handler_info = array();
+
     // Create a new handler.
     $handler = page_manager_new_task_handler($plugin);
     $title = !empty($form_state['values']['title']) ? $form_state['values']['title'] : $plugin['title'];
