@@ -1329,6 +1329,11 @@ function ctools_access_summary($plugin, $contexts, $test) {
     $context          = isset($test['context']) ? $test['context'] : array();
     $description      = $function($test['settings'], ctools_context_select($contexts, $required_context, $context), $plugin);
   }
+
+  if (!empty($test['settings']['not'])) {
+    $description = "NOT ($description)";
+  }
+
   return $description;
 }
 
