@@ -60,5 +60,5 @@ function ctools_php_ctools_access_check($__conf, $contexts) {
  * Provide a summary description based upon the checked roles.
  */
 function ctools_php_ctools_access_summary($conf, $contexts) {
-  return check_plain($conf['description']);
+  return !empty($conf['description']) ? check_plain($conf['description']) : t('No description');
 }
