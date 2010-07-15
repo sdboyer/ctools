@@ -424,7 +424,14 @@
   };
 
   Drupal.CTools.AJAX.commands.redirect = function(data) {
-    location.href = data.url;
+    if (data.delay > 0) {
+      setTimeout(function () {
+        location.href = data.url;
+      }, data.delay);
+    }
+    else {
+      location.href = data.url;
+    }
   };
 
   Drupal.CTools.AJAX.commands.reload = function(data) {
