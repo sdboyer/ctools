@@ -50,6 +50,7 @@ Restore a less aggressive plugin caching.
 #704132: Fix broken term_parent access plugin.
 #596212 by KoCo: Fix warning message if using taxonomy terms context but no valid terms were found.
 #657652: PHP Access rules become uneditable if they had no description.
+#680778 by hefox: Taxonomy synonyms not showing correctly in term list content type.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
