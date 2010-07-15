@@ -1330,7 +1330,7 @@ function ctools_access_summary($plugin, $contexts, $test) {
     $description      = $function($test['settings'], ctools_context_select($contexts, $required_context, $context), $plugin);
   }
 
-  if (!empty($test['settings']['not'])) {
+  if (!empty($test['not'])) {
     $description = "NOT ($description)";
   }
 
@@ -1395,7 +1395,7 @@ function ctools_access($settings, $contexts = array()) {
       }
 
       $pass = $function($test['settings'], $test_contexts, $plugin);
-      if (!empty($test['settings']['not'])) {
+      if (!empty($test['not'])) {
         $pass = !$pass;
       }
     }
