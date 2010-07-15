@@ -47,6 +47,7 @@ Restore a less aggressive plugin caching.
 #854190 by Amitaibu: Provide a nicer experience with stylizer if there are no stylizer-enabled modules running.
 #737602: Generic NOT checkbox for all access tests.
 #735922 by daniboy: Allow the redirect command to have a delay.
+#704132: Fix broken term_parent access plugin.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
