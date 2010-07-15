@@ -237,7 +237,17 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
     }
 
     $form_info['path'] = "admin/build/pages/add/$task_name/%step";
+  }
+  else {
+    $new_page = page_manager_page_new();
+    $new_page->name = NULL;
 
+    $page = new stdClass();
+    page_manager_page_new_page_cache($new_page, $page);
+    $form_info['path'] = 'admin/build/pages/add/%task_name/%step';
+  }
+
+  if ($step && $step != 'basic') {
     $handler_plugin = page_manager_get_task_handler($page->handler);
 
     $form_info['forms'] += $handler_plugin['forms'];
@@ -279,12 +289,6 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
     }
   }
   else {
-    $new_page = page_manager_page_new();
-    $new_page->name = NULL;
-
-    $page = new stdClass();
-    page_manager_page_new_page_cache($new_page, $page);
-    $form_info['path'] = 'admin/build/pages/add/%task_name/%step';
     $form_info['show trail'] = FALSE;
     $form_info['order'] = array(
       'basic' => t('Basic settings'),

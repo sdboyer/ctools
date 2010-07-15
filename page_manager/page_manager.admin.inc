@@ -1390,6 +1390,9 @@ function page_manager_handler_add_form(&$form, $form_state, $features = array())
         '#type' => 'checkbox',
         '#title' => $feature,
       );
+      if (!empty($form_state['page']->forms) && in_array($feature_id, $form_state['page']->forms)) {
+        $form['features'][$plugin][$feature_id]['#default_value'] = TRUE;
+      }
 
       if ($plugin != 'default') {
         $form['features'][$plugin][$feature_id] += array(
