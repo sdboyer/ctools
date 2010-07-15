@@ -78,6 +78,7 @@ function ctools_context_terms_convert($context, $type) {
           $context->names = '';
         }
         else {
+          $names = array();
           $result = db_query("SELECT tid, name FROM {term_data} WHERE tid IN (" . db_placeholders($context->tids) . ")", $context->tids);
           while ($term = db_fetch_object($result)) {
             $names[$term->tid] = $term->name;

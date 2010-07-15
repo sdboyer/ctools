@@ -48,6 +48,7 @@ Restore a less aggressive plugin caching.
 #737602: Generic NOT checkbox for all access tests.
 #735922 by daniboy: Allow the redirect command to have a delay.
 #704132: Fix broken term_parent access plugin.
+#596212 by KoCo: Fix warning message if using taxonomy terms context but no valid terms were found.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
