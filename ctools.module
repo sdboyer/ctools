@@ -312,6 +312,13 @@ function ctools_theme_registry_alter(&$registry) {
       $registry['page']['theme paths'][1] == 'themes/garland') {
     $registry['page']['preprocess functions'][2] = 'ctools_garland_preprocess_page';
   }
+
+  // Move this one last last last so it can catch changes made by modules and themes.
+  $key = array_search('ctools_preprocess_page', $registry['page']['preprocess functions']);
+  if ($key) {
+    unset($registry['page']['preprocess functions'][$key]);
+  }
+  $registry['page']['preprocess functions'][] = 'ctools_preprocess_page';
 }
 
 
@@ -611,15 +618,14 @@ function ctools_preprocess_page(&$variables) {
 
   // Go through all CSS files that are being added to the page and catalog them.
   $css_files = array();
-  $css = drupal_add_css();
-  foreach ($css as $media => $types) {
+  foreach ($vars['css'] as $media => $types) {
     // If CSS preprocessing is off, we still need to output the styles.
     // Additionally, go through any remaining styles if CSS preprocessing is on and output the non-cached ones.
     foreach ($types as $type => $files) {
       if ($type == 'module') {
         // Setup theme overrides for module styles.
         $theme_styles = array();
-        foreach (array_keys($css[$media]['theme']) as $theme_style) {
+        foreach (array_keys($vars['css'][$media]['theme']) as $theme_style) {
           $theme_styles[] = basename($theme_style);
         }
       }
