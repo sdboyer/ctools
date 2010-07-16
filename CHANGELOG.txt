@@ -52,6 +52,7 @@ Restore a less aggressive plugin caching.
 #657652: PHP Access rules become uneditable if they had no description.
 #680778 by hefox: Taxonomy synonyms not showing correctly in term list content type.
 #617678: Improve 'back' button handling during adding a page in page manager.
+#817810: Search menu retooling caused the title of search pages to get lost.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
