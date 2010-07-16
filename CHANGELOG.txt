@@ -55,6 +55,7 @@ Restore a less aggressive plugin caching.
 #817810: Search menu retooling caused the title of search pages to get lost.
 #505132: Fix CSS caching to truly work on private filesystem now.
 #707990: Add default converters and a default converter to user context to ease integration with realname.module.
+#592986: Allow "text-transform" in user-generated CSS.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
