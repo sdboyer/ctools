@@ -892,6 +892,12 @@ function ctools_export_ui_ctools_access_set($argument, $access) {
   }
 }
 
+/**
+ * Implementation of hook_file_download()
+ *
+ * When using the private file system, we have to let Drupal know it's ok to
+ * download CSS and image files from our temporary directory.
+ */
 function ctools_file_download($filepath) {
   if (strpos($filepath, 'ctools') === 0) {
     $mime = file_get_mimetype($filepath);

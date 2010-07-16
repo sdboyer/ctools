@@ -7,6 +7,9 @@ API version 1.7.2
     used to manage styles for modules other than Panels.
   Introduce ctools_access_ruleset module for customizable access rulesets.
   Introduce ctools_custom_content module for customizable content panes.
+  Add 'convert default' as a converter keyword for context implementations.
+    Instead of reverting $context->title this will cause %context without
+    :converter to use a default converter.
   
 API version 1.7.1
   Introduce 'modal return' and 'ajax return' to wizard.inc to allow

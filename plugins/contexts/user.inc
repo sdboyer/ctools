@@ -23,6 +23,7 @@ $plugin = array(
   'context name' => 'user',
   'convert list' => 'ctools_context_user_convert_list',
   'convert' => 'ctools_context_user_convert',
+  'convert default' => 'name',
   'js' => array('misc/autocomplete.js'),
 );
 
