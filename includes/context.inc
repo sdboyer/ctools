@@ -456,8 +456,14 @@ function _ctools_context_get_converters($id, $plugin_name) {
     $converters = (array) $function();
   }
 
+  // DEPRECATED, but left in: This alter was misnamed.
   foreach (module_implements('ctools_context_convert_list') as $module) {
     $function = $module . '_ctools_context_convert_list';
+    $function($plugin, $converters);
+  }
+
+  foreach (module_implements('ctools_context_convert_list_alter') as $module) {
+    $function = $module . '_ctools_context_convert_list_alter';
     $function($plugin, $converters);
   }
 
