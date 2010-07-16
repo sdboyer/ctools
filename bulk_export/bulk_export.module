@@ -56,7 +56,7 @@ function bulk_export_export() {
     else {
       $exportables[$table] = ctools_export_default_list($table, $schema);
     }
-    asort($exportables[$table]);
+    natcasesort($exportables[$table]);
     $export_tables[$table] = $schema['module'];
   }
   if ($exportables) {
@@ -219,6 +219,7 @@ function bulk_export_export_form_submit($form, &$form_state) {
   foreach ($form_state['values']['tables'] as $table => $names) {
     $names = array_keys(array_filter($names));
     if ($names) {
+      natcasesort($names);
       ctools_export_to_hook_code($code, $table, $names, $name);
     }
   }
