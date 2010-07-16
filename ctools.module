@@ -618,14 +618,14 @@ function ctools_preprocess_page(&$variables) {
 
   // Go through all CSS files that are being added to the page and catalog them.
   $css_files = array();
-  foreach ($vars['css'] as $media => $types) {
+  foreach ($variables['css'] as $media => $types) {
     // If CSS preprocessing is off, we still need to output the styles.
     // Additionally, go through any remaining styles if CSS preprocessing is on and output the non-cached ones.
     foreach ($types as $type => $files) {
       if ($type == 'module') {
         // Setup theme overrides for module styles.
         $theme_styles = array();
-        foreach (array_keys($vars['css'][$media]['theme']) as $theme_style) {
+        foreach (array_keys($variables['css'][$media]['theme']) as $theme_style) {
           $theme_styles[] = basename($theme_style);
         }
       }
