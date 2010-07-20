@@ -6,15 +6,8 @@
  * Content type plugin to expose all views as content.
  */
 
-/**
- * Implementation of hook_ctools_content_types()
- */
-function views_content_views_ctools_content_types() {
-  if (!variable_get('ctools_content_all_views', TRUE)) {
-    return;
-  }
-
-  return array(
+if (variable_get('ctools_content_all_views', TRUE)) {
+  $plugin = array(
     'title' => t('All views'),
     'defaults' => array(
       'override_pager_settings' => FALSE,

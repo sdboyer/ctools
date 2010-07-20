@@ -855,20 +855,24 @@ function ctools_get_relationships() {
  *   - identifier: The human readable identifier for this relationship, usually
  *     defined by the UI.
  *   - keyword: The keyword used for this relationship for substitutions.
+ *
  * @param $source_context
  *   The context this relationship is based upon.
+ *
+ * @param $placeholders
+ *   If TRUE, placeholders are acceptable.
  *
  * @return
  *   A context object if one can be loaded.
  */
-function ctools_context_get_context_from_relationship($relationship, $source_context) {
+function ctools_context_get_context_from_relationship($relationship, $source_context, $placeholders = FALSE) {
   ctools_include('plugins');
   if ($function = ctools_plugin_load_function('ctools', 'relationships', $relationship['name'], 'context')) {
     if (!isset($relationship['relationship_settings'])) {
       $relationship['relationship_settings'] = array();
     }
 
-    $context = $function($source_context, $relationship['relationship_settings']);
+    $context = $function($source_context, $relationship['relationship_settings'], $placeholders);
     if ($context) {
       $context->identifier = $relationship['identifier'];
       $context->page_title = isset($relationship['title']) ? $relationship['title'] : '';
@@ -923,11 +927,15 @@ function ctools_context_get_relevant_relationships($contexts) {
  *   - context: context id relationship belongs to. This will be used to
  *     identify which context in the $contexts array to use to create the
  *     relationship context.
+ *
  * @param $contexts
  *   A keyed array of contexts used to figure out which relationships
  *   are relevant. New contexts will be added to this.
+ *
+ * @param $placeholders
+ *   If TRUE, placeholders are acceptable.
  */
-function ctools_context_get_context_from_relationships($relationships, &$contexts) {
+function ctools_context_get_context_from_relationships($relationships, &$contexts, $placeholders = FALSE) {
   $return = array();
 
   foreach ($relationships as $rdata) {
@@ -1044,12 +1052,17 @@ function ctools_context_get_context_from_context($context, $type = 'context', $a
  * @param $type
  *   Either 'context' or 'requiredcontext', which indicates whether the contexts
  *   are loaded from internal data or copied from an external source.
+ * @param $placeholders
+ *   If true, placeholders are acceptable.
  */
-function ctools_context_get_context_from_contexts($contexts, $type = 'context') {
+function ctools_context_get_context_from_contexts($contexts, $type = 'context', $placeholders = FALSE) {
   $return = array();
   foreach ($contexts as $context) {
     $ctext = ctools_context_get_context_from_context($context, $type);
     if ($ctext) {
+      if ($placeholders) {
+        $ctext->placeholder = TRUE;
+      }
       $return[ctools_context_id($context, $type)] = $ctext;
     }
   }
@@ -1121,7 +1134,7 @@ function ctools_context_load_contexts($object, $placeholders = TRUE, $contexts =
     // from external sources. If this isn't set, it's assumed these context
     // will already have been matched up and loaded.
     if (!empty($object->requiredcontexts) && is_array($object->requiredcontexts)) {
-      $contexts += ctools_context_get_context_from_contexts($object->requiredcontexts, 'requiredcontext');
+      $contexts += ctools_context_get_context_from_contexts($object->requiredcontexts, 'requiredcontext', $placeholders);
     }
 
     if (!empty($object->arguments) && is_array($object->arguments)) {
@@ -1130,12 +1143,12 @@ function ctools_context_load_contexts($object, $placeholders = TRUE, $contexts =
   }
 
   if (!empty($object->contexts) && is_array($object->contexts)) {
-    $contexts += ctools_context_get_context_from_contexts($object->contexts);
+    $contexts += ctools_context_get_context_from_contexts($object->contexts, 'context', $placeholders);
   }
 
   // add contexts from relationships
   if (!empty($object->relationships) && is_array($object->relationships)) {
-    ctools_context_get_context_from_relationships($object->relationships, $contexts);
+    ctools_context_get_context_from_relationships($object->relationships, $contexts, $placeholders);
   }
 
   return $contexts;

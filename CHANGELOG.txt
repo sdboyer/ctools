@@ -56,6 +56,7 @@ Restore a less aggressive plugin caching.
 #505132: Fix CSS caching to truly work on private filesystem now.
 #707990: Add default converters and a default converter to user context to ease integration with realname.module.
 #592986: Allow "text-transform" in user-generated CSS.
+#507092: Add a "view" context, meaning you can load a view into a context and then display individual rows from that view as panes.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

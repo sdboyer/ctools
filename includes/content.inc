@@ -62,9 +62,11 @@ function ctools_content_process(&$plugin, $info) {
 
   // Another ease of use check:
   if (!isset($plugin['content types'])) {
-    // If a content type is set to SINGLE and *no* subtypes are defined, this rewrites
-    // things so that the syntax is nicer.
-    if (!empty($plugin['single'])) {
+    // If a subtype plugin exists, try to use it. Otherwise assume single.
+    if (function_exists($function_base . 'content_types')) {
+      $plugin['content types'] = $function_base . 'content_types';
+    }
+    else {
       $type = array(
         'title' => $plugin['title'],
         'description' => $plugin['description'],
@@ -79,10 +81,6 @@ function ctools_content_process(&$plugin, $info) {
         $type['top level'] = $plugin['top level'];
       }
       $plugin['content types'] = array($plugin['name'] => $type);
-    }
-    // Otherwise, auto discover the function based upon pattern naming.
-    else if (function_exists($function_base . 'content_types')) {
-      $plugin['content types'] = $function_base . 'content_types';
     }
   }
 }
