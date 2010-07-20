@@ -486,7 +486,7 @@ function views_content_views_content_type_admin_info($subtype, $conf, $contexts)
  *   Correct error checking on this function checks against is_object().
  */
 function _views_content_views_update_conf(&$conf, $subtype) {
-  $task = views_content_views_ctools_content_types();
+  $plugin = ctools_get_content_type('views');
 
   // Special: Existing content types get a different default than new ones:
   if (!empty($conf) && !isset($conf['override_pager_settings'])) {
@@ -495,7 +495,7 @@ function _views_content_views_update_conf(&$conf, $subtype) {
 
   // Make sure that our defaults are always set if there is no
   // previous setting. This helps updates go more smoothly.
-  foreach ($task['defaults'] as $key => $value) {
+  foreach ($plugin['defaults'] as $key => $value) {
     if (!isset($conf[$key])) {
       $conf[$key] = $value;
     }

@@ -1091,7 +1091,11 @@ function ctools_context_match_required_contexts($required, $contexts) {
   }
 
   foreach ($required as $r) {
-    $return[ctools_context_id($r, 'requiredcontext')] = array_shift($contexts);
+    $context = drupal_clone(array_shift($contexts));
+    $context->identifier = $r['identifier'];
+    $context->page_title = isset($r['title']) ? $r['title'] : '';
+    $context->keyword    = $r['keyword'];
+    $return[ctools_context_id($r, 'requiredcontext')] = $context;
   }
 
   return $return;
