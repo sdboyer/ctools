@@ -58,6 +58,7 @@ Restore a less aggressive plugin caching.
 #592986: Allow "text-transform" in user-generated CSS.
 #507092: Add a "view" context, meaning you can load a view into a context and then display individual rows from that view as panes.
 #696402 by pokurek: Prevent node add/edit contexts from getting into infinite loops.
+#609424: Book relationship plugin was completely non-functional.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

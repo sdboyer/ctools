@@ -18,6 +18,7 @@ $plugin = array(
   'context' => 'ctools_book_parent_context',
   'settings form' => 'ctools_book_parent_settings_form',
   'settings form validate' => 'ctools_book_parent_settings_form_validate',
+  'defaults' => array('type' => 'top'),
 );
 
 /**
@@ -29,18 +30,14 @@ function ctools_book_parent_context($context, $conf) {
     return ctools_context_create_empty('node');
   }
 
-  if (isset($context->data->parent)) {
+  if (isset($context->data->book)) {
     if ($conf['type'] == 'top') {
-      // Search through the book tree to load the top level.
-      $result = array('nid' => $context->data->nid, 'vid' => $context->data->vid, 'parent' => $context->data->parent);
-      while (!empty($result['parent'])) {
-        $result = db_fetch_array(db_query("SELECT * FROM {book} b INNER JOIN {node} n ON b.vid = n.nid WHERE b.nid = %d", $result['parent']));
-      }
-      $nid = $result['nid'];
+      $nid = $context->data->book['bid'];
     }
     else {
       // Just load the parent book.
-      $nid = $context->data->parent;
+      $item = book_link_load($context->data->book['plid']);
+      $nid = $item['nid'];
     }
 
     if (!empty($nid)) {
