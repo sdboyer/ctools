@@ -192,6 +192,7 @@ function page_manager_page_menu_item($task, $menu, $access_arguments, $page_argu
  * Page callback to add a subtask.
  */
 function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
+  ctools_include('context');
   $task = page_manager_get_task('page');
   $task_handler_plugins = page_manager_get_task_handler_plugins($task);
   if (empty($task_handler_plugins)) {

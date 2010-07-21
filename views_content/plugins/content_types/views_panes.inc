@@ -234,19 +234,45 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
     }
   }
 
+  if ($allow['items_per_page'] && isset($conf['items_per_page'])) {
+    $view->display_handler->set_option('items_per_page', $conf['items_per_page']);
+    // And here too, which works in Views 3 where the above does not.
+    $view->set_items_per_page($conf['items_per_page']);
+  }
+
+  if ($allow['offset']) {
+    $view->display_handler->set_option('offset', $conf['offset']);
+    $view->set_offset($conf['offset']);
+  }
+
   if ($allow['use_pager']) {
     // Only set use_pager if they differ, this way we can avoid overwriting the
     // pager type that Views uses.
-    if (!$view->display_handler->get_option('use_pager') || empty($conf['use_pager'])) {
-      $view->display_handler->set_option('use_pager', $conf['use_pager']);
+    // Views 3 version
+    if (method_exists($view, 'init_pager')) {
+      $pager = $view->display_handler->get_option('pager');
+      if ($conf['use_pager'] && ($pager['type'] == 'none' || $pager['type'] == 'some')) {
+        $pager['type'] = 'full';
+      }
+      elseif (!$conf['use_pager'] && $pager['type'] != 'none' && $pager['type'] != 'some') {
+        $pager['type'] = $view->get_items_per_page() || !empty($pager['options']['items_per_page']) ? 'some' : 'none';
+      }
+
+      if ($conf['use_pager']) {
+        if (!isset($pager['options']['id']) || $pager['options']['id'] != $conf['pager_id']) {
+          $pager['options']['id'] = $conf['pager_id'];
+        }
+      }
+
+      $view->display_handler->set_option('pager', $pager);
     }
-    $view->display_handler->set_option('pager_element', $conf['pager_id']);
-  }
-  if ($allow['items_per_page'] && isset($conf['items_per_page'])) {
-    $view->display_handler->set_option('items_per_page', $conf['items_per_page']);
-  }
-  if ($allow['offset']) {
-    $view->display_handler->set_option('offset', $conf['offset']);
+    else {
+      if (!$view->display_handler->get_option('use_pager') || empty($conf['use_pager'])) {
+        $view->display_handler->set_option('use_pager', $conf['use_pager']);
+      }
+
+      $view->display_handler->set_option('pager_element', $conf['pager_id']);
+    }
   }
 
   if ($allow['fields_override']) {
@@ -476,8 +502,9 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
 
     $view->set_exposed_input($conf['exposed']);
 
-    // @TODO Views 3 will need this figured out
-//    $exposed_form_state['exposed_form_plugin'] = $this;
+    if (version_compare(views_api_version(), '3', '>=')) {
+      $exposed_form_state['exposed_form_plugin'] = $view->display_handler->get_plugin('exposed_form');
+    }
     $view->init_handlers();
     $exposed_form = views_exposed_form($exposed_form_state);
 

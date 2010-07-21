@@ -89,8 +89,14 @@ function views_content_views_row_edit(&$form, &$form_state) {
     return;
   }
 
-  // TODO: Views 3
-  $rows = $view->display_handler->get_option('items_per_page');
+  // Support Views 2 and Views 3.
+  if (method_exists($view, 'get_items_per_page')) {
+    $view->init_pager();
+    $rows = $view->get_items_per_page();
+  }
+  else {
+    $rows = $view->display_handler->get_option('items_per_page');
+  }
   if (empty($rows)) {
     $form['markup'] = array('#value' => '<p>' . t('The view must have a maximum number of items set to use this content type.') . '</p>');
     return;
@@ -125,7 +131,6 @@ function views_content_views_row_edit(&$form, &$form_state) {
       '#dependency' => array('edit-use-fields' => array(TRUE)),
     );
   }
-
 }
 
 function views_content_views_row_edit_validate(&$form, &$form_state) {
@@ -147,6 +152,10 @@ function views_content_views_row_content_type_admin_info($subtype, $conf, $conte
   if (!empty($conf['use_fields'])) {
     $display_fields = array();
     $view = views_content_context_get_view($context);
+    if (empty($view)) {
+      $block->title = t('Broken view');
+      return $block;
+    }
     $fields = $view->display_handler->get_field_labels();
 
     foreach ($conf['fields'] as $field) {

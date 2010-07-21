@@ -170,15 +170,38 @@ function views_content_views_content_type_render($subtype, $conf, $panel_args, $
     $view->display_handler->set_option('use_more', FALSE);
   }
 
+  // Only set use_pager if they differ, this way we can avoid overwriting the
+  // pager type that Views uses.
   if ($conf['override_pager_settings']) {
-    // Only set use_pager if they differ, this way we can avoid overwriting the
-    // pager type that Views uses.
-    if (!$view->display_handler->get_option('use_pager') || empty($conf['use_pager'])) {
-      $view->display_handler->set_option('use_pager', $conf['use_pager']);
+    if (method_exists($view, 'init_pager')) {
+      // Views 3 version
+      $view->set_items_per_page($conf['nodes_per_page']);
+      $view->set_offset($conf['offset']);
+
+      $pager = $view->display_handler->get_option('pager');
+      if ($conf['use_pager'] && ($pager['type'] == 'none' || $pager['type'] == 'some')) {
+        $pager['type'] = 'full';
+      }
+      elseif (!$conf['use_pager'] && $pager['type'] != 'none' && $pager['type'] != 'some') {
+        $pager['type'] = $view->get_items_per_page() ? 'some' : 'none';
+      }
+
+      if ($conf['use_pager']) {
+        if (!isset($pager['options']['id']) || $pager['options']['id'] != $conf['pager_id']) {
+          $pager['options']['id'] = $conf['pager_id'];
+        }
+      }
+
+      $view->display_handler->set_option('pager', $pager);
     }
-    $view->display_handler->set_option('pager_element', $conf['pager_id']);
-    $view->display_handler->set_option('items_per_page', $conf['nodes_per_page']);
-    $view->display_handler->set_option('offset', $conf['offset']);
+    else {
+      if (!$view->display_handler->get_option('use_pager') || empty($conf['use_pager'])) {
+        $view->display_handler->set_option('use_pager', $conf['use_pager']);
+      }
+      $view->display_handler->set_option('pager_element', $conf['pager_id']);
+      $view->display_handler->set_option('items_per_page', $conf['nodes_per_page']);
+      $view->display_handler->set_option('offset', $conf['offset']);
+    }
   }
 
   $stored_feeds = drupal_add_feed();
@@ -523,10 +546,19 @@ function _views_content_views_update_conf(&$conf, $subtype) {
 
   // If set NOT to override, go ahead and refresh from the view.
   if (empty($conf['override_pager_settings'])) {
-    $conf['use_pager'] = $view->display_handler->get_option('use_pager');
-    $conf['pager_id'] = $view->display_handler->get_option('element_id');
-    $conf['nodes_per_page'] = $view->display_handler->get_option('items_per_page');
-    $conf['offset'] = $view->display_handler->get_option('offset');
+    if (method_exists($view, 'init_pager')) {
+      $pager = $view->current_display->get_option('pager');
+      $conf['use_pager'] = $pager['type'] != 'none' && $pager['type'] != 'some';
+      $conf['pager_id'] = isset($pager['options']['id']) ? $pager['options']['id'] : 0;
+      $conf['offset'] = isset($pager['options']['offset']) ? $pager['options']['offset'] : 0;
+      $conf['nodes_per_page'] = isset($pager['options']['items_per_page']) ? $pager['options']['items_per_page'] : 0;
+    }
+    else {
+      $conf['use_pager'] = $view->display_handler->get_option('use_pager');
+      $conf['pager_id'] = $view->display_handler->get_option('element_id');
+      $conf['nodes_per_page'] = $view->display_handler->get_option('items_per_page');
+      $conf['offset'] = $view->display_handler->get_option('offset');
+    }
   }
 
   return $view;

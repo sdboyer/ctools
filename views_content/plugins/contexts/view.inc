@@ -48,10 +48,12 @@ function views_content_context_view_create($empty, $data = NULL, $conf = FALSE) 
   }
 
   if ($conf) {
-    if (is_array($data)) {
+    if (is_array($data) && !empty($data['view'])) {
       list($name, $display_id) = explode(':', $data['view'], 2);
       $data = views_get_view($name);
-      $data->set_display($display_id);
+      if ($data) {
+        $data->set_display($display_id);
+      }
     }
   }
 
