@@ -62,7 +62,10 @@ function ctools_export_ui_process(&$plugin, $info) {
 
   $schema = ctools_export_get_schema($plugin['schema']);
   if (empty($schema)) {
-    drupal_set_message(t('The plugin definition of @plugin cannot locate schema %schema.', array('%schema' => $plugin['schema'], '@plugin' => $plugin['name'])), 'error');
+    // If we're updating the schema may not have been read yet, so don't report this error in that case.
+    if (!defined('MAINTENANCE_MODE')) {
+      drupal_set_message(t('The plugin definition of @plugin cannot locate schema %schema.', array('%schema' => $plugin['schema'], '@plugin' => $plugin['name'])), 'error');
+    }
     return;
   }
 

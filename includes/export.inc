@@ -102,6 +102,10 @@ function ctools_export_crud_load($table, $name) {
  */
 function ctools_export_crud_load_all($table, $reset = FALSE) {
   $schema = ctools_export_get_schema($table);
+  if (empty($schema['export'])) {
+    return array();
+  }
+
   $export = $schema['export'];
 
   if ($reset) {
@@ -745,7 +749,7 @@ function ctools_export_get_schema($table) {
     $schema = drupal_get_schema($table);
 
     if (!isset($schema['export'])) {
-      $schema['export'] = array();
+      return array();
     }
 
     if (empty($schema['module'])) {
