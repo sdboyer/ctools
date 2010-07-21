@@ -10,7 +10,9 @@ function ctools_export_ui_menu(&$items) {
   foreach (ctools_get_export_uis() as $plugin) {
     if ($plugin['has menu']) {
       $handler = ctools_export_ui_get_handler($plugin);
-      $handler->hook_menu($items);
+      if ($handler) {
+        $handler->hook_menu($items);
+      }
     }
   }
 }

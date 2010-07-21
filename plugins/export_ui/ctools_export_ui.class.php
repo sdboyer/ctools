@@ -86,6 +86,16 @@ class ctools_export_ui {
       return FALSE;
     }
 
+    // More fine-grained access control:
+    if ($op == 'add' && !user_access($this->plugin['create access'])) {
+      return FALSE;
+    }
+
+    // More fine-grained access control:
+    if (($op == 'revert' || $op == 'delete') && !user_access($this->plugin['delete access'])) {
+      return FALSE;
+    }
+
     // If we need to do a token test, do it here.
     if (!empty($this->plugin['allowed operations'][$op]['token']) && (!isset($_GET['token']) || !drupal_valid_token($_GET['token'], $op))) {
       return FALSE;
@@ -494,7 +504,7 @@ class ctools_export_ui {
     $this->rows[$name]['class'] = !empty($item->disabled) ? 'ctools-export-ui-disabled' : 'ctools-export-ui-enabled';
 
     // If we have an admin title, make it the first row.
-    if ($this->plugin['export']['admin_title']) {
+    if (!empty($this->plugin['export']['admin_title'])) {
       $this->rows[$name]['data'][] = array('data' => check_plain($item->{$this->plugin['export']['admin_title']}), 'class' => 'ctools-export-ui-title');
     }
     $this->rows[$name]['data'][] = array('data' => check_plain($name), 'class' => 'ctools-export-ui-name');
@@ -515,7 +525,7 @@ class ctools_export_ui {
    */
   function list_table_header() {
     $header = array();
-    if ($this->plugin['export']['admin_title']) {
+    if (!empty($this->plugin['export']['admin_title'])) {
       $header[] = array('data' => t('Title'), 'class' => 'ctools-export-ui-title');
     }
 
@@ -962,7 +972,7 @@ class ctools_export_ui {
       '#title' => t($schema['export']['key name']),
       '#type' => 'textfield',
       '#default_value' => $item->{$export_key},
-      '#description' => t('The unique ID for this @export', array('@export' => $this->plugin['title'])),
+      '#description' => t('The unique ID for this @export.', array('@export' => $this->plugin['title'])),
       '#required' => TRUE,
       '#maxlength' => 255,
     );
@@ -1542,7 +1552,7 @@ function ctools_export_ui_edit_item_wizard_form_validate(&$form, &$form_state) {
 
   // Additionally, if there were no errors from that, and we're finishing,
   // perform a final validate to make sure everything is ok.
-  if ($form_state['clicked_button']['#wizard type'] == 'finish' && !form_get_errors()) {
+  if (isset($form_state['clicked_button']['#wizard type']) && $form_state['clicked_button']['#wizard type'] == 'finish' && !form_get_errors()) {
     $form_state['object']->edit_finish_validate($form, $form_state);
   }
 }

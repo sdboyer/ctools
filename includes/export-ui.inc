@@ -34,6 +34,12 @@ function ctools_export_ui_process(&$plugin, $info) {
     'access' => 'administer site configuration',
   );
 
+  // Provide CRUD access defaults based on the base 'access' setting:
+  $plugin += array(
+    'create access' => $plugin['access'],
+    'delete access' => $plugin['access'],
+  );
+
   if (empty($plugin['has menu'])) {
     return;
   }
