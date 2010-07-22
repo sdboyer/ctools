@@ -380,7 +380,6 @@
 
   Drupal.CTools.AJAX.commands.settings = function(data) {
     $.extend(Drupal.settings, data.argument);
-    console.log(Drupal.settings);
   };
 
   Drupal.CTools.AJAX.commands.scripts = function(data) {
