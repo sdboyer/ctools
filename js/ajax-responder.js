@@ -356,7 +356,7 @@
   };
 
   Drupal.CTools.AJAX.commands.css_files = function(data) {
-    // Build a list of scripts already loaded:
+    // Build a list of css files already loaded:
     $('link:not(.ctools-temporary-css)').each(function () {
       if ($(this).attr('type') == 'text/css') {
         Drupal.CTools.AJAX.css[$(this).attr('href')] = $(this).attr('href');
@@ -380,6 +380,7 @@
 
   Drupal.CTools.AJAX.commands.settings = function(data) {
     $.extend(Drupal.settings, data.argument);
+    console.log(Drupal.settings);
   };
 
   Drupal.CTools.AJAX.commands.scripts = function(data) {

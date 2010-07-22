@@ -250,7 +250,7 @@
   Drupal.CTools.AJAX.commands.modal_display = function(command) {
     $('#modal-title').html(command.title);
     $('#modal-content').html(command.output);
-    Drupal.attachBehaviors($('#modal-content'));
+    Drupal.attachBehaviors();
   }
 
   /**

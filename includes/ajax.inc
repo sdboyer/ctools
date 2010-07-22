@@ -450,39 +450,11 @@ function ctools_ajax_command_submit($selector) {
  * to the AJAX requester.
  */
 function ctools_ajax_render($commands = array()) {
-  // Automatically extract any 'settings' added via drupal_add_js() and make
-  // them the first command.
+  $js_files = array();
+  $settings = ctools_process_js_files($js_files, 'header');
+  $settings += ctools_process_js_files($js_files, 'footer');
+
   $query_string = '?'. substr(variable_get('css_js_query_string', '0'), 0, 1);
-
-  $scripts = drupal_add_js(NULL, NULL);
-  $cached_scripts = array();
-
-  // Get replacements that are going to be made by contrib modules and take
-  // them into account so we don't double-load scripts.
-  $replacements = module_invoke_all('js_replacements');
-
-  foreach ($scripts as $type => $data) {
-    switch ($type) {
-      case 'setting':
-        $settings = $data;
-        break;
-      case 'inline':
-      case 'theme':
-        // Presently we ignore inline javascript.
-        // Theme JS is already added and because of admin themes, this could add
-        // improper JS to the page.
-        break;
-      default:
-        // If JS preprocessing is off, we still need to output the scripts.
-        // Additionally, go through any remaining scripts if JS preprocessing is on and output the non-cached ones.
-        foreach ($data as $path => $info) {
-          // If the script is being replaced, take that replacment into account.
-          $final_path = isset($replacements[$type][$path]) ? $replacements[$type][$path] : $path;
-          $js_files[] = base_path() . $final_path . ($info['cache'] ? $query_string : '?' . time());
-        }
-    }
-  }
-
   $css = drupal_add_css();
   foreach ($css as $media => $types) {
     // If CSS preprocessing is off, we still need to output the styles.
@@ -518,16 +490,16 @@ function ctools_ajax_render($commands = array()) {
     }
   }
 
-  if (!empty($settings)) {
-    array_unshift($commands, ctools_ajax_command_settings(call_user_func_array('array_merge_recursive', $settings)));
-  }
-
   if (!empty($js_files)) {
-    array_unshift($commands, ctools_ajax_command_scripts($js_files));
+    array_unshift($commands, ctools_ajax_command_scripts(array_keys($js_files)));
   }
 
   if (!empty($css_files)) {
     array_unshift($commands, ctools_ajax_command_css_files($css_files));
+  }
+
+  if (!empty($settings)) {
+    array_unshift($commands, ctools_ajax_command_settings(call_user_func_array('array_merge_recursive', $settings)));
   }
 
   if (!empty($_REQUEST['ctools_multipart'])) {
