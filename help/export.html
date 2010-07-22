@@ -37,6 +37,7 @@ function mymodule_schema() {
       ),
       // If the key is stored in a table that is joined in, specify it:
       'key in table' => 'my_join_table',
+
     ),
 
     // If your object's data is split up across multiple tables, you can
@@ -45,6 +46,10 @@ function mymodule_schema() {
     // translating keys to local database IDs.
     //
     // The joined table must have its own schema definition.
+    //
+    // If using joins, you should implement a 'delete callback' (see below)
+    // to ensure that deletes happen properly. export.inc does not do this
+    // automatically!
     'join' => array(
       'exportables' => array(
         // The following parameters will be used in this way:
