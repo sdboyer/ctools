@@ -21,7 +21,7 @@ class ctools_access_ruleset_ui extends ctools_export_ui {
     // Set this up and we can use CTools' Export UI's built in wizard caching,
     // which already has callbacks for the context cache under this name.
     $module = 'ctools_export_ui-' . $this->plugin['name'];
-    $name = $form_state['op'] == 'edit' ? $form_state['item']->{$this->plugin['export']['key']} : '$new$';
+    $name = $this->edit_cache_get_key($form_state['item'], $form_state['form type']);
 
     ctools_context_add_context_form($module, $form, $form_state, $form['right']['contexts_table'], $form_state['item'], $name);
     ctools_context_add_required_context_form($module, $form, $form_state, $form['left']['required_contexts_table'], $form_state['item'], $name);
@@ -38,7 +38,7 @@ class ctools_access_ruleset_ui extends ctools_export_ui {
     $form_state['contexts'] = ctools_context_load_contexts($form_state['item']);
 
     $form_state['module'] = 'ctools_export_ui';
-    $form_state['callback argument'] = $form_state['object']->plugin['name'] . ':' . $form_state['object']->edit_cache_get_key($form_state['item'], $form_state['op']);
+    $form_state['callback argument'] = $form_state['object']->plugin['name'] . ':' . $form_state['object']->edit_cache_get_key($form_state['item'], $form_state['form type']);
     $form_state['no buttons'] = TRUE;
 
     $form = array_merge($form, ctools_access_admin_form($form_state));

@@ -661,7 +661,7 @@ class ctools_export_ui {
     ctools_include('menu');
     $trail = ctools_get_menu_trail(ctools_export_ui_plugin_base_path($this->plugin));
     menu_set_active_trail($trail);
-    $name = $item->{$this->plugin['export']['key']};
+    $name = $original->{$this->plugin['export']['key']};
 
     $form_state = array(
       'plugin' => $this->plugin,
