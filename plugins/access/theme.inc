@@ -47,6 +47,9 @@ function ctools_theme_ctools_access_check($conf, $context) {
   else if (!empty($GLOBALS['custom_theme'])) {
     $theme = $GLOBALS['custom_theme'];
   }
+  else if (!empty($GLOBALS['user']->theme)) {
+    $theme = $GLOBALS['user']->theme;
+  }
   else {
     $theme = variable_get('theme_default', 'garland');
   }
