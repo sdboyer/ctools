@@ -60,6 +60,7 @@ Restore a less aggressive plugin caching.
 #696402 by pokurek: Prevent node add/edit contexts from getting into infinite loops.
 #609424: Book relationship plugin was completely non-functional.
 #709242: Required contexts would lose keyword and identifier when transfering context from one system into the subsystem.
+#860306 by jcmarco: "Substitutions" fieldset would not open due to missing js.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

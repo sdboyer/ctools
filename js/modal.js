@@ -197,7 +197,7 @@
   /**
    * Bind links that will open modals to the appropriate function.
    */
-  Drupal.behaviors.CToolsModal = function(context) {
+  Drupal.behaviors.ZZCToolsModal = function(context) {
     // Bind links
     // Note that doing so in this order means that the two classes can be
     // used together safely.

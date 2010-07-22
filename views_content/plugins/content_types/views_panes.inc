@@ -462,6 +462,9 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
     if (!empty($contexts)) {
       $form['path']['#description'] .= ' ' . t('You may use substitutions in this path.');
 
+      // Add js for collapsible fieldsets manually
+      drupal_add_js('misc/collapse.js');
+
       // We have to create a manual fieldset because fieldsets do not support IDs.
       // Use 'hidden' instead of 'markup' so that the process will run.
       $form['contexts_prefix'] = array(
