@@ -390,9 +390,16 @@
     });
 
     var html = '';
+    var head = document.getElementsByTagName('head')[0];
     for (i in data.argument) {
       if (!Drupal.CTools.AJAX.scripts[data.argument[i]]) {
         Drupal.CTools.AJAX.scripts[data.argument[i]] = data.argument[i];
+        // Use this to actually get the script tag into the dom, which is
+        // needed for scripts that self-reference to determine paths.
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = data.argument[i];
+        head.appendChild(script);
         html += '<script type="text/javascript" src="' + data.argument[i] + '"></script>';
       }
     }

@@ -217,29 +217,27 @@
       .addClass('ctools-use-modal-processed')
       .click(Drupal.CTools.Modal.clickAjaxButton);
 
-    if ($(context).attr('id') == 'modal-content') {
-      // Bind submit links in the modal form.
-      $('form:not(.ctools-use-modal-processed)', context)
-        .addClass('ctools-use-modal-processed')
-        .submit(Drupal.CTools.Modal.submitAjaxForm);
-      // add click handlers so that we can tell which button was clicked,
-      // because the AJAX submit does not set the values properly.
+    // Bind submit links in the modal form.
+    $('#modal-content form:not(.ctools-use-modal-processed)', context)
+      .addClass('ctools-use-modal-processed')
+      .submit(Drupal.CTools.Modal.submitAjaxForm);
+    // add click handlers so that we can tell which button was clicked,
+    // because the AJAX submit does not set the values properly.
 
-      $('input[type="submit"]:not(.ctools-use-modal-processed), button:not(.ctools-use-modal-processed)', context)
-        .addClass('ctools-use-modal-processed')
-        .click(function() {
-          if (Drupal.autocompleteSubmit && !Drupal.autocompleteSubmit()) {
-            return false;
-          }
+    $('#modal-content input[type="submit"]:not(.ctools-use-modal-processed), button:not(.ctools-use-modal-processed)', context)
+      .addClass('ctools-use-modal-processed')
+      .click(function() {
+        if (Drupal.autocompleteSubmit && !Drupal.autocompleteSubmit()) {
+          return false;
+        }
 
-          // Make sure it knows our button.
-          if (!$(this.form).hasClass('ctools-ajaxing')) {
-            this.form.clk = this;
-            $(this).after('<div class="ctools-ajaxing ctools-ajaxing-temporary"> &nbsp; </div>');
-          }
-        });
+        // Make sure it knows our button.
+        if (!$(this.form).hasClass('ctools-ajaxing')) {
+          this.form.clk = this;
+          $(this).after('<div class="ctools-ajaxing ctools-ajaxing-temporary"> &nbsp; </div>');
+        }
+      });
 
-    }
   };
 
   // The following are implementations of AJAX responder commands.
