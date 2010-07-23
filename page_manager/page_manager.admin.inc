@@ -1490,6 +1490,7 @@ function page_manager_handler_rearrange(&$form, &$form_state) {
     $form['handlers'][$id]['weight'] = array(
       '#type' => 'weight',
       '#default_value' => $info['weight'],
+      '#delta' => 30,
     );
   }
 }
