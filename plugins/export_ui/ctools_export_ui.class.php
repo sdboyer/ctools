@@ -817,6 +817,10 @@ class ctools_export_ui {
       $form_state['step'] = reset(array_keys($form_info['order']));
     }
 
+    if (empty($form_info['order'][$form_state['step']])) {
+      return MENU_NOT_FOUND;
+    }
+
     ctools_include('wizard');
     $output = ctools_wizard_multistep_form($form_info, $form_state['step'], $form_state);
     if (!empty($form_state['complete'])) {

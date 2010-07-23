@@ -1109,3 +1109,48 @@ function page_manager_get_current_page($page = NULL) {
 
   return $current;
 }
+
+/**
+ * Implementation of hook_panels_dashboard_blocks().
+ *
+ * Adds page information to the Panels dashboard.
+ */
+function page_manager_panels_dashboard_blocks(&$vars) {
+  $vars['links']['page_manager'] = array(
+    'weight' => -100,
+    'title' => l(t('Panel page'), 'admin/build/pages/add'),
+    'description' => t('Panel pages can be used as landing pages. They have a URL path, accept arguments and can have menu entries.'),
+  );
+
+  module_load_include('inc', 'page_manager', 'page_manager.admin');
+  $tasks = page_manager_get_tasks_by_type('page');
+  $pages = array('operations' => array());
+
+  page_manager_get_pages($tasks, $pages);
+  $count = 0;
+  $rows = array();
+  foreach ($pages['rows'] as $id => $info) {
+    $rows[] = array(
+      'data' => array(
+        $info['data']['title'],
+        $info['data']['operations'],
+      ),
+      'class' => $info['class'],
+    );
+
+    // Only show 10.
+    if (++$count >= 10) {
+      break;
+    }
+  }
+
+  $vars['blocks']['page_manager'] = array(
+    'weight' => -100,
+    'title' => t('Manage pages'),
+    'link' => l(t('Go to list'), 'admin/build/pages'),
+    'content' => theme('table', array(), $rows, array('class' => 'panels-manage')),
+    'class' => 'dashboard-pages',
+    'section' => 'right',
+  );
+}
+

@@ -940,3 +940,30 @@ function ctools_process_js_files(&$js_files, $scope) {
 
   return $settings;
 }
+
+/**
+ * Sort callback for sorting plugins naturally.
+ *
+ * Sort first by weight, then by title.
+ */
+function ctools_plugin_sort($a, $b) {
+  if (is_object($a)) {
+    $a = (array) $a;
+  }
+  if (is_object($b)) {
+    $b = (array) $b;
+  }
+
+  if (empty($a['weight'])) {
+    $a['weight'] = 0;
+  }
+
+  if (empty($b['weight'])) {
+    $b['weight'] = 0;
+  }
+
+  if ($a['weight'] == $b['weight']) {
+    return strnatcmp(strtolower($a['title']), strtolower($b['title']));
+  }
+  return ($a['weight'] < $b['weight']) ? -1 : 1;
+}

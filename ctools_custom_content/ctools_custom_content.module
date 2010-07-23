@@ -46,3 +46,51 @@ function ctools_content_type_new($set_defaults) {
   $item->settings = ctools_content_get_defaults($plugin, array());
   return $item;
 }
+
+/**
+ * Implementation of hook_panels_dashboard_blocks().
+ *
+ * Adds page information to the Panels dashboard.
+ */
+function ctools_custom_content_panels_dashboard_blocks(&$vars) {
+  $vars['links']['ctools_custom_content'] = array(
+    'title' => l(t('Custom content'), 'admin/build/ctools-content/add'),
+    'description' => t('Custom content panes are basic HTML you enter that can be reused in all of your panels.'),
+  );
+
+   // Load all mini panels and their displays.
+  ctools_include('export');
+  $items = ctools_export_crud_load_all('ctools_custom_content');
+  $count = 0;
+  $rows = array();
+
+  foreach ($items as $item) {
+    $rows[] = array(
+      check_plain($item->admin_title),
+      array(
+        'data' => l(t('Edit'), "admin/build/ctools-content/list/$item->name/edit"),
+        'class' => 'links',
+      ),
+    );
+
+    // Only show 10.
+    if (++$count >= 10) {
+      break;
+    }
+  }
+
+  if ($rows) {
+    $content = theme('table', array(), $rows, array('class' => 'panels-manage'));
+  }
+  else {
+    $content = '<p>' . t('There are no custom content panes.') . '</p>';
+  }
+
+  $vars['blocks']['ctools_custom_content'] = array(
+    'title' => t('Manage custom content'),
+    'link' => l(t('Go to list'), 'admin/build/ctools-content'),
+    'content' => $content,
+    'class' => 'dashboard-content',
+    'section' => 'right',
+  );
+}

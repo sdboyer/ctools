@@ -276,20 +276,14 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
   }
 
   if ($allow['fields_override']) {
-    $clone = $view->clone_view();
-    $clone->init_style();
-    if ($clone->style_plugin->uses_fields()) {
+    if ($conf['fields_override']) {
       $fields = $view->get_items('field');
-      if ($conf['fields_override']) {
-        foreach ($conf['fields_override'] as $field => $display) {
-          if ($conf['fields_override'][$field] == 0) {
-            $fields[$field]['exclude'] = 1;
-            $view->set_item($view->current_display, 'field', $field, $fields[$field]);
-          }
-        }
+      foreach ($conf['fields_override'] as $field => $display) {
+        $fields[$field]['exclude'] = empty($conf['fields_override'][$field]);
       }
+      $view->display_handler->set_option('fields', $fields);
+
     }
-    $clone->destroy();
   }
 
   if ($allow['exposed_form'] && !empty($conf['exposed'])) {
