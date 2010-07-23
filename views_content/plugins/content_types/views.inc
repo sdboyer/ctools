@@ -547,7 +547,7 @@ function _views_content_views_update_conf(&$conf, $subtype) {
   // If set NOT to override, go ahead and refresh from the view.
   if (empty($conf['override_pager_settings'])) {
     if (method_exists($view, 'init_pager')) {
-      $pager = $view->current_display->get_option('pager');
+      $pager = $view->display_handler->get_option('pager');
       $conf['use_pager'] = $pager['type'] != 'none' && $pager['type'] != 'some';
       $conf['pager_id'] = isset($pager['options']['id']) ? $pager['options']['id'] : 0;
       $conf['offset'] = isset($pager['options']['offset']) ? $pager['options']['offset'] : 0;
