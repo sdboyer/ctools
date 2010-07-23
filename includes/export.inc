@@ -337,7 +337,7 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
   $alias_count = 1;
   if (!empty($schema['join'])) {
     foreach ($schema['join'] as $join_key => $join) {
-      $join_schema = ctools_export_get_schema($join['table']);
+      $join_schema = drupal_get_schema($join['table']);
       if (!empty($join_schema)) {
         $query .= ' INNER JOIN {' . $join['table'] . '} t__' . $alias_count . ' ON t__0.' . $join['left_key'] . ' = ' . 't__' . $alias_count . '.' . $join['right_key'];
         $alias_count++;
