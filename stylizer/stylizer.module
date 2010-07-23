@@ -42,7 +42,7 @@ function stylizer_ctools_plugin_directory($module, $plugin) {
 function stylizer_panels_dashboard_blocks(&$vars) {
   $vars['links']['stylizer'] = array(
     'title' => l(t('Custom style'), 'admin/build/stylizer/add'),
-    'description' => t('Custom styles can be applied to Panel regions and Panel panes..'),
+    'description' => t('Custom styles can be applied to Panel regions and Panel panes.'),
   );
 
    // Load all mini panels and their displays.
