@@ -62,6 +62,8 @@ Restore a less aggressive plugin caching.
 #709242: Required contexts would lose keyword and identifier when transfering context from one system into the subsystem.
 #860306 by jcmarco: "Substitutions" fieldset would not open due to missing js.
 #861778 by ayalon: Hold session ID for anonymous users when using the object cache so wizards can work for anonymous.
+#846408: Increase #delta in reorder weights so that more than 21 variants can be used.
+#827310: Node comments content type should not display comments if the node is configured to disable them.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
