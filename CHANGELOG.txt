@@ -64,6 +64,7 @@ Restore a less aggressive plugin caching.
 #861778 by ayalon: Hold session ID for anonymous users when using the object cache so wizards can work for anonymous.
 #846408: Increase #delta in reorder weights so that more than 21 variants can be used.
 #827310: Node comments content type should not display comments if the node is configured to disable them.
+#622570 by omerida: Add an option to display the comment forbidden information if the comment form cannot be displayed in comment form content type.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============
