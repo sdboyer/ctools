@@ -88,9 +88,8 @@ function views_content_context_view_settings_form($conf) {
     $options[$view->name . ':' . $id] = $title;
   }
 
-  natcasesort($options);
-
   if (!empty($options)) {
+    natcasesort($options);
     $form['view'] = array(
       '#type' => 'select',
       '#options' => $options,
@@ -99,7 +98,7 @@ function views_content_context_view_settings_form($conf) {
   }
   else {
     $form['view'] = array(
-      '#value' => '<p>' . t('There are currently no views with Context displays enabled.') . '</p>',
+      '#value' => '<p>' . t('There are currently no views with Context displays enabled. You should go to the view administration and add a Context display to use a view as a context.') . '</p>',
     );
   }
 
