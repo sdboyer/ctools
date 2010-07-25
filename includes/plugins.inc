@@ -243,7 +243,9 @@ function ctools_get_plugins($module, $type, $id = NULL) {
 
   // If no id was requested, we are finished here:
   if (!$id) {
-    return $plugins[$module][$type];
+    // Use array_filter because looking for unknown plugins could cause NULL
+    // entries to appear in the list later.
+    return array_filter($plugins[$module][$type]);
   }
 
   // Check to see if we need to look for the file
