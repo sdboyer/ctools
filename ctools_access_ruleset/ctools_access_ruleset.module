@@ -29,7 +29,7 @@ function ctools_access_ruleset_perm() {
 function ctools_access_ruleset_ctools_plugin_directory($module, $plugin) {
   // Most of this module is implemented as an export ui plugin, and the
   // rest is in ctools/includes/ctools_access_ruleset.inc
-  if ($module == 'ctools' && $plugin == 'export_ui') {
+  if ($module == 'ctools' && ($plugin == 'export_ui' || $plugin == 'access')) {
     return 'plugins/' . $plugin;
   }
 }
