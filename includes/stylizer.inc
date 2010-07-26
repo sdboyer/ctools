@@ -706,7 +706,13 @@ function ctools_stylizer_edit_style(&$info, $js, $step = NULL) {
     if ($step != 'choose') {
       $cache = ctools_stylizer_get_settings_cache($name);
       if (!$cache) {
-        return t('Missing settings cache.');
+        $output = t('Missing settings cache.');
+        if ($js) {
+          return ctools_modal_form_render($form_state, $output);
+        }
+        else {
+          return $output;
+        }
       }
 
       if (!empty($cache['owner settings'])) {
