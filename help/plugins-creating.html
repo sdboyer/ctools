@@ -82,6 +82,12 @@ The following information can be specified:
 <dt>use hooks</dt>
 <dd><em>Defaults to:</em> <strong>TRUE</strong>*</dd>
 <dd>Use to enable support for plugin definition hooks instead of plugin definition files. NOTE: using a central plugin definition hook is less optimal for the plugins system, and as such this will default to FALSE in later versions.</dd>
+<dt>child plugins</dt>
+<dd><em>Defaults to:</em> <strong>FALSE</strong></dd>
+<dd>If set to TRUE, the plugin type can automatically have 'child plugins' meaning each plugin can actually provide multiple plugins. This is mostly used for plugins that store some of their information in the database, such as views, blocks or exportable custom versions of plugins.</dd>
+<dd>To implement, each plugin can have a 'get child' and 'get children' callback. Both of these should be implemented for performance reasons, since it is best to avoid getting all children if necessary, but if 'get child' is not implemented, it will fall back to 'get children' if it has to.</dd>
+<dd>Child plugins should be named parent:child, with the : being the separator, so that it knows which parent plugin to ask for teh child. The 'get children' method should at least return the parent plugin as part of the list, unless it wants the parent plugin itself to not be a choosable option, which is not unheard of. </dd>
+<dd>'get children' arguments are ($plugin, $parent) and 'get child' arguments are ($plugin, $parent, $child).
 </dl>
 
 In addition, there is a 'module' and 'type' settings; these are for internal use of the plugin system and you should not change these.
