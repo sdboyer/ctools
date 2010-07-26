@@ -339,7 +339,10 @@ function ctools_content_admin_title($type, $subtype, $conf, $context = NULL) {
   if ($function = ctools_plugin_get_function($plugin, 'admin title')) {
     $pane_context = ctools_content_select_context($plugin, $subtype, $conf, $context);
     if ($pane_context === FALSE) {
-      return t('@type:@subtype will not display due to missing context', array('@type' => $plugin['name'], '@subtype' => '@subtype'));
+      if ($plugin['name'] == $subtype) {
+        return t('@type will not display due to missing context', array('@type' => $plugin['name']));
+      }
+      return t('@type:@subtype will not display due to missing context', array('@type' => $plugin['name'], '@subtype' => $subtype));
     }
 
     return $function($subtype, $conf, $pane_context);
