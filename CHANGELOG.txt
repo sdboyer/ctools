@@ -67,6 +67,7 @@ Restore a less aggressive plugin caching.
 #622570 by omerida: Add an option to display the comment forbidden information if the comment form cannot be displayed in comment form content type.
 #863296: Do not leave NULL plugins left by searching for nonexistant plugins in the list when getting all plugins.
 #853256 by swentel: Allow the normal node view content types to support CCK hosted build modes like Views does.
+#865392 by Amitaibu: Auto-guess ctools ajax class with element associations.
 
 ctools 6.x-1.6 (2010-Jun-1)
 ==============

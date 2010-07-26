@@ -551,14 +551,19 @@ function ctools_ajax_render_error($error = '') {
  * @param $dest
  *   The URL to associate the form element to.
  * @param $type
- *   A type to use, in case a different behavior should be attached. Defaults
- *   to ctools-use-ajax.
+ *   Optional; A type to use, in case a different behavior should be attached.
+ *   If empty the type will be set to "ctools-use-ajax" for submit elements and
+ *   "ctools-use-ajax-onchange" for other elements.
  */
-function ctools_ajax_associate_url_to_element(&$form, &$form_element, $dest, $type = 'ctools-use-ajax') {
+function ctools_ajax_associate_url_to_element(&$form, &$form_element, $dest, $type = '') {
   drupal_add_js('misc/jquery.form.js', 'core');
   if (!isset($form_element['#id'])) {
     //Create a unique ID to associate $form_element and hidden elements since we dont have an ID
     $form_element['#id'] = uniqid('ctools-ajax-url-');
+
+    if (empty($type)) {
+      $type = $form_element['#type'] == 'submit' ? 'ctools-use-ajax' : 'ctools-use-ajax-onchange';
+    }
 
     if (empty($form_element['#attributes']['class'])) {
       $form_element['#attributes']['class'] = $type;
