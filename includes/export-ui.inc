@@ -44,7 +44,6 @@ function ctools_export_ui_process(&$plugin, $info) {
     return;
   }
 
-  $error = FALSE;
   // The following keys are required and the plugin cannot be processed
   // without them.
   $keys = array(
@@ -59,11 +58,6 @@ function ctools_export_ui_process(&$plugin, $info) {
     if (empty($plugin[$key])) {
       drupal_set_message(t('The plugin definition of @plugin is missing the %key key.', array('%key' => $key, '@plugin' => $plugin['name'])), 'error');
     }
-  }
-
-  // We process all so that a developer can see all the missing keys at once.
-  if ($error) {
-    return;
   }
 
   $schema = ctools_export_get_schema($plugin['schema']);
