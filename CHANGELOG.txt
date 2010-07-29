@@ -2,6 +2,7 @@ Current API VERSION: 1.7.2. See API.txt for more information.
 
 ctools 6.x-dev
 #856636: Fix warnings on update.
+#866524: "Custom" content type could cause crash if trying to reuse it without activating the custom content type module.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============
