@@ -4,6 +4,7 @@ ctools 6.x-dev
 #856636: Fix warnings on update.
 #866524: "Custom" content type could cause crash if trying to reuse it without activating the custom content type module.
 #870820 by EclipseGc: ctools_export_crud_import() passed wrong arguments to import callback, if defined.
+Improve the task system to make it possible for Panels Everywhere to get more contexts.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============

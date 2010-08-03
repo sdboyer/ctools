@@ -133,7 +133,7 @@ function theme_ctools_context_list($object, $header = '') {
       if (isset($context->keyword)) {
         $desc .= '<div class="description">' . t('Keyword: %@keyword', array('@keyword' => $context->keyword));
         foreach (ctools_context_get_converters('%' . $context->keyword . ':', $context) as $keyword => $title) {
-          $desc .= '<br />' . t('@keyword --&gt; @title', array('@context' => $keyword, '@title' => $title));
+          $desc .= '<br />' . t('@keyword --&gt; @title', array('@keyword' => $keyword, '@title' => $title));
         }
         $desc .= '</div>';
 
@@ -144,7 +144,6 @@ function theme_ctools_context_list($object, $header = '') {
       $output .= '<td>' . $desc . '</td>';
       $output .= '</tr>';
       $titles[$id] = $context->identifier;
-      $count++;
     }
   }
 

@@ -1,6 +1,10 @@
 API.txt: $Id$
 
 This file contains a log of changes to the API.
+API version 1.8
+  Introduce 'get base contexts' callback to all tasks to facilitate
+  Page Manager's site template extracting contexts from the environment.
+
 API version 1.7.2
   Allow Export UI to automatically have wizards by setting 'use wizard' => TRUE
   Moved the Panels Stylizer module into CTools so that the UI can be

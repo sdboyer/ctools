@@ -1133,6 +1133,10 @@ function ctools_context_match_required_contexts($required, $contexts) {
  *   An array of pre-existing contexts that will be part of the return value.
  */
 function ctools_context_load_contexts($object, $placeholders = TRUE, $contexts = array()) {
+  if (!empty($object->base_contexts)) {
+    $contexts += $object->base_contexts;
+  }
+
   if ($placeholders) {
     // This will load empty contexts as placeholders for arguments that come
     // from external sources. If this isn't set, it's assumed these context

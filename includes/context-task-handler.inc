@@ -201,8 +201,7 @@ function ctools_context_handler_summary($task, $subtask, $handler) {
  * for use in rendering.
  */
 function ctools_context_handler_get_task_contexts($task, $subtask, $args) {
-  $contexts = array();
-
+  $contexts = ctools_context_handler_get_base_contexts($task, $subtask);
   $arguments = ctools_context_handler_get_task_arguments($task, $subtask);
   ctools_context_get_context_from_arguments($arguments, $contexts, $args);
 
@@ -229,8 +228,10 @@ function ctools_context_handler_get_handler_contexts($contexts, $handler) {
  * the contexts as placeholders.
  */
 function ctools_context_handler_get_all_contexts($task, $subtask, $handler) {
+  $contexts = array();
+
   $object = ctools_context_handler_get_task_object($task, $subtask, $handler);
-  $contexts = ctools_context_load_contexts($object, TRUE);
+  $contexts = ctools_context_load_contexts($object, TRUE, $contexts);
   ctools_context_handler_set_access_restrictions($task, $subtask, $handler, $contexts);
   return $contexts;
 }
@@ -256,11 +257,26 @@ function ctools_context_handler_get_handler_object($handler) {
 function ctools_context_handler_get_task_object($task, $subtask, $handler) {
   $object = new stdClass;
   $object->name = !empty($handler->name) ? $handler->name : 'temp';
+  $object->base_contexts = ctools_context_handler_get_base_contexts($task, $subtask, TRUE);
   $object->arguments = ctools_context_handler_get_task_arguments($task, $subtask);
   $object->contexts = isset($handler->conf['contexts']) ? $handler->conf['contexts'] : array();
   $object->relationships = isset($handler->conf['relationships']) ? $handler->conf['relationships'] : array();
 
   return $object;
+}
+
+/**
+ * Get base contexts from a task, if it has any.
+ *
+ * Tasks can get their contexts either from base contexts or arguments; base
+ * contexts extract their information from the environment.
+ */
+function ctools_context_handler_get_base_contexts($task, $subtask, $placeholders = FALSE) {
+  if ($function = ctools_plugin_get_function($task, 'get base contexts')) {
+    return $function($task, $subtask, $placeholders);
+  }
+
+  return array();
 }
 
 /**
