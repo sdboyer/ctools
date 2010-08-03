@@ -241,7 +241,7 @@ function ctools_export_crud_import($table, $code) {
   $export = $schema['export'];
 
   if (!empty($export['import callback']) && function_exists($export['import callback'])) {
-    return $export['import callback']($object, $indent);
+    return $export['import callback']($code);
   }
   else {
     ob_start();
