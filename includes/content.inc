@@ -135,6 +135,10 @@ function ctools_content_get_subtypes($type) {
     $plugin = ctools_get_content_type($type);
   }
 
+  if (empty($plugin) || empty($plugin['name'])) {
+    return;
+  }
+
   if (isset($cache[$plugin['name']])) {
     return $cache[$plugin['name']];
   }
