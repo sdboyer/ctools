@@ -633,7 +633,7 @@ function ctools_preprocess_page(&$variables) {
         }
         // Only include the stylesheet if it exists.
         if (file_exists($file)) {
-          $css_files[url($file) . $query_string] = TRUE;
+          $css_files[base_path() . $file . $query_string] = TRUE;
         }
       }
     }
