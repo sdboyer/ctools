@@ -1310,8 +1310,9 @@ function ctools_export_ui_edit_item_form_submit(&$form, &$form_state) {
  */
 function ctools_export_ui_edit_item_form_delete(&$form, &$form_state) {
   $export_key = $form_state['plugin']['export']['key'];
+  $path = $form_state['item']->export_type & EXPORT_IN_CODE ? 'revert' : 'delete';
 
-  drupal_goto(ctools_export_ui_plugin_menu_path($form_state['plugin'], 'delete', $form_state['item']->{$export_key}), array('cancel_path' => $_GET['q']));
+  drupal_goto(ctools_export_ui_plugin_menu_path($form_state['plugin'], $path, $form_state['item']->{$export_key}), array('cancel_path' => $_GET['q']));
 }
 
 /**
