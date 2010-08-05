@@ -8,6 +8,7 @@ Improve the task system to make it possible for Panels Everywhere to get more co
 #718368: Ignore query string when testing js and css files for inclusion during AJAX requests.
 #690648 by awolfey: User signature content type.
 #874960 by yhahn: Export UI goes to wrong path on revert.
+#868410: Make transparency work on modal backdrop in IE.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============

@@ -39,6 +39,8 @@
       opacity: '.55'
     }, css);
 
+    // Add opacity handling for IE.
+    css.filter = 'alpha(opacity=' + (100 * css.opacity) + ')';
     content.hide();
 
     // if we already ahve a modalContent, remove it
