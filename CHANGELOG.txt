@@ -5,6 +5,7 @@ ctools 6.x-dev
 #866524: "Custom" content type could cause crash if trying to reuse it without activating the custom content type module.
 #870820 by EclipseGc: ctools_export_crud_import() passed wrong arguments to import callback, if defined.
 Improve the task system to make it possible for Panels Everywhere to get more contexts.
+#718368: Ignore query string when testing js and css files for inclusion during AJAX requests.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============
