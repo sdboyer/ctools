@@ -66,6 +66,27 @@ function ctools_context_handler_render($task, $subtask, $contexts, $args, $page 
           'handler' => $handler,
         ));
 
+        if (!empty($info['response code']) && $info['response code'] != 200) {
+          switch ($info['response code']) {
+            case 403:
+              return MENU_ACCESS_DENIED;
+            case 404:
+              return MENU_NOT_FOUND;
+            case 301:
+            case 302:
+            case 303:
+            case 304:
+            case 305:
+            case 307:
+              $info += array(
+                'query' => '',
+                'fragment' => '',
+              );
+              return drupal_goto($info['destination'], $info['query'], $info['fragment'], $info['response code']);
+            // @todo -- should other response codes be supported here?
+          }
+        }
+
         /*
         // Only do this if something hasn't already changed the active menu,
         // such as a book.
