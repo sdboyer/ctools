@@ -69,6 +69,7 @@ function _ctools_default_content_type_content_type() {
     'description' => t('Create a completely custom piece of HTML content.'),
     'edit form' => 'ctools_custom_content_type_edit_form',
     'all contexts' => TRUE,
+    'check editable' => 'ctools_custom_content_type_editable',
   );
 
   return $info;
@@ -118,6 +119,7 @@ function ctools_custom_content_type_get_conf($subtype, $conf) {
         $settings = $content->settings;
         $settings['custom_type'] = 'fixed';
         $settings['content'] = $content;
+        $settings['admin_title'] = $content->admin_title;
       }
       else {
         $content = ctools_export_crud_new('ctools_custom_content');
@@ -142,6 +144,14 @@ function ctools_custom_content_type_get_conf($subtype, $conf) {
   }
 
   return $settings;
+}
+
+function ctools_custom_content_type_editable($content_type, $subtype, $conf) {
+  if ($subtype['name'] == 'custom' && !empty($conf['name'])) {
+    return FALSE;
+  }
+
+  return TRUE;
 }
 
 /**
