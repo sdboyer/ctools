@@ -12,6 +12,7 @@ Improve the task system to make it possible for Panels Everywhere to get more co
 #872340: AJAX framework used wrong URLs with i18n and CSS files.
 #609246: Create variant to handle 403, 404 and 301 redirects for non-page page responses.
 #870466: Invisible steps broken by too aggressive of a test for valid wizard steps. This broke Mini Panel layout change in Panels.
+#872804: Export UI delete query failing to get table prefix thanks to PHP oddity.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============

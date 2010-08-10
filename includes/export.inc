@@ -186,7 +186,7 @@ function ctools_export_crud_delete($table, $object) {
     // If we were sent an object, get the export key from it. Otherwise
     // assume we were sent the export key.
     $value = is_object($object) ? $object->{$export['key']} : $object;
-    db_query("DELETE FROM {$table} WHERE " . $export['key'] . " = '%s'", $value);
+    db_query("DELETE FROM {" . $table . "} WHERE " . $export['key'] . " = '%s'", $value);
   }
 }
 
