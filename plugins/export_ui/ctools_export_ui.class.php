@@ -824,7 +824,7 @@ class ctools_export_ui {
       $form_state['step'] = reset(array_keys($form_info['order']));
     }
 
-    if (empty($form_info['order'][$form_state['step']])) {
+    if (empty($form_info['order'][$form_state['step']]) && empty($form_info['forms'][$form_state['step']])) {
       return MENU_NOT_FOUND;
     }
 
