@@ -293,6 +293,19 @@
     return url;
   };
 
+  Drupal.CTools.AJAX.getPath = function (link) {
+    if (!link) {
+      return;
+    }
+
+    var index = link.indexOf('?');
+    if (index != -1) {
+      link = link.substr(0, index);
+    }
+
+    return link;
+  }
+
   Drupal.CTools.AJAX.commands.prepend = function(data) {
     $(data.selector).prepend(data.data);
     Drupal.attachBehaviors($(data.selector));
@@ -359,14 +372,8 @@
     // Build a list of css files already loaded:
     $('link:not(.ctools-temporary-css)').each(function () {
       if ($(this).attr('type') == 'text/css') {
-        var link = $(this).attr('href');
+        var link = Drupal.CTools.AJAX.getPath($(this).attr('href'));
         if (link) {
-          // Strip off the query string; this can change at times and cause us
-          // to include files multiple times.
-          var index = link.indexOf('?');
-          if (index) {
-            link = link.substr(0, index);
-          }
           Drupal.CTools.AJAX.css[link] = $(this).attr('href');
         }
       }
@@ -374,11 +381,7 @@
 
     var html = '';
     for (i in data.argument) {
-      var link = data.argument[i].file;
-      var index = link.indexOf('?');
-      if (index) {
-        link = link.substr(0, index);
-      }
+      var link = Drupal.CTools.AJAX.getPath(data.argument[i].file);
       if (!Drupal.CTools.AJAX.css[link]) {
         html += '<link class="ctools-temporary-css" type="text/css" rel="stylesheet" media="' + data.argument[i].media +
           '" href="' + data.argument[i].file + '" />';
@@ -399,14 +402,8 @@
     // Build a list of scripts already loaded:
     var scripts = {};
     $('script').each(function () {
-      var link = $(this).attr('src');
+      var link = Drupal.CTools.AJAX.getPath($(this).attr('src'));
       if (link) {
-          // Strip off the query string; this can change at times and cause us
-          // to include files multiple times.
-        var index = link.indexOf('?');
-        if (index) {
-          link = link.substr(0, index);
-        }
         Drupal.CTools.AJAX.scripts[link] = $(this).attr('src');
       }
     });
@@ -414,14 +411,9 @@
     var html = '';
     var head = document.getElementsByTagName('head')[0];
     for (i in data.argument) {
-      var link = data.argument[i];
-      var index = link.indexOf('?');
-      if (index) {
-        link = link.substr(0, index);
-      }
-
+      var link = Drupal.CTools.AJAX.getPath(data.argument[i]);
       if (!Drupal.CTools.AJAX.scripts[link]) {
-        Drupal.CTools.AJAX.scripts[data.argument[i]] = link;
+        Drupal.CTools.AJAX.scripts[link] = link;
         // Use this to actually get the script tag into the dom, which is
         // needed for scripts that self-reference to determine paths.
         var script = document.createElement('script');

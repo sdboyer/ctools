@@ -610,7 +610,6 @@ function ctools_preprocess_page(&$variables) {
   ctools_process_js_files($js_files, 'footer');
 
   // Go through all CSS files that are being added to the page and catalog them.
-  $query_string = '?'. substr(variable_get('css_js_query_string', '0'), 0, 1);
   $css_files = array();
   foreach ($variables['css'] as $media => $types) {
     // If CSS preprocessing is off, we still need to output the styles.
@@ -633,7 +632,7 @@ function ctools_preprocess_page(&$variables) {
         }
         // Only include the stylesheet if it exists.
         if (file_exists($file)) {
-          $css_files[base_path() . $file . $query_string] = TRUE;
+          $css_files[base_path() . $file] = TRUE;
         }
       }
     }
@@ -905,7 +904,6 @@ function ctools_file_download($filepath) {
 function ctools_process_js_files(&$js_files, $scope) {
   // Automatically extract any 'settings' added via drupal_add_js() and make
   // them the first command.
-  $query_string = '?'. substr(variable_get('css_js_query_string', '0'), 0, 1);
   $scripts = drupal_add_js(NULL, NULL, $scope);
 
   // Get replacements that are going to be made by contrib modules and take
@@ -933,7 +931,7 @@ function ctools_process_js_files(&$js_files, $scope) {
         foreach ($data as $path => $info) {
           // If the script is being replaced, take that replacment into account.
           $final_path = isset($replacements[$type][$path]) ? $replacements[$type][$path] : $path;
-          $js_files[base_path() . $final_path . ($info['cache'] ? $query_string : '?' . time())] = TRUE;
+          $js_files[base_path() . $final_path] = TRUE;
         }
     }
   }

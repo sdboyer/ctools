@@ -3,7 +3,10 @@ API.txt: $Id$
 This file contains a log of changes to the API.
 API version 1.8
   Introduce 'get base contexts' callback to all tasks to facilitate
-  Page Manager's site template extracting contexts from the environment.
+    Page Manager's site template extracting contexts from the environment.
+  Introduce 'ctools_content_editable' function and the corresponding
+    'check editable' callback on all content types to determine if a
+    content type can be edited based upon configuration.
 
 API version 1.7.2
   Allow Export UI to automatically have wizards by setting 'use wizard' => TRUE

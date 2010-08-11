@@ -318,6 +318,24 @@ function ctools_content_render($type, $subtype, $conf, $keywords = array(), $arg
 }
 
 /**
+ * Determine if a content type can be edited or not.
+ *
+ * Some content types simply have their content and no options. This function
+ * lets a UI determine if it should display an edit link or not.
+ */
+function ctools_content_editable($type, $subtype, $conf) {
+  if (empty($type['edit form']) && empty($subtype['edit form'])) {
+    return FALSE;
+  }
+
+  if ($function = ctools_plugin_get_function($subtype, 'check editable')) {
+    return $function($type, $subtype, $conf);
+  }
+
+  return TRUE;
+}
+
+/**
  * Get the administrative title from a given content type.
  *
  * @param $type
