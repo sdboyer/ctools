@@ -186,8 +186,10 @@
       return self.pageYOffset ||
         $.boxModel && document.documentElement.scrollTop ||
         document.body.scrollTop;
+    if (this[0] != undefined){
+      return this[0].scrollTop;
+    }
 
-    return this[0].scrollTop;
   };
 
   /**
