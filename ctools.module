@@ -895,7 +895,7 @@ function ctools_file_download($filepath) {
   if (strpos($filepath, 'ctools') === 0) {
     $mime = file_get_mimetype($filepath);
     // For safety's sake, we allow only text and images.
-    if (strpos($mime, 'text') === 0 || strpos($mime, 'image')) {
+    if (strpos($mime, 'text') === 0 || strpos($mime, 'image') === 0) {
       return array('Content-type:' . $mime);
     }
   }
