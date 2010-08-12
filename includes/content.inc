@@ -264,7 +264,14 @@ function ctools_content_render($type, $subtype, $conf, $keywords = array(), $arg
     $plugin = ctools_get_content_type($type);
   }
 
-  if ($function = ctools_plugin_get_function($plugin, 'render callback')) {
+  $subtype_info = ctools_content_get_subtype($plugin, $subtype);
+
+  $function = ctools_plugin_get_function($subtype_info, 'render callback');
+  if (!$function) {
+    $function = ctools_plugin_get_function($plugin, 'render callback');
+  }
+
+  if ($function) {
     $pane_context = ctools_content_select_context($plugin, $subtype, $conf, $context);
     if ($pane_context === FALSE) {
       return;
@@ -565,7 +572,7 @@ function ctools_content_form($op, $form_info, &$form_state, $plugin, $subtype_na
     if (!empty($subtype['edit form'])) {
       _ctools_content_create_form_info($form_info, $subtype['edit form'], $subtype, $subtype, $op);
     }
-    if (!empty($plugin['edit form'])) {
+    else if (!empty($plugin['edit form'])) {
       _ctools_content_create_form_info($form_info, $plugin['edit form'], $plugin, $subtype, $op);
     }
   }

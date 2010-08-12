@@ -16,6 +16,7 @@ Improve the task system to make it possible for Panels Everywhere to get more co
 #867864: Fix a admin title and edit link problems with custom content types.
 #812744: Did not quite get query string removal working earlier, causing random breakages to AJAX requests.
 #866622 by dkinzer: Fix dimensions.js to not crash on undefined items.
+#215927: Allow exposed form blocks to inherit the current path.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============
