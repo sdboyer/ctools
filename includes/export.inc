@@ -769,14 +769,6 @@ function ctools_export_get_schema($table) {
       'bulk export' => TRUE,
       'list callback' => "$schema[module]_{$table}_list",
       'to hook code callback' => "$schema[module]_{$table}_to_hook_code",
-      'api' => array(),
-    );
-
-    $schema['export']['api'] += array(
-      'owner' => $table,
-      'api' => $table,
-      'minimum_version' => 1,
-      'current_version' => 1,
     );
 
     // If the export definition doesn't have the "primary key" then the CRUD
