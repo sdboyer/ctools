@@ -60,7 +60,16 @@ function ctools_export_ui_process(&$plugin, $info) {
     }
   }
 
+  // If we're on the modules page and building a menu, there is a design flaw
+  // in Drupal core that causes modules to be installed but the schema does
+  // not become available until AFTER menu rebuild. This helps smooth that
+  // out. This is a HACK but it should work:
   $schema = ctools_export_get_schema($plugin['schema']);
+
+  if (!$schema && $_GET['q'] == 'admin/build/modules/list/confirm') {
+    $schema = ctools_export_get_schema($plugin['schema'], TRUE);
+  }
+
   if (empty($schema)) {
     // If we're updating the schema may not have been read yet, so don't report this error in that case.
     if (!defined('MAINTENANCE_MODE')) {
