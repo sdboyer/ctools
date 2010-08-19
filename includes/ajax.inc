@@ -541,11 +541,13 @@ function ctools_ajax_render_error($error = '') {
  *   ctools_ajax_associate_url_to_element($form, $form['example'], 'example/ajax/urlpath');
  * @endcode
  *
- * The AJAX request will POST the value of the form element in the "ctools_changed" parameter.
+ * The AJAX request will POST the value of the form element in the
+ * "ctools_changed" parameter (i.e. $_POST['ctools_changed']).
  *
  * @param &$form
- *   Reference to the form element. This is required to have the #id and #attribute
- *   elements populated and to create the hidden form element for each select.
+ *   Reference to the form element. This is required to have the #id and
+ *   #attribute elements populated and to create the hidden form element for
+ *   each select.
  * @param &$form_element
  *   The form element we are going to take action on.
  * @param $dest
