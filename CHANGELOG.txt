@@ -20,6 +20,7 @@ Improve the task system to make it possible for Panels Everywhere to get more co
 #875020: Remove defaults for "API" in export section of schema as "No API version" is a possible option.
 Activating export-ui based modules caused warnings (that did not actually cause problems) on the modules page.
 #887812 by ayalon: Fix javascript crash bug.
+#848580: Re-organize form submission in modals so that wysiwyg can detach upon submit.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============

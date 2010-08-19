@@ -169,21 +169,7 @@
       else {
         var form = this.form;
         url = $(form).attr('action');
-        url = url.replace(/\/nojs(\/|$)/g, '/ajax$1');
-        $(form).ajaxSubmit({
-          type: "POST",
-          url: url,
-          data: { 'js': 1, 'ctools_ajax': 1},
-          global: true,
-          success: Drupal.CTools.AJAX.respond,
-          error: function(xhr) {
-            Drupal.CTools.AJAX.handleErrors(xhr, url);
-          },
-          complete: function() {
-            object.removeClass('ctools-ajaxing');
-          },
-          dataType: 'json'
-        });
+        setTimeout(function() { Drupal.CTools.AJAX.ajaxSubmit(form, url); }, 1);
       }
     }
     catch (err) {
@@ -193,6 +179,69 @@
     }
     return false;
   };
+
+  /**
+   * Event handler to submit an AJAX form.
+   *
+   * Using a secondary event ensures that our form submission is last, which
+   * is needed when submitting wysiwyg controlled forms, for example.
+   */
+  Drupal.CTools.AJAX.ajaxSubmit = function (form, url) {
+    $form = $(form);
+
+    if ($form.hasClass('ctools-ajaxing')) {
+      return false;
+    }
+
+    $form.addClass('ctools-ajaxing');
+
+    try {
+      url.replace(/\/nojs(\/|$)/g, '/ajax$1');
+
+      var ajaxOptions = {
+        type: 'POST',
+        url: url,
+        data: { 'js': 1, 'ctools_ajax': 1},
+        global: true,
+        success: Drupal.CTools.AJAX.respond,
+        error: function(xhr) {
+          Drupal.CTools.AJAX.handleErrors(xhr, url);
+        },
+        complete: function() {
+          $form.removeClass('ctools-ajaxing');
+          $('div.ctools-ajaxing-temporary').remove();
+        },
+        dataType: 'json'
+      };
+
+      // If the form requires uploads, use an iframe instead and add data to
+      // the submit to support this and use the proper response.
+      if ($form.attr('enctype') == 'multipart/form-data') {
+        $form.append('<input type="hidden" name="ctools_multipart" value="1">');
+        ajaxIframeOptions = {
+          success: Drupal.CTools.AJAX.iFrameJsonRespond,
+          iframe: true
+        };
+        ajaxOptions = $.extend(ajaxOptions, ajaxIframeOptions);
+      }
+
+      $form.ajaxSubmit(ajaxOptions);
+    }
+    catch (err) {
+      alert("An error occurred while attempting to process " + url);
+      $form.removeClass('ctools-ajaxing');
+      $('div.ctools-ajaxing-temporary').remove();
+      return false;
+    }
+  };
+
+  /**
+   * Wrapper for handling JSON responses from an iframe submission
+   */
+  Drupal.CTools.AJAX.iFrameJsonRespond = function(data) {
+    var myJson = eval(data);
+    Drupal.CTools.AJAX.respond(myJson);
+  }
 
   /**
    * Display error in a more fashion way

@@ -137,61 +137,12 @@
   /**
    * Submit responder to do an AJAX submit on all modal forms.
    */
-  Drupal.CTools.Modal.submitAjaxForm = function() {
-    if ($(this).hasClass('ctools-ajaxing')) {
-      return false;
-    }
+  Drupal.CTools.Modal.submitAjaxForm = function(e) {
+    var url = $(this).attr('action');
+    var form = $(this);
 
-    url = $(this).attr('action');
-    $(this).addClass('ctools-ajaxing');
-    var object = $(this);
-    try {
-      url.replace(/\/nojs(\/|$)/g, '/ajax$1');
-
-      var ajaxOptions = {
-        type: 'POST',
-        url: url,
-        data: { 'js': 1, 'ctools_ajax': 1},
-        global: true,
-        success: Drupal.CTools.AJAX.respond,
-        error: function(xhr) {
-          Drupal.CTools.AJAX.handleErrors(xhr, url);
-        },
-        complete: function() {
-          object.removeClass('ctools-ajaxing');
-          $('div.ctools-ajaxing-temporary').remove();
-        },
-        dataType: 'json'
-      };
-
-      // If the form requires uploads, use an iframe instead and add data to
-      // the submit to support this and use the proper response.
-      if ($(this).attr('enctype') == 'multipart/form-data') {
-        $(this).append('<input type="hidden" name="ctools_multipart" value="1">');
-        ajaxIframeOptions = {
-          success: Drupal.CTools.AJAX.iFrameJsonRespond,
-          iframe: true
-        };
-        ajaxOptions = $.extend(ajaxOptions, ajaxIframeOptions);
-      }
-
-      $(this).ajaxSubmit(ajaxOptions);
-    }
-    catch (err) {
-      alert("An error occurred while attempting to process " + url);
-      $(this).removeClass('ctools-ajaxing');
-      $('div.ctools-ajaxing-temporary').remove();
-      return false;
-    }
+    setTimeout(function() { Drupal.CTools.AJAX.ajaxSubmit(form, url); }, 1);
     return false;
-  }
-
-  /**
-   * Wrapper for handling JSON responses from an iframe submission
-   */
-  Drupal.CTools.AJAX.iFrameJsonRespond = function(data) {
-    var myJson = eval(data);
-    Drupal.CTools.AJAX.respond(myJson);
   }
 
   /**
@@ -220,7 +171,9 @@
     // Bind submit links in the modal form.
     $('#modal-content form:not(.ctools-use-modal-processed)', context)
       .addClass('ctools-use-modal-processed')
-      .submit(Drupal.CTools.Modal.submitAjaxForm);
+      .submit(Drupal.CTools.Modal.submitAjaxForm)
+      .bind('CToolsAJAXSubmit', Drupal.CTools.AJAX.ajaxSubmit);
+
     // add click handlers so that we can tell which button was clicked,
     // because the AJAX submit does not set the values properly.
 

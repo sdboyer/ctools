@@ -81,6 +81,9 @@ function ctools_content_process(&$plugin, $info) {
         $type['top level'] = $plugin['top level'];
       }
       $plugin['content types'] = array($plugin['name'] => $type);
+      if (!isset($plugin['single'])) {
+        $plugin['single'] = TRUE;
+      }
     }
   }
 }
