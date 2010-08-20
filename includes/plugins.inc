@@ -136,7 +136,7 @@ function ctools_plugin_api_include($owner, $api, $minimum_version, $current_vers
       }
       if (file_exists("./$plugin_info[path]/$plugin_info[file]")) {
         $plugin_info[$module]['included'] = TRUE;
-        require_once "./$plugin_info[path]/$plugin_info[file]";
+        include_once "./$plugin_info[path]/$plugin_info[file]";
       }
       $info[$module] = $plugin_info;
     }
