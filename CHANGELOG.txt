@@ -23,6 +23,7 @@ Activating export-ui based modules caused warnings (that did not actually cause 
 #848580: Re-organize form submission in modals so that wysiwyg can detach upon submit.
 #872072: Allow the modal to be vastly more customized.
 #873616: Invalid SQL in term_parent access plugin.
+#883490: Page manager "page" task needed to validate that % was not used in the first part of a path as that is not supported by Drupal menu system.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============

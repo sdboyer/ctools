@@ -196,7 +196,7 @@
     $form.addClass('ctools-ajaxing');
 
     try {
-      url.replace(/\/nojs(\/|$)/g, '/ajax$1');
+      url = url.replace(/\/nojs(\/|$)/g, '/ajax$1');
 
       var ajaxOptions = {
         type: 'POST',

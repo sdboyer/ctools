@@ -508,7 +508,7 @@ function page_manager_page_form_basic_validate(&$form, &$form_state) {
 
   $found = FALSE;
   $error = FALSE;
-  foreach (explode('/', $form_state['values']['path']) as $bit) {
+  foreach (explode('/', $form_state['values']['path']) as $position => $bit) {
     if (!isset($bit) || $bit === '') {
       continue;
     }
@@ -521,6 +521,11 @@ function page_manager_page_form_basic_validate(&$form, &$form_state) {
       if ($found) {
         form_error($form['path'], t('You cannot have a dynamic path element after an optional path element.'));
       }
+
+      if ($position == 0) {
+        form_error($form['path'], t('The first element in a path may not be dynamic.'));
+      }
+
       $path[] = '%';
     }
     else if ($bit[0] == '!') {
