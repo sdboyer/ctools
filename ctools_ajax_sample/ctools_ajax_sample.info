@@ -1,0 +1,7 @@
+; $Id$ 
+name = Chaos Tools (CTools) AJAX Example
+description = Shows how to use the power of Chaos AJAX.
+package = Chaos tool suite
+dependencies[] = ctools
+version = "6.x-1.0"
+core = "6.x"
