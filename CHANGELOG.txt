@@ -27,6 +27,7 @@ Activating export-ui based modules caused warnings (that did not actually cause 
 #883914: Ensure content pane validity before attemping to use.
 #884092: Fix stylizer error message that warns you when there are no modules utilizing stylizer.
 #831922 by tizzo: Make ctools_build_form() better support #ahah by properly rebuilding forms when necessary.
+#867554: Accidentally binding modal javascript to buttons that were not inputs outside of the modal.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============

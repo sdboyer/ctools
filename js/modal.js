@@ -240,7 +240,7 @@
     // add click handlers so that we can tell which button was clicked,
     // because the AJAX submit does not set the values properly.
 
-    $('#modal-content input[type="submit"]:not(.ctools-use-modal-processed), button:not(.ctools-use-modal-processed)', context)
+    $('#modal-content input[type="submit"]:not(.ctools-use-modal-processed), #modal-content button:not(.ctools-use-modal-processed)', context)
       .addClass('ctools-use-modal-processed')
       .click(function() {
         if (Drupal.autocompleteSubmit && !Drupal.autocompleteSubmit()) {
