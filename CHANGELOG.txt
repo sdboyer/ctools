@@ -25,6 +25,7 @@ Activating export-ui based modules caused warnings (that did not actually cause 
 #873616: Invalid SQL in term_parent access plugin.
 #883490: Page manager "page" task needed to validate that % was not used in the first part of a path as that is not supported by Drupal menu system.
 #883914: Ensure content pane validity before attemping to use.
+#884092: Fix stylizer error message that warns you when there are no modules utilizing stylizer.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============

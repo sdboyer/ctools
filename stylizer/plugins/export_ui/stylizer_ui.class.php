@@ -8,11 +8,9 @@ class stylizer_ui extends ctools_export_ui {
 
   function access($op, $item) {
     $access = parent::access($op, $item);
-    if ($op == 'add' & $access && empty($this->base_types)) {
+    if ($op == 'add' && $access && empty($this->base_types)) {
      // Make sure there are base styles defined.
      $access = FALSE;
-     // Give a warning about the missing base styles.
-     drupal_set_message($this->plugin['strings']['message']['missing base type'], 'warning');
     }
     return $access;
   }
@@ -22,6 +20,11 @@ class stylizer_ui extends ctools_export_ui {
     parent::list_form($form, $form_state);
 
     $all = array('all' => t('- All -'));
+
+    if (empty($this->base_types)) {
+      // Give a warning about the missing base styles.
+      drupal_set_message($this->plugin['strings']['message']['missing base type'], 'warning');
+    }
 
     $types = $all;
     foreach ($this->base_types as $module => $info) {
