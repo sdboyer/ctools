@@ -21,6 +21,7 @@ Improve the task system to make it possible for Panels Everywhere to get more co
 Activating export-ui based modules caused warnings (that did not actually cause problems) on the modules page.
 #887812 by ayalon: Fix javascript crash bug.
 #848580: Re-organize form submission in modals so that wysiwyg can detach upon submit.
+#872072: Allow the modal to be vastly more customized.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============

@@ -30,8 +30,6 @@ div.ctools-modal-content .modal-header a {
 div.ctools-modal-content .modal-content {
   padding: 1em 1em 0 1em;
   overflow: auto;
-  width: 575px;
-  height: 400px;
 }
 
 div.ctools-modal-content .modal-form {
