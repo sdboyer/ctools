@@ -174,7 +174,7 @@ function ctools_init() {
 
   // Clear plugin cache on the module page submit.
   if ($_GET['q'] == 'admin/build/modules' && !empty($_POST)) {
-    cache_clear_all('ctools_plugin_includes');
+    cache_clear_all('ctools_plugin_files');
   }
 }
 

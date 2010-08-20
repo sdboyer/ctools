@@ -136,7 +136,7 @@ function ctools_plugin_api_include($owner, $api, $minimum_version, $current_vers
       }
       if (file_exists("./$plugin_info[path]/$plugin_info[file]")) {
         $plugin_info[$module]['included'] = TRUE;
-        include_once "./$plugin_info[path]/$plugin_info[file]";
+        require_once "./$plugin_info[path]/$plugin_info[file]";
       }
       $info[$module] = $plugin_info;
     }
@@ -338,7 +338,7 @@ function ctools_plugin_load_includes($info, $filename = NULL) {
       else {
         // Parse a hook.
         $plugin = NULL; // ensure that we don't have something leftover from earlier.
-        require_once './' . $file->filename;
+        include_once './' . $file->filename;
         // .inc files have a special format for the hook identifier.
         // For example, 'foo.inc' in the module 'mogul' using the plugin
         // whose hook is named 'borg_type' should have a function named (deep breath)
