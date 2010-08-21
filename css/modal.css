@@ -30,6 +30,7 @@ div.ctools-modal-content .modal-header a {
 div.ctools-modal-content .modal-content {
   padding: 1em 1em 0 1em;
   overflow: auto;
+  position: relative; /* Keeps IE7 from flowing outside the modal. */
 }
 
 div.ctools-modal-content .modal-form {
