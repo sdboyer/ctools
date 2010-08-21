@@ -44,7 +44,7 @@
         // How much to remove from the inner content to make space for the
         // theming.
         contentRight: 25,
-        contentBottom: 45,
+        contentBottom: 45
       },
       modalOptions: {
         opacity: .55,
