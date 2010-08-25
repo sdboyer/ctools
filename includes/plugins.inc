@@ -785,3 +785,30 @@ function ctools_plugin_load_class($module, $type, $id, $class_name, $abstract = 
   $plugin = ctools_get_plugins($module, $type, $id);
   return ctools_plugin_get_class($plugin, $class_name, $abstract);
 }
+
+/**
+ * Sort callback for sorting plugins naturally.
+ *
+ * Sort first by weight, then by title.
+ */
+function ctools_plugin_sort($a, $b) {
+  if (is_object($a)) {
+    $a = (array) $a;
+  }
+  if (is_object($b)) {
+    $b = (array) $b;
+  }
+
+  if (empty($a['weight'])) {
+    $a['weight'] = 0;
+  }
+
+  if (empty($b['weight'])) {
+    $b['weight'] = 0;
+  }
+
+  if ($a['weight'] == $b['weight']) {
+    return strnatcmp(strtolower($a['title']), strtolower($b['title']));
+  }
+  return ($a['weight'] < $b['weight']) ? -1 : 1;
+}
