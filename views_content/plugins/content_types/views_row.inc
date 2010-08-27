@@ -60,7 +60,9 @@ function views_content_views_row_content_type_render($subtype, $conf, $panel_arg
     // Rerender just the rows we need.
     foreach ($conf['rows'] as $row) {
       $view->row_index = $row - 1;
-      $block->content .= $view->style_plugin->row_plugin->render($view->result[$row - 1]);
+      if (!empty($view->result[$row - 1])) {
+        $block->content .= $view->style_plugin->row_plugin->render($view->result[$row - 1]);
+      }
     }
   }
 
