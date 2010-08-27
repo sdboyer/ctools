@@ -119,14 +119,14 @@
           Drupal.CTools.AJAX.handleErrors(xhr, url);
         },
         complete: function() {
-          object.removeClass('ctools-ajaxing');
+          $('.ctools-ajaxing').removeClass('ctools-ajaxing');
         },
         dataType: 'json'
       });
     }
     catch (err) {
       alert("An error occurred while attempting to process " + url);
-      $(this).removeClass('ctools-ajaxing');
+      $('.ctools-ajaxing').removeClass('ctools-ajaxing');
       return false;
     }
 
@@ -161,7 +161,7 @@
             Drupal.CTools.AJAX.handleErrors(xhr, url);
           },
           complete: function() {
-            object.removeClass('ctools-ajaxing');
+            $('.ctools-ajaxing').removeClass('ctools-ajaxing');
           },
           dataType: 'json'
         });
@@ -208,7 +208,7 @@
           Drupal.CTools.AJAX.handleErrors(xhr, url);
         },
         complete: function() {
-          $form.removeClass('ctools-ajaxing');
+          $('.ctools-ajaxing').removeClass('ctools-ajaxing');
           $('div.ctools-ajaxing-temporary').remove();
         },
         dataType: 'json'
@@ -229,7 +229,7 @@
     }
     catch (err) {
       alert("An error occurred while attempting to process " + url);
-      $form.removeClass('ctools-ajaxing');
+      $('.ctools-ajaxing').removeClass('ctools-ajaxing');
       $('div.ctools-ajaxing-temporary').remove();
       return false;
     }
@@ -298,7 +298,7 @@
             Drupal.CTools.AJAX.handleErrors(xhr, url);
           },
           complete: function() {
-            object.removeClass('ctools-ajaxing');
+            $('.ctools-ajaxing').removeClass('ctools-ajaxing');
             if ($(object).hasClass('ctools-ajax-submit-onchange')) {
               $('form#' + form_id).submit();
             }
@@ -315,7 +315,7 @@
     }
     catch (err) {
       alert("An error occurred while attempting to process " + url);
-      $(this).removeClass('ctools-ajaxing');
+      $('.ctools-ajaxing').removeClass('ctools-ajaxing');
       return false;
     }
     return false;
