@@ -983,7 +983,7 @@ class ctools_export_ui {
       '#title' => t($schema['export']['key name']),
       '#type' => 'textfield',
       '#default_value' => $item->{$export_key},
-      '#description' => t('The unique ID for this @export.', array('@export' => $this->plugin['title'])),
+      '#description' => t('The unique ID for this @export.', array('@export' => $this->plugin['title singular'])),
       '#required' => TRUE,
       '#maxlength' => 255,
     );

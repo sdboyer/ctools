@@ -1,6 +1,7 @@
 Current API VERSION: 1.7.2. See API.txt for more information.
 
 ctools 6.x-dev
+==============
 #856636: Fix warnings on update.
 #866524: "Custom" content type could cause crash if trying to reuse it without activating the custom content type module.
 #870820 by EclipseGc: ctools_export_crud_import() passed wrong arguments to import callback, if defined.
@@ -29,6 +30,7 @@ Activating export-ui based modules caused warnings (that did not actually cause 
 #831922 by tizzo: Make ctools_build_form() better support #ahah by properly rebuilding forms when necessary.
 #867554: Accidentally binding modal javascript to buttons that were not inputs outside of the modal.
 #879438: Change require_once to include_once when including plugin files in case plugins have disappeared.
+#896660 by zoo33: Export-UI used wrong object name in descript of export key field.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============
