@@ -167,3 +167,25 @@ function page_manager_page_wizard_next(&$form_state) {
 
   page_manager_set_wizard_cache($form_state['cache']);
 }
+
+/**
+ * Provide a simple administrative list of all wizards.
+ *
+ * This is called as a page callback, but can also be used by any module
+ * that wants to get a list of wizards for its type.
+ */
+function page_manager_page_wizard_list($type = NULL) {
+  $plugins = page_manager_get_page_wizards();
+  uasort($plugins, 'ctools_plugin_sort');
+
+  $output = '<dl class="page-manager-wizards">';
+  foreach ($plugins as $id => $plugin) {
+    if (!$type || (isset($plugin['type']) && $plugin['type'] == $type)) {
+      $output .= '<dt>' . l($plugin['title'], 'admin/build/pages/wizard/' . $id) . '</dt>';
+      $output .= '<dd class="description">' . $plugin['description'] . '</dd>';
+    }
+  }
+  $output .= '</dl>';
+
+  return $output;
+}
