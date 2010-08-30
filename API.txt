@@ -7,6 +7,8 @@ API version 1.8
   Introduce 'ctools_content_editable' function and the corresponding
     'check editable' callback on all content types to determine if a
     content type can be edited based upon configuration.
+  Introduce utility.inc and move some code to it.
+  Introduce page-wizard.inc and a "page_wizard" type plugin for Page Manager.
 
 API version 1.7.2
   Allow Export UI to automatically have wizards by setting 'use wizard' => TRUE

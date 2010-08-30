@@ -31,6 +31,7 @@ Activating export-ui based modules caused warnings (that did not actually cause 
 #867554: Accidentally binding modal javascript to buttons that were not inputs outside of the modal.
 #879438: Change require_once to include_once when including plugin files in case plugins have disappeared.
 #896660 by zoo33: Export-UI used wrong object name in descript of export key field.
+New "Page wizards" to more easily create well-known types of pages in Page Manager.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============

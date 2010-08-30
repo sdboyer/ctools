@@ -217,6 +217,19 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
     $pages['tasks'][] = $task_name;
     $pages['rows'][$task_name] = $row;
   }
+
+  if (empty($task_id)) {
+    ctools_include('page-wizard');
+    $plugins = page_manager_get_page_wizards();
+    foreach ($plugins as $id => $plugin) {
+      if (!empty($plugin['shortcut'])) {
+        $pages['operations'][] = array(
+          'title' => $plugin['shortcut'],
+          'href' => 'admin/build/pages/wizard/' . $id,
+        );
+      }
+    }
+  }
 }
 
 /**
