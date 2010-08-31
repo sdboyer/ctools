@@ -205,7 +205,7 @@ function ctools_modal_form_wrapper($form_id, &$form_state) {
  * Render a form into an AJAX display.
  */
 function ctools_modal_form_render($form_state, $output) {
-  $title = empty($form_state['title']) ? '' : $form_state['title'];
+  $title = empty($form_state['title']) ? drupal_get_title() : $form_state['title'];
 
   // If there are messages for the form, render them.
   if ($messages = theme('status_messages')) {
@@ -233,4 +233,3 @@ function ctools_modal_render($title, $output) {
   ctools_include('ajax');
   ctools_ajax_render($commands);
 }
-
