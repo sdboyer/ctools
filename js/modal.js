@@ -250,7 +250,6 @@
         // Make sure it knows our button.
         if (!$(this.form).hasClass('ctools-ajaxing')) {
           this.form.clk = this;
-          $(this).after('<div class="ctools-ajaxing ctools-ajaxing-temporary"> &nbsp; </div>');
         }
       });
 
