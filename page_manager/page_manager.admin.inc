@@ -561,7 +561,7 @@ function page_manager_get_operations($page, $operations = NULL) {
   );
 
   // Restrict variant import to users who can already execute arbitrary PHP
-  if (user_access('use PHP for block visibility')) {
+  if (user_access('use PHP for settings')) {
     $result['actions']['children']['import'] = array(
       'title' => t('Import variant'),
       'description' => t('Add a new variant to this page from code exported from another page.'),
@@ -1414,7 +1414,7 @@ function page_manager_handler_import(&$form, &$form_state) {
     '#description' => t('Enter the name of the new variant.'),
   );
 
-  if (user_access('use PHP for block visibility')) {
+  if (user_access('use PHP for settings')) {
     $form['object'] = array(
       '#type' => 'textarea',
       '#title' => t('Paste variant code here'),
@@ -1434,7 +1434,7 @@ function page_manager_handler_import(&$form, &$form_state) {
  * Make sure that an import actually provides a handler.
  */
 function page_manager_handler_import_validate($form, &$form_state) {
-  if (!user_access('use PHP for block visibility')) {
+  if (!user_access('use PHP for settings')) {
     form_error($form['shoveoff'], t('You account permissions do not permit you to import.'));
     return;
   }
