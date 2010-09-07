@@ -86,12 +86,9 @@ function ctools_search_result_content_type_render($subtype, $conf, $panel_args, 
 function ctools_search_result_content_type_edit_form(&$form, &$form_state) {
   $conf = $form_state['conf'];
 
-<<<<<<< HEAD
-=======
   // Add js for collapsible fieldsets manually
   drupal_add_js('misc/collapse.js');
 
->>>>>>> DRUPAL-6--1
   $types = array();
   foreach (module_implements('search') as $name) {
     $types[$name] = module_invoke($name, 'search', 'name', TRUE);

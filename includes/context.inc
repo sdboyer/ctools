@@ -611,23 +611,6 @@ function ctools_context_keyword_substitute($string, $keywords, $contexts) {
       // Figure out our keyword and converter, if specified.
       if (strpos($keyword, ':')) {
         list($context, $converter) = explode(':', $keyword);
-<<<<<<< HEAD
-        if (empty($context->empty) && isset($context_keywords[$context])) {
-          $keywords['%' . $keyword] = ctools_context_convert_context($context_keywords[$context], $converter);
-        }
-        else {
-          $keywords['%' . $keyword] = '';
-        }
-      }
-      else {
-        if (isset($context_keywords[$keyword])) {
-          if (empty($context_keywords[$keyword]->empty)) {
-            $keywords['%' . $keyword] = $context_keywords[$keyword]->title;
-          }
-          else {
-            $keywords['%' . $keyword] = '';
-          }
-=======
       }
       else {
         $context = $keyword;
@@ -636,7 +619,6 @@ function ctools_context_keyword_substitute($string, $keywords, $contexts) {
         // Fall back to a default converter, if specified.
         if ($plugin && !empty($plugin['convert default'])) {
           $converter = $plugin['convert default'];
->>>>>>> DRUPAL-6--1
         }
       }
 

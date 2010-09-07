@@ -129,7 +129,6 @@
       $('.ctools-ajaxing').removeClass('ctools-ajaxing');
       return false;
     }
->>>>>>> DRUPAL-6--1
 
     return false;
   };
