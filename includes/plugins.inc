@@ -571,14 +571,6 @@ function _ctools_process_data($result, $info, $module, $path, $file) {
       if (is_array($info['defaults'])) {
         $result[$name] += $info['defaults'];
       }
-      // FIXME This callback-based approach for the 'defaults' key is entirely
-      // redundant with the 'process' callback. Consequently, that approach is
-      // DEPRECATED in favor using a 'process' callback. In the next major
-      // version, 'defaults' callbacks will be removed entirely; only the array
-      // addition 'defaults' approach will be allowed.
-      else if (function_exists($info['defaults'])) {
-        $info['defaults']($info, $result[$name]);
-      }
     }
 
     // Allow the plugin owner to do additional processing.
