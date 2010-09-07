@@ -33,11 +33,13 @@ function ctools_node_body_content_type_render($subtype, $conf, $panel_args, $con
     return;
   }
 
+  $body = str_replace('<!--break-->', '', $node->body);
+
   // Build the content type block.
   $block = new stdClass();
   $block->module  = 'node_body';
   $block->title   = $type->body_label;
-  $block->content = check_markup($node->body, $node->format, FALSE);
+  $block->content = check_markup($body, $node->format, FALSE);
   $block->delta   = $node->nid;
 
   return $block;

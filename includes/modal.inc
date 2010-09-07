@@ -48,16 +48,17 @@ function ctools_modal_add_js() {
     return;
   }
 
-  $settings = array('CToolsModal' => array(
-    'closeText' => t('Close Window'),
-    'closeImage' => theme('image', ctools_image_path('icon-close-window.png'), t('Close window'), t('Close window')),
-    'throbber' => theme('image', ctools_image_path('throbber.gif'), t('Loading...'), t('Loading')),
-  ));
+  $settings = array(
+    'CToolsModal' => array(
+      'loadingText' => t('Loading...'),
+      'closeText' => t('Close Window'),
+      'closeImage' => theme('image', ctools_image_path('icon-close-window.png'), t('Close window'), t('Close window')),
+      'throbber' => theme('image', ctools_image_path('throbber.gif'), t('Loading...'), t('Loading')),
+    ),
+  );
 
   drupal_add_js($settings, 'setting');
   drupal_add_js('misc/jquery.form.js');
-  ctools_add_js('dimensions');
-  ctools_add_js('mc');
   ctools_add_js('ajax-responder');
   ctools_add_js('modal');
 
@@ -186,7 +187,6 @@ function ctools_modal_text_button($text, $dest, $alt, $class = '') {
  */
 function ctools_modal_form_wrapper($form_id, &$form_state) {
   ctools_include('form');
-  ctools_include('modal');
   // This won't override settings already in.
   $form_state += array(
     're_render' => FALSE,
@@ -205,7 +205,7 @@ function ctools_modal_form_wrapper($form_id, &$form_state) {
  * Render a form into an AJAX display.
  */
 function ctools_modal_form_render($form_state, $output) {
-  $title = empty($form_state['title']) ? '' : $form_state['title'];
+  $title = empty($form_state['title']) ? drupal_get_title() : $form_state['title'];
 
   // If there are messages for the form, render them.
   if ($messages = theme('status_messages')) {
@@ -232,4 +232,3 @@ function ctools_modal_render($title, $output) {
   $commands[] = ctools_modal_command_display($title, $output);
   ajax_render($commands);
 }
-

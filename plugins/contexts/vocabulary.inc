@@ -56,7 +56,7 @@ function ctools_context_vocabulary_settings_form($conf) {
     '#title' => t('Vocabulary'),
     '#type' => 'select',
     '#options' => $options,
-    '#default_value' => isset($conf['vids']) ? $conf['vids'] : array(),
+    '#default_value' => isset($conf['vid']) ? $conf['vid'] : array(),
     '#prefix' => '<div class="clear-block">',
     '#suffix' => '</div>',
     '#description' => t('Select the vocabulary for this form.'),

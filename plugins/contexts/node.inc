@@ -138,7 +138,8 @@ function ctools_context_node_settings_form_validate($form, &$form_values, &$form
     $node = db_query('SELECT nid FROM {node} WHERE LOWER(title) = LOWER(:title)', array(':title' => $nid))->fetchObject();
   }
 
-  if (!$node) {
+  // Do not allow unpublished nodes to be selected by unprivileged users
+  if (!$node || (empty($node->status) && !(user_access('administer nodes')))) {
     form_error($form['node'], t('Invalid node selected.'));
   }
   else {
@@ -161,13 +162,19 @@ function ctools_context_node_settings_form_submit($form, &$form_values, &$form_s
  * Provide a list of ways that this context can be converted to a string.
  */
 function ctools_context_node_convert_list() {
-  return array(
+  $list = array(
     'nid' => t('Node ID'),
     'vid' => t('Node revision ID'),
     'title' => t('Node title'),
     'uid' => t('Author UID'),
     'type' => t('Node type'),
   );
+
+  if (module_exists('token')) {
+    $list += reset(token_get_list(array('node')));
+  }
+
+  return $list;
 }
 
 /**
@@ -185,5 +192,11 @@ function ctools_context_node_convert($context, $type) {
       return $context->data->uid;
     case 'type':
       return $context->data->type;
+  }
+  if (module_exists('token')) {
+    $values = token_get_values('node', $context->data);
+    if ($key = array_search($type, $values->tokens)) {
+      return $values->values[$key];
+    }
   }
 }

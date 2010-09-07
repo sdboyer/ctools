@@ -10,6 +10,7 @@ class views_content_plugin_display_panel_pane extends views_plugin_display {
    * this variable so that other modules can create alternate pane displays.
    */
   var $panel_pane_display = TRUE;
+  var $has_pane_conf = NULL;
 
   function option_definition() {
     $options = parent::option_definition();
@@ -33,6 +34,7 @@ class views_content_plugin_display_panel_pane extends views_plugin_display {
         'path_override'   => array('default' => FALSE),
         'title_override'  => array('default' => FALSE),
         'exposed_form'    => array('default' => FALSE),
+        'fields_override' => array('default' => FALSE),
        ),
     );
 
@@ -41,6 +43,15 @@ class views_content_plugin_display_panel_pane extends views_plugin_display {
     $options['inherit_panels_path'] = array('default' => 0);
 
     return $options;
+  }
+
+  function has_pane_conf() {
+    return isset($this->has_pane_conf);
+  }
+
+  function set_pane_conf($conf = array()) {
+    $this->set_option('pane_conf', $conf);
+    $this->has_pane_conf = TRUE;
   }
 
   /**
@@ -152,7 +163,8 @@ class views_content_plugin_display_panel_pane extends views_plugin_display {
           'more_link' => t('More link'),
           'path_override' => t('Path override'),
           'title_override' => t('Title override'),
-//          'exposed_form' => t('Use exposed widgets form as pane configuration'),
+          'exposed_form' => t('Use exposed widgets form as pane configuration'),
+          'fields_override' => t('Fields override'),
         );
 
         $allow = array_filter($this->get_option('allow'));
@@ -355,5 +367,38 @@ class views_content_plugin_display_panel_pane extends views_plugin_display {
 
     return $output;
   }
+
+  function use_more() {
+    $allow = $this->get_option('allow');
+    if (!$allow['more_link'] || !$this->has_pane_conf()) {
+      return parent::use_more();
+    }
+    $conf = $this->get_option('pane_conf');
+    return (bool) $conf['more_link'];
+  }
+
+  function get_path() {
+    if (empty($this->view->override_path)) {
+      return parent::get_path();
+    }
+    return $this->view->override_path;
+  }
+
+  /**
+   * Determine if this display should display the exposed
+   * filters widgets, so the view will know whether or not
+   * to render them.
+   *
+   * Regardless of what this function
+   * returns, exposed filters will not be used nor
+   * displayed unless uses_exposed() returns TRUE.
+   */
+  function displays_exposed() {
+    $conf = $this->get_option('allow');
+    // If this is set, the exposed form is part of pane configuration, not
+    // rendered normally.
+    return empty($conf['exposed_form']);
+  }
+
 }
 

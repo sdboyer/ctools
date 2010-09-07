@@ -85,7 +85,7 @@ function page_manager_user_view($account) {
   }
   else {
     //fire off "view" op so that triggers still work
-    module_invoke_all('user', 'view', array(), $account);
+    user_module_invoke('view', $array = array(), $account);
   }
   return $output;
 }

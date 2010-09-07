@@ -8,7 +8,7 @@
 
 /**
  * Use requirements to ensure that the CTools CSS cache directory can be
- * created.
+ * created and that the PHP version requirement is met.
  */
 function ctools_requirements($phase) {
   $requirements = array();
@@ -25,6 +25,13 @@ function ctools_requirements($phase) {
       $requirements['ctools_css_cache']['severity'] = REQUIREMENT_ERROR;
       $requirements['ctools_css_cache']['value'] = t('Unable to create');
     }
+
+    if (!function_exists('error_get_last')) {
+  	  $requirements['ctools_php_52']['title'] = t('CTools PHP requirements');
+      $requirements['ctools_php_52']['description'] = t('CTools requires certain features only available in PHP 5.2.0 or higher.');
+      $requirements['ctools_php_52']['severity'] = REQUIREMENT_WARNING;
+      $requirements['ctools_php_52']['value'] = t('PHP !version', array('!version' => phpversion()));
+    }
   }
 
   return $requirements;
@@ -34,8 +41,6 @@ function ctools_requirements($phase) {
  * Implements hook_schemea
  */
 function ctools_schema() {
-  // Currently, schema 1 is the only schema we have. As we make updates,
-  // we might either create a new schema 2 or make adjustments here.
   return ctools_schema_2();
 }
 
@@ -168,3 +173,26 @@ function ctools_update_6004() {
   db_add_primary_key('ctools_object_cache', array('sid', 'obj', 'name'));
   db_drop_index('ctools_object_cache', 'sid_obj_name');
 }
+
+/**
+ * Removed update.
+ */
+function ctools_update_6005() {
+  return array();
+}
+
+/**
+ * ctools_custom_content table was originally here, but is now moved to
+ * its own module.
+ */
+function ctools_update_6007() {
+  $ret = array();
+  if (db_table_exists('ctools_custom_content')) {
+    // Enable the module to make everything as seamless as possible.
+    drupal_install_modules(array('ctools_custom_content'));
+  }
+
+  return $ret;
+}
+
+

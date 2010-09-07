@@ -52,7 +52,12 @@ function ctools_term_list_content_type_render($subtype, $conf, $panel_args, $con
     }
     if ($terms) {
       foreach ($terms as $related) {
-        $items[$related->tid] = l($related->name, taxonomy_term_path($related), array('rel' => 'tag', 'title' => strip_tags($related->description)));
+        if (is_object($related)) {
+          $items[] = l($related->name, taxonomy_term_path($related), array('rel' => 'tag', 'title' => strip_tags($related->description)));
+        }
+        else {
+          $items[] = check_plain($related);
+        }
       }
 
       $block->content = theme('item_list', $items, NULL, $conf['list_type']);

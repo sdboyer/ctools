@@ -20,13 +20,11 @@ $plugin = array(
   'settings form submit' => 'ctools_context_user_settings_form_submit',
   'keyword' => 'user',
   'defaults' => array('type' => 'select', 'uid' => ''),
-  'no ui' => TRUE,
   'context name' => 'user',
-  'convert list' => array(
-    'uid' => t('User ID'),
-    'name' => t('User name'),
-  ),
+  'convert list' => 'ctools_context_user_convert_list',
   'convert' => 'ctools_context_user_convert',
+  'convert default' => 'name',
+  'js' => array('misc/autocomplete.js'),
 );
 
 /**
@@ -45,6 +43,7 @@ function ctools_context_create_user($empty, $data = NULL, $conf = FALSE) {
     if ($data['type'] == 'current') {
       global $user;
       $data = $user;
+      $data->logged_in_user = TRUE;
     }
     else {
       $data = user_load(array('uid' => $data['uid']));
@@ -143,6 +142,20 @@ function ctools_context_user_settings_form_submit($form, &$form_values, &$form_s
 }
 
 /**
+ * Provide a list of replacements.
+ */
+function ctools_context_user_convert_list() {
+  $list = array(
+    'uid' => t('User ID'),
+    'name' => t('User name'),
+  );
+  if (module_exists('token')) {
+    $list += reset(token_get_list(array('user')));
+  }
+  return $list;
+}
+
+/**
  * Convert a context into a string.
  */
 function ctools_context_user_convert($context, $type) {
@@ -151,5 +164,11 @@ function ctools_context_user_convert($context, $type) {
       return $context->data->uid;
     case 'name':
       return $context->data->name;
+  }
+  if (module_exists('token')) {
+    $values = token_get_values('user', $context->data);
+    if ($key = array_search($type, $values->tokens)) {
+      return $values->values[$key];
+    }
   }
 }

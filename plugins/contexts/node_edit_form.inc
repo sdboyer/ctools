@@ -35,12 +35,14 @@ $plugin = array(
  * are not always created from the UI.
  */
 function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALSE) {
-  $context = new ctools_context(array('form', 'node_edit', 'node_form', 'node'));
+  static $created;
+  $context = new ctools_context(array('form', 'node_edit', 'node_form', 'node', 'node_edit_form'));
   $context->plugin = 'node_edit_form';
 
-  if ($empty) {
+  if ($empty || (isset($created) && $created)) {
     return $context;
   }
+  $created = TRUE;
 
   if ($conf) {
     // In this case, $node is actually our $conf array.
@@ -180,7 +182,7 @@ function ctools_context_node_edit_form_settings_form_submit($form, &$form_values
 /**
  * Provide a list of ways that this context can be converted to a string.
  */
-function ctools_context_node_convert_edit_list() {
+function ctools_context_node_edit_convert_list() {
   // Pass through to the "node" context convert list.
   $plugin = ctools_get_context('node');
   return ctools_context_node_convert_list();
@@ -189,7 +191,7 @@ function ctools_context_node_convert_edit_list() {
 /**
  * Convert a context into a string.
  */
-function ctools_context_node_convert($context, $type) {
+function ctools_context_node_edit_convert($context, $type) {
   // Pass through to the "node" context convert list.
   $plugin = ctools_get_context('node');
   return ctools_context_node_convert($context, $type);

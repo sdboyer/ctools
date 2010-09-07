@@ -31,7 +31,7 @@ function ctools_node_comments_content_type_render($subtype, $conf, $panel_args, 
   if (empty($node)) {
     $block->content = t('Node comments go here.');
   }
-  else {
+  else if ($node->comment) {
     $block->content = ctools_comment_render($node, $conf);
     // Update the history table, stating that this user viewed this node.
     node_tag_new($node->nid);
@@ -85,7 +85,7 @@ function ctools_node_comments_content_type_admin_title($subtype, $conf, $context
  */
 function ctools_comment_render($node, $conf) {
   $output = '';
-  if (!user_access('access comments')) {
+  if (!user_access('access comments') || !$node->comment) {
     return;
   }
 

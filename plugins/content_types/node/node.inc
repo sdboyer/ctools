@@ -8,27 +8,26 @@
  */
 
 /**
- * Implements hook_ctools_content_types()
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_node_ctools_content_types() {
-  return array(
-    'title' => t('Node'),
-    'single' => TRUE,
-    'defaults' => array(
-      'nid' => '',
-      'teaser' => TRUE,
-      'links' => TRUE,
-      'leave_node_title' => FALSE,
-      'identifier' => '',
-    ),
-    'title' => t('Existing node'),
-    'icon' => 'icon_node.png',
-    'description' => t('Add a node from your site as content.'),
-    'category' => t('Custom'),
-    'top level' => TRUE,
-    'js' => array('misc/autocomplete.js'),
-  );
-}
+$plugin = array(
+  'title' => t('Node'),
+  'single' => TRUE,
+  'defaults' => array(
+    'nid' => '',
+    'links' => TRUE,
+    'leave_node_title' => FALSE,
+    'identifier' => '',
+    'build_mode' => 'teaser',
+  ),
+  'title' => t('Existing node'),
+  'icon' => 'icon_node.png',
+  'description' => t('Add a node from your site as content.'),
+  'category' => t('Custom'),
+  'top level' => TRUE,
+  'js' => array('misc/autocomplete.js'),
+);
 
 /**
  * Output function for the 'node' content type.
@@ -44,7 +43,9 @@ function ctools_node_content_type_render($subtype, $conf, $panel_args) {
   }
 
   foreach ($panel_args as $id => $arg) {
-    $nid = str_replace("@$id", $arg, $nid);
+    if (is_string($arg)) {
+      $nid = str_replace("@$id", $arg, $nid);
+    }
   }
 
   // Support node translation
@@ -77,17 +78,28 @@ function ctools_node_content_type_render($subtype, $conf, $panel_args) {
   $block->module = 'node';
   $block->delta = $node->nid;
 
-  $block->title = $node->title;
+  if (!empty($conf['link_node_title'])) {
+    $block->title = l($node->title, 'node/' . $node->nid);
+  }
+  else {
+    $block->title = check_plain($node->title);
+  }
 
   if (empty($conf['leave_node_title'])) {
     $node->title = NULL;
   }
+
   if (!empty($conf['identifier'])) {
     $node->panel_identifier = $conf['identifier'];
   }
 
+  // Handle existing configurations with the deprecated 'teaser' option.
+  if (isset($conf['teaser'])) {
+    $conf['build_mode'] = $conf['teaser'] ? 'teaser' : 'full';
+  }
+
   if (!isset($node->build_mode)) {
-    $node->build_mode = NODE_BUILD_NORMAL;
+    $node->build_mode = ($conf['build_mode'] == 'teaser' || $conf['build_mode'] == 'full') ? NODE_BUILD_NORMAL : $conf['build_mode'];
   }
 
   // FIXME some of the old behavior will likely not work after the straight
@@ -109,6 +121,14 @@ function ctools_node_content_type_edit_form(&$form, &$form_state) {
     '#description' => t('Advanced: if checked, do not touch the node title; this can cause the node title to appear twice unless your theme is aware of this.'),
   );
 
+  $form['link_node_title'] = array(
+    '#type' => 'checkbox',
+    '#default_value' => !empty($conf['link_node_title']),
+    '#title' => t('Link the node title to the node'),
+    '#description' => t('Check this box if you would like your pane title to link to the node.'),
+  );
+
+
   if ($form_state['op'] == 'add') {
     $form['nid'] = array(
       '#prefix' => '<div class="no-float">',
@@ -128,12 +148,6 @@ function ctools_node_content_type_edit_form(&$form, &$form_state) {
     );
   }
 
-  $form['teaser'] = array(
-    '#title' => t('Show only node teaser'),
-    '#type' => 'checkbox',
-    '#default_value' => $conf['teaser'],
-  );
-
   $form['links'] = array(
     '#type' => 'checkbox',
     '#default_value' => $conf['links'],
@@ -145,6 +159,38 @@ function ctools_node_content_type_edit_form(&$form, &$form_state) {
     '#default_value' => !empty($conf['identifier']) ? $conf['identifier'] : '',
     '#title' => t('Template identifier'),
     '#description' => t('This identifier will be added as a template suggestion to display this node: node-panel-IDENTIFIER.tpl.php. Please see the Drupal theming guide for information about template suggestions.'),
+  );
+
+  // CCK holds the registry of available build modes, but can hardly
+  // push them as options for the build mode options, so we break the normal
+  // rule of not directly relying on non-core modules.
+  if ($modes = module_invoke('content', 'build_modes')) {
+    $build_mode_options = array();
+    foreach ($modes as $key => $value) {
+      if (isset($value['views style']) && $value['views style']) {
+        $build_mode_options[$key] = $value['title'];
+      }
+    }
+  }
+  else {
+    $build_mode_options = array(
+      'teaser' => t('Teaser'),
+      'full' => t('Full node')
+    );
+  }
+
+  // Handle existing configurations with the deprecated 'teaser' option.
+  // Also remove the teaser key from the form_state.
+  if (isset($conf['teaser']) || !isset($conf['build_mode'])) {
+    unset($form_state['conf']['teaser']);
+    $conf['build_mode'] = $conf['teaser'] ? 'teaser' : 'full';
+  }
+  $form['build_mode'] = array(
+    '#title' => t('Build mode'),
+    '#type' => 'select',
+    '#description' => t('Select a build mode for this node.'),
+    '#options' => $build_mode_options,
+    '#default_value' => $conf['build_mode'],
   );
 
 }
@@ -177,7 +223,9 @@ function  ctools_node_content_type_edit_form_validate(&$form, &$form_state) {
     $form_state['values']['nid'] = $node->nid;
   }
 
-  if (!($node || preg_match('/^[@%]\d+$/', $nid))) {
+  if (!($node || preg_match('/^[@%]\d+$/', $nid)) ||
+      // Do not allow unpublished nodes to be selected by unprivileged users
+      (empty($node->status) && !user_access('administer nodes'))) {
     form_error($form['nid'], t('Invalid node'));
   }
 }
@@ -186,7 +234,7 @@ function  ctools_node_content_type_edit_form_validate(&$form, &$form_state) {
  * Validate the node selection.
  */
 function ctools_node_content_type_edit_form_submit(&$form, &$form_state) {
-  foreach (array('nid', 'teaser', 'links', 'leave_node_title', 'identifier') as $key) {
+  foreach (array('nid', 'links', 'leave_node_title', 'link_node_title', 'identifier', 'build_mode') as $key) {
     $form_state['conf'][$key] = $form_state['values'][$key];
   }
 }
@@ -201,7 +249,12 @@ function ctools_node_content_type_admin_title($subtype, $conf) {
 
   $node = node_load($conf['nid']);
   if ($node) {
-    return check_plain($node->title);
+    if (!empty($data->status) || user_access('administer nodes')) {
+      return check_plain($node->title);
+    }
+    else {
+      return t('Unpublished node @nid', array('@nid' => $conf['nid']));
+    }
   }
   else {
     return t('Deleted/missing node @nid', array('@nid' => $conf['nid']));

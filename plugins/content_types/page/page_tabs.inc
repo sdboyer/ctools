@@ -8,17 +8,21 @@
  */
 
 /**
- * Implements hook_ctools_content_types()
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_page_tabs_ctools_content_types() {
-  return array(
-    'title' => t('Tabs'),
-    'single' => TRUE,
-    'icon' => 'icon_page.png',
-    'description' => t('Add the tabs (local tasks) as content.'),
-    'category' => t('Page elements'),
-  );
-}
+$plugin = array(
+  'title' => t('Tabs'),
+  'single' => TRUE,
+  'icon' => 'icon_page.png',
+  'description' => t('Add the tabs (local tasks) as content.'),
+  'category' => t('Page elements'),
+  'render last' => TRUE,
+  'defaults' => array(
+    'type' => 'both',
+    'id' => 'tabs',
+  ),
+);
 
 /**
  * Output function for the 'page_tabs' content type.
@@ -26,12 +30,41 @@ function ctools_page_tabs_ctools_content_types() {
  * Outputs the tabs (local tasks) of the current page.
  */
 function ctools_page_tabs_content_type_render($subtype, $conf, $panel_args) {
-  $token = '<!-- ctools-page-tabs -->';
-  ctools_set_page_token($token, 'variable', 'tabs');
-
   $block = new stdClass();
-  $block->content = $token;
+  $block->content = theme('menu_local_tasks');
 
   return $block;
 }
 
+
+function ctools_page_tabs_content_type_edit_form(&$form, &$form_state) {
+  $conf = $form_state['conf'];
+
+  $form['type'] = array(
+    '#title' => t('Tabs type'),
+    '#type' => 'select',
+    '#options' => array(
+      'both' => t('Primary and secondary'),
+      'primary' => t('Primary'),
+      'secondary' => t('Secondary'),
+    ),
+    '#default_value' => $conf['type'],
+  );
+
+  $form['id'] = array(
+    '#title' => t('CSS id to use'),
+    '#type' => 'textfield',
+    '#default_value' => $conf['id'],
+  );
+}
+
+/**
+ * The submit form stores the data in $conf.
+ */
+function ctools_page_tabs_content_type_edit_form_submit(&$form, &$form_state) {
+  foreach (array_keys($form_state['plugin']['defaults']) as $key) {
+    if (isset($form_state['values'][$key])) {
+      $form_state['conf'][$key] = $form_state['values'][$key];
+    }
+  }
+}

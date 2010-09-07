@@ -44,11 +44,11 @@ function page_manager_permission() {
 
 /**
  * Implements hook_ctools_plugin_directory() to let the system know
- * we implement task and task_handler plugins.
+ * where our task and task_handler plugins are.
  */
-function page_manager_ctools_plugin_directory($module, $plugin) {
-  if ($module == 'page_manager') {
-    return 'plugins/' . $plugin;
+function page_manager_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'page_manager') {
+    return 'plugins/' . $plugin_type;
   }
 }
 
@@ -56,6 +56,13 @@ function page_manager_ctools_plugin_directory($module, $plugin) {
  * Delegated implementation of hook_menu().
  */
 function page_manager_menu() {
+  // For some reason, some things can activate modules without satisfying
+  // dependencies. I don't know how, but this helps prevent things from
+  // whitescreening when this happens.
+  if (!module_exists('ctools')) {
+    return;
+  }
+
   $items = array();
   $base = array(
     'access arguments' => array('use page manager'),
@@ -128,6 +135,13 @@ function page_manager_menu() {
  * Get a list of all tasks and delegate to them.
  */
 function page_manager_menu_alter(&$items) {
+  // For some reason, some things can activate modules without satisfying
+  // dependencies. I don't know how, but this helps prevent things from
+  // whitescreening when this happens.
+  if (!module_exists('ctools')) {
+    return;
+  }
+
   $tasks = page_manager_get_tasks();
 
   foreach ($tasks as $task) {
@@ -149,6 +163,13 @@ function page_manager_menu_alter(&$items) {
  * Implements hook_theme()
  */
 function page_manager_theme() {
+  // For some reason, some things can activate modules without satisfying
+  // dependencies. I don't know how, but this helps prevent things from
+  // whitescreening when this happens.
+  if (!module_exists('ctools')) {
+    return;
+  }
+
   $base = array(
     'path' => drupal_get_path('module', 'page_manager') . '/theme',
     'file' => 'page_manager.theme.inc',
@@ -718,6 +739,8 @@ function page_manager_get_task_subtasks($task) {
   if ($function = ctools_plugin_get_function($task, 'subtasks callback')) {
     return $function($task);
   }
+
+  return array();
 }
 
 /**
@@ -1043,21 +1066,8 @@ function page_manager_page_manager_handlers_list() {
   $handlers = ctools_export_load_object('page_manager_handlers');
   foreach ($handlers as $handler) {
     if (in_array($handler->task, $types)) {
-      $list[$handler->name] = "$handler->task: {$handler->conf['title']} ($handler->name)";
+      $list[$handler->name] = check_plain("$handler->task: " . $handler->conf['title'] . " ($handler->name)");
     }
-  }
-  return $list;
-}
-
-/**
- * Callback to list pages available for export.
- */
-function page_manager_page_manager_pages_list() {
-  $list = array();
-
-  $pages = ctools_export_load_object('page_manager_pages', 'all');
-  foreach ($pages as $page) {
-    $list[$page->name] = "$page->admin_title ($page->name)";
   }
   return $list;
 }
@@ -1111,4 +1121,48 @@ function page_manager_get_current_page($page = NULL) {
   }
 
   return $current;
+}
+
+/**
+ * Implementation of hook_panels_dashboard_blocks().
+ *
+ * Adds page information to the Panels dashboard.
+ */
+function page_manager_panels_dashboard_blocks(&$vars) {
+  $vars['links']['page_manager'] = array(
+    'weight' => -100,
+    'title' => l(t('Panel page'), 'admin/build/pages/add'),
+    'description' => t('Panel pages can be used as landing pages. They have a URL path, accept arguments and can have menu entries.'),
+  );
+
+  module_load_include('inc', 'page_manager', 'page_manager.admin');
+  $tasks = page_manager_get_tasks_by_type('page');
+  $pages = array('operations' => array());
+
+  page_manager_get_pages($tasks, $pages);
+  $count = 0;
+  $rows = array();
+  foreach ($pages['rows'] as $id => $info) {
+    $rows[] = array(
+      'data' => array(
+        $info['data']['title'],
+        $info['data']['operations'],
+      ),
+      'class' => $info['class'],
+    );
+
+    // Only show 10.
+    if (++$count >= 10) {
+      break;
+    }
+  }
+
+  $vars['blocks']['page_manager'] = array(
+    'weight' => -100,
+    'title' => t('Manage pages'),
+    'link' => l(t('Go to list'), 'admin/build/pages'),
+    'content' => theme('table', array(), $rows, array('class' => 'panels-manage')),
+    'class' => 'dashboard-pages',
+    'section' => 'right',
+  );
 }

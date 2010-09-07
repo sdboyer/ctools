@@ -212,6 +212,7 @@
         else {
           content.slideToggle(100, afterToggle);
         }
+
         toggle.toggleClass('ctools-toggle-collapsed');
 
         // If we're supposed to remember the state of this class, do so.

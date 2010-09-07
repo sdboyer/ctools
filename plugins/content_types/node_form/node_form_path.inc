@@ -24,7 +24,7 @@ function ctools_node_form_path_content_type_render($subtype, $conf, $panel_args,
   $block->delta = 'url-path-options';
 
   if (isset($context->form)) {
-    if (!empty($context->form->form_id) && !empty($context->form['path']['#access'])) {
+    if (!empty($context->form['form_id']) && !empty($context->form['path']['#access'])) {
       // remove the fieldset
       unset($context->form['path']['#type']);
       $context->form['path']['path']['#size'] /= 2;

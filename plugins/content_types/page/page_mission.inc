@@ -8,17 +8,17 @@
  */
 
 /**
- * Implements hook_ctools_content_types()
+ * Plugins are described by creating a $plugin array which will be used
+ * by the system that includes this file.
  */
-function ctools_page_mission_ctools_content_types() {
-  return array(
-    'title' => t('Mission'),
-    'single' => TRUE,
-    'icon' => 'icon_page.png',
-    'description' => t('Add the site mission statement as content.'),
-    'category' => t('Page elements'),
-  );
-}
+$plugin = array(
+  'title' => t('Mission'),
+  'single' => TRUE,
+  'icon' => 'icon_page.png',
+  'description' => t('Add the site mission statement as content.'),
+  'category' => t('Page elements'),
+  'render last' => TRUE,
+);
 
 /**
  * Output function for the 'page_mission' content type.
@@ -26,11 +26,8 @@ function ctools_page_mission_ctools_content_types() {
  * Outputs the mission statement for the site.
  */
 function ctools_page_mission_content_type_render($subtype, $conf, $panel_args) {
-  $token = '<!-- ctools-page-mission -->';
-  ctools_set_page_token($token, 'variable', 'mission');
-
   $block = new stdClass();
-  $block->content = $token;
+  $block->content = filter_xss_admin(theme_get_setting('mission'));
 
   return $block;
 }

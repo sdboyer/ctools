@@ -24,7 +24,7 @@ function ctools_node_form_taxonomy_content_type_render($subtype, $conf, $panel_a
       $block->delta = 'url-path-options';
 
       if (isset($context->form)) {
-        if (!empty($context->form->form_id) && !empty($context->form['taxonomy'])) {
+        if (!empty($context->form['form_id']) && !empty($context->form['taxonomy'])) {
           // remove the fieldset
           unset($context->form['taxonomy']['#type']);
           $block->content = drupal_render($context->form['taxonomy']);
