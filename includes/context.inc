@@ -614,17 +614,25 @@ function ctools_context_keyword_substitute($string, $keywords, $contexts) {
         continue;
       }
 
+      // If the keyword is already set by something passed in, don't try to
+      // overwrite it.
+      if (!empty($keywords['%' . $keyword])) {
+        continue;
+      }
+
       // Figure out our keyword and converter, if specified.
       if (strpos($keyword, ':')) {
         list($context, $converter) = explode(':', $keyword);
       }
       else {
         $context = $keyword;
-        $plugin = ctools_get_context($context_keywords[$context]->plugin);
+        if (isset($context_keywords[$keyword])) {
+          $plugin = ctools_get_context($context_keywords[$context]->plugin);
 
-        // Fall back to a default converter, if specified.
-        if ($plugin && !empty($plugin['convert default'])) {
-          $converter = $plugin['convert default'];
+          // Fall back to a default converter, if specified.
+          if ($plugin && !empty($plugin['convert default'])) {
+            $converter = $plugin['convert default'];
+          }
         }
       }
 
@@ -639,7 +647,6 @@ function ctools_context_keyword_substitute($string, $keywords, $contexts) {
       }
     }
   }
-
   return strtr($string, $keywords);
 }
 
