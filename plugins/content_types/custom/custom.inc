@@ -266,10 +266,19 @@ function ctools_custom_content_type_edit_form(&$form, &$form_state) {
   $form['body_field']['format'] = filter_form($settings['format'], 1, $parents);
 
   if (!empty($form_state['contexts'])) {
+    // Set extended description if both CCK and Token modules are enabled, notifying of unlisted keywords
+    if (module_exists('content') && module_exists('token')) {
+      $description = t('If checked, context keywords will be substituted in this content. Note that CCK fields may be used as keywords using patterns like <em>%node:field_name-formatted</em>.');
+    } elseif (!module_exists('token')) {
+      $description = t('If checked, context keywords will be substituted in this content. More keywords will be available if you install the Token module, see http://drupal.org/project/token.');
+    } else {
+      $description = t('If checked, context keywords will be substituted in this content.');
+    }
+
     $form['substitute'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use context keywords'),
-      '#description' => t('If checked, context keywords will be substituted in this content.'),
+      '#description' => $description,
       '#default_value' => !empty($settings['substitute']),
     );
     $form['contexts'] = array(

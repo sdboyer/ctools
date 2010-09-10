@@ -117,7 +117,7 @@ function theme_ctools_context_item_form($form) {
  *
  * Contexts must be preloaded.
  */
-function theme_ctools_context_list($object, $header = '') {
+function theme_ctools_context_list($object, $header = '', $description = '') {
   $titles = array();
   $output = '';
   $count  = 1;
@@ -222,6 +222,9 @@ function theme_ctools_context_list($object, $header = '') {
 
   $head = '';
   if ($header) {
+    if ($description) {
+      $header .= '<div class="description">' . $description . '</div>';
+    }
     $head .= '<thead><tr>';
     $head .= '<th colspan="2">' . $header . '</th>';
     $head .= '</tr></thead>';

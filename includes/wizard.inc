@@ -296,7 +296,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
     }
 
     // If we are allowed to cancel, place a cancel button.
-    if (isset($form_info['cancel path']) || !empty($form_info['show cancel'])) {
+    if ((isset($form_info['cancel path']) && !isset($form_info['show cancel'])) || !empty($form_info['show cancel'])) {
       $form['buttons']['cancel'] = array(
         '#type' => 'submit',
         '#value' => $form_info['cancel text'],
