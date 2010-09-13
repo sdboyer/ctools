@@ -1,0 +1,7 @@
+; $Id$
+name = Stylizer
+description = Create custom styles for applications such as Panels.
+core = 6.x
+package = Chaos tool suite
+dependencies[] = ctools
+dependencies[] = color
