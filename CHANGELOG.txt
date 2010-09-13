@@ -69,6 +69,7 @@ Activating export-ui based modules caused warnings (that did not actually cause 
 #896660 by zoo33: Export-UI used wrong object name in descript of export key field.
 New "Page wizards" to more easily create well-known types of pages in Page Manager.
 #891682 by Dave Reid: Have modal title use the page title if no title was set on the form.
+Add documentation for the modal.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============

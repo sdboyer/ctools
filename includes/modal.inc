@@ -66,6 +66,9 @@ function ctools_modal_add_js() {
   $done = TRUE;
 }
 
+/**
+ * @todo this is deprecated
+ */
 function ctools_modal_add_plugin_js($plugins) {
   $css = array();
   $js = array(drupal_get_path('module', 'ctools') . '/js/dependent.js' => TRUE);
