@@ -338,15 +338,15 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
   $alias_count = 1;
   if (!empty($schema['join'])) {
     foreach ($schema['join'] as $join_key => $join) {
-      if (drupal_get_schema($join['table'])) {
+      if ($join_schema = drupal_get_schema($join['table'])) {
         $query->join($join['table'], 't__' . $alias_count, 't__0' . $join['left_key'] . ' = ' . 't__' . $alias_count . '.' . $join['right_key']);
         $query->fields('t__' . $alias_count);
         $alias_count++;
 
-        // @TODO: Requires a CTools export API decision... perhaps a callback?
-        // if (!empty($join['extra'])) {
-        //   $query .= ' ' . $join['extra'];
-        // }
+        // Allow joining tables to alter the query through a callback.
+        if (isset($join['callback']) && function_exists($join['callback'])) {
+          $join['callback']($query, $schema, $join_schema);
+        }
       }
     }
   }
