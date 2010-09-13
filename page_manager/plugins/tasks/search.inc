@@ -150,8 +150,10 @@ function page_manager_search_menu_alter(&$items, $task) {
  * of it due to the special way we're handling search items.
  */
 function page_manager_search_view($type = 'node') {
-  ctools_include('menu');
-  menu_set_active_trail(ctools_get_menu_trail('search/' . $type));
+  // @TODO: test that this actually works once page_manager is upgraded.
+  drupal_static_reset('menu_set_active_trail');
+  drupal_static_reset('menu_tree_page_data');
+  menu_set_active_trail();
 
   module_load_include('inc', 'search', 'search.pages');
   return search_view($type);
