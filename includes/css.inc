@@ -587,7 +587,7 @@ function ctools_css_flush_caches() {
   // Remove all generated files.
   // @see http://drupal.org/node/573292
   // file_unmanaged_delete_recursive('public://render');
-  $filedir = file_directory_path('public') . '/ctools/css';
+  $filedir = file_default_scheme() . '://ctools/css';
   file_unmanaged_delete_recursive($filedir);
 
   db_delete('ctools_css_cache')->execute();
