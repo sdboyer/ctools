@@ -23,50 +23,6 @@ class CtoolsPluginsGetInfoTestCase extends DrupalWebTestCase {
   }
 
   /**
-   * Helper function that builds a list of default values we want to recieve for plugin information.
-   *
-   * @param $module
-   * Module name
-   * @param $type
-   * Plugin type
-   * @return
-   * Default plugin array.
-   */
-  function buildDefaults($module, $type) {
-    return array(
-      'module' => $module,
-      'type' => $type,
-      'cache' => FALSE,
-      'cache table' => 'cache',
-      'use hooks' => FALSE,
-      'defaults' => array(),
-      'hook' => $module . '_' . $type,
-      'load themes' => FALSE,
-    );
-  }
-
-  /**
-   * Test that get plugin info works properly.
-   */
-  function testGetInfo() {
-
-    ctools_include('plugins');
-
-	$module = 'ctools_plugin_test';
-
-	// Check that plugins without a hook get expected defaults.
-    $info = ctools_plugin_get_info($module, 'defaults');
-    $defaults = $this->buildDefaults($module, 'defaults');
-    $this->assertEqual($info, $defaults, 'Default values properly set for plugins without definition hooks.');
-
-    // Check that defaults are correctly added to definitions.
-    $info = ctools_plugin_get_info($module, 'extra_defaults');
-    $extra = ctools_plugin_test_ctools_plugin_extra_defaults();
-    $extra += $this->buildDefaults($module, 'extra_defaults');
-    $this->assertEqual($info, $extra, 'Extras are properly added to plugin definitions.');
-  }
-
-  /**
    * Helper function that runs some generalized tests for plugin loading.
    *
    * @param $cached
