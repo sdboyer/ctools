@@ -3,4 +3,5 @@ name = Chaos Tools (CTools) AJAX Example
 description = Shows how to use the power of Chaos AJAX.
 package = Chaos tool suite
 dependencies[] = ctools
-core = "7.x"
+core = 7.x
+files[] = ctools_ajax_sample.module

@@ -519,10 +519,6 @@ function ctools_preprocess_page(&$variables) {
     }
     $variables['content'] = strtr($variables['content'], $tokens);
   }
-
-  if (defined('CTOOLS_AJAX_INCLUDED')) {
-    ctools_ajax_page_preprocess($variables);
-  }
 }
 
 // -----------------------------------------------------------------------

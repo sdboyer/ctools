@@ -135,17 +135,17 @@ function ctools_ajax_sample_page() {
 
   $links[] = ctools_ajax_text_button(t('Hello world!'), "ctools_ajax_sample/nojs/hello", t('Replace text with "hello world"'));
 
-  $output = theme('item_list', $links, t('Actions'));
+  $output = theme('item_list', array('items' => $links, 'title' => t('Actions')));
 
   // This container will have data AJAXed into it.
-  $output .= theme('ctools_ajax_sample_container', '<h1>' . t('Sample Content') . '</h1>');
+  $output .= theme('ctools_ajax_sample_container', array('content' => '<h1>' . t('Sample Content') . '</h1>'));
 
   // Create a table that we can have data removed from via AJAX.
   $header = array(t('Row'), t('Content'), t('Actions'));
   $rows = array();
   for($i = 1; $i < 11; $i++) {
     $rows[] = array(
-      'class' => 'ajax-sample-row-'. $i,
+      'class' => array('ajax-sample-row-'. $i),
       'data' => array(
         $i,
         md5($i),
@@ -154,9 +154,9 @@ function ctools_ajax_sample_page() {
     );
   }
 
-  $output .= theme('table', $header, $rows, array('class' => 'ajax-sample-table'));
+  $output .= theme('table', array('header' => $header, 'rows' => $rows, array('class' => 'ajax-sample-table')));
 
-  return $output;
+  return array('markup' => array('#markup' => $output));
 }
 
 /**
@@ -372,9 +372,9 @@ function ctools_ajax_sample_animal($js = NULL, $step = NULL) {
 /**
  * Theme function for main rendered output.
  */
-function theme_ctools_ajax_sample_container($content) {
+function theme_ctools_ajax_sample_container($vars) {
   $output = '<div id="ctools-sample">';
-  $output .= $content;
+  $output .= $vars['content'];
   $output .= '</div>';
 
   return $output;
