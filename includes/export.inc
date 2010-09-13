@@ -186,7 +186,9 @@ function ctools_export_crud_delete($table, $object) {
     // If we were sent an object, get the export key from it. Otherwise
     // assume we were sent the export key.
     $value = is_object($object) ? $object->{$export['key']} : $object;
-    db_query("DELETE FROM {" . $table . "} WHERE " . $export['key'] . " = '%s'", $value);
+    db_delete($table)
+      ->condition($export['key'], $value)
+      ->execute();
   }
 }
 
@@ -303,7 +305,6 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
     return array();
   }
 
-  $join_schemas = array();
   $export = $schema['export'];
 
   if (!isset($cache[$table])) {
@@ -333,19 +334,19 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
   }
 
   // Build the query
-  $query = db_select($table)->fields($table);
-  // FIXME !!!!! broken after latest merge
+  $query = db_select($table, 't__0')->fields('t__0');
   $alias_count = 1;
   if (!empty($schema['join'])) {
     foreach ($schema['join'] as $join_key => $join) {
-      $join_schema = drupal_get_schema($join['table']);
-      if (!empty($join_schema)) {
-        $query .= ' INNER JOIN {' . $join['table'] . '} t__' . $alias_count . ' ON t__0.' . $join['left_key'] . ' = ' . 't__' . $alias_count . '.' . $join['right_key'];
+      if (drupal_get_schema($join['table'])) {
+        $query->join($join['table'], 't__' . $alias_count, 't__0' . $join['left_key'] . ' = ' . 't__' . $alias_count . '.' . $join['right_key']);
+        $query->fields('t__' . $alias_count);
         $alias_count++;
-        $join_schemas[$join['table']] = $join_schema;
-        if (!empty($join['extra'])) {
-          $query .= ' ' . $join['extra'];
-        }
+
+        // @TODO: Requires a CTools export API decision... perhaps a callback?
+        // if (!empty($join['extra'])) {
+        //   $query .= ' ' . $join['extra'];
+        // }
       }
     }
   }
@@ -356,14 +357,6 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
   // If they passed in names, add them to the query.
   if ($type == 'names') {
     $query->condition($export['key'], $args, 'IN');
-    // FIXME !!!!! broken after latest merge
-    if (!isset($export['key in table'])) {
-      $conditions[] = "$export[key] IN (" . db_placeholders($args, $schema['fields'][$export['key']]['type']) . ")";
-    }
-    else {
-      $conditions[] = "$export[key] IN (" . db_placeholders($args, $join_schemas[$export['key in table']]['fields'][$export['key']]['type']) . ")";
-    }
-    $query_args = $args;
   }
   else if ($type == 'conditions') {
     foreach ($args as $key => $value) {
