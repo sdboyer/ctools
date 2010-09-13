@@ -16,7 +16,7 @@
  */
 $plugin = array(
   'no title override' => TRUE,
-  'defaults' => array('admin_title' => '', 'title' => '', 'body' => '', 'format' => FILTER_FORMAT_DEFAULT, 'substitute' => TRUE),
+  'defaults' => array('admin_title' => '', 'title' => '', 'body' => '', 'format' => filter_fallback_format(), 'substitute' => TRUE),
   'js' => array('misc/autocomplete.js', 'misc/textarea.js', 'misc/collapse.js'),
   // Make sure the edit form is only used for some subtypes.
   'edit form' => '',
@@ -128,7 +128,7 @@ function ctools_custom_content_type_get_conf($subtype, $conf) {
           'admin_title' => t('Missing/deleted content'),
           'title' => '',
           'body' => '',
-          'format' => FILTER_FORMAT_DEFAULT,
+          'format' => filter_fallback_format(),
           'substitute' => TRUE,
           'custom_type' => 'fixed',
           'content' => $content,

@@ -19,11 +19,11 @@ if (module_exists('search')) {
       'override_empty' => FALSE,
       'empty_title' => '',
       'empty' => '',
-      'empty_format' => FILTER_FORMAT_DEFAULT,
+      'empty_format' => filter_fallback_format(),
       'override_no_key' => FALSE,
       'no_key_title' => '',
       'no_key' => '',
-      'no_key_format' => FILTER_FORMAT_DEFAULT,
+      'no_key_format' => filter_fallback_format(),
     ),
   );
 }
