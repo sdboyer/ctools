@@ -220,197 +220,14 @@ function ctools_menu_set_trail_parent($path) {
 }
 
 /**
- * An alternative to theme_menu_local_tasks to add flexibility to tabs.
- *
- * The code in theme_menu_local_tasks has no entry points to put hooks.
- * Therefore, what CTools does is, if that theme function is not overridden,
- * it uses hook_theme_registry_alter() to use its own version. This version
- * then allows modules to use ctools_menu_add_local_task() to add a dynamic
- * local task to the list.
- *
- * If a theme *does* override theme_menu_local_tasks, it can still get this
- * functionality by using ctools versions of menu_primary_local_tasks() and
- * menu_secondary_local_tasks().
- */
-function ctools_theme_menu_local_tasks() {
-  $output = '';
-
-  if ($primary = ctools_menu_primary_local_tasks()) {
-    $output .= "<ul class=\"tabs primary\">\n". $primary ."</ul>\n";
-  }
-  if ($secondary = ctools_menu_secondary_local_tasks()) {
-    $output .= "<ul class=\"tabs secondary\">\n". $secondary ."</ul>\n";
-  }
-
-  return $output;
-}
-
-/**
- * CTools variant of menu_primary_local_tasks().
- *
- * This can be called by themes which implement their own theme_menu_local_tasks
- * in order to get local tasks that include CTools' additions.
- */
-function ctools_menu_primary_local_tasks() {
-  return ctools_menu_local_tasks(0);
-}
-
-/**
- * CTools variant of menu_secondary_local_tasks().
- *
- * This can be called by themes which implement their own theme_menu_local_tasks
- * in order to get local tasks that include CTools' additions.
- */
-function ctools_menu_secondary_local_tasks() {
-  return ctools_menu_local_tasks(1);
-}
-
-/**
- * CTools' variant of menu_local_tasks.
- *
- * This function is a new version of menu_local_tasks that is meant to be more
- * flexible and allow for modules to dynamically add items to the local tasks
- * using a simple function.
- *
- * One downside to using this is that the code to build the tabs could be run
- * twice on a page if something
- */
-function ctools_menu_local_tasks($level = 0, $return_root = FALSE) {
-  static $tabs;
-  static $root_path;
-
-  if (!isset($tabs)) {
-    $tabs = array();
-
-    $router_item = menu_get_item();
-    if (!$router_item || !$router_item['access']) {
-      return '';
-    }
-    // Get all tabs and the root page.
-    $result = db_query("SELECT * FROM {menu_router} WHERE tab_root = '%s' ORDER BY weight, title", $router_item['tab_root']);
-    $map = arg();
-    $children = array();
-    $tasks = array();
-    $root_path = $router_item['path'];
-
-    while ($item = db_fetch_array($result)) {
-      _menu_translate($item, $map, TRUE);
-      if ($item['tab_parent']) {
-        // All tabs, but not the root page.
-        $children[$item['tab_parent']][$item['path']] = $item;
-      }
-      // Store the translated item for later use.
-      $tasks[$item['path']] = $item;
-    }
-
-    // Find all tabs below the current path.
-    $path = $router_item['path'];
-
-    _ctools_menu_add_dynamic_items($children[$path]);
-
-    // Tab parenting may skip levels, so the number of parts in the path may not
-    // equal the depth. Thus we use the $depth counter (offset by 1000 for ksort).
-    $depth = 1001;
-    while (isset($children[$path])) {
-      $tabs_current = '';
-      $next_path = '';
-      $count = 0;
-      foreach ($children[$path] as $item) {
-        if ($item['access']) {
-          $count++;
-          // The default task is always active.
-          if ($item['type'] == MENU_DEFAULT_LOCAL_TASK) {
-            // Find the first parent which is not a default local task.
-            if (isset($item['tab_parent'])) {
-              for ($p = $item['tab_parent']; $tasks[$p]['type'] == MENU_DEFAULT_LOCAL_TASK; $p = $tasks[$p]['tab_parent']);
-              $href = $tasks[$p]['href'];
-              $next_path = $item['path'];
-            }
-            else {
-              $href = $item['href'];
-            }
-            $link = theme('menu_item_link', array('href' => $href) + $item);
-            $tabs_current .= theme('menu_local_task', $link, TRUE);
-          }
-          else {
-            $link = theme('menu_item_link', $item);
-            $tabs_current .= theme('menu_local_task', $link);
-          }
-        }
-      }
-      $path = $next_path;
-      $tabs[$depth]['count'] = $count;
-      $tabs[$depth]['output'] = $tabs_current;
-      $depth++;
-    }
-
-    // Find all tabs at the same level or above the current one.
-    $parent = $router_item['tab_parent'];
-    $path = $router_item['path'];
-    $current = $router_item;
-    $depth = 1000;
-    while (isset($children[$parent])) {
-      $tabs_current = '';
-      $next_path = '';
-      $next_parent = '';
-      $count = 0;
-      foreach ($children[$parent] as $item) {
-        if ($item['access']) {
-          $count++;
-          if ($item['type'] == MENU_DEFAULT_LOCAL_TASK) {
-            // Find the first parent which is not a default local task.
-            for ($p = $item['tab_parent']; $tasks[$p]['type'] == MENU_DEFAULT_LOCAL_TASK; $p = $tasks[$p]['tab_parent']);
-            $link = theme('menu_item_link', array('href' => $tasks[$p]['href']) + $item);
-            if ($item['path'] == $router_item['path']) {
-              $root_path = $tasks[$p]['path'];
-            }
-          }
-          else {
-            $link = theme('menu_item_link', $item);
-          }
-          // We check for the active tab.
-          if ($item['path'] == $path) {
-            $tabs_current .= theme('menu_local_task', $link, TRUE);
-            $next_path = $item['tab_parent'];
-            if (isset($tasks[$next_path])) {
-              $next_parent = $tasks[$next_path]['tab_parent'];
-            }
-          }
-          else {
-            $tabs_current .= theme('menu_local_task', $link);
-          }
-        }
-      }
-      $path = $next_path;
-      $parent = $next_parent;
-      $tabs[$depth]['count'] = $count;
-      $tabs[$depth]['output'] = $tabs_current;
-      $depth--;
-    }
-    // Sort by depth.
-    ksort($tabs);
-    // Remove the depth, we are interested only in their relative placement.
-    $tabs = array_values($tabs);
-  }
-
-  if ($return_root) {
-    return $root_path;
-  }
-  else {
-    // We do not display single tabs.
-    return (isset($tabs[$level]) && $tabs[$level]['count'] > 1) ? $tabs[$level]['output'] : '';
-  }
-}
-
-/**
  * Re-sort menu items after we have modified them.
  */
 function ctools_menu_sort($a, $b) {
-  $a_weight = (is_array($a) && isset($a['weight'])) ? $a['weight'] : 0;
-  $b_weight = (is_array($b) && isset($b['weight'])) ? $b['weight'] : 0;
+  $a_weight = (is_array($a) && isset($a['#link']['weight'])) ? $a['#link']['weight'] : 0;
+  $b_weight = (is_array($b) && isset($b['#link']['weight'])) ? $b['#link']['weight'] : 0;
   if ($a_weight == $b_weight) {
-    $a_title = (is_array($a) && isset($a['title'])) ? $a['title'] : 0;
-    $b_title = (is_array($b) && isset($b['title'])) ? $b['title'] : 0;
+    $a_title = (is_array($a) && isset($a['#link']['title'])) ? $a['#link']['title'] : 0;
+    $b_title = (is_array($b) && isset($b['#link']['title'])) ? $b['#link']['title'] : 0;
     if ($a_title == $b_title) {
       return 0;
     }
@@ -421,76 +238,28 @@ function ctools_menu_sort($a, $b) {
   return ($a_weight < $b_weight) ? -1 : 1;
 }
 
-/**
- * Theme override to use CTools to call help instead of the basic call.
- *
- * This is used only to try and improve performance; this calls through to
- * the same functions that tabs do and executes a complex build. By overriding
- * this to use the CTools version, we can prevent this query from being run
- * twice on the same page.
- */
-function ctools_menu_help() {
-  if ($help = ctools_menu_get_active_help()) {
-    return '<div class="help">'. $help .'</div>';
-  }
-}
-
-/**
- * CTools' replacement for ctools_menu_get_active_help()
- */
-function ctools_menu_get_active_help() {
-  $output = '';
-  $router_path = ctools_menu_tab_root_path();
-  // We will always have a path unless we are on a 403 or 404.
-  if (!$router_path) {
-    return '';
-  }
-
-  $arg = drupal_help_arg(arg(NULL));
-  $empty_arg = drupal_help_arg();
-
-  foreach (module_list() as $name) {
-    if (module_hook($name, 'help')) {
-      // Lookup help for this path.
-      if ($help = module_invoke($name, 'help', $router_path, $arg)) {
-        $output .= $help ."\n";
-      }
-      // Add "more help" link on admin pages if the module provides a
-      // standalone help page.
-      if ($arg[0] == "admin" && module_exists('help') && module_invoke($name, 'help', 'admin/help#'. $arg[2], $empty_arg) && $help) {
-        $output .= theme("more_help_link", url('admin/help/'. $arg[2]));
-      }
-    }
-  }
-  return $output;
-}
-
-/**
- * CTools' replacement for menu_tab_root_path()
- */
-function ctools_menu_tab_root_path() {
-  return ctools_menu_local_tasks(0, TRUE);
-}
-
-/**
- * Returns the rendered local tasks. The default implementation renders
- * them as tabs. Overridden to split the secondary tasks.
- *
- * @ingroup themeable
- */
-function ctools_garland_menu_local_tasks() {
-  return ctools_menu_primary_local_tasks();
-}
-
-function _ctools_menu_add_dynamic_items(&$links) {
+function _ctools_menu_add_dynamic_items(&$data, &$router_item, &$root_path) {
   // TESTING: add hardcoded values.
   if ($additions = ctools_menu_add_tab()) {
+    // If none of the static local tasks are active allow one of the dynamic
+    // active tasks to be marked as such.
+    $has_active = FALSE;
+    if (!empty($data['tabs'][0]['output'])) {
+      foreach ($data['tabs'][0]['output'] as $element) {
+        if (!empty($element['#link']['#active'])) {
+          $has_active = TRUE;
+        }
+      }
+    }
     foreach ($additions as $addition) {
-      $links[$addition['href']] = $addition + array(
-        'access' => TRUE,
-        'type' => MENU_LOCAL_TASK,
+      $addition['localized_options'] = isset($addition['options']) ? $addition['options'] : array();
+      $data['tabs'][0]['output'][] = array(
+        '#theme' => 'menu_local_task',
+        '#link' => $addition,
+        '#active' => (!$has_active && $root_path === $addition['href']),
       );
     }
-    uasort($links, 'ctools_menu_sort');
+    uasort($data['tabs'][0]['output'], 'ctools_menu_sort');
+    $data['tabs'][0]['count'] = count($data['tabs'][0]['output']);
   }
 }

@@ -35,39 +35,6 @@ function _ctools_passthrough(&$items, $type = 'theme') {
  * Implementation of hook_theme_registry_alter()
  */
 function ctools_theme_registry_alter(&$registry) {
-  if ($registry['menu_local_tasks']['function'] == 'theme_menu_local_tasks') {
-    $registry['menu_local_tasks'] = array(
-      'function' => 'ctools_theme_menu_local_tasks',
-      'path' => drupal_get_path('module', 'ctools') . '/includes',
-      'file' => 'menu.inc',
-    ) + $registry['menu_local_tasks'];
-  }
-
-  if (isset($registry['help']['function']) && $registry['help']['function'] == 'theme_help') {
-    $registry['help'] = array(
-      'function' => 'ctools_menu_help',
-      'path' => drupal_get_path('module', 'ctools') . '/includes',
-      'file' => 'menu.inc',
-    ) + $registry['help'];
-  }
-
-  // Handle a special override for garland because it's cute and does its own
-  // thing with tabs and we can't ask users to edit a core theme for us.
-  if ($registry['menu_local_tasks']['function'] == 'phptemplate_menu_local_tasks' &&
-      $registry['menu_local_tasks']['theme paths'][1] == 'themes/garland') {
-    $registry['menu_local_tasks'] = array(
-      'function' => 'ctools_garland_menu_local_tasks',
-      'path' => drupal_get_path('module', 'ctools') . '/includes',
-      'file' => 'menu.inc',
-    ) + $registry['menu_local_tasks'];
-  }
-
-  if (isset($registry['page']['preprocess functions'][2]) &&
-      $registry['page']['preprocess functions'][2] == 'phptemplate_preprocess_page' &&
-      $registry['page']['theme paths'][1] == 'themes/garland') {
-    $registry['page']['preprocess functions'][2] = 'ctools_garland_preprocess_page';
-  }
-
   // Move this one last last last so it can catch changes made by modules and themes.
   $key = array_search('ctools_preprocess_page', $registry['page']['preprocess functions']);
   if ($key) {
