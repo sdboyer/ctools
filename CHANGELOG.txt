@@ -71,6 +71,7 @@ New "Page wizards" to more easily create well-known types of pages in Page Manag
 #891682 by Dave Reid: Have modal title use the page title if no title was set on the form.
 Add documentation for the modal.
 #867120: %title was not being properly honored in keyword substitutions.
+#856050 by Itangalo: Improve help text regarding tokens and substitutions.
 
 ctools 6.x-1.7 (2010-Jul-26)
 ==============

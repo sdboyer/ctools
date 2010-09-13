@@ -403,10 +403,17 @@ function ctools_context_handler_edit_context(&$form, &$form_state) {
   ctools_context_add_context_form($module, $form, $form_state, $form['right']['contexts_table'], $cache);
   ctools_context_add_relationship_form($module, $form, $form_state, $form['right']['relationships_table'], $cache);
 
+  // Set an additional description if CCK and Token are enabled, to notify of unlisted keywords
+  if (module_exists('content') && module_exists('token')) {
+    $description = t('Note that CCK fields may be used as keywords using patterns like <em>%node:field_name-formatted</em>.');
+  } elseif (!module_exists('token')) {
+    $description = t('More keywords will be available if you install the Token module, see http://drupal.org/project/token.');
+  }
+
   $form['left']['summary'] = array(
     '#prefix' => '<div class="page-manager-contexts">',
     '#suffix' => '</div>',
-    '#value' => theme('ctools_context_list', $cache, t('Summary of contexts')),
+    '#value' => theme('ctools_context_list', $cache, t('Summary of contexts'), $description),
   );
 
   $form_state['context_object'] = &$cache;
