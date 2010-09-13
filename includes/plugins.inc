@@ -315,7 +315,7 @@ function ctools_plugin_load_includes($info, $filename = NULL) {
       $extension = empty($info['info file']) ? $info['extension'] : 'info';
 
       foreach ($directories as $module => $path) {
-        $all_files[$info['module']][$info['type']][$module] = drupal_system_listing('\.' . $extension . '$', $path, 'name', 0);
+        $all_files[$info['module']][$info['type']][$module] = drupal_system_listing('/\.' . $extension . '$/', $path, 'name', 0);
       }
 
       cache_set("ctools_plugin_files:$info[module]:$info[type]", $all_files[$info['module']][$info['type']]);
