@@ -479,21 +479,6 @@ function ctools_ctools_plugin_access() {
 // Drupal theme preprocess hooks that must be in the .module file.
 
 /**
- * Override or insert PHPTemplate variables into the templates.
- *
- * This needs to be in the .module file to ensure availability; we can't change the
- * paths or it won't be able to find templates.
- */
-function ctools_garland_preprocess_page(&$vars) {
-  $vars['tabs2'] = ctools_menu_secondary_local_tasks();
-
-  // Hook into color.module
-  if (module_exists('color')) {
-    _color_page_alter($vars);
-  }
-}
-
-/**
  * A theme preprocess function to automatically allow panels-based node
  * templates based upon input when the panel was configured.
  */
@@ -742,4 +727,12 @@ function ctools_export_ui_ctools_access_set($argument, $access) {
     $item->access = $access;
     return $handler->edit_cache_set_key($item, $key);
   }
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function ctools_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  ctools_include('menu');
+  _ctools_menu_add_dynamic_items($data, $router_item, $root_path);
 }
