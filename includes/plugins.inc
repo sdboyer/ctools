@@ -771,41 +771,15 @@ function ctools_plugin_get_class($plugin_definition, $class_name, $abstract = FA
   if (!isset($plugin_definition[$class_name])) {
     return;
   }
-
-  if (is_array($plugin_definition[$class_name]) && isset($plugin_definition[$class_name]['class'])) {
-    if (isset($plugin_definition[$class_name]['parent'])) {
-      // Make sure parents are included.
-      // TODO parent-loading needs to be better documented; the 'parent' designated
-      // on the plugin actually corresponds not to the name of the parent CLASS,
-      // but the name of the parent PLUGIN (and it then loads loads whatever
-      // class is in the same $class_name slot). Initially unintuitive.
-      ctools_plugin_load_class($plugin_definition['plugin module'], $plugin_definition['plugin type'], $plugin_definition[$class_name]['parent'], $class_name);
-    }
-    $class = $plugin_definition[$class_name]['class'];
-    if (isset($plugin_definition[$class_name]['file'])) {
-      $file = $plugin_definition[$class_name]['file'];
-      if (isset($plugin_definition[$class_name]['path'])) {
-        $file = $plugin_definition[$class_name]['path'] . '/' . $file;
-      }
-      require_once DRUPAL_ROOT . '/' . $file;
-    }
-    $is_abstract = !empty($plugin_definition[$class_name]['abstract']);
+  else if (is_string($plugin_definition[$class_name])) {
+    // Plugin uses the string form shorthand.
+    return $plugin_definition[$class_name];
   }
-  else {
-    $class = $plugin_definition[$class_name];
-    $is_abstract = FALSE;
+  else if (isset($plugin_definition[$class_name]['class'])) {
+    // Plugin uses the verbose array form.
+    return $plugin_definition[$class_name]['class'];
   }
-
-  // If we didn't explicitly include a file above, try autoloading a file
-  // based on the class' name.
-  $default_file =  DRUPAL_ROOT . '/' . $plugin_definition['path'] . "/$class.class.php";
-  if (!isset($file) && file_exists($default_file)) {
-    require_once $default_file;
-  }
-
-  if (class_exists($class) && (!$is_abstract || $abstract)) {
-    return $class;
-  }
+  // @todo consider adding an else {watchdog(...)} here
 }
 
 /**
