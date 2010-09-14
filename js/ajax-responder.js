@@ -22,6 +22,7 @@
    * Drupal.CTools.AJAX.commands space.
    */
   Drupal.CTools.AJAX.respond = function(data) {
+    console.log(data);
     for (i in data) {
       if (data[i]['command'] && Drupal.CTools.AJAX.commands[data[i]['command']]) {
         Drupal.CTools.AJAX.commands[data[i]['command']](data[i]);

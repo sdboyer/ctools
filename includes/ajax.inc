@@ -453,10 +453,6 @@ function ctools_ajax_command_submit($selector) {
  * to the AJAX requester.
  */
 function ctools_ajax_render($commands = array()) {
-  $js_files = array();
-  $settings = ctools_process_js_files($js_files, 'header');
-  $settings += ctools_process_js_files($js_files, 'footer');
-
   $query_string = '?'. substr(variable_get('css_js_query_string', '0'), 0, 1);
   $css = drupal_add_css();
   foreach ($css as $media => $types) {
