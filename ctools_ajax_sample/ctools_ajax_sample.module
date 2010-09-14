@@ -20,12 +20,21 @@ function ctools_ajax_sample_menu() {
       'access callback' => TRUE,
       'type' => MENU_NORMAL_ITEM,
   );
+  $items['ctools_ajax_sample/simple_form'] = array(
+    'title' => 'Simple Form',
+    'page callback' => 'ctools_ajax_simple_form',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
   $items['ctools_ajax_sample/%ctools_js/hello'] = array(
       'title' => 'Hello World',
-      'page callback' => 'ctools_ajax_sample_hello',
+      'page callback' => 'ctools_build_form',
+      'page arguments' => array('ctools_ajax_sample_hello'),
       'page arguments' => array(1),
       'access callback' => TRUE,
       'type' => MENU_CALLBACK,
+      'file' => 'form.inc',
+      'file path' => drupal_get_path('module', 'ctools') .'/includes',
   );
   $items['ctools_ajax_sample/%ctools_js/tablenix/%'] = array(
       'title' => 'Hello World',
@@ -57,6 +66,22 @@ function ctools_ajax_sample_menu() {
   );
 
   return $items;
+}
+
+function ctools_ajax_simple_form() {
+  ctools_include('form');
+  $form_state = array();
+  return ctools_build_form('ctools_ajax_simple_form_form', $form_state);
+}
+
+function ctools_ajax_simple_form_form() {
+  $form = array();
+
+  $form['textfield'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Test Textfield'),
+  );
+  return $form;
 }
 
 /**
@@ -483,7 +508,7 @@ function ctools_ajax_sample_wizard_cancel(&$form_state) {
 /**
  * Wizard start form. Choose an animal.
  */
-function ctools_ajax_sample_start(&$form, &$form_state) {
+function ctools_ajax_sample_start($form, &$form_state) {
   $form_state['title'] = t('Choose animal');
 
   $animals = ctools_ajax_sample_animals();
@@ -498,6 +523,7 @@ function ctools_ajax_sample_start(&$form, &$form_state) {
     '#default_value' => $form_state['object']->type,
     '#required' => TRUE,
   );
+  return $form;
 }
 
 /**
@@ -512,7 +538,7 @@ function ctools_ajax_sample_start_submit(&$form, &$form_state) {
 /**
  * Wizard form to configure your sheep.
  */
-function ctools_ajax_sample_configure_sheep(&$form, &$form_state) {
+function ctools_ajax_sample_configure_sheep($form, &$form_state) {
   $form_state['title'] = t('Configure sheep');
 
   $form['name'] = array(
@@ -533,6 +559,7 @@ function ctools_ajax_sample_configure_sheep(&$form, &$form_state) {
     '#default_value' => !empty($form_state['object']->sheep) ? $form_state['object']->sheep : '',
     '#required' => TRUE,
   );
+  return $form;
 }
 
 /**
@@ -556,7 +583,7 @@ function ctools_ajax_sample_show_sheep($object) {
 /**
  * Wizard form to configure your lizard.
  */
-function ctools_ajax_sample_configure_lizard(&$form, &$form_state) {
+function ctools_ajax_sample_configure_lizard($form, &$form_state) {
   $form_state['title'] = t('Configure lizard');
 
   $form['name'] = array(
@@ -571,6 +598,7 @@ function ctools_ajax_sample_configure_lizard(&$form, &$form_state) {
     '#type' => 'checkbox',
     '#default_value' => !empty($form_state['object']->lizard),
   );
+  return $form;
 }
 
 /**
@@ -594,7 +622,7 @@ function ctools_ajax_sample_show_lizard($object) {
 /**
  * Wizard form to configure your raptor.
  */
-function ctools_ajax_sample_configure_raptor(&$form, &$form_state) {
+function ctools_ajax_sample_configure_raptor($form, &$form_state) {
   $form_state['title'] = t('Configure raptor');
 
   $form['name'] = array(
@@ -622,7 +650,7 @@ function ctools_ajax_sample_configure_raptor(&$form, &$form_state) {
     '#type' => 'checkbox',
     '#default_value' => !empty($form_state['object']->domesticated),
   );
-
+  return $form;
 }
 
 /**

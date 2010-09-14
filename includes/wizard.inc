@@ -141,7 +141,7 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
     if (empty($form_state['ajax'])) {
       // redirect, if one is set.
       if ($form_state['redirect']) {
-        return drupal_redirect_form(array(), $form_state['redirect']);
+        call_user_func_array('drupal_goto', $form_state['redirect']);
       }
     }
     else if (isset($form_state['ajax next'])) {
@@ -171,7 +171,7 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
 /**
  * Provide a wrapper around another form for adding multi-step information.
  */
-function ctools_wizard_wrapper(&$form, &$form_state) {
+function ctools_wizard_wrapper($form, &$form_state) {
   $form_info = &$form_state['form_info'];
   $info = $form_info['forms'][$form_state['step']];
 
@@ -357,6 +357,7 @@ function ctools_wizard_wrapper(&$form, &$form_state) {
   if (isset($form_info['wrapper']) && function_exists($form_info['wrapper'])) {
     $form_info['wrapper']($form, $form_state);
   }
+  return $form;
 }
 
 /**
