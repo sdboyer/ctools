@@ -70,6 +70,12 @@ function ctools_ajax_sample_menu() {
       'access callback' => TRUE,
       'type' => MENU_NORMAL_ITEM,
   );
+  $items['ctools_ajax_sample/jumped'] = array(
+    'title' => 'Successful Jumping',
+    'page callback' => 'ctools_ajax_sample_jump_menu_page',
+    'access callback' => TRUE,
+    'type' => MENU_NORMAL_ITEM,
+  );
 
   return $items;
 }
@@ -204,7 +210,7 @@ function ctools_ajax_sample_page() {
   $output .= '<h3>'. t('Collapsible Div') .'</h3>';
   $output .= theme('ctools_collapsible', array('handle' => $handle, 'content' => $content, 'collapsed' => FALSE));
 
-  /* Jump Menu */
+  // Create a jump menu
   ctools_include('jump-menu');
   $form = drupal_get_form('ctools_ajax_sample_jump_menu_form');
   $output .= '<h3>'. t('Jump Menu') .'</h3>';
@@ -733,3 +739,11 @@ function ctools_ajax_sample_jump_menu_form() {
   return $form;
 }
 
+/** 
+ * Provide a message to the user that the jump menu worked
+ */
+function ctools_ajax_sample_jump_menu_page() { 
+  $return_link = l(t('Return to the examples page.'), 'ctools_ajax_sample');
+  $output = t('You successfully jumped! !return_link', array('!return_link' => $return_link));
+  return $output; 
+}
