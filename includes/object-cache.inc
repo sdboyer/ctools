@@ -24,7 +24,7 @@
  * @param $skip_cache
  *   Skip the memory cache, meaning this must be read from the db again.
  *
- * @TODO $skip_cache is deprecated in favor of drupal_static*
+ * @deprecated $skip_cache is deprecated in favor of drupal_static*
  * @return
  *   The data that was cached.
  */
