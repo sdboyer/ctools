@@ -176,9 +176,11 @@ class ctools_export_ui {
       'no_redirect' => TRUE,
       'object' => &$this,
     );
+    if (!isset($form_state['input']['form_id'])) {
+      $form_state['input']['form_id'] = 'ctools_export_ui_list_form';
+    }
 
-    ctools_include('form');
-    $form = ctools_build_form('ctools_export_ui_list_form', $form_state);
+    $form = drupal_render(drupal_build_form('ctools_export_ui_list_form', $form_state));
 
     $output = $this->list_header($form_state) . $this->list_render($form_state) . $this->list_footer($form_state);
 
@@ -187,13 +189,13 @@ class ctools_export_ui {
       return $form . $output;
     }
 
-    ctools_include('ajax');
     $commands = array();
-    $commands[] = ctools_ajax_command_replace('#ctools-export-ui-list-items', $output);
+    $commands[] = ajax_command_replace('#ctools-export-ui-list-items', $output);
     if (!empty($replace_form)) {
-      $commands[] = ctools_ajax_command_replace('#ctools-export-ui-list-form', $form);
+      $commands[] = ajax_command_replace('#ctools-export-ui-list-form', $form);
     }
-    ctools_ajax_render($commands);
+    print ajax_render($commands);
+    ajax_footer();
   }
 
   /**
@@ -224,12 +226,12 @@ class ctools_export_ui {
     $all = array('all' => t('- All -'));
 
     $form['top row'] = array(
-      '#prefix' => '<div class="ctools-export-ui-row ctools-export-ui-top-row clear-block">',
+      '#prefix' => '<div class="ctools-export-ui-row ctools-export-ui-top-row clearfix">',
       '#suffix' => '</div>',
     );
 
     $form['bottom row'] = array(
-      '#prefix' => '<div class="ctools-export-ui-row ctools-export-ui-bottom-row clear-block">',
+      '#prefix' => '<div class="ctools-export-ui-row ctools-export-ui-bottom-row clearfix">',
       '#suffix' => '</div>',
     );
 
@@ -280,23 +282,23 @@ class ctools_export_ui {
       '#type' => 'submit',
       '#id' => 'ctools-export-ui-list-items-apply',
       '#value' => t('Apply'),
-      '#attributes' => array('class' => 'ctools-use-ajax ctools-auto-submit-click'),
+      '#attributes' => array('class' => array('ctools-use-ajax ctools-auto-submit-click')),
     );
 
     $form['bottom row']['reset'] = array(
       '#type' => 'submit',
       '#id' => 'ctools-export-ui-list-items-apply',
       '#value' => t('Reset'),
-      '#attributes' => array('class' => 'ctools-use-ajax'),
+      '#attributes' => array('class' => array('ctools-use-ajax')),
     );
 
     ctools_add_js('ajax-responder');
     ctools_add_js('auto-submit');
     drupal_add_js('misc/jquery.form.js');
 
-    $form['#prefix'] = '<div class="clear-block">';
+    $form['#prefix'] = '<div class="clearfix">';
     $form['#suffix'] = '</div>';
-    $form['#attributes'] = array('class' => 'ctools-auto-submit-full-form');
+    $form['#attributes'] = array('class' => array('ctools-auto-submit-full-form'));
   }
 
   /**
@@ -362,7 +364,7 @@ class ctools_export_ui {
           'href' => ctools_export_ui_plugin_menu_path($plugin, $op, $name),
         );
         if (!empty($plugin['allowed operations'][$op]['ajax'])) {
-          $operations[$op]['attributes'] = array('class' => 'ctools-use-ajax');
+          $operations[$op]['attributes'] = array('class' => array('ctools-use-ajax'));
         }
         if (!empty($plugin['allowed operations'][$op]['token'])) {
           $operations[$op]['query'] = array('token' => drupal_get_token($op));
@@ -508,15 +510,15 @@ class ctools_export_ui {
     }
 
     $this->rows[$name]['data'] = array();
-    $this->rows[$name]['class'] = !empty($item->disabled) ? 'ctools-export-ui-disabled' : 'ctools-export-ui-enabled';
+    $this->rows[$name]['class'] = !empty($item->disabled) ? array('ctools-export-ui-disabled') : array('ctools-export-ui-enabled');
 
     // If we have an admin title, make it the first row.
     if (!empty($this->plugin['export']['admin_title'])) {
-      $this->rows[$name]['data'][] = array('data' => check_plain($item->{$this->plugin['export']['admin_title']}), 'class' => 'ctools-export-ui-title');
+      $this->rows[$name]['data'][] = array('data' => check_plain($item->{$this->plugin['export']['admin_title']}), 'class' => array('ctools-export-ui-title'));
     }
-    $this->rows[$name]['data'][] = array('data' => check_plain($name), 'class' => 'ctools-export-ui-name');
-    $this->rows[$name]['data'][] = array('data' => check_plain($item->type), 'class' => 'ctools-export-ui-storage');
-    $this->rows[$name]['data'][] = array('data' => theme('links', $operations), 'class' => 'ctools-export-ui-operations');
+    $this->rows[$name]['data'][] = array('data' => check_plain($name), 'class' => array('ctools-export-ui-name'));
+    $this->rows[$name]['data'][] = array('data' => check_plain($item->type), 'class' => array('ctools-export-ui-storage'));
+    $this->rows[$name]['data'][] = array('data' => theme('links', $operations), 'class' => array('ctools-export-ui-operations'));
 
     // Add an automatic mouseover of the description if one exists.
     if (!empty($this->plugin['export']['admin_description'])) {
@@ -533,12 +535,12 @@ class ctools_export_ui {
   function list_table_header() {
     $header = array();
     if (!empty($this->plugin['export']['admin_title'])) {
-      $header[] = array('data' => t('Title'), 'class' => 'ctools-export-ui-title');
+      $header[] = array('data' => t('Title'), 'class' => array('ctools-export-ui-title'));
     }
 
-    $header[] = array('data' => t('Name'), 'class' => 'ctools-export-ui-name');
-    $header[] = array('data' => t('Storage'), 'class' => 'ctools-export-ui-storage');
-    $header[] = array('data' => t('Operations'), 'class' => 'ctools-export-ui-operations');
+    $header[] = array('data' => t('Name'), 'class' => array('ctools-export-ui-name'));
+    $header[] = array('data' => t('Storage'), 'class' => array('ctools-export-ui-storage'));
+    $header[] = array('data' => t('Operations'), 'class' => array('ctools-export-ui-operations'));
 
     return $header;
   }
@@ -553,7 +555,12 @@ class ctools_export_ui {
    * so be sure it exists.
    */
   function list_render(&$form_state) {
-    return theme('table', $this->list_table_header(), $this->rows, array('id' => 'ctools-export-ui-list-items'));
+    $table = array(
+      'header' => $this->list_table_header(),
+      'rows' => $this->rows,
+      'attributes' => array('id' => 'ctools-export-ui-list-items'),
+    );
+    return theme('table', $table);
   }
 
   /**
@@ -665,9 +672,9 @@ class ctools_export_ui {
     }
 
     // Tabs and breadcrumb disappearing, this helps alleviate through cheating.
-    ctools_include('menu');
-    $trail = ctools_get_menu_trail(ctools_export_ui_plugin_base_path($this->plugin));
-    menu_set_active_trail($trail);
+    // ...not sure this this is the best way.
+    $trail = menu_set_active_item(ctools_export_ui_plugin_base_path($this->plugin));
+
     $name = $original->{$this->plugin['export']['key']};
 
     $form_state = array(
@@ -715,8 +722,7 @@ class ctools_export_ui {
    * By default, export UI will provide a single form for editing an object.
    */
   function edit_execute_form_standard(&$form_state) {
-    ctools_include('form');
-    $output = ctools_build_form('ctools_export_ui_edit_item_form', $form_state);
+    $output = drupal_build_form('ctools_export_ui_edit_item_form', $form_state);
     if (!empty($form_state['executed'])) {
       $this->edit_save_form($form_state);
     }
@@ -1130,9 +1136,7 @@ class ctools_export_ui {
       'no_redirect' => TRUE,
     );
 
-    ctools_include('form');
-
-    $output = ctools_build_form('ctools_export_ui_delete_confirm_form', $form_state);
+    $output = drupal_build_form('ctools_export_ui_delete_confirm_form', $form_state);
     if (!empty($form_state['executed'])) {
       ctools_export_crud_delete($this->plugin['schema'], $item);
       $export_key = $this->plugin['export']['key'];
@@ -1258,8 +1262,7 @@ class ctools_export_ui {
  *
  * This simply loads the object defined in the plugin and hands it off.
  */
-function ctools_export_ui_list_form(&$form_state) {
-  $form = array();
+function ctools_export_ui_list_form($form, $form_state) {
   $form_state['object']->list_form($form, $form_state);
   return $form;
 }
@@ -1283,7 +1286,7 @@ function ctools_export_ui_list_form_submit(&$form, &$form_state) {
  *
  * This simply loads the object defined in the plugin and hands it off.
  */
-function ctools_export_ui_edit_item_form(&$form_state) {
+function ctools_export_ui_edit_item_form($form, &$form_state) {
   $form = array();
   $form_state['object']->edit_form($form, $form_state);
   return $form;
@@ -1337,7 +1340,7 @@ function ctools_export_ui_edit_name_validate($element, &$form_state) {
  *
  * @todo -- call back into the object instead.
  */
-function ctools_export_ui_delete_confirm_form(&$form_state) {
+function ctools_export_ui_delete_confirm_form($form, &$form_state) {
   $plugin = $form_state['plugin'];
   $item = $form_state['item'];
 
