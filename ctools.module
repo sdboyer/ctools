@@ -413,6 +413,7 @@ function ctools_file_download($filepath) {
  * @param array $modules
  */
 function ctools_registry_files_alter(&$files, $modules) {
+  ctools_include('plugins');
   $all_type_info = ctools_plugin_get_plugin_type_info();
   foreach ($all_type_info as $module => $plugin_types) {
     foreach ($plugin_types as $plugin_type_name => $plugin_type_info) {
