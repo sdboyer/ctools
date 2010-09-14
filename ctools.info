@@ -5,6 +5,7 @@ core = 7.x
 package = Chaos tool suite
 files[] = ctools.module
 files[] = tests/ctools.plugins.test
+files[] = tests/object_cache.test
 files[] = includes/collapsible.theme.inc
 files[] = includes/content.menu.inc
 files[] = includes/menu.inc
