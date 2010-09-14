@@ -198,6 +198,12 @@ function ctools_ajax_sample_page() {
   $output .= '<h3>Drop Down Menu</h3>';
   $output .= theme('ctools_dropdown', array('title' => 'Click to Drop Down', 'links' => $links));
 
+  // Create a collapsible div 
+  $handle = t('Click to Expand');
+  $content = 'Nulla ligula ante, aliquam at adipiscing egestas, varius vel arcu. Etiam laoreet elementum mi vel consequat. Etiam scelerisque lorem vel neque consequat quis bibendum libero congue. Nulla facilisi. Mauris a elit a leo feugiat porta. Phasellus placerat cursus est vitae elementum.';
+  $output .= '<h3>'. t('Collapsible Div') .'</h3>';
+  $output .= theme('ctools_collapsible', array('handle' => $handle, 'content' => $content, 'collapsed' => FALSE));
+
   return array('markup' => array('#markup' => $output));
 }
 
