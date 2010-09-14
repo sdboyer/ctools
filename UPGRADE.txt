@@ -4,3 +4,9 @@ Upgrading from ctools-6.x-1.x to ctools-7.x-2.x:
     to drupal_static*().
   - All calls to ctools_css_add_css should be replaced with calls to
     drupal_add_css(). Note that the arguments to drupal_add_css() have changed.
+  - Plugin types now must be explicitly registered via a registration hook,
+    hook_ctools_plugin_type(); info once provided in magically-named functions
+    (e.g., ctools_ctools_plugin_content_types() was the old function to
+    provide plugin type info for ctools' content_type plugins) now must be
+    provided in that global hook. See http://drupal.org/node/910538 for more
+    details.
