@@ -165,8 +165,8 @@ function ctools_plugin_api_include($owner, $api, $minimum_version, $current_vers
 function ctools_get_plugins($module, $type, $id = NULL) {
   // Store local caches of plugins and plugin info so we don't have to do full
   // lookups everytime.
-  $info = &ctools_static('ctools_plugin_info', array());
-  $plugins = &ctools_static('ctools_plugins', array());
+  $info = &drupal_static('ctools_plugin_info', array());
+  $plugins = &drupal_static('ctools_plugins', array());
 
   // Attempt to shortcut this whole piece of code if we already have
   // the requested plugin:
@@ -176,7 +176,7 @@ function ctools_get_plugins($module, $type, $id = NULL) {
 
   // Store the status of plugin loading. If a module plugin type pair is true,
   // then it is fully loaded and no searching or setup needs to be done.
-  $setup = &ctools_static('ctools_plugin_setup', array());
+  $setup = &drupal_static('ctools_plugin_setup', array());
 
   // Request metadata/defaults for this plugin from the declaring module. This
   // is done once per page request, upon a request being made for that plugin.
@@ -288,7 +288,7 @@ function ctools_get_plugins($module, $type, $id = NULL) {
  */
 function ctools_plugin_load_includes($info, $filename = NULL) {
   // Keep a static array so we don't hit drupal_system_listing more than necessary.
-  $all_files = &ctools_static(__FUNCTION__, array());
+  $all_files = &drupal_static(__FUNCTION__, array());
 
   // If we're being asked for all plugins of a type, skip any caching
   // we may have done because this is an admin task and it's ok to
