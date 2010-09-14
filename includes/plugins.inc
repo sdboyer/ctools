@@ -305,7 +305,7 @@ function ctools_plugin_get_plugin_type_info() {
 
       foreach ($module_infos as $type => $info) {
         // Apply defaults. Array addition will not overwrite pre-existing keys.
-        $all_type_info[$module][$type] += array(
+        $info += array(
           'module' => $module,
           'type' => $type,
           'cache' => FALSE,
@@ -318,6 +318,7 @@ function ctools_plugin_get_plugin_type_info() {
           'hook' => $module . '_' . $type,
           'load themes' => FALSE,
         );
+        $all_type_info[$module][$type] = $info;
       }
     }
     cache_set('ctools_plugin_type_info', $info);
