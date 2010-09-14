@@ -57,8 +57,15 @@ function mymodule_schema() {
         'table' => 'my_join_table',
         'left_key' => 'format',
         'right_key' => 'id',
-        // Optionally you can define extra clauses to add to the INNER JOIN
-        'extras' => "AND extra_clauses",
+        // Optionally you can define a callback to add custom conditions or
+        // alter the query as necessary. The callback function takes 3 args:
+        //
+        //   myjoincallback(&$query, $schema, $join_schema);
+        //
+        // where $query is the database query object, $schema is the schema for
+        // the export base table and $join_schema is the schema for the current
+        // join table.
+        'callback' => 'myjoincallback',
 
         // You must specify which fields will be loaded. These fields must
         // exist in the schema definition of the joined table.
