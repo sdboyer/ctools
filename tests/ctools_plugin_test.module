@@ -13,39 +13,29 @@ function ctools_plugin_test_ctools_plugin_directory($module, $plugin) {
   }
 }
 
-/**
- * CTools plugin information callback for an api with extra defaults.
- *
- * @return
- * Ctools plugin definition array.
- */
-function ctools_plugin_test_ctools_plugin_extra_defaults() {
+function ctools_plugin_test_ctools_plugin_type() {
   return array(
-    'defaults' => array(
-      'bool' => true,
-      'string' => 'string',
-      'array' => array('some value'),
+    'extra_defaults' => array(
+      'defaults' => array(
+        'bool' => true,
+        'string' => 'string',
+        'array' => array('some value'),
+      ),
     ),
-  );
-}
-
-function ctools_plugin_test_ctools_plugin_cached() {
-  return array(
-    'cache' => TRUE,
-  );
-}
-
-function ctools_plugin_test_ctools_plugin_cached_hook() {
-  return array(
-    'cache' => TRUE,
-    'use hooks' => TRUE,
-  );
-}
-
-function ctools_plugin_test_ctools_plugin_not_cached_hook() {
-  return array(
-    'cache' => FALSE,
-    'use hooks' => TRUE,
+    'cached' => array(
+      'cache' => TRUE,
+    ),
+    'not_cached' => array(
+      'cache' => FALSE,
+    ),
+    'cached_hook' => array(
+      'cache' => TRUE,
+      'use hooks' => TRUE,
+    ),
+    'not_cached_hook' => array(
+      'cache' => FALSE,
+      'use hooks' => TRUE,
+    ),
   );
 }
 
