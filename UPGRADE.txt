@@ -4,3 +4,5 @@ Upgrading from ctools-6.x-1.x to ctools-7.x-2.x:
     to drupal_static*().
   - All calls to ctools_css_add_css should be replaced with calls to
     drupal_add_css(). Note that the arguments to drupal_add_css() have changed.
+  - All wizard form builder functions must now return a form array().
+  - ctools_build_form is very close to being removed.  In anticipation of this, all $form_state['wrapper callback']s must now be $form_state['wrapper_callback']  In addition to this $form_state['args'] must now be $form_state['build_info']['args']
