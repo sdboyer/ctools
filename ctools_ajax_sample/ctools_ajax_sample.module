@@ -727,8 +727,8 @@ function ctools_ajax_sample_test_css() {
 /** 
  * Helper function to provide a sample jump menu form
  */
-function ctools_plugin_example_jump_menu_form() {
-  $url = url('ctools_ajax_sample/jumped') 
+function ctools_ajax_sample_jump_menu_form() {
+  $url = url('ctools_ajax_sample/jumped');
   $form = ctools_jump_menu(array(), array($url => t('Jump!')), array());
   return $form;
 }
