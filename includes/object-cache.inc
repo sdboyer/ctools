@@ -92,8 +92,7 @@ function ctools_object_cache_clear($obj, $name) {
     ->condition('name', $name)
     ->execute();
   // Ensure the static cache is emptied of this obj:name set.
-  $cache = &drupal_static('ctools_object_cache_get', array());
-  unset($cache["$obj:$name"]);
+  drupal_static_reset('ctools_object_cache_get');
 }
 
 
