@@ -187,7 +187,7 @@ function ctools_ajax_sample_page() {
 
   $output .= theme('table', array('header' => $header, 'rows' => $rows, array('class' => 'ajax-sample-table')));
 
-  // Show examples of ctools javascript widgets 
+  // Show examples of ctools javascript widgets
   $output .= '<h2>CTools Javascript Widgets</h2>';
 
   // Create a drop down menu
@@ -195,10 +195,10 @@ function ctools_ajax_sample_page() {
   $links[] = array('title' => t('Link 1'), 'href' => $_GET['q']);
   $links[] = array('title' => t('Link 2'), 'href' => $_GET['q']);
   $links[] = array('title' => t('Link 3'), 'href' => $_GET['q']);
-  $output .= '<h3>Drop Down Menu</h3>';
-  $output .= theme('ctools_dropdown', array('title' => 'Click to Drop Down', 'links' => $links));
+  $output .= '<h3>' . t('Drop Down Menu') . '</h3>';
+  $output .= theme('ctools_dropdown', array('title' => t('Click to Drop Down'), 'links' => $links));
 
-  // Create a collapsible div 
+  // Create a collapsible div
   $handle = t('Click to Collapse');
   $content = 'Nulla ligula ante, aliquam at adipiscing egestas, varius vel arcu. Etiam laoreet elementum mi vel consequat. Etiam scelerisque lorem vel neque consequat quis bibendum libero congue. Nulla facilisi. Mauris a elit a leo feugiat porta. Phasellus placerat cursus est vitae elementum.';
   $output .= '<h3>'. t('Collapsible Div') .'</h3>';
