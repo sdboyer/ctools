@@ -34,7 +34,7 @@
  */
 function ctools_dropdown_theme(&$items) {
   $items['ctools_dropdown'] = array(
-    'arguments' => array('title' => NULL, 'links' => NULL, 'image' => FALSE, 'class' => ''),
+    'variables' => array('title' => NULL, 'links' => NULL, 'image' => FALSE, 'class' => ''),
     'file' => 'includes/dropdown.theme.inc',
   );
 }
@@ -55,12 +55,12 @@ function ctools_dropdown_theme(&$items) {
  *   to style a single dropdown however you like without interfering with
  *   other dropdowns.
  */
-function theme_ctools_dropdown($title, $links, $image = FALSE, $class = '') {
+function theme_ctools_dropdown($variables) { 
   // Provide a unique identifier for every dropdown on the page.
   static $id = 0;
   $id++;
 
-  $class = 'ctools-dropdown-no-js ctools-dropdown' . ($class ? (' ' . $class) : '');
+  $class = 'ctools-dropdown-no-js ctools-dropdown' . ($variables['class'] ? (' ' . $variables['class']) : '');
 
   ctools_add_js('dropdown');
   ctools_add_css('dropdown');
@@ -69,17 +69,17 @@ function theme_ctools_dropdown($title, $links, $image = FALSE, $class = '') {
 
   $output .= '<div class="' . $class . '" id="ctools-dropdown-' . $id . '">';
   $output .= '<div class="ctools-dropdown-link-wrapper">';
-  if ($image) {
-    $output .= '<a href="#" class="ctools-dropdown-link ctools-dropdown-image-link">' . $title . '</a>';
+  if ($variables['image']) {
+    $output .= '<a href="#" class="ctools-dropdown-link ctools-dropdown-image-link">' . $variables['title'] . '</a>';
   }
   else {
-    $output .= '<a href="#" class="ctools-dropdown-link ctools-dropdown-text-link">' . check_plain($title) . '</a>';
+    $output .= '<a href="#" class="ctools-dropdown-link ctools-dropdown-text-link">' . check_plain($variables['title']) . '</a>';
   }
 
   $output .= '</div>'; // wrapper
   $output .= '<div class="ctools-dropdown-container-wrapper">';
   $output .= '<div class="ctools-dropdown-container">';
-  $output .= theme_links($links);
+  $output .= theme_links(array('links' => $variables['links'], 'attributes' => array(), 'heading' => ''));
   $output .= '</div>'; // container
   $output .= '</div>'; // container wrapper
   $output .= '</div>'; // dropdown
