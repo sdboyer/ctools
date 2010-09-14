@@ -168,20 +168,6 @@ function ctools_get_plugins($module, $type, $id = NULL) {
   $plugins = &drupal_static('ctools_plugins', array());
   $info = ctools_plugin_get_plugin_type_info();
 
-  // Only trigger info loading once.
-  if (!$info_loaded) {
-    $info_loaded = TRUE;
-    $cache = cache_get('ctools_plugin_type_info');
-    if (!empty($cache->data)) {
-      $info = $cache->data;
-    }
-    else {
-      // Cache expired, refill it.
-      $info = ctools_plugin_get_plugin_type_info();
-      cache_set('ctools_plugin_type_info', $info);
-    }
-  }
-
   // Attempt to shortcut this whole piece of code if we already have
   // the requested plugin:
   if ($id && isset($plugins[$module][$type]) && array_key_exists($id, $plugins[$module][$type])) {
