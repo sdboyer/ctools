@@ -316,6 +316,19 @@ function ctools_plugin_get_plugin_type_info() {
     cache_set('ctools_plugin_type_info', $info);
   }
 
+  // Initialize the plugins static cache with empty arrays for all known
+  // module/plugin type combinations.
+  $plugins = &drupal_static('ctools_plugins', array());
+
+  foreach ($all_type_info as $module => $infos) {
+    $infos = array_fill_keys(array_keys($infos), array());
+    if (!isset($plugins[$module])) {
+      // Initialize it if not already set (which should typically be the case)
+      $plugins[$module] = array();
+    }
+    $plugins[$module] += $infos;
+  }
+
   return $all_type_info;
 }
 
