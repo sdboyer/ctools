@@ -35,7 +35,8 @@ function ctools_object_cache_get($obj, $name, $skip_cache = FALSE) {
   }
 
   if (!array_key_exists($key, $cache)) {
-    $data = db_query('SELECT * FROM {ctools_object_cache} WHERE sid = :session_id AND obj = :object AND name = :name', array(':session_id' => session_id(), ':object' => $obj, ':name' => $name))->fetchObject();
+    $data = db_query('SELECT * FROM {ctools_object_cache} WHERE sid = :session_id AND obj = :object AND name = :name', array(':session_id' => session_id(), ':object' => $obj, ':name' => $name))
+      ->fetchObject();
     if ($data) {
       $cache[$key] = unserialize($data->data);
     }
@@ -111,7 +112,8 @@ function ctools_object_cache_clear($obj, $name) {
  *   An object containing the UID and updated date if found; NULL if not.
  */
 function ctools_object_cache_test($obj, $name) {
-  return db_query('SELECT s.uid, c.updated FROM {ctools_object_cache} c INNER JOIN {sessions} s ON c.sid = s.sid WHERE s.sid <> :session_id AND c.obj = :obj AND c.name = :name ORDER BY c.updated ASC', array(':session_id' => session_id(), ':obj' => $obj, ':name' => $name))->fetchObject();
+  return db_query('SELECT s.uid, c.updated FROM {ctools_object_cache} c INNER JOIN {sessions} s ON c.sid = s.sid WHERE s.sid <> :session_id AND c.obj = :obj AND c.name = :name ORDER BY c.updated ASC', array(':session_id' => session_id(), ':obj' => $obj, ':name' => $name))
+    ->fetchObject();
 }
 
 /**
@@ -130,16 +132,8 @@ function ctools_object_cache_test($obj, $name) {
  *   An array of objects containing the UID and updated date for each name found.
  */
 function ctools_object_cache_test_objects($obj, $names) {
-  $placeholders = db_placeholders($names, 'varchar');
-  $args = array_merge(array($obj), $names);
-  $result = db_query("SELECT c.name, s.uid, c.updated FROM {ctools_object_cache} c INNER JOIN {sessions}  s ON c.sid = s.sid WHERE c.obj = '%s' AND c.name IN ($placeholders) ORDER BY c.updated ASC", $args);
-
-  $return = array();
-  while ($test = db_fetch_object($result)) {
-    $return[$test->name] = $test;
-  }
-
-  return $return;
+  return db_query("SELECT c.name, s.uid, c.updated FROM {ctools_object_cache} c INNER JOIN {sessions} s ON c.sid = s.sid WHERE c.obj = ':obj' AND c.name IN (:names) ORDER BY c.updated ASC", array(':obj' => $obj, ':names' => $names))
+    ->fetchAllAssoc('name');
 }
 
 /**
