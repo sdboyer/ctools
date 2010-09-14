@@ -211,48 +211,49 @@
   /**
    * Bind links that will open modals to the appropriate function.
    */
-  Drupal.behaviors.ZZCToolsModal = function(context) {
-    // Bind links
-    // Note that doing so in this order means that the two classes can be
-    // used together safely.
-    $('a.ctools-use-modal-cache:not(.ctools-use-modal-processed)', context)
-      .addClass('ctools-use-modal-processed')
-      .click(Drupal.CTools.Modal.clickAjaxCacheLink)
-      .each(function () {
-        Drupal.CTools.AJAX.warmCache.apply(this);
-      });
+  Drupal.behaviors.ZZCToolsModal = { 
+    attach: function(context) {
+      // Bind links
+      // Note that doing so in this order means that the two classes can be
+      // used together safely.
+      $('a.ctools-use-modal-cache:not(.ctools-use-modal-processed)', context)
+        .addClass('ctools-use-modal-processed')
+        .click(Drupal.CTools.Modal.clickAjaxCacheLink)
+        .each(function () {
+          Drupal.CTools.AJAX.warmCache.apply(this);
+        });
 
-    $('a.ctools-use-modal:not(.ctools-use-modal-processed)', context)
-      .addClass('ctools-use-modal-processed')
-      .click(Drupal.CTools.Modal.clickAjaxLink);
+      $('a.ctools-use-modal:not(.ctools-use-modal-processed)', context)
+        .addClass('ctools-use-modal-processed')
+        .click(Drupal.CTools.Modal.clickAjaxLink);
 
-    // Bind buttons
-    $('input.ctools-use-modal:not(.ctools-use-modal-processed), button.ctools-use-modal:not(.ctools-use-modal-processed)', context)
-      .addClass('ctools-use-modal-processed')
-      .click(Drupal.CTools.Modal.clickAjaxButton);
+      // Bind buttons
+      $('input.ctools-use-modal:not(.ctools-use-modal-processed), button.ctools-use-modal:not(.ctools-use-modal-processed)', context)
+        .addClass('ctools-use-modal-processed')
+        .click(Drupal.CTools.Modal.clickAjaxButton);
 
-    // Bind submit links in the modal form.
-    $('#modal-content form:not(.ctools-use-modal-processed)', context)
-      .addClass('ctools-use-modal-processed')
-      .submit(Drupal.CTools.Modal.submitAjaxForm)
-      .bind('CToolsAJAXSubmit', Drupal.CTools.AJAX.ajaxSubmit);
+      // Bind submit links in the modal form.
+      $('#modal-content form:not(.ctools-use-modal-processed)', context)
+        .addClass('ctools-use-modal-processed')
+        .submit(Drupal.CTools.Modal.submitAjaxForm)
+        .bind('CToolsAJAXSubmit', Drupal.CTools.AJAX.ajaxSubmit);
 
-    // add click handlers so that we can tell which button was clicked,
-    // because the AJAX submit does not set the values properly.
+      // add click handlers so that we can tell which button was clicked,
+      // because the AJAX submit does not set the values properly.
 
-    $('#modal-content input[type="submit"]:not(.ctools-use-modal-processed), #modal-content button:not(.ctools-use-modal-processed)', context)
-      .addClass('ctools-use-modal-processed')
-      .click(function() {
-        if (Drupal.autocompleteSubmit && !Drupal.autocompleteSubmit()) {
-          return false;
-        }
+      $('#modal-content input[type="submit"]:not(.ctools-use-modal-processed), #modal-content button:not(.ctools-use-modal-processed)', context)
+        .addClass('ctools-use-modal-processed')
+        .click(function() {
+          if (Drupal.autocompleteSubmit && !Drupal.autocompleteSubmit()) {
+            return false;
+          }
 
-        // Make sure it knows our button.
-        if (!$(this.form).hasClass('ctools-ajaxing')) {
-          this.form.clk = this;
-        }
-      });
-
+          // Make sure it knows our button.
+          if (!$(this.form).hasClass('ctools-ajaxing')) {
+            this.form.clk = this;
+          }
+        });
+    }
   };
 
   // The following are implementations of AJAX responder commands.
