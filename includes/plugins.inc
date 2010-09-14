@@ -315,6 +315,7 @@ function ctools_plugin_get_plugin_type_info() {
           'type' => $type,
           'cache' => FALSE,
           'cache table' => 'cache',
+          'classes' => array(),
           'use hooks' => FALSE,
           'defaults' => array(),
           'process' => '',
