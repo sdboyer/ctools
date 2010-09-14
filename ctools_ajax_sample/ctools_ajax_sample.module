@@ -64,12 +64,6 @@ function ctools_ajax_sample_menu() {
       'access callback' => TRUE,
       'type' => MENU_CALLBACK,
   );
-  $items['ctools_ajax_sample/test-css'] = array(
-      'title' => 'Test CSS',
-      'page callback' => 'ctools_ajax_sample_test_css',
-      'access callback' => TRUE,
-      'type' => MENU_NORMAL_ITEM,
-  );
   $items['ctools_ajax_sample/jumped'] = array(
     'title' => 'Successful Jumping',
     'page callback' => 'ctools_ajax_sample_jump_menu_page',
@@ -709,29 +703,6 @@ function ctools_ajax_sample_show_raptor($object) {
 }
 
 /**
- * Page callback to test the css tool.
- */
-function ctools_ajax_sample_test_css() {
-  $css = "#some-id .some-class {\n  color: black;\n  illegal-key: foo;\n}";
-  $output = '<pre>' . $css . '</pre>';
-
-  ctools_include('css');
-  $filename1 = ctools_css_store('unfiltered-css-test', $css, FALSE);
-  $filename2 = ctools_css_store('filtered-css-test', $css, TRUE);
-
-  $match = $filename1 == ctools_css_retrieve('unfiltered-css-test') ? 'Match' : 'No match';
-  $output .= '<pre>Unfiltered: ' . $filename1 . ' ' . $match . '</pre>';
-  $output .= '<pre>' . file_get_contents($filename1) . '</pre>';
-
-  $match = $filename2 == ctools_css_retrieve('filtered-css-test') ? 'Match' : 'No match';
-  $output .= '<pre>Filtered: ' . $filename2 . ' ' . $match . '</pre>';
-  $output .= '<pre>' . file_get_contents($filename2) . '</pre>';
-
-  drupal_add_css($filename2, array('type' => 'file'));
-  return array('#markup' => $output);
-}
-
-/** 
  * Helper function to provide a sample jump menu form
  */
 function ctools_ajax_sample_jump_menu_form() {
