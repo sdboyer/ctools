@@ -466,19 +466,19 @@ function ctools_export_load_object($table, $type = 'all', $args = array()) {
  */
 function ctools_export_load_object_reset($table = NULL) {
   if (empty($table)) {
-    ctools_static_reset('ctools_export_load_object');
-    ctools_static_reset('ctools_export_load_object_all');
-    ctools_static_reset('_ctools_export_get_defaults');
-    ctools_static_reset('ctools_plugin_api_info');
+    drupal_static_reset('ctools_export_load_object');
+    drupal_static_reset('ctools_export_load_object_all');
+    drupal_static_reset('_ctools_export_get_defaults');
+    drupal_static_reset('ctools_plugin_api_info');
   }
   else {
-    $cache = &ctools_static('ctools_export_load_object');
-    $cached_database = &ctools_static('ctools_export_load_object_all');
-    $cached_defaults = &ctools_static('_ctools_export_get_defaults');
+    $cache = &drupal_static('ctools_export_load_object');
+    $cached_database = &drupal_static('ctools_export_load_object_all');
+    $cached_defaults = &drupal_static('_ctools_export_get_defaults');
     unset($cache[$table]);
     unset($cached_database[$table]);
     unset($cached_defaults[$table]);
-    ctools_static_reset('ctools_plugin_api_info');
+    drupal_static_reset('ctools_plugin_api_info');
   }
 }
 
@@ -527,7 +527,7 @@ function ctools_get_default_object($table, $name) {
  * to get default objects.
  */
 function _ctools_export_get_defaults($table, $export) {
-  $cache = &ctools_static(__FUNCTION__, array());
+  $cache = &drupal_static(__FUNCTION__, array());
 
   if (!isset($cache[$table])) {
     $cache[$table] = array();
@@ -741,7 +741,7 @@ function ctools_export_object($table, $object, $indent = '', $identifier = NULL,
  * that it's easily available.
  */
 function ctools_export_get_schema($table) {
-  $cache = &ctools_static(__FUNCTION__);
+  $cache = &drupal_static(__FUNCTION__);
   if (empty($cache[$table])) {
     $schema = drupal_get_schema($table);
 

@@ -376,7 +376,7 @@ function ctools_export_ui_process(&$plugin, $info) {
  *   Either the lister class or FALSE if one could not be had.
  */
 function ctools_export_ui_get_handler($plugin) {
-  $cache = &ctools_static(__FUNCTION__, array());
+  $cache = &drupal_static(__FUNCTION__, array());
   if (empty($cache[$plugin['name']])) {
     // If a list class is not specified by the plugin, fall back to the
     // default ctools_export_ui plugin instead.

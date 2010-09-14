@@ -178,9 +178,9 @@ function ctools_add_js($file, $module = 'ctools', $dir = 'js') {
  *   TRUE to reset a specific named variable, or all variables if $name is NULL.
  *   Resetting every variable should only be used, for example, for running unit
  *   tests with a clean environment. Should be used only though via function
- *   ctools_static_reset().
+ *   drupal_static_reset().
  */
-function &ctools_static($name, $default_value = NULL, $reset = FALSE) {
+function &drupal_static($name, $default_value = NULL, $reset = FALSE) {
   static $data = array();
 
   // Reset a single value, or all values.
@@ -210,8 +210,8 @@ function &ctools_static($name, $default_value = NULL, $reset = FALSE) {
  * @param $name
  *   Name of the static variable to reset. Omit to reset all variables.
  */
-function ctools_static_reset($name) {
-  ctools_static($name, NULL, TRUE);
+function drupal_static_reset($name) {
+  drupal_static($name, NULL, TRUE);
 }
 
 /**
@@ -611,7 +611,7 @@ function ctools_js_load($js) {
  * %ctools_export_ui in menu paths.
  */
 function ctools_export_ui_load($item_name, $plugin_name) {
-  $return = &ctools_static(__FUNCTION__, FALSE);
+  $return = &drupal_static(__FUNCTION__, FALSE);
 
   if (!$return) {
     ctools_include('export-ui');
