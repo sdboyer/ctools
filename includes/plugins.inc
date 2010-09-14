@@ -168,6 +168,12 @@ function ctools_get_plugins($module, $type, $id = NULL) {
   $plugins = &drupal_static('ctools_plugins', array());
   $info = ctools_plugin_get_plugin_type_info();
 
+  // Bail out noisily if an invalid module/type combination is requested.
+  if (!isset($info[$module][$type])) {
+    watchdog('ctools', 'Invalid plugin module/type combination requested: module %module and type %type', array('%module' => $module, '%type' => $type), WATCHDOG_ERROR);
+    return array();
+  }
+
   // Attempt to shortcut this whole piece of code if we already have
   // the requested plugin:
   if ($id && isset($plugins[$module][$type]) && array_key_exists($id, $plugins[$module][$type])) {
