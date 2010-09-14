@@ -12,6 +12,8 @@ html.js div.ctools-dropdown div.ctools-dropdown-container ul li a {
 
 html.js div.ctools-dropdown div.ctools-dropdown-container ul {
   list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 
 html.js div.ctools-dropdown div.ctools-dropdown-container ul li {
@@ -47,14 +49,14 @@ html.js div.ctools-dropdown div.ctools-dropdown-container {
 
 html.js div.ctools-dropdown div.ctools-dropdown-container ul li li a {
   padding-left: 25px;
-  width: 150px; 
+  width: 150px;
   color: #027AC6;
 }
 
 html.js div.ctools-dropdown div.ctools-dropdown-container ul li a {
   text-decoration: none;
   padding-left: 5px;
-  width: 120px;
+  width: 170px;
   color: #027AC6;
 }
 
