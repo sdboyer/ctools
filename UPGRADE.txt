@@ -1,0 +1,4 @@
+Upgrading from ctools-6.x-1.x to ctools-7.x-2.x:
+
+  - All calls to ctools_static*() should be replaced with corresponding calls
+    to drupal_static*().
