@@ -1,5 +1,5 @@
 // $Id$
-
+(function($){
 /**
  * To make a form auto submit, all you have to do is 3 things:
  *
@@ -27,7 +27,7 @@
  * could use additional support for radios and checkboxes.
  */
 
-Drupal.behaviors.CToolsAutoSubmit = function() {
+Drupal.behaviors.CToolsAutoSubmit = {attach: function() {
   var timeoutID = 0;
 
   // Bind to any select widgets that will be auto submitted.
@@ -69,4 +69,5 @@ Drupal.behaviors.CToolsAutoSubmit = function() {
         }
       }
     });
-}
+}}
+})(jQuery);
