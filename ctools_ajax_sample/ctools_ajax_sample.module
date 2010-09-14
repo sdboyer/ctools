@@ -204,6 +204,12 @@ function ctools_ajax_sample_page() {
   $output .= '<h3>'. t('Collapsible Div') .'</h3>';
   $output .= theme('ctools_collapsible', array('handle' => $handle, 'content' => $content, 'collapsed' => FALSE));
 
+  /* Jump Menu */
+  ctools_include('jump-menu');
+  $form = drupal_get_form('ctools_ajax_sample_jump_menu_form');
+  $output .= '<h3>'. t('Jump Menu') .'</h3>';
+  $output .= drupal_render($form);
+
   return array('markup' => array('#markup' => $output));
 }
 
@@ -717,3 +723,13 @@ function ctools_ajax_sample_test_css() {
   drupal_add_css($filename2, array('type' => 'file'));
   return array('#markup' => $output);
 }
+
+/** 
+ * Helper function to provide a sample jump menu form
+ */
+function ctools_plugin_example_jump_menu_form() {
+  $url = url('ctools_ajax_sample/jumped') 
+  $form = ctools_jump_menu(array(), array($url => t('Jump!')), array());
+  return $form;
+}
+
