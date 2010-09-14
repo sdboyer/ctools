@@ -165,56 +165,6 @@ function ctools_add_js($file, $module = 'ctools', $dir = 'js') {
 }
 
 /**
- * Central static variable storage. Modeled after Drupal 7's drupal_static().
- *
- * @param $name
- *   Globally unique name for the variable. For a function with only one static,
- *   variable, the function name (e.g. via the PHP magic __FUNCTION__ constant)
- *   is recommended. For a function with multiple static variables add a
- *   distinguishing suffix to the function name for each one.
- * @param $default_value
- *   Optional default value.
- * @return $reset
- *   TRUE to reset a specific named variable, or all variables if $name is NULL.
- *   Resetting every variable should only be used, for example, for running unit
- *   tests with a clean environment. Should be used only though via function
- *   ctools_static_reset().
- */
-function &ctools_static($name, $default_value = NULL, $reset = FALSE) {
-  static $data = array();
-
-  // Reset a single value, or all values.
-  if ($reset) {
-    if (isset($name)) {
-      unset($data[$name]);
-    }
-    else {
-      $data = array();
-    }
-    // We must return a reference to a variable.
-    $dummy = NULL;
-    return $dummy;
-  }
-
-  if (!isset($data[$name])) {
-    $data[$name] = $default_value;
-  }
-
-  return $data[$name];
-}
-
-/**
- * Reset one or all centrally stored static variable(s).
- * Modeled after Drupal 7's drupal_static_reset().
- *
- * @param $name
- *   Name of the static variable to reset. Omit to reset all variables.
- */
-function ctools_static_reset($name) {
-  ctools_static($name, NULL, TRUE);
-}
-
-/**
  * Get a list of roles in the system.
  *
  * @return
@@ -526,10 +476,6 @@ function ctools_preprocess_page(&$variables) {
     }
     $variables['content'] = strtr($variables['content'], $tokens);
   }
-
-  if (defined('CTOOLS_AJAX_INCLUDED')) {
-    ctools_ajax_page_preprocess($variables);
-  }
 }
 
 // -----------------------------------------------------------------------
@@ -622,7 +568,7 @@ function ctools_js_load($js) {
  * %ctools_export_ui in menu paths.
  */
 function ctools_export_ui_load($item_name, $plugin_name) {
-  $return = &ctools_static(__FUNCTION__, FALSE);
+  $return = &drupal_static(__FUNCTION__, FALSE);
 
   if (!$return) {
     ctools_include('export-ui');
