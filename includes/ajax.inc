@@ -505,10 +505,10 @@ function ctools_ajax_render($commands = array()) {
     // We don't use drupal_json here because the header is not true. We're not really
     // returning JSON, strictly-speaking, but rather JSON content wrapped in a <textarea>
     // as per the "file uploads" example here: http://malsup.com/jquery/form/#code-samples
-    echo '<textarea>' . drupal_to_js($commands) . '</textarea>';
+    echo '<textarea>' . drupal_json_encode($commands) . '</textarea>';
   }
   else {
-    drupal_json($commands);
+    drupal_json_output($commands);
   }
   exit;
 }
