@@ -53,6 +53,20 @@ function page_manager_ctools_plugin_directory($owner, $plugin_type) {
 }
 
 /**
+ * Implements hook_ctools_plugin_type() to inform the plugin system that Page
+ * Manager owns task, task_handler, and page_wizard plugin types.
+ *
+ * All of these are empty because the defaults all work.
+ */
+function page_manager_ctools_plugin_type() {
+  return array(
+    'tasks' => array(),
+    'task_handlers' => array(),
+    'page_wizards' => array(),
+  );
+}
+
+/**
  * Delegated implementation of hook_menu().
  */
 function page_manager_menu() {

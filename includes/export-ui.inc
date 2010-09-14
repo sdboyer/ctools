@@ -7,14 +7,6 @@
  *
  * See Advanced Help for documentation.
  */
-/**
- * Implementation of hook_ctools_plugin_*.
- */
-function ctools_ctools_plugin_export_ui() {
-  return array(
-    'process' => 'ctools_export_ui_process',
-  );
-}
 
 /**
  * Process an export-ui plugin to provide it with defaults.
