@@ -313,7 +313,7 @@ function ctools_plugin_get_plugin_type_info() {
         $all_type_info[$module][$type] = $info;
       }
     }
-    cache_set('ctools_plugin_type_info', $info);
+    cache_set('ctools_plugin_type_info', $all_type_info);
   }
 
   // Initialize the plugins static cache with empty arrays for all known
