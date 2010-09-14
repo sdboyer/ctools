@@ -188,13 +188,14 @@ function ctools_ajax_sample_page() {
   $output .= theme('table', array('header' => $header, 'rows' => $rows, array('class' => 'ajax-sample-table')));
 
   // Show examples of ctools javascript widgets
-  $output .= '<h2>CTools Javascript Widgets</h2>';
+  $output .= '<h2>'. t('CTools Javascript Widgets') .'</h2>';
 
   // Create a drop down menu
   $links = array();
   $links[] = array('title' => t('Link 1'), 'href' => $_GET['q']);
   $links[] = array('title' => t('Link 2'), 'href' => $_GET['q']);
   $links[] = array('title' => t('Link 3'), 'href' => $_GET['q']);
+
   $output .= '<h3>' . t('Drop Down Menu') . '</h3>';
   $output .= theme('ctools_dropdown', array('title' => t('Click to Drop Down'), 'links' => $links));
 
