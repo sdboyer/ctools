@@ -170,7 +170,7 @@ function ctools_get_plugins($module, $type, $id = NULL) {
 
   // Bail out noisily if an invalid module/type combination is requested.
   if (!isset($info[$module][$type])) {
-    watchdog('ctools', 'Invalid plugin module/type combination requested: module %module and type %type', array('%module' => $module, '%type' => $type), WATCHDOG_ERROR);
+    watchdog('ctools', 'Invalid plugin module/type combination requested: module @module and type @type', array('@module' => $module, '@type' => $type), WATCHDOG_ERROR);
     return array();
   }
 
