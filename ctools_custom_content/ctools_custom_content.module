@@ -57,7 +57,7 @@ function ctools_content_type_new($set_defaults) {
  */
 function ctools_custom_content_panels_dashboard_blocks(&$vars) {
   $vars['links']['ctools_custom_content'] = array(
-    'title' => l(t('Custom content'), 'admin/build/ctools-content/add'),
+    'title' => l(t('Custom content'), 'admin/structure/ctools-content/add'),
     'description' => t('Custom content panes are basic HTML you enter that can be reused in all of your panels.'),
   );
 
@@ -71,7 +71,7 @@ function ctools_custom_content_panels_dashboard_blocks(&$vars) {
     $rows[] = array(
       check_plain($item->admin_title),
       array(
-        'data' => l(t('Edit'), "admin/build/ctools-content/list/$item->name/edit"),
+        'data' => l(t('Edit'), "admin/structure/ctools-content/list/$item->name/edit"),
         'class' => 'links',
       ),
     );
@@ -91,7 +91,7 @@ function ctools_custom_content_panels_dashboard_blocks(&$vars) {
 
   $vars['blocks']['ctools_custom_content'] = array(
     'title' => t('Manage custom content'),
-    'link' => l(t('Go to list'), 'admin/build/ctools-content'),
+    'link' => l(t('Go to list'), 'admin/structure/ctools-content'),
     'content' => $content,
     'class' => 'dashboard-content',
     'section' => 'right',
