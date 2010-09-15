@@ -268,16 +268,16 @@
   /**
    * AJAX responder command to place HTML within the modal.
    */
-  Drupal.CTools.AJAX.commands.modal_display = function(command) {
-    $('#modal-title').html(command.title);
-    $('#modal-content').html(command.output);
+  Drupal.CTools.Modal.modal_display = function(ajax, response, status) {
+    $('#modal-title').html(response.title);
+    $('#modal-content').html(response.output);
     Drupal.attachBehaviors();
   }
 
   /**
    * AJAX responder command to dismiss the modal.
    */
-  Drupal.CTools.AJAX.commands.modal_dismiss = function(command) {
+  Drupal.CTools.Modal.modal_dismiss = function(command) {
     Drupal.CTools.Modal.dismiss();
     $('link.ctools-temporary-css').remove();
   }
@@ -285,12 +285,35 @@
   /**
    * Display loading
    */
-  Drupal.CTools.AJAX.commands.modal_loading = function(command) {
-    Drupal.CTools.AJAX.commands.modal_display({
+  //Drupal.CTools.AJAX.commands.modal_loading = function(command) {
+  Drupal.CTools.Modal.modal_loading = function(command) { 
+    Drupal.CTools.Modal.modal_display({
       output: Drupal.theme(Drupal.CTools.Modal.currentSettings.throbberTheme),
       title: Drupal.CTools.Modal.currentSettings.loadingText
     });
   }
+
+  /**
+   * Find a URL for an AJAX button.
+   *
+   * The URL for this gadget will be composed of the values of items by
+   * taking the ID of this item and adding -url and looking for that
+   * class. They need to be in the form in order since we will
+   * concat them all together using '/'.
+   */
+  Drupal.CTools.Modal.findURL = function(item) {
+    var url = '';
+    var url_class = '.' + $(item).attr('id') + '-url';
+    $(url_class).each(
+      function() {
+        if (url && $(this).val()) {
+          url += '/';
+        }
+        url += $(this).val();
+      });
+    return url;
+  };
+
 
   /**
    * modalContent
