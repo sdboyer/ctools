@@ -165,35 +165,10 @@
   };
 
   /**
-   * Generic replacement click handler to open the modal with the destination
-   * specified by the href of the link.
+   * Handler to prepare the modal for the response
    */
   Drupal.CTools.Modal.clickAjaxLink = function () {
-    // show the empty dialog right away.
     Drupal.CTools.Modal.show(Drupal.CTools.Modal.getSettings(this));
-    Drupal.CTools.AJAX.clickAJAXLink.apply(this);
-    if (!$(this).hasClass('ctools-ajaxing')) {
-      Drupal.CTools.Modal.dismiss();
-    }
-
-    return false;
-  };
-
-  /**
-   * Generic replacement click handler to open the modal with the destination
-   * specified by the href of the link.
-   */
-  Drupal.CTools.Modal.clickAjaxButton = function() {
-    if ($(this).hasClass('ctools-ajaxing')) {
-      return false;
-    }
-
-    Drupal.CTools.Modal.show(Drupal.CTools.Modal.getSettings(this));
-    Drupal.CTools.AJAX.clickAJAXButton.apply(this);
-    if (!$(this).hasClass('ctools-ajaxing')) {
-      Drupal.CTools.Modal.dismiss();
-    }
-
     return false;
   };
 
