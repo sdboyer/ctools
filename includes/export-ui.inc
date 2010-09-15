@@ -450,7 +450,7 @@ function ctools_get_export_uis() {
  */
 function ctools_export_ui_switcher_page($plugin_name, $op) {
   $args = func_get_args();
-  $js = !empty($_REQUEST['ctools_ajax']);
+  $js = !empty($_REQUEST['js']);
 
   // Load the $plugin information
   $plugin = ctools_get_export_ui($plugin_name);

@@ -207,6 +207,7 @@ class ctools_export_ui {
    * gadgets for custom fields.
    */
   function list_form(&$form, &$form_state) {
+    $form['#attached']['js'] = array('misc/ajax.js', 'misc/progress.js');
     // This forces the form to *always* treat as submitted which is
     // necessary to make it work.
     $form['#token'] = FALSE;
@@ -282,14 +283,14 @@ class ctools_export_ui {
       '#type' => 'submit',
       '#id' => 'ctools-export-ui-list-items-apply',
       '#value' => t('Apply'),
-      '#attributes' => array('class' => array('ctools-use-ajax ctools-auto-submit-click')),
+      '#attributes' => array('class' => array('use-ajax-submit ctools-auto-submit-click')),
     );
 
     $form['bottom row']['reset'] = array(
       '#type' => 'submit',
       '#id' => 'ctools-export-ui-list-items-apply',
       '#value' => t('Reset'),
-      '#attributes' => array('class' => array('ctools-use-ajax')),
+      '#attributes' => array('class' => array('use-ajax-submit')),
     );
 
     ctools_add_js('ajax-responder');
@@ -364,7 +365,7 @@ class ctools_export_ui {
           'href' => ctools_export_ui_plugin_menu_path($plugin, $op, $name),
         );
         if (!empty($plugin['allowed operations'][$op]['ajax'])) {
-          $operations[$op]['attributes'] = array('class' => array('ctools-use-ajax'));
+          $operations[$op]['attributes'] = array('class' => array('use-ajax'));
         }
         if (!empty($plugin['allowed operations'][$op]['token'])) {
           $operations[$op]['query'] = array('token' => drupal_get_token($op));
