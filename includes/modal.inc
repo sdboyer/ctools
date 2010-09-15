@@ -52,8 +52,16 @@ function ctools_modal_add_js() {
     'CToolsModal' => array(
       'loadingText' => t('Loading...'),
       'closeText' => t('Close Window'),
-      'closeImage' => theme('image', ctools_image_path('icon-close-window.png'), t('Close window'), t('Close window')),
-      'throbber' => theme('image', ctools_image_path('throbber.gif'), t('Loading...'), t('Loading')),
+      'closeImage' => theme('image', array( 
+        'path' => ctools_image_path('icon-close-window.png'), 
+        'title' => t('Close window'), 
+        'alt' => t('Close window')
+      )),
+      'throbber' => theme('image', array(
+          'path' => ctools_image_path('throbber.gif'), 
+          'title' => t('Loading...'), 
+          'alt' => t('Loading'),
+      )),
     ),
   );
 
