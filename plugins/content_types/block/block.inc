@@ -114,7 +114,7 @@ function ctools_block_content_type_render($subtype, $conf) {
       array(
         'title' => t('Configure block'),
         'alt' => t("Configure this block's 'block settings' in administer >> site building >> blocks"),
-        'href' => "admin/build/block/configure/$module/$delta",
+        'href' => "admin/structure/block/configure/$module/$delta",
         'query' => drupal_get_destination(),
       ),
     );

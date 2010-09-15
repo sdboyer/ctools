@@ -33,13 +33,13 @@ function bulk_export_theme() {
  * Implements hook_menu().
  */
 function bulk_export_menu() {
-  $items['admin/build/bulkexport'] = array(
+  $items['admin/structure/bulkexport'] = array(
     'title' => 'Bulk Exporter',
     'description' => 'Bulk-export multiple CTools-handled data objects to code.',
     'access arguments' => array('use bulk exporter'),
     'page callback' => 'bulk_export_export',
   );
-  $items['admin/build/bulkexport/results'] = array(
+  $items['admin/structure/bulkexport/results'] = array(
     'access arguments' => array('use bulk exporter'),
     'page callback' => 'bulk_export_export',
     'type' => MENU_CALLBACK,
@@ -173,7 +173,7 @@ function bulk_export_export_form($form, &$form_state) {
     '#value' => t('Export'),
   );
 
-  $form['#action'] = url('admin/build/bulkexport/results');
+  $form['#action'] = url('admin/structure/bulkexport/results');
   $form['#exportables'] = $form_state['exportables'];
   $form['#export_tables'] = $form_state['export_tables'];
   return $form;

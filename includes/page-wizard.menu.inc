@@ -17,7 +17,7 @@ function ctools_page_wizard_menu(&$items) {
     'type' => MENU_CALLBACK,
   );
 
-  $items['admin/build/pages/wizard'] = array(
+  $items['admin/structure/pages/wizard'] = array(
     'title' => 'Wizards',
     'page callback' => 'page_manager_page_wizard_list',
     'page arguments' => array(4),
@@ -25,7 +25,7 @@ function ctools_page_wizard_menu(&$items) {
     'type' => MENU_LOCAL_TASK,
   ) + $base;
 
-  $items['admin/build/pages/wizard/%'] = array(
+  $items['admin/structure/pages/wizard/%'] = array(
     'title' => 'Wizard',
     'page callback' => 'page_manager_page_wizard',
     'page arguments' => array(4),
