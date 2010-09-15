@@ -428,7 +428,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     'title' => t('Add @type "@context"', array('@type' => $type_info['singular title'], '@context' => $info['title'])),
   );
 
-  $output = ctools_modal_form_wrapper($type_info['form id'], $form_state);
+  $output = ctools_modal_form_wrapper('ctools_context_form', $form_state);
 
   if (empty($output)) {
     // successful submit
@@ -451,7 +451,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     );
 
     ctools_context_add_item_to_form($module, $type, $object_name, $arg_form[$type][$position], $position, $ref[$position]);
-    $arg_form = form_builder($type_info['form id'], $arg_form, $arg_form_state);
+    $arg_form = form_builder('ctools_context_form', $arg_form, $arg_form_state);
 
     // Build the relationships table so we can ajax it in.
     // This is an additional thing that goes in here.
@@ -546,7 +546,7 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
     'title' => t('Edit @type "@context"', array('@type' => $type_info['singular title'], '@context' => $info['title'])),
   );
 
-  $output = ctools_modal_form_wrapper($type_info['form id'], $form_state);
+  $output = ctools_modal_form_wrapper('ctools_context_form', $form_state);
 
   if (empty($output)) {
     // successful submit
@@ -570,7 +570,7 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
     );
 
     ctools_context_add_item_to_form($module, $type, $object_name, $arg_form[$type][$position], $position, $ref[$position]);
-    $arg_form = form_builder($type_info['form id'], $arg_form, $arg_form_state);
+    $arg_form = form_builder('ctools_context_form', $arg_form, $arg_form_state);
 
     $output[] = ctools_ajax_command_replace('#' . $type . '-row-' . $position, theme('ctools_context_item_row', $type, $arg_form[$type][$position], $position, $position));
     $output[] = ctools_ajax_command_changed('#' . $type . '-row-' . $position, '.title');
@@ -579,355 +579,168 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
 }
 
 /**
- * Form (for ajax use) to add a context
+ * Get the config form.
+ *
+ * The $form_info and $form_state need to be preconfigured with data you'll need
+ * such as whether or not you're using ajax, or the modal. $form_info will need
+ * your next/submit callbacks so that you can cache your data appropriately.
+ *
+ * @return
+ *   If this function returns false, no form exists.
  */
-function ctools_edit_context_form(&$form_state) {
-  $object   = $form_state['object'];
-  $context  = $form_state['info'];
-  $position = $form_state['position'];
-  $contexts = $form_state['contexts'];
+function ctools_context_form($op, $form_info, &$form_state, $plugin, &$conf, $step = NULL) {
+  $form_state += array(
+    'plugin' => $plugin,
+    'conf' => &$conf,
+    'op' => $op,
+  );
 
-  $ctext = $object->contexts[$position];
+  $form_info += array(
+    'id' => 'ctools_context_form',
+    'show back' => TRUE,
+  );
+
+  // Turn the forms defined in the plugin into the format the wizard needs.
+  if ($op == 'add') {
+    if (!empty($plugin['add form'])) {
+      _ctools_context_create_form_info($form_info, $plugin['add form'], $plugin, $op);
+    }
+  }
+
+  if (empty($form_info['order'])) {
+    // Use the edit form for the add form if add form was completely left off.
+    if (!empty($plugin['edit form'])) {
+      _ctools_context_create_form_info($form_info, $plugin['edit form'], $plugin, $op);
+    }
+  }
+
+  if (empty($form_info['order'])) {
+    return FALSE;
+  }
+
+  ctools_include('wizard');
+  return ctools_wizard_multistep_form($form_info, $step, $form_state);
+
+}
+
+function _ctools_context_create_form_info(&$form_info, $info, $plugin_definition, $op) {
+  if (is_string($info)) {
+    if (empty($plugin_definition['title'])) {
+      $title = t('Configure');
+    }
+    else if ($op == 'add') {
+      $title = t('Configure new !plugin_title', array('!plugin_title' => $plugin_definition['title']));
+    }
+    else {
+      $title = t('Configure !plugin_title', array('!plugin_title' => $plugin_definition['title']));
+    }
+    $form_info['order'] = array('form' => $title);
+    $form_info['forms'] = array(
+      'form' => array(
+        'title' => $title,
+        'form id' => $info,
+        'wrapper' => 'ctools_edit_context_form_defaults',
+      ),
+    );
+  }
+  else if (is_array($info)) {
+    $form_info['order'] = array();
+    $form_info['forms'] = array();
+    $count = 0;
+    $base = 'step';
+    $wrapper = NULL;
+    foreach ($info as $form_id => $title) {
+      // @todo -- docs say %title can be used to sub for the admin title.
+      $step = $base . ++$count;
+      if (empty($wrapper)) {
+        $wrapper = $step;
+      }
+
+      if (is_array($title)) {
+        if (!empty($title['default'])) {
+          $wrapper = $step;
+        }
+        $title = $title['title'];
+      }
+
+      $form_info['order'][$step] = $title;
+      $form_info['forms'][$step] = array(
+        'title' => $title,
+        'form id' => $form_id,
+      );
+    }
+    if ($wrapper) {
+      $form_info['forms'][$wrapper]['wrapper'] = 'ctools_edit_context_form_defaults';
+    }
+  }
+}
+
+function ctools_edit_context_form_defaults($form, &$form_state) {
+  // Basic values required to orient ourselves
+  $object            = $form_state['object'];
+  $plugin_definition = $form_state['info'];
+  $position          = $form_state['position'];
+  $contexts          = $form_state['contexts'];
+
+  $ctext = $object->{$plugin_definition['key']}[$position];
+
+  if ($plugin_definition['key'] == 'arguments' && !isset($plugin_definition['default'])) {
+    $plugin_definition['default'] = 'ignore';
+    $plugin_definition['title'] = '';
+  }
 
   $form['description'] = array(
     '#prefix' => '<div class="description">',
     '#suffix' => '</div>',
-    '#value' => check_plain($context['description']),
+    '#value' => check_plain($plugin_definition['description']),
   );
 
-  // Basic context values
-  $form['context']['#tree'] = TRUE;
-
-  $form['context']['name'] = array(
+  $form['name'] = array(
     '#type' => 'hidden',
-    '#value' => $context['name'],
+    '#value' => $plugin_definition['name'],
   );
 
-  $form['context']['id'] = array(
+  $form['id'] = array(
     '#type' => 'hidden',
     '#value' => $ctext['id'],
   );
+  if ($plugin_definition['key'] == 'relationships') {
+    $form['context'] = ctools_context_selector($contexts, $plugin_definition['required context'], isset($ctext['context']) ? $ctext['context'] : '');
+  }
+  if ($plugin_definition['key'] == 'arguments') {
+    $form['default'] = array(
+      '#type' => 'select',
+      '#title' => t('Default'),
+      '#options' => array(
+        'ignore' => t('Ignore it; content that requires this context will not be available.'),
+        '404' => t('Display page not found or display nothing at all.'),
+      ),
+      '#default_value' => $ctext['default'],
+      '#description' => t('If the argument is missing or is not valid, select how this should behave.'),
+    );
+  
+    $form['title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Title'),
+      '#default_value' => $ctext['title'],
+      '#description' => t('Enter a title to use when this argument is present. You may use %KEYWORD substitution, where the keyword is specified below.'),
+    );
+  }
 
-  $form['context']['identifier'] = array(
+  $form['identifier'] = array(
     '#type' => 'textfield',
     '#title' => t('Identifier'),
     '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' => t('context'))),
     '#default_value' => $ctext['identifier'],
   );
 
-  $form['context']['keyword'] = array(
+  $form['keyword'] = array(
     '#type' => 'textfield',
     '#title' => t('Keyword'),
     '#description' => t('Enter a keyword to use for substitution in titles.'),
     '#default_value' => $ctext['keyword'],
   );
-
-  // Settings particular to this context
-  $context_settings = array();
-  if (isset($ctext['context_settings'])) {
-    $context_settings = $ctext['context_settings'];
-  }
-
-  if (isset($context['settings form']) && function_exists($context['settings form'])) {
-    $form['context']['context_settings'] = $context['settings form']($context_settings);
-    $form['context']['context_settings']['#tree'] = TRUE;
-  }
-
-  $form['next'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
   return $form;
-}
-
-/**
- * validate a  context edited/added via ajax
- */
-function ctools_edit_context_form_validate($form, &$form_state) {
-  $context = $form_state['info'];
-
-  if (isset($context['settings form validate']) && function_exists($context['settings form validate'])) {
-    $context['settings form validate']($form['context']['context_settings'], $form_state['values']['context']['context_settings'], $form_state);
-  }
-}
-
-/**
- * Updates an context edited/added via ajax
- */
-function ctools_edit_context_form_submit($form, &$form_state) {
-  $info = $form_state['info'];
-
-  if (isset($info['settings form submit']) && function_exists($info['settings form submit'])) {
-    $info['settings form submit']($form, $form_state['values']['context']['context_settings'], $form_state);
-  }
-
-  $context = $form_state['values']['context'];
-  $form_state['ref'][$form_state['position']] = $context;
-}
-
-/**
- * Form (for ajax use) to add a context
- */
-function ctools_edit_requiredcontext_form(&$form_state) {
-  $object   = $form_state['object'];
-  $context  = $form_state['info'];
-  $position = $form_state['position'];
-  $contexts = $form_state['contexts'];
-
-  $ctext = $object->requiredcontexts[$position];
-  $form['start_form'] = array('#value' => '<div class="modal-form clear-block">');
-
-  $form['description'] = array(
-    '#prefix' => '<div class="description">',
-    '#suffix' => '</div>',
-    '#value' => check_plain($context['description']),
-  );
-
-  // Basic context values
-  $form['requiredcontext']['#tree'] = TRUE;
-
-  $form['requiredcontext']['name'] = array(
-    '#type' => 'hidden',
-    '#value' => $context['name'],
-  );
-
-  $form['requiredcontext']['id'] = array(
-    '#type' => 'hidden',
-    '#value' => $ctext['id'],
-  );
-
-  $form['requiredcontext']['identifier'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Identifier'),
-    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' => t('required context'))),
-    '#default_value' => $ctext['identifier'],
-  );
-
-  $form['requiredcontext']['keyword'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Keyword'),
-    '#description' => t('Enter a keyword to use for substitution in titles.'),
-    '#default_value' => $ctext['keyword'],
-  );
-
-  $form['end_form'] = array('#value' => '</div>');
-
-  $form['next'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
-  return $form;
-}
-
-/**
- * Updates a required context edited/added via ajax
- */
-function ctools_edit_requiredcontext_form_submit($form, &$form_state) {
-  $form_state['ref'][$form_state['position']] = $form_state['values']['requiredcontext'];
-}
-
-/**
- * Form (for ajax use) to add a relationship
- */
-function ctools_edit_relationship_form(&$form_state) {
-  $object       = $form_state['object'];
-  $relationship = $form_state['info'];
-  $position     = $form_state['position'];
-  $contexts     = $form_state['contexts'];
-
-  $rel = $object->relationships[$position];
-
-  $form['description'] = array(
-    '#prefix' => '<div class="description">',
-    '#suffix' => '</div>',
-    '#value' => check_plain($relationship['description']),
-  );
-
-  // Basic relationship values
-  $form['relationship']['#tree'] = TRUE;
-
-  $form['relationship']['context'] = ctools_context_selector($contexts, $relationship['required context'], isset($rel['context']) ? $rel['context'] : '');
-
-  $form['relationship']['name'] = array(
-    '#type' => 'hidden',
-    '#value' => $relationship['name'],
-  );
-
-  $form['relationship']['id'] = array(
-    '#type' => 'hidden',
-    '#value' => $rel['id'],
-  );
-
-  $form['relationship']['identifier'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Identifier'),
-    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' => t('relationship'))),
-    '#default_value' => $rel['identifier'],
-  );
-
-  $form['relationship']['keyword'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Keyword'),
-    '#description' => t('Enter a keyword to use for substitution in titles.'),
-    '#default_value' => $rel['keyword'],
-  );
-
-  // Settings particular to this relationship
-  $relationship_settings = array();
-  if (isset($rel['relationship_settings'])) {
-    $relationship_settings = $rel['relationship_settings'];
-  }
-
-  if (isset($relationship['settings form']) && function_exists($relationship['settings form'])) {
-    $form['relationship']['relationship_settings'] = $relationship['settings form']($relationship_settings);
-    $form['relationship']['relationship_settings']['#tree'] = TRUE;
-  }
-
-  $form['next'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
-  return $form;
-}
-
-/**
- * validate an relationship edited/added via ajax
- */
-function ctools_edit_relationship_form_validate($form, &$form_state) {
-  $relationship = $form_state['info'];
-
-  if (isset($relationship['settings form validate']) && function_exists($relationship['settings form validate'])) {
-    $relationship['settings form validate']($form['relationship']['relationship_settings'], $form_state['values']['relationship']['relationship_settings'], $form_state);
-  }
-}
-
-/**
- * Updates an relationship edited/added via ajax
- */
-function ctools_edit_relationship_form_submit($form, &$form_state) {
-  $relationship = $form_state['info'];
-
-  if (isset($relationship['settings form submit']) && function_exists($relationship['settings form submit'])) {
-    $relationship['settings form submit']($form, $form_state['values']['relationship']['relationship_settings'], $form_state);
-  }
-
-  $form_state['ref'][$form_state['position']] = $form_state['values']['relationship'];
-}
-
-/**
- * Form (for ajax use) to add an argument
- */
-function ctools_edit_argument_form(&$form_state) {
-  // Basic values required to orient ourselves
-  $object   = $form_state['object'];
-  $argument = $form_state['info'];
-  $position = $form_state['position'];
-  $contexts = $form_state['contexts'];
-
-  $arg = $object->arguments[$position];
-
-  if (!isset($arg['default'])) {
-    $arg['default'] = 'ignore';
-    $arg['title'] = '';
-  }
-
-  $form['description'] = array(
-    '#prefix' => '<div class="description">',
-    '#suffix' => '</div>',
-    '#value' => check_plain($argument['description']),
-  );
-
-  // Basic argument values
-  $form['argument']['#tree'] = TRUE;
-
-  $form['argument']['name'] = array(
-    '#type' => 'hidden',
-    '#value' => $argument['name'],
-  );
-
-  $form['argument']['id'] = array(
-    '#type' => 'hidden',
-    '#value' => $arg['id'],
-  );
-
-  $form['argument']['default'] = array(
-    '#type' => 'select',
-    '#title' => t('Default'),
-    '#options' => array(
-      'ignore' => t('Ignore it; content that requires this context will not be available.'),
-      '404' => t('Display page not found or display nothing at all.'),
-    ),
-    '#default_value' => $arg['default'],
-    '#description' => t('If the argument is missing or is not valid, select how this should behave.'),
-  );
-
-  $form['argument']['title'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Title'),
-    '#default_value' => $arg['title'],
-    '#description' => t('Enter a title to use when this argument is present. You may use %KEYWORD substitution, where the keyword is specified below.'),
-  );
-
-  $form['argument']['identifier'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Identifier'),
-    '#description' => t('Enter a name to identify this !type on administrative screens.', array('!type' => t('argument'))),
-    '#default_value' => $arg['identifier'],
-  );
-
-  $form['argument']['keyword'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Keyword'),
-    '#description' => t('Enter a keyword to use for substitution in titles.'),
-    '#default_value' => $arg['keyword'],
-  );
-
-  // Settings particular to this argument
-  $argument_settings = array();
-  if (isset($arg['argument_settings'])) {
-    $argument_settings = $arg['argument_settings'];
-  }
-
-
-  if (isset($argument['settings form']) && function_exists($argument['settings form'])) {
-    $form['argument']['argument_settings'] = $argument['settings form']($argument_settings);
-  }
-  $form['argument']['argument_settings']['#tree'] = TRUE;
-
-  $form['next'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
-
-  return $form;
-}
-
-/**
- * validate an argument edited/added via ajax
- */
-function ctools_edit_argument_form_validate($form, &$form_state) {
-  $argument = $form_state['info'];
-
-  if (isset($argument['settings form validate']) && function_exists($argument['settings form validate'])) {
-    $argument['settings form validate']($form, $form_state['values']['argument_settings'], $form_state);
-  }
-}
-
-/**
- * Updates an argument edited/added via ajax
- */
-function ctools_edit_argument_form_submit($form, &$form_state) {
-  $argument = $form_state['info'];
-
-  if (!isset($form_state['values']['argument_settings'])) {
-    $form_state['values']['argument_settings'] = array();
-  }
-
-  if (isset($argument['settings form submit']) && function_exists($argument['settings form submit'])) {
-    $argument['settings form submit']($form, $form_state['values']['argument_settings'], $form_state);
-  }
-
-  $form_state['ref'][$form_state['position']] = $form_state['values']['argument'];
 }
 
 /**
