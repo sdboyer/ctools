@@ -81,17 +81,3 @@ function ctools_access_ruleset_schema_1() {
 
   return $schema;
 }
-
-/**
- * Implementation of hook_install().
- */
-function ctools_access_ruleset_install() {
-  drupal_install_schema('ctools_access_ruleset');
-}
-
-/**
- * Implementation of hook_uninstall().
- */
-function ctools_access_ruleset_uninstall() {
-  drupal_uninstall_schema('ctools_access_ruleset');
-}

@@ -14,11 +14,14 @@
  */
 
 /**
- * Implementation of hook_perm()
+ * Implementation of hook_permission()
  */
-function ctools_custom_content_perm() {
+function ctools_custom_content_permission() {
   return array(
-    'administer custom content',
+    'administer custom content' => array(
+      'title' => t('Administer custom content'),
+      'description' => t('Add, edit and delete CTools custom stored custom content'),
+    ),
   );
 }
 

@@ -1,6 +1,7 @@
 ; $Id$
 name = Custom content panes
 description = Create custom, exportable, reusable content panes for applications like Panels.
-core = 6.x
+core = 7.x
 package = Chaos tool suite
 dependencies[] = ctools
+files[] = ctools_custom_content.module

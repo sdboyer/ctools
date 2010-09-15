@@ -58,7 +58,7 @@ function ctools_export_ui_process(&$plugin, $info) {
   // out. This is a HACK but it should work:
   $schema = ctools_export_get_schema($plugin['schema']);
 
-  if (!$schema && $_GET['q'] == 'admin/build/modules/list/confirm') {
+  if (!$schema && $_GET['q'] == 'admin/modules/list/confirm') {
     $schema = ctools_export_get_schema($plugin['schema'], TRUE);
   }
 
@@ -106,7 +106,7 @@ function ctools_export_ui_process(&$plugin, $info) {
 
   $plugin['menu'] += array(
     'menu item' => str_replace(' ', '-', $plugin['name']),
-    'menu prefix' => 'admin/build',
+    'menu prefix' => 'admin/structure',
     'menu title' => $plugin['title'],
     'menu description' => '',
   );
