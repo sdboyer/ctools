@@ -170,7 +170,7 @@ function ctools_get_plugins($module, $type, $id = NULL) {
 
   // Bail out noisily if an invalid module/type combination is requested.
   if (!isset($info[$module][$type])) {
-    watchdog('ctools', 'Invalid plugin module/type combination requested: module %module and type %type', array('%module' => $module, '%type' => $type), WATCHDOG_ERROR);
+    watchdog('ctools', 'Invalid plugin module/type combination requested: module @module and type @type', array('@module' => $module, '@type' => $type), WATCHDOG_ERROR);
     return array();
   }
 
@@ -273,6 +273,19 @@ function ctools_get_plugins($module, $type, $id = NULL) {
   return $plugins[$module][$type][$id];
 }
 
+/**
+ * Return the full list of plugin type info for all plugin types registered in
+ * the current system.
+ *
+ * This function manages its own cache getting/setting, and should always be
+ * used as the way to initially populate the list of plugin types. Make sure you
+ * call this function to properly populate the ctools_plugin_type_info static
+ * variable.
+ *
+ * @return array
+ *   A multilevel array of plugin type info, the outer array keyed on module
+ *   name and each inner array keyed on plugin type name.
+ */
 function ctools_plugin_get_plugin_type_info() {
   $info_loaded = &drupal_static('ctools_plugin_typle_info_loaded', FALSE);
   $all_type_info = &drupal_static('ctools_plugin_type_info', array());
