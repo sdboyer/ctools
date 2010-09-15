@@ -152,10 +152,12 @@ function ctools_ajax_sample_page() {
     $links[] = ctools_modal_text_button(t('Modal Login (custom style)'), 'ctools_ajax_sample/nojs/login', t('Login via modal'),  'ctools-modal-ctools-sample-style');
   }
 
-  // Three ways to do our animal picking wizard.
+  // Four ways to do our animal picking wizard.
+  $button_form = ctools_ajax_sample_ajax_button_form();
   $links[] = l(t('Wizard (no modal)'), 'ctools_ajax_sample/nojs/animal');
   $links[] = ctools_modal_text_button(t('Wizard (default modal)'), 'ctools_ajax_sample/nojs/animal', t('Pick an animal'));
   $links[] = ctools_modal_text_button(t('Wizard (custom modal)'), 'ctools_ajax_sample/nojs/animal', t('Pick an animal'),  'ctools-modal-ctools-sample-style');
+  $links[] = drupal_render($button_form);
 
   $links[] = ctools_ajax_text_button(t('Hello world!'), "ctools_ajax_sample/nojs/hello", t('Replace text with "hello world"'));
 
@@ -714,3 +716,24 @@ function ctools_ajax_sample_jump_menu_page() {
   return $output; 
 }
 
+/** 
+ * Provide a form for an example ajax modal button 
+ */
+function ctools_ajax_sample_ajax_button_form() { 
+  $form = array();
+
+  $form['url'] = array(
+    '#type' => 'hidden',
+    '#attributes' => array('class' => array('ctools-ajax-sample-button-url')),
+    '#value' => 'ctools_ajax_sample/nojs/animal',
+  );
+
+  $form['ajax_button'] = array(
+    '#type' => 'button',
+    '#value' => 'Wizard (button modal)',
+    '#attributes' => array('class' => array('ctools-use-modal')),
+    '#id' => 'ctools-ajax-sample-button',
+  );
+
+  return $form;
+}
