@@ -216,12 +216,15 @@
       // Bind links
       // Note that doing so in this order means that the two classes can be
       // used together safely.
+      /*
+       * @todo remimplement the warm caching feature
       $('a.ctools-use-modal-cache:not(.ctools-use-modal-processed)', context)
         .addClass('ctools-use-modal-processed')
         .click(Drupal.CTools.Modal.clickAjaxCacheLink)
         .each(function () {
           Drupal.CTools.AJAX.warmCache.apply(this);
         });
+        */
 
       $('a.ctools-use-modal:not(.ctools-use-modal-processed)', context)
         .addClass('ctools-use-modal-processed')
