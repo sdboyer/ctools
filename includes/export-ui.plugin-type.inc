@@ -11,7 +11,11 @@
 
 function ctools_export_ui_plugin_type(&$items) {
   $items['export_ui'] = array(
-    'process' => 'ctools_export_ui_process',
+    'process' => array(
+      'function' => 'ctools_export_ui_process',
+      'file' => 'export-ui.inc',
+      'path' => drupal_get_path('module', 'ctools') . '/includes',
+    ),
     'classes' => array('handler'),
   );
 }

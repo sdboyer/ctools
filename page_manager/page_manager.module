@@ -39,7 +39,19 @@ define('PAGE_MANAGER_CHANGED_STATUS', 0x08);
  * Implements hook_permission().
  */
 function page_manager_permission() {
-  return array('use page manager', 'administer page manager');
+  return array(
+    'use page manager' => array(
+      'title' => t('Use Page Manager'),
+      'description' => t("Allows users to use most of Page Manager's features, though restricts some of the most powerful, potentially site-damaging features. Note that even the reduced featureset still allows for enormous control over your website."),
+      'restrict access' => TRUE,
+    ),
+    'administer page manager' => array(
+      'title' => t('Administer Page Manager'),
+      'description' => t('Allows complete control over Page Manager, i.e., complete control over your site. Grant with extreme caution.'),
+      'restrict access' => TRUE,
+    ),
+  );
+
 }
 
 /**

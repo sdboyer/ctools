@@ -308,11 +308,11 @@ function ctools_plugin_get_plugin_type_info($flush = FALSE) {
       $function = $module . '_ctools_plugin_type';
       $module_infos = $function();
 
-      foreach ($module_infos as $type => $info) {
+      foreach ($module_infos as $plugin_type_name => $plugin_type_info) {
         // Apply defaults. Array addition will not overwrite pre-existing keys.
         $info += array(
           'module' => $module,
-          'type' => $type,
+          'type' => $plugin_type_name,
           'cache' => FALSE,
           'cache table' => 'cache',
           'classes' => array(),
@@ -321,10 +321,10 @@ function ctools_plugin_get_plugin_type_info($flush = FALSE) {
           'process' => '',
           'extension' => 'inc',
           'info file' => FALSE,
-          'hook' => $module . '_' . $type,
+          'hook' => $module . '_' . $plugin_type_name,
           'load themes' => FALSE,
         );
-        $all_type_info[$module][$type] = $info;
+        $all_type_info[$module][$plugin_type_name] = $plugin_type_info;
       }
     }
     cache_set('ctools_plugin_type_info', $all_type_info);
@@ -625,7 +625,7 @@ function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL,
  * Fill in default values and run hooks for data loaded for one or
  * more plugins.
  */
-function _ctools_process_data($result, $info, $module, $path, $file) {
+function _ctools_process_data($result, $plugin_type_info, $module, $path, $file) {
   // Fill in global defaults.
   foreach ($result as $name => $plugin) {
     $result[$name] += array(
@@ -633,20 +633,20 @@ function _ctools_process_data($result, $info, $module, $path, $file) {
       'name' => $name,
       'path' => $path,
       'file' => $file,
-      'plugin module' => $info['module'],
-      'plugin type' => $info['type'],
+      'plugin module' => $plugin_type_info['module'],
+      'plugin type' => $plugin_type_info['type'],
     );
 
     // Fill in plugin-specific defaults, if they exist.
-    if (!empty($info['defaults'])) {
-      if (is_array($info['defaults'])) {
-        $result[$name] += $info['defaults'];
+    if (!empty($plugin_type_info['defaults'])) {
+      if (is_array($plugin_type_info['defaults'])) {
+        $result[$name] += $plugin_type_info['defaults'];
       }
     }
 
     // Allow the plugin owner to do additional processing.
-    if (!empty($info['process']) && function_exists($info['process'])) {
-      $info['process']($result[$name], $info);
+    if (!empty($plugin_type_info['process']) && $function = ctools_plugin_get_function($plugin_type_info, 'process')) {
+      $function($result[$name], $plugin_type_info);
     }
   }
   return $result;
