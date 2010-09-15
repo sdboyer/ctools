@@ -408,12 +408,16 @@ function ctools_file_download($filepath) {
  *
  * Alter the registry of files to automagically include all classes in
  * class-based plugins.
- *
- * @param array $files
- * @param array $modules
  */
-function ctools_registry_files_alter(&$files, $modules) {
+function ctools_registry_files_alter(&$files, $indexed_modules) {
   ctools_include('plugins');
+
+  // Remap the passed indexed modules into a useful format.
+  $modules = array();
+  foreach ($indexed_modules as $module_object) {
+    $modules[$module_object->name] = $module_object;
+  }
+
   $all_type_info = ctools_plugin_get_plugin_type_info();
   foreach ($all_type_info as $module => $plugin_types) {
     foreach ($plugin_types as $plugin_type_name => $plugin_type_info) {
