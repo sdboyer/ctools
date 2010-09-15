@@ -207,7 +207,6 @@ class ctools_export_ui {
    * gadgets for custom fields.
    */
   function list_form(&$form, &$form_state) {
-    $form['#attached']['js'] = array('misc/ajax.js', 'misc/progress.js');
     // This forces the form to *always* treat as submitted which is
     // necessary to make it work.
     $form['#token'] = FALSE;
@@ -293,12 +292,9 @@ class ctools_export_ui {
       '#attributes' => array('class' => array('use-ajax-submit')),
     );
 
-    ctools_add_js('ajax-responder');
-    ctools_add_js('auto-submit');
-    drupal_add_js('misc/jquery.form.js');
-
     $form['#prefix'] = '<div class="clearfix">';
     $form['#suffix'] = '</div>';
+    $form['#attached']['js'] = array('misc/ajax.js', 'misc/progress.js', 'misc/jquery.form.js', ctools_attach_js('auto-submit'));
     $form['#attributes'] = array('class' => array('ctools-auto-submit-full-form'));
   }
 

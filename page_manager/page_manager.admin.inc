@@ -32,18 +32,20 @@ function page_manager_list_page($js = NULL) {
 
   // Add lock icon to all locked tasks.
   global $user;
-  ctools_include('object-cache');
-  $locks = ctools_object_cache_test_objects('page_manager_page', $pages['tasks']);
-  foreach ($locks as $task_name => $lock) {
-    if ($lock->uid == $user->uid) {
-      $pages['rows'][$task_name]['class'] .= ' page-manager-locked';
-      $pages['rows'][$task_name]['title'] = t('This page is currently locked for editing by you. Nobody else may edit this page until these changes are saved or canceled.');
-    }
-    else {
-      $pages['rows'][$task_name]['class'] .= ' page-manager-locked-other';
-      $pages['rows'][$task_name]['title'] = t('This page is currently locked for editing by another user. You may not edit this page without breaking the lock.');
-    }
-  }
+  // @todo broken fix later
+//  ctools_include('object-cache');
+//  $locks = ctools_object_cache_test_objects('page_manager_page', $pages['tasks']);
+//  foreach ($locks as $task_name => $lock) {
+//    if ($lock->uid == $user->uid) {
+//      $pages['rows'][$task_name]['class'] .= ' page-manager-locked';
+//      $pages['rows'][$task_name]['title'] = t('This page is currently locked for editing by you. Nobody else may edit this page until these changes are saved or canceled.');
+//    }
+//    else {
+//      $pages['rows'][$task_name]['class'] .= ' page-manager-locked-other';
+//      $pages['rows'][$task_name]['title'] = t('This page is currently locked for editing by another user. You may not edit this page without breaking the lock.');
+//    }
+//  }
+
 
   $input = $_POST;
 
@@ -92,23 +94,25 @@ function page_manager_list_page($js = NULL) {
   );
 
   $header[] = array('data' => t('Operations'), 'class' => array('page-manager-page-operations'));
-  $table = theme('table', $header, $pages['rows'], array('id' => 'page-manager-list-pages'));
+  $table = theme('table', array('header' => $header, 'rows' => $pages['rows'], 'attributes' => array('id' => 'page-manager-list-pages')));
 
-  $operations = '<div id="page-manager-links" class="links">' . theme('links', $pages['operations']) . '</div>';
+  $operations = '<div id="page-manager-links" class="links">' . theme('links', array('links' => $pages['operations'])) . '</div>';
 
   drupal_add_css(drupal_get_path('module', 'page_manager') . '/css/page-manager.css');
 
+
   if (!$js) {
-    return $form . $table . $operations;
+    return array('#markup' => drupal_render($form) . $table . $operations);
   }
 
   ctools_include('ajax');
   $commands = array();
-  $commands[] = ctools_ajax_command_replace('#page-manager-list-pages', $table);
+  $commands[] = ajax_command_replace('#page-manager-list-pages', $table);
   if (!empty($replace_form)) {
-    $commands[] = ctools_ajax_command_replace('#page-manager-list-pages-form', $form);
+    $commands[] = ajax_command_replace('#page-manager-list-pages-form', $form);
   }
-  ctools_ajax_render($commands);
+  print ajax_render($commands);
+  ajax_footer();
 }
 
 /**
@@ -197,20 +201,20 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
       if (!empty($task['disabled'])) {
         $operations[] = array(
           'title' => t('Enable'),
-          'href' => 'admin/build/pages/nojs/enable/' . $task_name,
+          'href' => 'admin/structure/pages/nojs/enable/' . $task_name,
           'query' => array('token' => drupal_get_token($task_name)),
         );
       }
       else {
         $operations[] = array(
           'title' => t('Disable'),
-          'href' => 'admin/build/pages/nojs/disable/' . $task_name,
+          'href' => 'admin/structure/pages/nojs/disable/' . $task_name,
           'query' => array('token' => drupal_get_token($task_name)),
         );
       }
     }
 
-    $row['data']['operations'] = array('data' => theme('links', $operations), 'class' => array('page-manager-page-operations'));
+    $row['data']['operations'] = array('data' => theme('links', array('links' => $operations)), 'class' => array('page-manager-page-operations'));
 
     $pages['disabled'][$task_name] = !empty($task['disabled']);
     $pages['tasks'][] = $task_name;
@@ -221,13 +225,13 @@ function page_manager_get_pages($tasks, &$pages, $task_id = NULL) {
 /**
  * Provide a form for sorting and filtering the list of pages.
  */
-function page_manager_list_pages_form(&$form_state) {
+function page_manager_list_pages_form($form, &$form_state) {
   // This forces the form to *always* treat as submitted which is
   // necessary to make it work.
   if (empty($_POST)) {
     $form["#programmed"] = TRUE;
   }
-  $form['#action'] = url('admin/build/pages/nojs/', array('absolute' => TRUE));
+  $form['#action'] = url('admin/structure/pages/nojs/', array('absolute' => TRUE));
   if (!variable_get('clean_url', FALSE)) {
     $form['q'] = array(
       '#type' => 'hidden',
@@ -292,20 +296,20 @@ function page_manager_list_pages_form(&$form_state) {
     '#type' => 'submit',
     '#id' => 'edit-pages-apply',
     '#value' => t('Apply'),
-    '#attributes' => array('class' => array('ctools-use-ajax')),
+    '#attributes' => array('class' => array('use-ajax-submit ctools-auto-submit-click')),
   );
 
   $form['reset'] = array(
     '#type' => 'submit',
     '#id' => 'edit-pages-reset',
     '#value' => t('Reset'),
-    '#attributes' => array('class' => array('ctools-use-ajax')),
+    '#attributes' => array('class' => array('use-ajax-submit')),
   );
 
-  ctools_add_js('ajax-responder');
-  drupal_add_js('misc/jquery.form.js');
-  drupal_add_js(drupal_get_path('module', 'page_manager') . '/js/page-list.js');
-  $form['#theme'] = array('page_manager_list_pages_form');
+  $form['#attached']['js'] = array('misc/ajax.js', 'misc/progress.js', 'misc/jquery.form.js', ctools_attach_js('auto-submit'), ctools_attach_js('page-list', 'page_manager'));
+  $form['#prefix'] = '<div class="clearfix">';
+  $form['#suffix'] = '</div>';
+  $form['#attributes'] = array('class' => array('ctools-auto-submit-full-form'));
   return $form;
 }
 
@@ -394,7 +398,7 @@ function page_manager_edit_page($page) {
   $rendered_operations = page_manager_render_operations($page, $operations, $args, array('class' => array('operations-main')), 'nav');
   $content = page_manager_get_operation_content(FALSE, $page, $args, $operations);
 
-  $output = theme('page_manager_edit_page', $page, $form, $rendered_operations, $content);
+  $output = theme('page_manager_edit_page', array('page' => $page, 'save' => $form, 'operations' => $rendered_operations, 'content' => $content));
   return $output;
 }
 
@@ -435,16 +439,15 @@ function page_manager_edit_page_operation() {
   $form_state = array('page' => &$page);
   $form = drupal_build_form('page_manager_save_page_form', $form_state);
 
-  $output = theme('page_manager_edit_page', $page, $form, $rendered_operations, $content);
+  $output = theme('page_manager_edit_page', array('page' => $page, 'save' => $form, 'operations' => $rendered_operations, 'content' => $content));
 
   if ($js) {
     $commands = array();
-    if (isset($content['js settings'])) {
-      $commands[] = ctools_ajax_command_settings($content['js settings']);
-    }
-    $commands[] = ctools_ajax_command_replace('#page-manager-edit', $output);
+    $commands[] = ajax_command_replace('#page-manager-edit', $output);
 
-    ctools_ajax_render($commands);
+    print ajax_render($commands);
+    ajax_footer();
+    return;
   }
 
   drupal_set_title($page->subtask['admin title']);
@@ -471,7 +474,7 @@ function page_manager_get_operations($page, $operations = NULL) {
       'summary' => array(
         'title' => t('Summary'),
         'description' => t('Get a summary of the information about this page.'),
-        'path' => 'admin/build/pages/edit',
+        'path' => 'admin/structure/pages/edit',
         'ajax' => FALSE,
         'no operations' => TRUE,
         'form info' => array(
@@ -1127,7 +1130,7 @@ function page_manager_render_operations(&$page, $operations, $active_trail, $att
         $output[$location] .= $operation['title'];
         break;
       case 'operation':
-        $path = isset($operation['path']) ? $operation['path'] : 'admin/build/pages/nojs/operation';
+        $path = isset($operation['path']) ? $operation['path'] : 'admin/structure/pages/nojs/operation';
         if (!isset($operation['no task'])) {
           $path .= '/' . $page->task_name;
         }
@@ -1141,7 +1144,7 @@ function page_manager_render_operations(&$page, $operations, $active_trail, $att
 
         $class = array('page-manager-operation');
         if (!isset($operation['ajax']) || !empty($operation['ajax'])) {
-          $class[] = 'ctools-use-ajax';
+          $class[] = 'use-ajax';
         }
         if (!empty($operation['class'])) {
           $class[] = $operation['class'];
@@ -1191,7 +1194,7 @@ function page_manager_render_operations(&$page, $operations, $active_trail, $att
       $title = '<div class="page-manager-group-title' . $class . '">' . $attributes['title'] . '</div>';
 
       if (!empty($attributes['collapsible'])) {
-        $output[$location] = theme('ctools_collapsible', $title, $output[$location], empty($active_trail));
+        $output[$location] = theme('ctools_collapsible', array('handler' => $title, 'content' => $output[$location], 'collapsed' => empty($active_trail)));
       }
       else {
         $output[$location] = $title . $output[$location];
@@ -1211,7 +1214,7 @@ function page_manager_save_page_form(&$form_state) {
     );
 
     // Always make sure we submit back to the proper page.
-    $form['#action'] = url('admin/build/pages/edit/' . $form_state['page']->task_name);
+    $form['#action'] = url('admin/structure/pages/edit/' . $form_state['page']->task_name);
     $form['save'] = array(
       '#type' => 'submit',
       '#value' => t('Save'),
@@ -1242,7 +1245,7 @@ function page_manager_save_page_form_cancel(&$form, &$form_state) {
   page_manager_clear_page_cache($form_state['page']->task_name);
 
   if (!empty($form_state['page']->new)) {
-    $form_state['redirect'] = 'admin/build/pages';
+    $form_state['redirect'] = 'admin/structure/pages';
   }
 }
 
@@ -1770,7 +1773,7 @@ function page_manager_page_summary(&$form, &$form_state) {
     ),
   );
 
-  $output .= '<div class="links">' . theme('links', $links) . '</div>';
+  $output .= '<div class="links">' . theme('links', array('links' => $links)) . '</div>';
   $form['markup'] = array(
     '#value' => $output,
   );
@@ -1805,5 +1808,5 @@ function page_manager_enable_page($disable, $js, $page) {
   }
 
   // For now $js is not actually in use on this.
-  drupal_goto('admin/build/pages');
+  drupal_goto('admin/structure/pages');
 }

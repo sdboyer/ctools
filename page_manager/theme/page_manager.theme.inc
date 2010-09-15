@@ -61,7 +61,9 @@ function template_preprocess_page_manager_edit_page(&$vars) {
 /**
  * Remove some items from the form so they don't submit.
  */
-function theme_page_manager_list_pages_form($form) {
+function theme_page_manager_list_pages_form($variables) {
+  // @todo This can NOT be right -- is this a bug in core?
+  $form = &$variables[''];
   // Don't render these:
 /*
   unset($form['form_id']);

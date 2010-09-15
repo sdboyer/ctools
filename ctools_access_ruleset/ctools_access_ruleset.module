@@ -44,7 +44,7 @@ function ctools_access_ruleset_ctools_plugin_directory($module, $plugin) {
  */
 function ctools_access_ruleset_panels_dashboard_blocks(&$vars) {
   $vars['links']['ctools_access_ruleset'] = array(
-    'title' => l(t('Custom ruleset'), 'admin/build/ctools-rulesets/add'),
+    'title' => l(t('Custom ruleset'), 'admin/structure/ctools-rulesets/add'),
     'description' => t('Custom rulesets are combinations of access plugins you can use for access control, selection criteria and pane visibility.'),
   );
 
@@ -58,7 +58,7 @@ function ctools_access_ruleset_panels_dashboard_blocks(&$vars) {
     $rows[] = array(
       check_plain($item->admin_title),
       array(
-        'data' => l(t('Edit'), "admin/build/ctools-rulesets/list/$item->name/edit"),
+        'data' => l(t('Edit'), "admin/structure/ctools-rulesets/list/$item->name/edit"),
         'class' => 'links',
       ),
     );
@@ -78,7 +78,7 @@ function ctools_access_ruleset_panels_dashboard_blocks(&$vars) {
 
   $vars['blocks']['ctools_access_ruleset'] = array(
     'title' => t('Manage custom rulesets'),
-    'link' => l(t('Go to list'), 'admin/build/ctools-rulesets'),
+    'link' => l(t('Go to list'), 'admin/structure/ctools-rulesets'),
     'content' => $content,
     'class' => 'dashboard-ruleset',
     'section' => 'right',

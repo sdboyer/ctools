@@ -165,6 +165,27 @@ function ctools_add_js($file, $module = 'ctools', $dir = 'js') {
 }
 
 /**
+ * Format a javascript file name for use with $form['#attached']['js'].
+ *
+ * This helper function is used by ctools but can also be used in other
+ * modules in the same way as explained in the comments of ctools_include.
+ *
+ * @code
+ *   $form['#attached']['js'] = array(ctools_attach_js('auto-submit'));
+ * @endcode
+ *
+ * @param $file
+ *   The base file name to be included.
+ * @param $module
+ *   Optional module containing the include.
+ * @param $dir
+ *   Optional subdirectory containing the include file.
+ */
+function ctools_attach_js($file, $module = 'ctools', $dir = 'js') {
+  return drupal_get_path('module', $module) . "/$dir/$file.js";
+}
+
+/**
  * Get a list of roles in the system.
  *
  * @return
