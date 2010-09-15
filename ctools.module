@@ -449,7 +449,7 @@ function ctools_registry_files_alter(&$files, $indexed_modules) {
             // conventions.
             $filename = isset($plugin_definition[$class_key]['file']) ? $plugin_definition[$class_key]['file'] : $class . '.class.php';
             $base_path = isset($plugin_definition[$class_key]['path']) ? $plugin_definition[$class_key]['path'] : $plugin_definition['path'];
-            $path = "/$base_path/$filename";
+            $path = "$base_path/$filename";
           }
 
           if (file_exists($path)) {
