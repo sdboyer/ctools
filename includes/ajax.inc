@@ -87,7 +87,8 @@ define('CTOOLS_AJAX_INCLUDED', 1);
  *   $commands = array();
  *   $commands[] = ctools_ajax_command_replace('#ctools-object-1', 'some html here');
  *   $commands[] = ctools_ajax_command_changed('#ctools-object-1');
- *   ctools_ajax_render($commands); // this function exits.
+ *   print ajax_render($commands); // this function exits.
+ *   exit;
  * @endcode
  */
 
@@ -450,77 +451,13 @@ function ctools_ajax_command_submit($selector) {
 }
 
 /**
- * Render a commands array into JSON and immediately hand this back
- * to the AJAX requester.
- */
-function ctools_ajax_render($commands = array()) {
-  $query_string = '?'. substr(variable_get('css_js_query_string', '0'), 0, 1);
-  $css = drupal_add_css();
-  foreach ($css as $media => $types) {
-    // If CSS preprocessing is off, we still need to output the styles.
-    // Additionally, go through any remaining styles if CSS preprocessing is on and output the non-cached ones.
-    foreach ($types as $type => $files) {
-      if ($type == 'module') {
-        // Setup theme overrides for module styles.
-        $theme_styles = array();
-        foreach (array_keys($css[$media]['theme']) as $theme_style) {
-          $theme_styles[] = basename($theme_style);
-        }
-      }
-      // The theme stuff should already be added and because of admin themes,
-      // this could cause different CSS to be added.
-      if ($type != 'theme') {
-        foreach ($types[$type] as $file => $preprocess) {
-          // If the theme supplies its own style using the name of the module style, skip its inclusion.
-          // This includes any RTL styles associated with its main LTR counterpart.
-          if ($type == 'module' && in_array(str_replace('-rtl.css', '.css', basename($file)), $theme_styles)) {
-            // Unset the file to prevent its inclusion when CSS aggregation is enabled.
-            unset($types[$type][$file]);
-            continue;
-          }
-          // Only include the stylesheet if it exists.
-          if (file_exists($file)) {
-            $css_files[] = array(
-              'file' => base_path() . $file . $query_string,
-              'media' => $media,
-            );
-          }
-        }
-      }
-    }
-  }
-
-  if (!empty($js_files)) {
-    array_unshift($commands, ctools_ajax_command_scripts(array_keys($js_files)));
-  }
-
-  if (!empty($css_files)) {
-    array_unshift($commands, ctools_ajax_command_css_files($css_files));
-  }
-
-  if (!empty($settings)) {
-    array_unshift($commands, ctools_ajax_command_settings(call_user_func_array('array_merge_recursive', $settings)));
-  }
-
-  if (!empty($_REQUEST['ctools_multipart'])) {
-    // We don't use drupal_json here because the header is not true. We're not really
-    // returning JSON, strictly-speaking, but rather JSON content wrapped in a <textarea>
-    // as per the "file uploads" example here: http://malsup.com/jquery/form/#code-samples
-    echo '<textarea>' . drupal_json_encode($commands) . '</textarea>';
-  }
-  else {
-    drupal_json_output($commands);
-  }
-  exit;
-}
-
-/**
  * Send an error response back via AJAX and immediately exit.
  */
 function ctools_ajax_render_error($error = '') {
   $commands = array();
   $commands[] = ctools_ajax_command_error($error);
-  ctools_ajax_render($commands);
+  print ajax_render($commands);
+  exit;
 }
 
 /**

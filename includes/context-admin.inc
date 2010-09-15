@@ -488,7 +488,8 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     $output[] = ctools_modal_command_dismiss();
   }
 
-  ctools_ajax_render($output);
+  print ajax_render($output);
+  exit;
 }
 
 /**
@@ -575,7 +576,8 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
     $output[] = ctools_ajax_command_replace('#' . $type . '-row-' . $position, theme('ctools_context_item_row', $type, $arg_form[$type][$position], $position, $position));
     $output[] = ctools_ajax_command_changed('#' . $type . '-row-' . $position, '.title');
   }
-  ctools_ajax_render($output);
+  print ajax_render($output);
+  exit;
 }
 
 /**
@@ -964,7 +966,8 @@ function ctools_context_ajax_item_delete($module = NULL, $type = NULL, $object_n
   $output   = array();
   $output[] = ctools_ajax_command_replace('#' . $type . '-row-' . $position, '');
   $output[] = ctools_ajax_command_restripe("#$type-table");
-  ctools_ajax_render($output);
+  print ajax_render($output);
+  exit;
 }
 
 // --- End of contexts
