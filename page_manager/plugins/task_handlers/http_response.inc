@@ -116,9 +116,6 @@ function page_manager_http_response_admin_summary($handler, $task, $subtask, $pa
   $task_name = page_manager_make_task_name($task['name'], $subtask['name']);
   $output = '';
 
-  $display = panels_panel_context_get_display($handler);
-
-  ctools_include('plugins', 'panels');
   ctools_include('context');
   ctools_include('context-task-handler');
 
@@ -128,9 +125,7 @@ function page_manager_http_response_admin_summary($handler, $task, $subtask, $pa
   // Get operations for just this handler.
   $operations = $operations['handlers']['children'][$handler->name]['children']['actions']['children'];
   $args = array('handlers', $handler->name, 'actions');
-  $rendered_operations = page_manager_render_operations($page, $operations, array(), array('class' => 'actions'), 'actions', $args);
-
-  $layout = panels_get_layout($display->layout);
+  $rendered_operations = page_manager_render_operations($page, $operations, array(), array('class' => array('actions')), 'actions', $args);
 
   $plugin = page_manager_get_task_handler($handler->handler);
 
@@ -149,9 +144,9 @@ function page_manager_http_response_admin_summary($handler, $task, $subtask, $pa
 
   $type = $handler->type == t('Default') ? t('In code') : $handler->type;
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Storage')),
-    array('class' => t('page-summary-data'), 'data' => $type),
-    array('class' => t('page-summary-operation'), 'data' => ''),
+    array('class' => array('page-summary-label'), 'data' => t('Storage')),
+    array('class' => array('page-summary-data'), 'data' => $type),
+    array('class' => array('page-summary-operation'), 'data' => ''),
   );
 
   if (!empty($handler->disabled)) {
@@ -164,27 +159,27 @@ function page_manager_http_response_admin_summary($handler, $task, $subtask, $pa
   }
 
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Status')),
-    array('class' => t('page-summary-data'), 'data' => $text),
-    array('class' => t('page-summary-operation'), 'data' => $link),
+    array('class' => array('page-summary-label'), 'data' => t('Status')),
+    array('class' => array('page-summary-data'), 'data' => $text),
+    array('class' => array('page-summary-operation'), 'data' => $link),
   );
 
   $link = l(t('Edit'), page_manager_edit_url($task_name, array('handlers', $handler->name, 'criteria')));
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Selection rule')),
-    array('class' => t('page-summary-data'), 'data' => $access),
-    array('class' => t('page-summary-operation'), 'data' => $link),
+    array('class' => array('page-summary-label'), 'data' => t('Selection rule')),
+    array('class' => array('page-summary-data'), 'data' => $access),
+    array('class' => array('page-summary-operation'), 'data' => $link),
   );
 
   $link = l(t('Edit'), page_manager_edit_url($task_name, array('handlers', $handler->name, 'settings')));
   $codes = page_manager_http_response_codes();
   $rows[] = array(
-    array('class' => t('page-summary-label'), 'data' => t('Response code')),
-    array('class' => t('page-summary-data'), 'data' => $codes[$handler->conf['code']]),
-    array('class' => t('page-summary-operation'), 'data' => $link),
+    array('class' => array('page-summary-label'), 'data' => t('Response code')),
+    array('class' => array('page-summary-data'), 'data' => $codes[$handler->conf['code']]),
+    array('class' => array('page-summary-operation'), 'data' => $link),
   );
 
-  $info = theme('table', array(), $rows, array('class' => 'page-manager-handler-summary'));
+  $info = theme('table', array('header' => array(), 'rows' => $rows, 'attributes' => array('class' => array('page-manager-handler-summary'))));
 
   $title = $handler->conf['title'];
   if ($title != t('Panel')) {
@@ -245,6 +240,8 @@ function page_manager_http_response_edit_settings(&$form, &$form_state) {
     '#dependency' => array('edit-code' => array(301)),
     '#description' => t('Enter the path to redirect to. You may use keyword substitutions from contexts. You can use external urls (http://www.example.com/foo) or internal urls (node/1).'),
   );
+
+  return $form;
 }
 
 function page_manager_http_response_edit_settings_submit(&$form, &$form_state) {
@@ -257,7 +254,6 @@ function page_manager_http_response_render($handler, $base_contexts, $args, $tes
   // Go through arguments and see if they match.
   ctools_include('context');
   ctools_include('context-task-handler');
-  ctools_include('plugins', 'panels');
 
   // Add my contexts
   $contexts = ctools_context_handler_get_handler_contexts($base_contexts, $handler);

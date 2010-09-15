@@ -88,7 +88,7 @@ function page_manager_node_view($node) {
 
   $output = ctools_context_handler_render($task, '', $contexts, array($node->nid));
   if ($output !== FALSE) {
-    node_tag_new($node->nid);
+    node_tag_new($node);
     return $output;
   }
 
