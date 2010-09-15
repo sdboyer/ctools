@@ -10,7 +10,7 @@
  */
 
 function ctools_context_plugin_type(&$items) {
-  $items['context'] = array();
+  $items['contexts'] = array();
   $items['arguments'] = array();
   $items['relationships'] = array();
 }
