@@ -40,6 +40,7 @@ function ctools_node_form_taxonomy_content_type_admin_title($subtype, $conf, $co
   return t('"@s" node form select taxonomy', array('@s' => $context->identifier));
 }
 
-function ctools_node_form_taxonomy_content_type_edit_form(&$form, &$form_state) {
+function ctools_node_form_taxonomy_content_type_edit_form($form, &$form_state) {
   // provide a blank form so we have a place to have context setting.
+  return $form;
 }

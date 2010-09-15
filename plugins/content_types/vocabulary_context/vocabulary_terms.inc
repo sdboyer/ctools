@@ -65,7 +65,7 @@ function ctools_vocabulary_terms_content_type_admin_title($subtype, $conf, $cont
   return t('"@s" terms', array('@s' => $context->identifier));
 }
 
-function ctools_vocabulary_terms_content_type_edit_form(&$form, &$form_state) {
+function ctools_vocabulary_terms_content_type_edit_form($form, &$form_state) {
   $conf = $form_state['conf'];
   $form['max_depth'] = array(
     '#type' => 'select',
@@ -85,7 +85,7 @@ function ctools_vocabulary_terms_content_type_edit_form(&$form, &$form_state) {
   return $form;
 }
 
-function ctools_vocabulary_terms_content_type_edit_form_submit(&$form, &$form_state) {
+function ctools_vocabulary_terms_content_type_edit_form_submit($form, &$form_state) {
   // Copy everything from our defaults.
   foreach (array_keys($form_state['plugin']['defaults']) as $key) {
     $form_state['conf'][$key] = $form_state['values'][$key];
