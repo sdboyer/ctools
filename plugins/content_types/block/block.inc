@@ -163,14 +163,15 @@ function ctools_block_content_type_render($subtype, $conf) {
 /**
  * Empty form so we can have the default override title.
  */
-function ctools_block_content_type_edit_form(&$form, &$form_state) {
+function ctools_block_content_type_edit_form($form, &$form_state) {
   // Does nothing!
+  return $form;
 }
 
 /**
  * Submit function to fix the subtype for really old panel panes.
  */
-function ctools_block_content_type_edit_form_submit(&$form, &$form_state) {
+function ctools_block_content_type_edit_form_submit($form, &$form_state) {
   if (empty($form_state['subtype']) && isset($form_state['pane'])) {
     $form_state['pane']->subtype = $form_state['conf']['module'] . '-' . $form_state['conf']['delta'];
     unset($form_state['conf']['module']);

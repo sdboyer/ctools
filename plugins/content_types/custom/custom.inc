@@ -236,7 +236,7 @@ function ctools_custom_content_type_admin_info($subtype, $conf) {
 /**
  * Returns an edit form for the custom type.
  */
-function ctools_custom_content_type_edit_form(&$form, &$form_state) {
+function ctools_custom_content_type_edit_form($form, &$form_state) {
   $settings = ctools_custom_content_type_get_conf($form_state['subtype'], $form_state['conf']);
   $form_state['settings'] = $settings;
 
@@ -338,6 +338,7 @@ function ctools_custom_content_type_edit_form(&$form, &$form_state) {
     '#process' => array('ctools_dependent_process'),
     '#dependency' => array('edit-reusable' => array(1)),
   );
+  return $form;
 }
 
 function _ctools_custom_content_type_edit_save(&$content, $form_state) {
@@ -379,7 +380,7 @@ function ctools_custom_content_type_edit_form_validate(&$form, &$form_state) {
 /**
  * The submit form stores the data in $conf.
  */
-function ctools_custom_content_type_edit_form_submit(&$form, &$form_state) {
+function ctools_custom_content_type_edit_form_submit($form, &$form_state) {
   if ($form_state['settings']['custom_type'] == 'fixed') {
     _ctools_custom_content_type_edit_save($form_state['settings']['content'], $form_state);
   }

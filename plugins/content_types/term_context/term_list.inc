@@ -84,7 +84,7 @@ function ctools_admin_term_list_options() {
 /**
  * Returns an edit form for the custom type.
  */
-function ctools_term_list_content_type_edit_form(&$form, &$form_state) {
+function ctools_term_list_content_type_edit_form($form, &$form_state) {
   $conf = $form_state['conf'];
 
   $form['type'] = array(
@@ -102,6 +102,7 @@ function ctools_term_list_content_type_edit_form(&$form, &$form_state) {
     '#options' => array('ul' => t('Unordered'), 'ol' => t('Ordered')),
     '#default_value' => $conf['list_type'],
   );
+  return $form;
 }
 
 function ctools_term_list_content_type_admin_title($subtype, $conf, $context) {
@@ -109,7 +110,7 @@ function ctools_term_list_content_type_admin_title($subtype, $conf, $context) {
   return t('"@s" @type', array('@s' => $context->identifier, '@type' => drupal_strtolower($options[$conf['type']])));
 }
 
-function ctools_term_list_content_type_edit_form_submit(&$form, &$form_state) {
+function ctools_term_list_content_type_edit_form_submit($form, &$form_state) {
   // Copy everything from our defaults.
   foreach (array_keys($form_state['plugin']['defaults']) as $key) {
     $form_state['conf'][$key] = $form_state['values'][$key];

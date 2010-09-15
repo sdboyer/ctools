@@ -82,7 +82,6 @@
  * To utilize this form:
  * @code
  *   ctools_include('context-access-admin');
- *   ctools_include('form'),
  *   $form_state = array(
  *     'access' => $access,
  *     'module' => 'module name',
@@ -91,7 +90,7 @@
  *     // 'logged-in-user' will be added if not present as the access system
  *     // requires this context.
  *   ),
- *   $output = ctools_build_form('ctools_access_admin_form', $form_state);
+ *   $output = drupal_build_form('ctools_access_admin_form', $form_state);
  *   if (!empty($form_state['executed'])) {
  *     // save $form_state['access'] however you like.
  *   }

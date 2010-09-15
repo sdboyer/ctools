@@ -38,6 +38,7 @@ function ctools_node_form_input_format_content_type_admin_title($subtype, $conf,
   return t('"@s" node form input format', array('@s' => $context->identifier));
 }
 
-function ctools_node_form_input_format_content_type_edit_form(&$form, &$form_state) {
+function ctools_node_form_input_format_content_type_edit_form($form, &$form_state) {
   // provide a blank form so we have a place to have context setting.
+  return $form;
 }

@@ -165,6 +165,27 @@ function ctools_add_js($file, $module = 'ctools', $dir = 'js') {
 }
 
 /**
+ * Format a javascript file name for use with $form['#attached']['js'].
+ *
+ * This helper function is used by ctools but can also be used in other
+ * modules in the same way as explained in the comments of ctools_include.
+ *
+ * @code
+ *   $form['#attached']['js'] = array(ctools_attach_js('auto-submit'));
+ * @endcode
+ *
+ * @param $file
+ *   The base file name to be included.
+ * @param $module
+ *   Optional module containing the include.
+ * @param $dir
+ *   Optional subdirectory containing the include file.
+ */
+function ctools_attach_js($file, $module = 'ctools', $dir = 'js') {
+  return drupal_get_path('module', $module) . "/$dir/$file.js";
+}
+
+/**
  * Get a list of roles in the system.
  *
  * @return
@@ -403,6 +424,17 @@ function ctools_file_download($filepath) {
   }
 }
 
+/**
+ * Implements hook_registry_files_alter().
+ *
+ * Alter the registry of files to automagically include all classes in
+ * class-based plugins.
+ */
+function ctools_registry_files_alter(&$files, $indexed_modules) {
+  ctools_include('registry');
+  return _ctools_registry_files_alter($files, $indexed_modules);
+}
+
 // -----------------------------------------------------------------------
 // CTools hook implementations.
 
@@ -417,12 +449,19 @@ function ctools_ctools_plugin_directory($owner, $plugin_type) {
 }
 
 /**
- * Inform CTools that the layout plugin can be loaded from themes.
+ * Implements hook_ctools_plugin_type().
  */
-function ctools_ctools_plugin_access() {
-  return array(
+function ctools_ctools_plugin_type() {
+  ctools_include('utility');
+  $items = array();
+  // Add all the plugins that have their own declaration space elsewhere.
+  _ctools_passthrough($items, 'plugin-type');
+
+  // And add plugins that aren't taken care of in their own, separate files.
+  $items['access'] = array(
     'child plugins' => TRUE,
   );
+  return $items;
 }
 
 // -----------------------------------------------------------------------

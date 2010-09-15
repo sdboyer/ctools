@@ -25,7 +25,7 @@ $plugin = array(
 /**
  * Settings form for the 'by parent term' access plugin
  */
-function ctools_term_parent_ctools_access_settings(&$form, &$form_state, $conf) {
+function ctools_term_parent_ctools_access_settings($form, &$form_state, $conf) {
   // If no configuration was saved before, set some defaults.
   if (empty($conf)) {
     $conf = array(
@@ -53,6 +53,7 @@ function ctools_term_parent_ctools_access_settings(&$form, &$form_state, $conf) 
     $options[$vid] = $vocabulary->name;
   }
   $form['settings']['vid']['#options'] = $options;
+  return $form;
 }
 
 /**

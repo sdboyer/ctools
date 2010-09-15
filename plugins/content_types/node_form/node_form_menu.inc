@@ -41,6 +41,7 @@ function ctools_node_form_menu_content_type_admin_title($subtype, $conf, $contex
   return t('"@s" node form menu settings', array('@s' => $context->identifier));
 }
 
-function ctools_node_form_menu_content_type_edit_form(&$form, &$form_state) {
+function ctools_node_form_menu_content_type_edit_form($form, &$form_state) {
   // provide a blank form so we have a place to have context setting.
+  return $form;
 }

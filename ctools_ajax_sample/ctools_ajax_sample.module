@@ -26,16 +26,6 @@ function ctools_ajax_sample_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
-  $items['ctools_ajax_sample/%ctools_js/hello'] = array(
-      'title' => 'Hello World',
-      'page callback' => 'ctools_build_form',
-      'page arguments' => array('ctools_ajax_sample_hello'),
-      'page arguments' => array(1),
-      'access callback' => TRUE,
-      'type' => MENU_CALLBACK,
-      'file' => 'form.inc',
-      'file path' => drupal_get_path('module', 'ctools') .'/includes',
-  );
   $items['ctools_ajax_sample/%ctools_js/tablenix/%'] = array(
       'title' => 'Hello World',
       'page callback' => 'ctools_ajax_sample_tablenix',
@@ -64,12 +54,6 @@ function ctools_ajax_sample_menu() {
       'access callback' => TRUE,
       'type' => MENU_CALLBACK,
   );
-  $items['ctools_ajax_sample/test-css'] = array(
-      'title' => 'Test CSS',
-      'page callback' => 'ctools_ajax_sample_test_css',
-      'access callback' => TRUE,
-      'type' => MENU_NORMAL_ITEM,
-  );
   $items['ctools_ajax_sample/jumped'] = array(
     'title' => 'Successful Jumping',
     'page callback' => 'ctools_ajax_sample_jump_menu_page',
@@ -81,19 +65,22 @@ function ctools_ajax_sample_menu() {
 }
 
 function ctools_ajax_simple_form() {
-  ctools_include('form');
-  $form_state = array();
-  return ctools_build_form('ctools_ajax_simple_form_form', $form_state);
+  ctools_include('content');
+  ctools_include('context');
+  $node = node_load(1);
+  $context = ctools_context_create('node', $node);
+  $context = array('context_node_1' => $context);
+  return ctools_content_render('node_comment_form', 'node_comment_form', ctools_ajax_simple_form_pane(), array(), array(), $context);
 }
 
-function ctools_ajax_simple_form_form() {
-  $form = array();
-
-  $form['textfield'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Test Textfield'),
+function ctools_ajax_simple_form_pane() {
+  $configuration = array(
+    'anon_links' => 0,
+    'context' => 'context_node_1',
+    'override_title' => 0,
+    'override_title_text' => '',
   );
-  return $form;
+  return $configuration;
 }
 
 /**
@@ -710,29 +697,6 @@ function ctools_ajax_sample_show_raptor($object) {
 }
 
 /**
- * Page callback to test the css tool.
- */
-function ctools_ajax_sample_test_css() {
-  $css = "#some-id .some-class {\n  color: black;\n  illegal-key: foo;\n}";
-  $output = '<pre>' . $css . '</pre>';
-
-  ctools_include('css');
-  $filename1 = ctools_css_store('unfiltered-css-test', $css, FALSE);
-  $filename2 = ctools_css_store('filtered-css-test', $css, TRUE);
-
-  $match = $filename1 == ctools_css_retrieve('unfiltered-css-test') ? 'Match' : 'No match';
-  $output .= '<pre>Unfiltered: ' . $filename1 . ' ' . $match . '</pre>';
-  $output .= '<pre>' . file_get_contents($filename1) . '</pre>';
-
-  $match = $filename2 == ctools_css_retrieve('filtered-css-test') ? 'Match' : 'No match';
-  $output .= '<pre>Filtered: ' . $filename2 . ' ' . $match . '</pre>';
-  $output .= '<pre>' . file_get_contents($filename2) . '</pre>';
-
-  drupal_add_css($filename2, array('type' => 'file'));
-  return array('#markup' => $output);
-}
-
-/** 
  * Helper function to provide a sample jump menu form
  */
 function ctools_ajax_sample_jump_menu_form() {
@@ -749,3 +713,4 @@ function ctools_ajax_sample_jump_menu_page() {
   $output = t('You successfully jumped! !return_link', array('!return_link' => $return_link));
   return $output; 
 }
+

@@ -868,7 +868,7 @@ function ctools_export_set_object_status($object, $new_status = TRUE) {
  *   $output = drupal_get_form('ctools_export_form', $code, $object_title);
  * @endcode
  */
-function ctools_export_form(&$form_state, $code, $title = '') {
+function ctools_export_form($form, &$form_state, $code, $title = '') {
   $lines = substr_count($code, "\n");
   $form['code'] = array(
     '#type' => 'textarea',

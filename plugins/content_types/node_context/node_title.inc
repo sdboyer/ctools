@@ -44,7 +44,7 @@ function ctools_node_title_content_type_render($subtype, $conf, $panel_args, $co
 /**
  * Returns an edit form for custom type settings.
  */
-function ctools_node_title_content_type_edit_form(&$form, &$form_state) {
+function ctools_node_title_content_type_edit_form($form, &$form_state) {
   $conf = $form_state['conf'];
 
   $form['link'] = array(
@@ -53,12 +53,13 @@ function ctools_node_title_content_type_edit_form(&$form, &$form_state) {
     '#default_value' => $conf['link'],
     '#description' => t('Check here to make the title link to the node.'),
   );
+  return $form;
 }
 
 /**
  * Submit handler for the custom type settings form.
  */
-function ctools_node_title_content_type_edit_form_submit(&$form, &$form_state) {
+function ctools_node_title_content_type_edit_form_submit($form, &$form_state) {
   // Copy everything from our defaults.
   foreach (array_keys($form_state['plugin']['defaults']) as $key) {
     $form_state['conf'][$key] = $form_state['values'][$key];

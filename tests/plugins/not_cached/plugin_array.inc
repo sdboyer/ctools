@@ -11,8 +11,7 @@
 $plugin = array(
   'function' => 'ctools_plugin_test_plugin_array_not_cached_test',
   'handler' => array(
-  	'class' => 'ctoolsNotCachedPluginArray',
-    'parent' => 'magic_func',
+    'class' => 'ctoolsNotCachedPluginArray',
   ),
 );
 

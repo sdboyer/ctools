@@ -36,14 +36,15 @@ function ctools_contact_content_type_render($subtype, $conf, $panel_args, $conte
 /**
  * Returns an edit form for custom type settings.
  */
-function ctools_contact_content_type_edit_form(&$form, &$form_state) {
+function ctools_contact_content_type_edit_form($form, &$form_state) {
   // Empty so that we can have title override.
+  return $form;
 }
 
 /**
  * Submit handler for contact form.
  */
-function ctools_contact_content_type_edit_form_submit(&$form, &$form_state) {
+function ctools_contact_content_type_edit_form_submit($form, &$form_state) {
   // Copy everything from our defaults.
 /*
   foreach (array_keys($form_state['plugin']['defaults']) as $key) {

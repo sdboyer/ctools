@@ -38,6 +38,7 @@ function ctools_node_book_nav_content_type_admin_title($subtype, $conf, $context
   return t('"@s" book navigation', array('@s' => $context->identifier));
 }
 
-function ctools_node_book_nav_content_type_edit_form(&$form, &$form_state) {
+function ctools_node_book_nav_content_type_edit_form($form, &$form_state) {
   // provide a blank form so we have a place to have context setting.
+  return $form;
 }

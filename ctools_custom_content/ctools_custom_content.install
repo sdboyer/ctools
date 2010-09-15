@@ -66,19 +66,3 @@ function ctools_custom_content_schema_1() {
 
   return $schema;
 }
-
-/**
- * Implementation of hook_install().
- */
-function ctools_custom_content_install() {
-  if (!db_table_exists('ctools_custom_content')) {
-    drupal_install_schema('ctools_custom_content');
-  }
-}
-
-/**
- * Implementation of hook_uninstall().
- */
-function ctools_custom_content_uninstall() {
-  drupal_uninstall_schema('ctools_custom_content');
-}

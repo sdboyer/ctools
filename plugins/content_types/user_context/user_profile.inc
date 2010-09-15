@@ -41,6 +41,7 @@ function ctools_user_profile_content_type_admin_title($subtype, $conf, $context)
   return t('"@s" user profile', array('@s' => $context->identifier));
 }
 
-function ctools_user_profile_content_type_edit_form(&$form, &$form_state) {
+function ctools_user_profile_content_type_edit_form($form, &$form_state) {
   // provide a blank form so we have a place to have context setting.
+  return $form;
 }

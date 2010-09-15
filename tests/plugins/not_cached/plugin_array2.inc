@@ -9,13 +9,13 @@
  * Plugin array plugin definition.
  */
 $plugin = array(
-  'function' => 'ctools_plugin_test_plugin_array_cached_test',
+  'function' => 'ctools_plugin_test_plugin_array2_not_cached_test',
   'handler' => array(
-    'class' => 'ctoolsCachedPluginArray',
+    'class' => 'ctoolsNotCachedPluginArray2',
   ),
 );
 
 /**
  * Plugin array function plugin.
  */
-function ctools_plugin_test_plugin_array_cached_test() {}
+function ctools_plugin_test_plugin_array2_not_cached_test() {}

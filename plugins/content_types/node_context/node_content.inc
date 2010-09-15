@@ -131,7 +131,7 @@ function ctools_node_content_render_node($node, $conf) {
 /**
  * Returns an edit form for the custom type.
  */
-function ctools_node_content_content_type_edit_form(&$form, &$form_state) {
+function ctools_node_content_content_type_edit_form($form, &$form_state) {
   $conf = $form_state['conf'];
 
   $form['leave_node_title'] = array(
@@ -208,7 +208,7 @@ function ctools_node_content_content_type_edit_form(&$form, &$form_state) {
   return $form;
 }
 
-function ctools_node_content_content_type_edit_form_submit(&$form, &$form_state) {
+function ctools_node_content_content_type_edit_form_submit($form, &$form_state) {
   // Copy everything from our defaults.
   foreach (array_keys($form_state['plugin']['defaults']) as $key) {
     $form_state['conf'][$key] = $form_state['values'][$key];

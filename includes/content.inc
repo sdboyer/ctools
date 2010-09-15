@@ -11,18 +11,6 @@
  */
 
 /**
- * Implements hook_ctools_plugin_*.
- *
- * Give information to CTools about the content types plugin.
- */
-function ctools_ctools_plugin_content_types() {
-  return array(
-    'cache' => FALSE,
-    'process' => 'ctools_content_process',
-  );
-}
-
-/**
  * Provide defaults for a content type.
  *
  * Currently we check for automatically named callbacks to make life a little
@@ -323,7 +311,7 @@ function ctools_content_render($type, $subtype, $conf, $keywords = array(), $arg
       }
     }
 
-    return $content;
+    return array('#markup' => drupal_render($content->content));
   }
 }
 

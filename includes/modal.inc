@@ -196,14 +196,13 @@ function ctools_modal_text_button($text, $dest, $alt, $class = '') {
  *   form will never be redirected.
  */
 function ctools_modal_form_wrapper($form_id, &$form_state) {
-  ctools_include('form');
   // This won't override settings already in.
   $form_state += array(
     're_render' => FALSE,
     'no_redirect' => !empty($form_state['ajax']),
   );
 
-  $output = ctools_build_form($form_id, $form_state);
+  $output = drupal_build_form($form_id, $form_state);
   if (!empty($form_state['ajax']) && empty($form_state['executed'])) {
     return ctools_modal_form_render($form_state, $output);
   }

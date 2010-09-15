@@ -19,7 +19,7 @@ $plugin = array(
 /**
  * Settings form
  */
-function ctools_string_equal_ctools_access_settings(&$form, &$form_state, $conf) {
+function ctools_string_equal_ctools_access_settings($form, &$form_state, $conf) {
   $form['settings']['operator'] = array(
     '#type' => 'radios',
     '#title' => t('Operator'),
@@ -44,6 +44,7 @@ function ctools_string_equal_ctools_access_settings(&$form, &$form_state, $conf)
     '#title' => t('Case sensitive'),
     '#default_value' => $conf['case'],
   );
+  return $form;
 }
 
 /**
