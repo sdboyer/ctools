@@ -228,33 +228,62 @@
 
       $('a.ctools-use-modal:not(.ctools-use-modal-processed)', context)
         .addClass('ctools-use-modal-processed')
-        .click(Drupal.CTools.Modal.clickAjaxLink);
+        .click(Drupal.CTools.Modal.clickAjaxLink)
+        .each(function () { 
+          // Create a drupal ajax object
+          var element_settings = {};
+          if ($(this).attr('href')) {
+            element_settings.url = $(this).attr('href');
+            element_settings.event = 'click';
+          }
+          var base = $(this).attr('href');
+          Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
+
+          // Attach the display behavior to the ajax object 
+          Drupal.ajax[base].commands.modal_display = Drupal.CTools.Modal.modal_display;
+          Drupal.ajax[base].commands.modal_dismiss = Drupal.CTools.Modal.modal_dismiss;
+        }
+      );
 
       // Bind buttons
       $('input.ctools-use-modal:not(.ctools-use-modal-processed), button.ctools-use-modal:not(.ctools-use-modal-processed)', context)
         .addClass('ctools-use-modal-processed')
-        .click(Drupal.CTools.Modal.clickAjaxButton);
+        .click(Drupal.CTools.Modal.clickAjaxLink)
+        .each(function() { 
+          var element_settings = {};
 
-      // Bind submit links in the modal form.
-      $('#modal-content form:not(.ctools-use-modal-processed)', context)
+          // AJAX submits specified in this manner automatically submit to the
+          // normal form action.
+          element_settings.url = Drupal.CTools.Modal.findURL(this);
+          element_settings.event = 'click';
+
+          var base = $(this).attr('id');
+          Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
+
+          // Attach the display behavior to the ajax object 
+          Drupal.ajax[base].commands.modal_display = Drupal.CTools.Modal.modal_display;
+        });
+
+      // Bind our custom event to the form submit
+      $('#modal-content form:not(.ctools-use-modal-processed)', context) 
         .addClass('ctools-use-modal-processed')
-        .submit(Drupal.CTools.Modal.submitAjaxForm)
-        .bind('CToolsAJAXSubmit', Drupal.CTools.AJAX.ajaxSubmit);
+        .each(function() { 
 
-      // add click handlers so that we can tell which button was clicked,
-      // because the AJAX submit does not set the values properly.
+          $(this).ajaxForm();
 
-      $('#modal-content input[type="submit"]:not(.ctools-use-modal-processed), #modal-content button:not(.ctools-use-modal-processed)', context)
-        .addClass('ctools-use-modal-processed')
-        .click(function() {
-          if (Drupal.autocompleteSubmit && !Drupal.autocompleteSubmit()) {
-            return false;
-          }
+          var element_settings = {};
 
-          // Make sure it knows our button.
-          if (!$(this.form).hasClass('ctools-ajaxing')) {
-            this.form.clk = this;
-          }
+          element_settings.url = $(this).attr('action');
+          element_settings.setClick = true;
+          element_settings.event = 'submit';
+          element_settings.progress = { 'type': 'throbber' } 
+          var base = $(this).attr('id');
+
+          Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
+          Drupal.ajax[base].form = $(this);
+
+          Drupal.ajax[base].commands.modal_display = Drupal.CTools.Modal.modal_display;
+          Drupal.ajax[base].commands.modal_dismiss = Drupal.CTools.Modal.modal_dismiss;
         });
     }
   };
