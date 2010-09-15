@@ -286,18 +286,18 @@ function ctools_get_plugins($module, $type, $id = NULL) {
  *   A multilevel array of plugin type info, the outer array keyed on module
  *   name and each inner array keyed on plugin type name.
  */
-function ctools_plugin_get_plugin_type_info() {
-  $info_loaded = &drupal_static('ctools_plugin_typle_info_loaded', FALSE);
+function ctools_plugin_get_plugin_type_info($flush = FALSE) {
+  $info_loaded = &drupal_static('ctools_plugin_type_info_loaded', FALSE);
   $all_type_info = &drupal_static('ctools_plugin_type_info', array());
 
   // Only trigger info loading once.
-  if ($info_loaded) {
+  if ($info_loaded && !$flush) {
     return $all_type_info;
   }
   $info_loaded = TRUE;
 
   $cache = cache_get('ctools_plugin_type_info');
-  if (!empty($cache->data)) {
+  if (!empty($cache->data) && !$flush) {
     // Plugin type info cache is warm, use it.
     $all_type_info = $cache->data;
   }
@@ -308,22 +308,23 @@ function ctools_plugin_get_plugin_type_info() {
       $function = $module . '_ctools_plugin_type';
       $module_infos = $function();
 
-      foreach ($module_infos as $type => $info) {
+      foreach ($module_infos as $plugin_type_name => $plugin_type_info) {
         // Apply defaults. Array addition will not overwrite pre-existing keys.
         $info += array(
           'module' => $module,
-          'type' => $type,
+          'type' => $plugin_type_name,
           'cache' => FALSE,
           'cache table' => 'cache',
+          'classes' => array(),
           'use hooks' => FALSE,
           'defaults' => array(),
           'process' => '',
           'extension' => 'inc',
           'info file' => FALSE,
-          'hook' => $module . '_' . $type,
+          'hook' => $module . '_' . $plugin_type_name,
           'load themes' => FALSE,
         );
-        $all_type_info[$module][$type] = $info;
+        $all_type_info[$module][$plugin_type_name] = $plugin_type_info;
       }
     }
     cache_set('ctools_plugin_type_info', $all_type_info);
@@ -624,7 +625,7 @@ function ctools_plugin_process($info, $module, $identifier, $path, $file = NULL,
  * Fill in default values and run hooks for data loaded for one or
  * more plugins.
  */
-function _ctools_process_data($result, $info, $module, $path, $file) {
+function _ctools_process_data($result, $plugin_type_info, $module, $path, $file) {
   // Fill in global defaults.
   foreach ($result as $name => $plugin) {
     $result[$name] += array(
@@ -632,20 +633,20 @@ function _ctools_process_data($result, $info, $module, $path, $file) {
       'name' => $name,
       'path' => $path,
       'file' => $file,
-      'plugin module' => $info['module'],
-      'plugin type' => $info['type'],
+      'plugin module' => $plugin_type_info['module'],
+      'plugin type' => $plugin_type_info['type'],
     );
 
     // Fill in plugin-specific defaults, if they exist.
-    if (!empty($info['defaults'])) {
-      if (is_array($info['defaults'])) {
-        $result[$name] += $info['defaults'];
+    if (!empty($plugin_type_info['defaults'])) {
+      if (is_array($plugin_type_info['defaults'])) {
+        $result[$name] += $plugin_type_info['defaults'];
       }
     }
 
     // Allow the plugin owner to do additional processing.
-    if (!empty($info['process']) && function_exists($info['process'])) {
-      $info['process']($result[$name], $info);
+    if (!empty($plugin_type_info['process']) && $function = ctools_plugin_get_function($plugin_type_info, 'process')) {
+      $function($result[$name], $plugin_type_info);
     }
   }
   return $result;
@@ -749,13 +750,11 @@ function ctools_plugin_load_function($module, $type, $id, $function_name) {
  *   The loaded plugin type.
  * @param $class_name
  *   The identifier of the class. For example, 'handler'.
- * @param $abstract
- *   If true, will return abstract classes. Otherwise, parents will be included but nothing will be returned.
  *
  * @return
  *   The actual name of the class to call, or NULL if the class does not exist.
  */
-function ctools_plugin_get_class($plugin_definition, $class_name, $abstract = FALSE) {
+function ctools_plugin_get_class($plugin_definition, $class_name) {
   // If cached the .inc file may not have been loaded. require_once is quite safe
   // and fast so it's okay to keep calling it.
   if (isset($plugin_definition['file'])) {
@@ -770,41 +769,15 @@ function ctools_plugin_get_class($plugin_definition, $class_name, $abstract = FA
   if (!isset($plugin_definition[$class_name])) {
     return;
   }
-
-  if (is_array($plugin_definition[$class_name]) && isset($plugin_definition[$class_name]['class'])) {
-    if (isset($plugin_definition[$class_name]['parent'])) {
-      // Make sure parents are included.
-      // TODO parent-loading needs to be better documented; the 'parent' designated
-      // on the plugin actually corresponds not to the name of the parent CLASS,
-      // but the name of the parent PLUGIN (and it then loads loads whatever
-      // class is in the same $class_name slot). Initially unintuitive.
-      ctools_plugin_load_class($plugin_definition['plugin module'], $plugin_definition['plugin type'], $plugin_definition[$class_name]['parent'], $class_name);
-    }
-    $class = $plugin_definition[$class_name]['class'];
-    if (isset($plugin_definition[$class_name]['file'])) {
-      $file = $plugin_definition[$class_name]['file'];
-      if (isset($plugin_definition[$class_name]['path'])) {
-        $file = $plugin_definition[$class_name]['path'] . '/' . $file;
-      }
-      require_once DRUPAL_ROOT . '/' . $file;
-    }
-    $is_abstract = !empty($plugin_definition[$class_name]['abstract']);
+  else if (is_string($plugin_definition[$class_name])) {
+    // Plugin uses the string form shorthand.
+    return $plugin_definition[$class_name];
   }
-  else {
-    $class = $plugin_definition[$class_name];
-    $is_abstract = FALSE;
+  else if (isset($plugin_definition[$class_name]['class'])) {
+    // Plugin uses the verbose array form.
+    return $plugin_definition[$class_name]['class'];
   }
-
-  // If we didn't explicitly include a file above, try autoloading a file
-  // based on the class' name.
-  $default_file =  DRUPAL_ROOT . '/' . $plugin_definition['path'] . "/$class.class.php";
-  if (!isset($file) && file_exists($default_file)) {
-    require_once $default_file;
-  }
-
-  if (class_exists($class) && (!$is_abstract || $abstract)) {
-    return $class;
-  }
+  // @todo consider adding an else {watchdog(...)} here
 }
 
 /**
@@ -819,15 +792,13 @@ function ctools_plugin_get_class($plugin_definition, $class_name, $abstract = FA
  *   The id of the specific plugin to load.
  * @param $class_name
  *   The identifier of the class. For example, 'handler'.
- * @param $abstract
- *   If true, will tell ctools_plugin_get_class to allow the return of abstract classes.
  *
  * @return
  *   The actual name of the class to call, or NULL if the class does not exist.
  */
-function ctools_plugin_load_class($module, $type, $id, $class_name, $abstract = FALSE) {
+function ctools_plugin_load_class($module, $type, $id, $class_name) {
   $plugin = ctools_get_plugins($module, $type, $id);
-  return ctools_plugin_get_class($plugin, $class_name, $abstract);
+  return ctools_plugin_get_class($plugin, $class_name);
 }
 
 /**

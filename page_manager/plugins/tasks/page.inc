@@ -37,7 +37,7 @@ function page_manager_page_page_manager_tasks() {
     'page operations' => array(
       array(
         'title' => ' &raquo; ' . t('Create a new page'),
-        'href' => 'admin/build/pages/add',
+        'href' => 'admin/structure/pages/add',
         'html' => TRUE,
       ),
     ),

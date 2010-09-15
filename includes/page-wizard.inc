@@ -109,7 +109,7 @@ function page_manager_page_wizard($name, $step = NULL) {
     'next callback' => 'page_manager_page_wizard_next',
     'finish callback' => 'page_manager_page_wizard_finish',
 
-    'path' => "admin/build/pages/wizard/$name/%step",
+    'path' => "admin/structure/pages/wizard/$name/%step",
   );
 
   $form_info = array_merge_recursive($form_info, $plugin['form info']);
@@ -181,7 +181,7 @@ function page_manager_page_wizard_list($type = NULL) {
   $output = '<dl class="page-manager-wizards">';
   foreach ($plugins as $id => $plugin) {
     if (!$type || (isset($plugin['type']) && $plugin['type'] == $type)) {
-      $output .= '<dt>' . l($plugin['title'], 'admin/build/pages/wizard/' . $id) . '</dt>';
+      $output .= '<dt>' . l($plugin['title'], 'admin/structure/pages/wizard/' . $id) . '</dt>';
       $output .= '<dd class="description">' . $plugin['description'] . '</dd>';
     }
   }

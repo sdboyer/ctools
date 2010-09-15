@@ -24,26 +24,26 @@ function page_manager_page_menu(&$items, $task) {
     'file' => 'plugins/tasks/page.admin.inc',
   );
 
-  $items['admin/build/pages/add'] = array(
+  $items['admin/structure/pages/add'] = array(
     'title' => 'Add custom page',
     'page callback' => 'page_manager_page_add_subtask',
     'page arguments' => array(),
     'type' => MENU_LOCAL_TASK,
   ) + $base;
 
-  $items['admin/build/pages/import'] = array(
+  $items['admin/structure/pages/import'] = array(
     'title' => 'Import page',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('page_manager_page_import_subtask', 'page'),
     'type' => MENU_LOCAL_TASK,
   ) + $base;
   if ($access_callback == 'user_access') {
-    $items['admin/build/pages/import']['access callback'] = 'ctools_access_multiperm';
-    $items['admin/build/pages/import']['access arguments'][] = 'use PHP for settings';
+    $items['admin/structure/pages/import']['access callback'] = 'ctools_access_multiperm';
+    $items['admin/structure/pages/import']['access arguments'][] = 'use PHP for settings';
   }
 
   // AJAX callbacks for argument modal.
-  $items['admin/build/pages/argument'] = array(
+  $items['admin/structure/pages/argument'] = array(
     'page callback' => 'page_manager_page_subtask_argument_ajax',
     'type' => MENU_CALLBACK,
   ) + $base;
@@ -237,7 +237,7 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
       return drupal_not_found();
     }
 
-    $form_info['path'] = "admin/build/pages/add/$task_name/%step";
+    $form_info['path'] = "admin/structure/pages/add/$task_name/%step";
   }
   else {
     $new_page = page_manager_page_new();
@@ -245,7 +245,7 @@ function page_manager_page_add_subtask($task_name = NULL, $step = NULL) {
 
     $page = new stdClass();
     page_manager_page_new_page_cache($new_page, $page);
-    $form_info['path'] = 'admin/build/pages/add/%task_name/%step';
+    $form_info['path'] = 'admin/structure/pages/add/%task_name/%step';
   }
 
   if ($step && $step != 'basic') {
@@ -897,7 +897,7 @@ function page_manager_page_form_argument(&$form, &$form_state) {
     $form['table']['argument'][$keyword]['change-url'] = array(
       '#attributes' => array('class' => array("page-manager-context-$keyword-change-url")),
       '#type' => 'hidden',
-      '#value' => url("admin/build/pages/argument/change/$task_name/$keyword", array('absolute' => TRUE)),
+      '#value' => url("admin/structure/pages/argument/change/$task_name/$keyword", array('absolute' => TRUE)),
     );
     $form['table']['argument'][$keyword]['change'] = array(
       '#type' => 'submit',
@@ -914,7 +914,7 @@ function page_manager_page_form_argument(&$form, &$form_state) {
       $form['table']['argument'][$keyword]['settings-url'] = array(
         '#attributes' => array('class' => array("page-manager-context-$keyword-settings-url")),
         '#type' => 'hidden',
-        '#value' => url("admin/build/pages/argument/settings/$task_name/$keyword", array('absolute' => TRUE)),
+        '#value' => url("admin/structure/pages/argument/settings/$task_name/$keyword", array('absolute' => TRUE)),
       );
       $form['table']['argument'][$keyword]['settings'] = array(
         '#type' => 'submit',
@@ -992,7 +992,7 @@ function page_manager_page_subtask_argument_ajax($step = NULL, $task_name = NULL
   // Set up wizard info
   $form_info = array(
     'id' => 'page_manager_page_argument',
-    'path' => "admin/build/pages/argument/%step/$task_name/$keyword",
+    'path' => "admin/structure/pages/argument/%step/$task_name/$keyword",
     'show cancel' => TRUE,
     'next callback' => 'page_manager_page_argument_next',
     'finish callback' => 'page_manager_page_argument_finish',
@@ -1485,7 +1485,7 @@ function page_manager_page_form_delete_submit(&$form, &$form_state) {
   $page = $form_state['page']->subtask['subtask'];
   page_manager_page_delete($page);
   if ($page->type != t('Overridden')) {
-    $form_state['redirect'] = 'admin/build/pages';
+    $form_state['redirect'] = 'admin/structure/pages';
     drupal_set_message(t('The page has been deleted.'));
   }
   else {

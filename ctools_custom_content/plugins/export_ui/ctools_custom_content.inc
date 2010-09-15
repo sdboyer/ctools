@@ -16,9 +16,6 @@ $plugin = array(
   'title plural' => t('content panes'),
   'title plural proper' => t('Content panes'),
 
-  'handler' => array(
-    'class' => 'ctools_custom_content_ui',
-    'parent' => 'ctools_export_ui',
-  ),
+  'handler' => 'ctools_custom_content_ui',
 );
 

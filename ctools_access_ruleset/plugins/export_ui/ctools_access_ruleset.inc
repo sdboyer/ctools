@@ -16,10 +16,7 @@ $plugin = array(
   'title plural' => t('rulesets'),
   'title plural proper' => t('Rulesets'),
 
-  'handler' => array(
-    'class' => 'ctools_access_ruleset_ui',
-    'parent' => 'ctools_export_ui',
-  ),
+  'handler' => 'ctools_access_ruleset_ui',
 
   'use wizard' => TRUE,
   'form info' => array(

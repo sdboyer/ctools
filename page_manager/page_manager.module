@@ -39,7 +39,19 @@ define('PAGE_MANAGER_CHANGED_STATUS', 0x08);
  * Implements hook_permission().
  */
 function page_manager_permission() {
-  return array('use page manager', 'administer page manager');
+  return array(
+    'use page manager' => array(
+      'title' => t('Use Page Manager'),
+      'description' => t("Allows users to use most of Page Manager's features, though restricts some of the most powerful, potentially site-damaging features. Note that even the reduced featureset still allows for enormous control over your website."),
+      'restrict access' => TRUE,
+    ),
+    'administer page manager' => array(
+      'title' => t('Administer Page Manager'),
+      'description' => t('Allows complete control over Page Manager, i.e., complete control over your site. Grant with extreme caution.'),
+      'restrict access' => TRUE,
+    ),
+  );
+
 }
 
 /**
@@ -83,39 +95,39 @@ function page_manager_menu() {
     'file' => 'page_manager.admin.inc',
   );
 
-  $items['admin/build/pages'] = array(
+  $items['admin/structure/pages'] = array(
     'title' => 'Pages',
     'description' => 'Add, edit and remove overridden system pages and user defined pages from the system.',
     'page callback' => 'page_manager_list_page',
   ) + $base;
 
-  $items['admin/build/pages/list'] = array(
+  $items['admin/structure/pages/list'] = array(
     'title' => 'List',
     'page callback' => 'page_manager_list_page',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
   ) + $base;
 
-  $items['admin/build/pages/edit/%page_manager_cache'] = array(
+  $items['admin/structure/pages/edit/%page_manager_cache'] = array(
     'title' => 'Edit',
     'page callback' => 'page_manager_edit_page',
     'page arguments' => array(4),
     'type' => MENU_CALLBACK,
   ) + $base;
 
-  $items['admin/build/pages/%ctools_js/operation/%page_manager_cache'] = array(
+  $items['admin/structure/pages/%ctools_js/operation/%page_manager_cache'] = array(
     'page callback' => 'page_manager_edit_page_operation',
     'page arguments' => array(3, 5),
     'type' => MENU_CALLBACK,
   ) + $base;
 
-  $items['admin/build/pages/%ctools_js/enable/%page_manager_cache'] = array(
+  $items['admin/structure/pages/%ctools_js/enable/%page_manager_cache'] = array(
     'page callback' => 'page_manager_enable_page',
     'page arguments' => array(FALSE, 3, 5),
     'type' => MENU_CALLBACK,
   ) + $base;
 
-  $items['admin/build/pages/%ctools_js/disable/%page_manager_cache'] = array(
+  $items['admin/structure/pages/%ctools_js/disable/%page_manager_cache'] = array(
     'page callback' => 'page_manager_enable_page',
     'page arguments' => array(TRUE, 3, 5),
     'type' => MENU_CALLBACK,
@@ -190,9 +202,6 @@ function page_manager_theme() {
   );
 
   $items = array(
-    'page_manager_list_pages_form' => array(
-      'arguments' => array('form' => NULL),
-    ) + $base,
     'page_manager_handler_rearrange' => array(
       'arguments' => array('form' => NULL),
     ) + $base,
@@ -751,7 +760,13 @@ function page_manager_get_task_subtasks($task) {
   }
 
   if ($function = ctools_plugin_get_function($task, 'subtasks callback')) {
-    return $function($task);
+    $retval = $function($task);
+    if (is_array($retval)) {
+      return $retval;
+    }
+    else {
+      dsm($retval);
+    }
   }
 
   return array();
@@ -1032,10 +1047,10 @@ function page_manager_edit_url($task_name, $trail = array()) {
   }
 
   if (empty($trail) || $trail == array('summary')) {
-    return "admin/build/pages/edit/$task_name";
+    return "admin/structure/pages/edit/$task_name";
   }
 
-  return 'admin/build/pages/nojs/operation/' . $task_name . '/' . implode('/', $trail);
+  return 'admin/structure/pages/nojs/operation/' . $task_name . '/' . implode('/', $trail);
 }
 
 /**
@@ -1145,7 +1160,7 @@ function page_manager_get_current_page($page = NULL) {
 function page_manager_panels_dashboard_blocks(&$vars) {
   $vars['links']['page_manager'] = array(
     'weight' => -100,
-    'title' => l(t('Panel page'), 'admin/build/pages/add'),
+    'title' => l(t('Panel page'), 'admin/structure/pages/add'),
     'description' => t('Panel pages can be used as landing pages. They have a URL path, accept arguments and can have menu entries.'),
   );
 
@@ -1174,8 +1189,8 @@ function page_manager_panels_dashboard_blocks(&$vars) {
   $vars['blocks']['page_manager'] = array(
     'weight' => -100,
     'title' => t('Manage pages'),
-    'link' => l(t('Go to list'), 'admin/build/pages'),
-    'content' => theme('table', array(), $rows, array('class' => 'panels-manage')),
+    'link' => l(t('Go to list'), 'admin/structure/pages'),
+    'content' => theme('table', array('header' => array(), 'rows' => $rows, 'attributes' => array('class' => 'panels-manage'))),
     'class' => 'dashboard-pages',
     'section' => 'right',
   );

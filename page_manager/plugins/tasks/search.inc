@@ -254,6 +254,7 @@ function page_manager_search_enable($cache, $status) {
  * Return a list of all subtasks.
  */
 function page_manager_search_subtasks($task) {
+  $return = array();
   foreach (module_implements('search') as $name) {
     if(module_invoke($name, 'search', 'name')) {
       $return[$name] = page_manager_search_build_subtask($task, $name);

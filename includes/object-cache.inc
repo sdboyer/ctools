@@ -132,7 +132,7 @@ function ctools_object_cache_test($obj, $name) {
  *   An array of objects containing the UID and updated date for each name found.
  */
 function ctools_object_cache_test_objects($obj, $names) {
-  return db_query("SELECT c.name, s.uid, c.updated FROM {ctools_object_cache} c INNER JOIN {sessions} s ON c.sid = s.sid WHERE c.obj = ':obj' AND c.name IN (:names) ORDER BY c.updated ASC", array(':obj' => $obj, ':names' => $names))
+  return db_query("SELECT c.name, s.uid, c.updated FROM {ctools_object_cache} c INNER JOIN {sessions} s ON c.sid = s.sid WHERE c.obj = :obj AND c.name IN (:names) ORDER BY c.updated ASC", array(':obj' => $obj, ':names' => $names))
     ->fetchAllAssoc('name');
 }
 

@@ -53,7 +53,7 @@ function stylizer_ctools_plugin_type() {
  */
 function stylizer_panels_dashboard_blocks(&$vars) {
   $vars['links']['stylizer'] = array(
-    'title' => l(t('Custom style'), 'admin/build/stylizer/add'),
+    'title' => l(t('Custom style'), 'admin/structure/stylizer/add'),
     'description' => t('Custom styles can be applied to Panel regions and Panel panes.'),
   );
 
@@ -74,7 +74,7 @@ function stylizer_panels_dashboard_blocks(&$vars) {
         check_plain($item->admin_title),
         $type,
         array(
-          'data' => l(t('Edit'), "admin/build/stylizer/list/$item->name/edit"),
+          'data' => l(t('Edit'), "admin/structure/stylizer/list/$item->name/edit"),
           'class' => 'links',
         ),
       );
@@ -95,7 +95,7 @@ function stylizer_panels_dashboard_blocks(&$vars) {
 
   $vars['blocks']['stylizer'] = array(
     'title' => t('Manage styles'),
-    'link' => l(t('Go to list'), 'admin/build/stylizer'),
+    'link' => l(t('Go to list'), 'admin/structure/stylizer'),
     'content' => $content,
     'class' => 'dashboard-styles',
     'section' => 'left',

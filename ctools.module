@@ -165,6 +165,27 @@ function ctools_add_js($file, $module = 'ctools', $dir = 'js') {
 }
 
 /**
+ * Format a javascript file name for use with $form['#attached']['js'].
+ *
+ * This helper function is used by ctools but can also be used in other
+ * modules in the same way as explained in the comments of ctools_include.
+ *
+ * @code
+ *   $form['#attached']['js'] = array(ctools_attach_js('auto-submit'));
+ * @endcode
+ *
+ * @param $file
+ *   The base file name to be included.
+ * @param $module
+ *   Optional module containing the include.
+ * @param $dir
+ *   Optional subdirectory containing the include file.
+ */
+function ctools_attach_js($file, $module = 'ctools', $dir = 'js') {
+  return drupal_get_path('module', $module) . "/$dir/$file.js";
+}
+
+/**
  * Get a list of roles in the system.
  *
  * @return
@@ -296,7 +317,7 @@ function ctools_init() {
   }
 
   // Clear plugin cache on the module page submit.
-  if ($_GET['q'] == 'admin/build/modules/list/confirm' && !empty($_POST)) {
+  if ($_GET['q'] == 'admin/modules/list/confirm' && !empty($_POST)) {
     cache_clear_all('ctools_plugin_files:', 'cache', TRUE);
   }
 }
@@ -401,6 +422,17 @@ function ctools_file_download($filepath) {
       return array('Content-type:' . $mime);
     }
   }
+}
+
+/**
+ * Implements hook_registry_files_alter().
+ *
+ * Alter the registry of files to automagically include all classes in
+ * class-based plugins.
+ */
+function ctools_registry_files_alter(&$files, $indexed_modules) {
+  ctools_include('registry');
+  return _ctools_registry_files_alter($files, $indexed_modules);
 }
 
 // -----------------------------------------------------------------------
