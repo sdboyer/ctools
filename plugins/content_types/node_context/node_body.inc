@@ -48,8 +48,9 @@ function ctools_node_body_content_type_render($subtype, $conf, $panel_args, $con
 /**
  * Returns an edit form for custom type settings.
  */
-function ctools_node_body_content_type_edit_form(&$form, &$form_state) {
+function ctools_node_body_content_type_edit_form($form, &$form_state) {
   // provide a blank form so we have a place to have context setting.
+  return $form;
 }
 
 /**

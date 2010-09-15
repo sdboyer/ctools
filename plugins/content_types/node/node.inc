@@ -192,7 +192,7 @@ function ctools_node_content_type_edit_form(&$form, &$form_state) {
     '#options' => $build_mode_options,
     '#default_value' => $conf['build_mode'],
   );
-
+  return $form;
 }
 
 /**
