@@ -11,25 +11,25 @@
  */
 function ctools_context_theme(&$theme) {
   $theme['ctools_context_list'] = array(
-    'arguments' => array('object'),
+    'variables' => array('object' => NULL),
     'file' => 'includes/context.theme.inc',
   );
   $theme['ctools_context_list_no_table'] = array(
-    'arguments' => array('object'),
+    'variables' => array('object' => NULL),
     'file' => 'includes/context.theme.inc',
   );
   $theme['ctools_context_item_form'] = array(
-    'arguments' => array('form'),
+    'variables' => array('form' => NULL),
     'file' => 'includes/context.theme.inc',
   );
   $theme['ctools_context_item_row'] = array(
-    'arguments' => array('type', 'form', 'position', 'count', 'with_tr' => TRUE),
+    'variables' => array('type' => NULL, 'form' => NULL, 'position' => NULL, 'count' => NULL, 'with_tr' => TRUE),
     'file' => 'includes/context.theme.inc',
   );
 
   // For the access plugin
   $theme['ctools_access_admin_add'] = array(
-    'arguments' => array('form'),
+    'variables' => array('form' => NULL),
     'file' => 'includes/context-admin.inc',
   );
 }
@@ -37,7 +37,12 @@ function ctools_context_theme(&$theme) {
 /**
  * Theme the form item for the context entry.
  */
-function theme_ctools_context_item_row($type, $form, $position, $count, $with_tr = TRUE) {
+function theme_ctools_context_item_row($vars) {
+  $type = $vars['type'];
+  $form = $vars['form'];
+  $position = $vars['position'];
+  $count = $vars['count'];
+  $with_tr = $vars['with_tr'];
   $output = '<td class="title">&nbsp;' . drupal_render($form['title']) . '</td>';
   if (!empty($form['position'])) {
     $output .= '<td class="position">&nbsp;' . drupal_render($form['position']) . '</td>';
@@ -54,7 +59,8 @@ function theme_ctools_context_item_row($type, $form, $position, $count, $with_tr
 /**
  * Display the context item.
  */
-function theme_ctools_context_item_form($form) {
+function theme_ctools_context_item_form($vars) {
+  $form = $vars['form'];
   $output = '';
   $type   = $form['#ctools_context_type'];
   $module = $form['#ctools_context_module'];
@@ -117,7 +123,10 @@ function theme_ctools_context_item_form($form) {
  *
  * Contexts must be preloaded.
  */
-function theme_ctools_context_list($object, $header = '', $description = '') {
+function theme_ctools_context_list($vars) {
+  $object = $vars['object'];
+  $header = $vars['header'];
+  $description = $vars['description'];
   $titles = array();
   $output = '';
   $count  = 1;
@@ -237,7 +246,8 @@ function theme_ctools_context_list($object, $header = '', $description = '') {
  * ctools_context_list() but not in a table format because tabledrag
  * won't let us have tables within tables and still drag.
  */
-function theme_ctools_context_list_no_table($object) {
+function theme_ctools_context_list_no_table($vars) {
+  $object = $vars['object'];
   ctools_add_css('context');
   $titles = array();
   $output = '';

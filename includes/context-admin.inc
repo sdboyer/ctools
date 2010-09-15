@@ -482,7 +482,12 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
       $output[] = ctools_ajax_command_replace('div#ctools-relationships-table div.buttons', drupal_render($rel_form));
     }
 
-    $text = theme('ctools_context_item_row', $type, $arg_form[$type][$position], $position, $position);
+    $theme_vars = array();
+    $theme_vars['type'] = $type;
+    $theme_vars['form'] = $arg_form[$type][$position];
+    $theme_vars['position'] = $position;
+    $theme_vars['count'] = $position;
+    $text = theme('ctools_context_item_row', $theme_vars);
     $output[] = ctools_ajax_command_append('#' . $type . '-table tbody', $text);
     $output[] = ctools_ajax_command_changed('#' . $type . '-row-' . $position, '.title');
     $output[] = ctools_modal_command_dismiss();
@@ -572,10 +577,16 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
     ctools_context_add_item_to_form($module, $type, $object_name, $arg_form[$type][$position], $position, $ref[$position]);
     $arg_form = form_builder('ctools_context_form', $arg_form, $arg_form_state);
 
-    $output[] = ctools_ajax_command_replace('#' . $type . '-row-' . $position, theme('ctools_context_item_row', $type, $arg_form[$type][$position], $position, $position));
+    $theme_vars = array();
+    $theme_vars['type'] = $type;
+    $theme_vars['form'] = $arg_form[$type][$position];
+    $theme_vars['position'] = $position;
+    $theme_vars['count'] = $position;
+    $output[] = ctools_ajax_command_replace('#' . $type . '-row-' . $position, theme('ctools_context_item_row', $theme_vars));
     $output[] = ctools_ajax_command_changed('#' . $type . '-row-' . $position, '.title');
   }
-  ctools_ajax_render($output);
+  print ajax_render($output);
+  ajax_footer();
 }
 
 /**
