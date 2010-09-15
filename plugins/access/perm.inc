@@ -23,7 +23,7 @@ $plugin = array(
 /**
  * Settings form for the 'by perm' access plugin
  */
-function ctools_perm_ctools_access_settings(&$form, &$form_state, $conf) {
+function ctools_perm_ctools_access_settings($form, &$form_state, $conf) {
   $perms = array();
   // Get list of permissions
   foreach (module_list(FALSE, FALSE, TRUE) as $module) {

@@ -24,7 +24,7 @@ $plugin = array(
 /**
  * Settings form for the 'by term_vocabulary' access plugin
  */
-function ctools_term_vocabulary_ctools_access_settings(&$form, &$form_state, $conf) {
+function ctools_term_vocabulary_ctools_access_settings($form, &$form_state, $conf) {
   $options = array();
   $vocabularies = taxonomy_get_vocabularies();
   foreach ($vocabularies as $voc) {
@@ -38,12 +38,13 @@ function ctools_term_vocabulary_ctools_access_settings(&$form, &$form_state, $co
     '#description' => t('Only the checked vocabularies will be valid.'),
     '#default_value' => $conf['vids'],
   );
+  return $form;
 }
 
 /**
  * Compress the term_vocabularys allowed to the minimum.
  */
-function ctools_term_vocabulary_ctools_access_settings_submit(&$form, &$form_state) {
+function ctools_term_vocabulary_ctools_access_settings_submit($form, &$form_state) {
   $form_state['values']['settings']['vids'] = array_filter($form_state['values']['settings']['vids']);
 }
 
