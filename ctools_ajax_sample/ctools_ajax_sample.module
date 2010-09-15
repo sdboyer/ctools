@@ -26,16 +26,6 @@ function ctools_ajax_sample_menu() {
     'access callback' => TRUE,
     'type' => MENU_CALLBACK,
   );
-  $items['ctools_ajax_sample/%ctools_js/hello'] = array(
-      'title' => 'Hello World',
-      'page callback' => 'ctools_build_form',
-      'page arguments' => array('ctools_ajax_sample_hello'),
-      'page arguments' => array(1),
-      'access callback' => TRUE,
-      'type' => MENU_CALLBACK,
-      'file' => 'form.inc',
-      'file path' => drupal_get_path('module', 'ctools') .'/includes',
-  );
   $items['ctools_ajax_sample/%ctools_js/tablenix/%'] = array(
       'title' => 'Hello World',
       'page callback' => 'ctools_ajax_sample_tablenix',
@@ -75,19 +65,22 @@ function ctools_ajax_sample_menu() {
 }
 
 function ctools_ajax_simple_form() {
-  ctools_include('form');
-  $form_state = array();
-  return ctools_build_form('ctools_ajax_simple_form_form', $form_state);
+  ctools_include('content');
+  ctools_include('context');
+  $node = node_load(1);
+  $context = ctools_context_create('node', $node);
+  $context = array('context_node_1' => $context);
+  return ctools_content_render('node_comment_form', 'node_comment_form', ctools_ajax_simple_form_pane(), array(), array(), $context);
 }
 
-function ctools_ajax_simple_form_form() {
-  $form = array();
-
-  $form['textfield'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Test Textfield'),
+function ctools_ajax_simple_form_pane() {
+  $configuration = array(
+    'anon_links' => 0,
+    'context' => 'context_node_1',
+    'override_title' => 0,
+    'override_title_text' => '',
   );
-  return $form;
+  return $configuration;
 }
 
 /**
@@ -719,3 +712,4 @@ function ctools_ajax_sample_jump_menu_page() {
   $output = t('You successfully jumped! !return_link', array('!return_link' => $return_link));
   return $output; 
 }
+

@@ -59,14 +59,15 @@ function ctools_search_form_content_type_render($subtype, $conf, $panel_args, $c
 
   $form_state = array(
     'no_redirect' => TRUE,
-    'args' => array(url($path), $keys, $conf['type'], $prompt),
+    'build_info' => array(
+      'args' => array(url($path), $keys, $conf['type'], $prompt),
+    ),
   );
 
-  ctools_include('form');
   module_load_include('inc', 'search', 'search.pages');
 
   $form_id = $conf['form'] == 'simple' ? 'ctools_search_form' : 'search_form';
-  $block->content = ctools_build_form($form_id, $form_state);
+  $block->content = drupal_build_form($form_id, $form_state);
 
   // We do the redirect manually because the built in search form is stupid
   // and won't redirect even though action is a valid argument for it.

@@ -29,14 +29,20 @@ function ctools_node_comment_form_content_type_render($subtype, $conf, $panel_ar
     $block->content = t('Comment form here.');
   }
   else {
-    if (user_access('post comments') && node_comment_mode($node->nid) == COMMENT_NODE_READ_WRITE) {
-      ctools_include('form');
+    if (user_access('post comments') && $node->comment == COMMENT_NODE_OPEN) {
+      $comment = new stdClass();
+      $comment->nid = $node->nid;
+      $comment->pid = NULL;
       $form_state = array(
         'ctools comment alter' => TRUE,
         'node' => $node,
-        'args' => array(array('nid' => $node->nid))
+        'build_info' => array(
+          'args' => array(
+            $comment,
+          ),
+        ),
       );
-      $block->content = ctools_build_form('comment_form', $form_state);
+      $block->content = drupal_build_form('comment_form', $form_state);
     }
     else if (!empty($conf['anon_links'])) {
       $block->content = theme('comment_post_forbidden', $node);
