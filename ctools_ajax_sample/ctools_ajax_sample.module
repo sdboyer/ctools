@@ -388,7 +388,8 @@ function ctools_ajax_sample_animal($js = NULL, $step = NULL) {
 
   // Send this all off to our form. This is like drupal_get_form only wizardy.
   ctools_include('wizard');
-  $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
+  $form = ctools_wizard_multistep_form($form_info, $step, $form_state);
+  $output = drupal_render($form);
 
   if ($output === FALSE || !empty($form_state['complete'])) {
     // This creates a string based upon the animal and its setting using
