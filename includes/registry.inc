@@ -21,7 +21,7 @@ function _ctools_registry_files_alter(&$files, $indexed_modules) {
     $modules[$module_object->name] = $module_object;
   }
 
-  $all_type_info = ctools_plugin_get_plugin_type_info();
+  $all_type_info = ctools_plugin_get_plugin_type_info(TRUE);
   foreach ($all_type_info as $module => $plugin_types) {
     foreach ($plugin_types as $plugin_type_name => $plugin_type_info) {
       if (empty($plugin_type_info['classes'])) {

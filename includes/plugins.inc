@@ -286,18 +286,18 @@ function ctools_get_plugins($module, $type, $id = NULL) {
  *   A multilevel array of plugin type info, the outer array keyed on module
  *   name and each inner array keyed on plugin type name.
  */
-function ctools_plugin_get_plugin_type_info() {
+function ctools_plugin_get_plugin_type_info($flush = FALSE) {
   $info_loaded = &drupal_static('ctools_plugin_type_info_loaded', FALSE);
   $all_type_info = &drupal_static('ctools_plugin_type_info', array());
 
   // Only trigger info loading once.
-  if ($info_loaded) {
+  if ($info_loaded && !$flush) {
     return $all_type_info;
   }
   $info_loaded = TRUE;
 
   $cache = cache_get('ctools_plugin_type_info');
-  if (!empty($cache->data)) {
+  if (!empty($cache->data) && !$flush) {
     // Plugin type info cache is warm, use it.
     $all_type_info = $cache->data;
   }
