@@ -310,7 +310,7 @@ function ctools_plugin_get_plugin_type_info($flush = FALSE) {
 
       foreach ($module_infos as $plugin_type_name => $plugin_type_info) {
         // Apply defaults. Array addition will not overwrite pre-existing keys.
-        $info += array(
+        $plugin_type_info += array(
           'module' => $module,
           'type' => $plugin_type_name,
           'cache' => FALSE,
