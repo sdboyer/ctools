@@ -308,11 +308,11 @@ function ctools_plugin_get_plugin_type_info($flush = FALSE) {
       $function = $module . '_ctools_plugin_type';
       $module_infos = $function();
 
-      foreach ($module_infos as $type => $info) {
+      foreach ($module_infos as $plugin_type_name => $plugin_type_info) {
         // Apply defaults. Array addition will not overwrite pre-existing keys.
         $info += array(
           'module' => $module,
-          'type' => $type,
+          'type' => $plugin_type_name,
           'cache' => FALSE,
           'cache table' => 'cache',
           'classes' => array(),
@@ -321,10 +321,10 @@ function ctools_plugin_get_plugin_type_info($flush = FALSE) {
           'process' => '',
           'extension' => 'inc',
           'info file' => FALSE,
-          'hook' => $module . '_' . $type,
+          'hook' => $module . '_' . $plugin_type_name,
           'load themes' => FALSE,
         );
-        $all_type_info[$module][$type] = $info;
+        $all_type_info[$module][$plugin_type_name] = $plugin_type_info;
       }
     }
     cache_set('ctools_plugin_type_info', $all_type_info);
