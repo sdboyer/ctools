@@ -25,7 +25,7 @@ if (module_exists('locale')) {
 /**
  * Settings form for the 'by site_language' access plugin
  */
-function ctools_site_language_ctools_access_settings(&$form, &$form_state, $conf) {
+function ctools_site_language_ctools_access_settings($form, &$form_state, $conf) {
   $options = array(
     'default' => t('Default site language'),
   );
@@ -37,6 +37,7 @@ function ctools_site_language_ctools_access_settings(&$form, &$form_state, $conf
     '#description' => t('Pass only if the current site language is one of the selected languages.'),
     '#default_value' => $conf['language'],
   );
+  return $form;
 }
 
 /**

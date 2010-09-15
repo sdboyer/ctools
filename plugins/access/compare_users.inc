@@ -28,7 +28,7 @@ $plugin = array(
 /**
  * Settings form for the 'by perm' access plugin
  */
-function ctools_compare_users_settings(&$form, &$form_state, $conf) {
+function ctools_compare_users_settings($form, &$form_state, $conf) {
 
   $form['settings']['helptext'] = array(
     '#type' => 'markup',
@@ -41,6 +41,7 @@ function ctools_compare_users_settings(&$form, &$form_state, $conf) {
     '#options' => array(1 => t('Equal'), 0 => t('Not equal')),
     '#default_value' => $conf['equality'],
   );
+  return $form;
 }
 
 /**

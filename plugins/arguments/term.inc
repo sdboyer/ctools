@@ -76,7 +76,7 @@ function ctools_term_context($arg = NULL, $conf = NULL, $empty = FALSE) {
 /**
  * Settings form for the argument
  */
-function ctools_term_settings_form(&$form, &$form_state, $conf) {
+function ctools_term_settings_form($form, &$form_state, $conf) {
   // @todo allow synonym use like Views does.
   $form['settings']['input_form'] = array(
     '#title' => t('Argument type'),
@@ -106,6 +106,7 @@ function ctools_term_settings_form(&$form, &$form_state, $conf) {
     '#default_value' => !empty($conf['breadcrumb']),
     '#description' => t('If checked, taxonomy term parents will appear in the breadcrumb trail.'),
   );
+  return $form;
 }
 
 /**

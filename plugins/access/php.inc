@@ -26,7 +26,7 @@ $plugin = array(
  * @todo Need a way to provide a list of all available contexts to be used by
  *       the eval-ed PHP.
  */
-function ctools_php_ctools_access_settings(&$form, &$form_state, $conf) {
+function ctools_php_ctools_access_settings($form, &$form_state, $conf) {
   $perms = array();
 
   $form['settings']['description'] = array(
@@ -46,6 +46,7 @@ function ctools_php_ctools_access_settings(&$form, &$form_state, $conf) {
     $form['settings']['php']['#value'] = $conf['php'];
     $form['settings']['php']['#description'] .= ' ' . t('You do not have sufficient permissions to edit PHP code.');
   }
+  return $form;
 }
 
 /**

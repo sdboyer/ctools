@@ -111,7 +111,7 @@ function ctools_node_content_type_render($subtype, $conf, $panel_args) {
 /**
  * The form to add or edit a node as content.
  */
-function ctools_node_content_type_edit_form(&$form, &$form_state) {
+function ctools_node_content_type_edit_form($form, &$form_state) {
   $conf = $form_state['conf'];
 
   $form['leave_node_title'] = array(
@@ -192,7 +192,7 @@ function ctools_node_content_type_edit_form(&$form, &$form_state) {
     '#options' => $build_mode_options,
     '#default_value' => $conf['build_mode'],
   );
-
+  return $form;
 }
 
 /**
@@ -233,7 +233,7 @@ function  ctools_node_content_type_edit_form_validate(&$form, &$form_state) {
 /**
  * Validate the node selection.
  */
-function ctools_node_content_type_edit_form_submit(&$form, &$form_state) {
+function ctools_node_content_type_edit_form_submit($form, &$form_state) {
   foreach (array('nid', 'links', 'leave_node_title', 'link_node_title', 'identifier', 'build_mode') as $key) {
     $form_state['conf'][$key] = $form_state['values'][$key];
   }

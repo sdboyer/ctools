@@ -40,6 +40,7 @@ function ctools_node_form_comment_content_type_admin_title($subtype, $conf, $con
   return t('"@s" node form comment settings', array('@s' => $context->identifier));
 }
 
-function ctools_node_form_comment_content_type_edit_form(&$form, &$form_state) {
+function ctools_node_form_comment_content_type_edit_form($form, &$form_state) {
   // provide a blank form so we have a place to have context setting.
+  return $form;
 }

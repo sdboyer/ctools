@@ -56,16 +56,17 @@ function ctools_node_comment_form_content_type_admin_title($subtype, $conf, $con
   return t('"@s" comment form', array('@s' => $context->identifier));
 }
 
-function ctools_node_comment_form_content_type_edit_form(&$form, &$form_state) {
+function ctools_node_comment_form_content_type_edit_form($form, &$form_state) {
   $form['anon_links'] = array(
     '#type'  => 'checkbox',
     '#title' => t('Shows links to register or login.'),
     '#description' => t('If anonymous comments are not allowed, this will display the register and login links.'),
     '#default_value' => $form_state['conf']['anon_links'],
   );
+  return $form;
 }
 
-function ctools_node_comment_form_content_type_edit_form_submit(&$form, &$form_state) {
+function ctools_node_comment_form_content_type_edit_form_submit($form, &$form_state) {
   // For each part of the form defined in the 'defaults' array set when you
   // defined the content type, copy the value from the form into the array
   // of items to be saved. We don't ever want to use

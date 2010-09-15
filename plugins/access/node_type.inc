@@ -25,7 +25,7 @@ $plugin = array(
 /**
  * Settings form for the 'by node_type' access plugin
  */
-function ctools_node_type_ctools_access_settings(&$form, &$form_state, $conf) {
+function ctools_node_type_ctools_access_settings($form, &$form_state, $conf) {
   $types = node_type_get_types();
   foreach ($types as $type => $info) {
     $options[$type] = check_plain($info->name);
@@ -38,12 +38,13 @@ function ctools_node_type_ctools_access_settings(&$form, &$form_state, $conf) {
     '#description' => t('Only the checked node types will be valid.'),
     '#default_value' => $conf['type'],
   );
+  return $form;
 }
 
 /**
  * Compress the node_types allowed to the minimum.
  */
-function ctools_node_type_ctools_access_settings_submit(&$form, &$form_state) {
+function ctools_node_type_ctools_access_settings_submit($form, &$form_state) {
   $form_state['values']['settings']['type'] = array_filter($form_state['values']['settings']['type']);
 }
 
