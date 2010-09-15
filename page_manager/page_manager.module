@@ -191,17 +191,17 @@ function page_manager_theme() {
 
   $items = array(
     'page_manager_handler_rearrange' => array(
-      'arguments' => array('form' => NULL),
+      'variables' => array('form' => NULL),
     ) + $base,
     'page_manager_edit_page' => array(
       'template' => 'page-manager-edit-page',
-      'arguments' => array('page' => NULL, 'save' => NULL, 'operations' => array(), 'content' => array()),
+      'variables' => array('page' => NULL, 'save' => NULL, 'operations' => array(), 'content' => array()),
     ) + $base,
     'page_manager_lock' => array(
-      'arguments' => array('page' => array()),
+      'variables' => array('page' => array()),
     ) + $base,
     'page_manager_changed' => array(
-      'arguments' => array('text' => NULL, 'description' => NULL),
+      'variables' => array('text' => NULL, 'description' => NULL),
     ) + $base,
   );
 
@@ -475,7 +475,7 @@ function page_manager_load_task_handlers($task, $subtask_id = NULL, $default_han
       $placeholders[] = "'%s'";
     }
 
-    $result = db_query('SELECT name, weight FROM {page_manager_weights} WHERE name IN :names', array(':names' => $names));
+    $result = db_query('SELECT name, weight FROM {page_manager_weights} WHERE name IN (:names)', array(':names' => $names));
     foreach ($result as $weight) {
       $handlers[$weight->name]->weight = $weight->weight;
     }
