@@ -178,7 +178,7 @@ class ctools_export_ui {
     );
 
     ctools_include('form');
-    $form = ctools_build_form('ctools_export_ui_list_form', $form_state);
+    $form = drupal_build_form('ctools_export_ui_list_form', $form_state);
 
     $output = $this->list_header($form_state) . $this->list_render($form_state) . $this->list_footer($form_state);
 
@@ -716,7 +716,7 @@ class ctools_export_ui {
    */
   function edit_execute_form_standard(&$form_state) {
     ctools_include('form');
-    $output = ctools_build_form('ctools_export_ui_edit_item_form', $form_state);
+    $output = drupal_build_form('ctools_export_ui_edit_item_form', $form_state);
     if (!empty($form_state['executed'])) {
       $this->edit_save_form($form_state);
     }
@@ -1132,7 +1132,7 @@ class ctools_export_ui {
 
     ctools_include('form');
 
-    $output = ctools_build_form('ctools_export_ui_delete_confirm_form', $form_state);
+    $output = drupal_build_form('ctools_export_ui_delete_confirm_form', $form_state);
     if (!empty($form_state['executed'])) {
       ctools_export_crud_delete($this->plugin['schema'], $item);
       $export_key = $this->plugin['export']['key'];

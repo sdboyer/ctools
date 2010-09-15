@@ -323,7 +323,7 @@ function ctools_content_render($type, $subtype, $conf, $keywords = array(), $arg
       }
     }
 
-    return $content;
+    return array('#markup' => drupal_render($content->content));
   }
 }
 

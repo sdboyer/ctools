@@ -30,7 +30,7 @@
  *
  * Aside from the addition of the $form_info which contains an array of
  * information and configuration so the multi-step wizard can do its thing,
- * this function works a lot like ctools_build_form.
+ * this function works a lot like drupal_build_form.
  *
  * Remember that the form builders for this form will receive
  * &$form, &$form_state, NOT just &$form_state and no additional args.
@@ -84,9 +84,9 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
     }
   }
 
-  // This tells ctools_build_form to apply our wrapper to the form. It
+  // This tells drupal_build_form to apply our wrapper to the form. It
   // will give it buttons and the like.
-  $form_state['wrapper callback'] = 'ctools_wizard_wrapper';
+  $form_state['wrapper_callback'] = 'ctools_wizard_wrapper';
   if (!isset($form_state['rerender'])) {
     $form_state['rerender'] = FALSE;
   }
@@ -94,7 +94,7 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
   $form_state['no_redirect'] = TRUE;
 
   ctools_include('form');
-  $output = ctools_build_form($info['form id'], $form_state);
+  $output = drupal_build_form($info['form id'], $form_state);
 
   if (empty($form_state['executed']) || !empty($form_state['rerender'])) {
     if (empty($form_state['title']) && !empty($info['title'])) {

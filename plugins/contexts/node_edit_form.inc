@@ -64,7 +64,7 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
     ctools_include('form');
     $form_id = $node->type . '_node_form';
 
-    $form_state = array('want form' => TRUE, 'args' => array($node));
+    $form_state = array('want form' => TRUE, 'build_info' => array('args' => array($node)));
 
     $file = drupal_get_path('module', 'node') . '/node.pages.inc';
     require_once DRUPAL_ROOT . '/' . $file;
@@ -72,7 +72,7 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
     // need to be included if this form is loaded from cache:
     $form_state['form_load_files'] = array($file);
 
-    $form = ctools_build_form($form_id, $form_state);
+    $form = drupal_build_form($form_id, $form_state);
 
     // Fill in the 'node' portion of the context
     $context->data     = $node;
