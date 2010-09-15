@@ -9,6 +9,10 @@
 function ctools_content_plugin_type(&$items) {
   $items['content_types'] = array(
     'cache' => FALSE,
-    'process' => 'ctools_content_process',
+    'process' => array(
+      'function' => 'ctools_content_process',
+      'file' => 'export-ui.inc',
+      'path' => drupal_get_path('module', 'ctools') . '/includes',
+    ),
   );
 }
