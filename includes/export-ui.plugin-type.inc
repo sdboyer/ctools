@@ -12,5 +12,6 @@
 function ctools_export_ui_plugin_type(&$items) {
   $items['export_ui'] = array(
     'process' => 'ctools_export_ui_process',
+    'classes' => array('handler'),
   );
 }

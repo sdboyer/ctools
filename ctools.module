@@ -424,6 +424,17 @@ function ctools_file_download($filepath) {
   }
 }
 
+/**
+ * Implements hook_registry_files_alter().
+ *
+ * Alter the registry of files to automagically include all classes in
+ * class-based plugins.
+ */
+function ctools_registry_files_alter(&$files, $indexed_modules) {
+  ctools_include('registry');
+  return _ctools_registry_files_alter($files, $indexed_modules);
+}
+
 // -----------------------------------------------------------------------
 // CTools hook implementations.
 
