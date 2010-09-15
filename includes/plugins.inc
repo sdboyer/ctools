@@ -165,8 +165,14 @@ function ctools_plugin_api_include($owner, $api, $minimum_version, $current_vers
 function ctools_get_plugins($module, $type, $id = NULL) {
   // Store local caches of plugins and plugin info so we don't have to do full
   // lookups everytime.
-  $info = &drupal_static('ctools_plugin_info', array());
   $plugins = &drupal_static('ctools_plugins', array());
+  $info = ctools_plugin_get_plugin_type_info();
+
+  // Bail out noisily if an invalid module/type combination is requested.
+  if (!isset($info[$module][$type])) {
+    watchdog('ctools', 'Invalid plugin module/type combination requested: module @module and type @type', array('@module' => $module, '@type' => $type), WATCHDOG_ERROR);
+    return array();
+  }
 
   // Attempt to shortcut this whole piece of code if we already have
   // the requested plugin:
@@ -177,14 +183,6 @@ function ctools_get_plugins($module, $type, $id = NULL) {
   // Store the status of plugin loading. If a module plugin type pair is true,
   // then it is fully loaded and no searching or setup needs to be done.
   $setup = &drupal_static('ctools_plugin_setup', array());
-
-  // Request metadata/defaults for this plugin from the declaring module. This
-  // is done once per page request, upon a request being made for that plugin.
-  if (!isset($info[$module][$type])) {
-    $info[$module][$type] = ctools_plugin_get_info($module, $type);
-    // Also, initialize the local plugin cache.
-    $plugins[$module][$type] = array();
-  }
 
   // We assume we don't need to build a cache.
   $build_cache = FALSE;
@@ -273,6 +271,78 @@ function ctools_get_plugins($module, $type, $id = NULL) {
 
   // At this point we should either have the plugin, or a NULL.
   return $plugins[$module][$type][$id];
+}
+
+/**
+ * Return the full list of plugin type info for all plugin types registered in
+ * the current system.
+ *
+ * This function manages its own cache getting/setting, and should always be
+ * used as the way to initially populate the list of plugin types. Make sure you
+ * call this function to properly populate the ctools_plugin_type_info static
+ * variable.
+ *
+ * @return array
+ *   A multilevel array of plugin type info, the outer array keyed on module
+ *   name and each inner array keyed on plugin type name.
+ */
+function ctools_plugin_get_plugin_type_info() {
+  $info_loaded = &drupal_static('ctools_plugin_typle_info_loaded', FALSE);
+  $all_type_info = &drupal_static('ctools_plugin_type_info', array());
+
+  // Only trigger info loading once.
+  if ($info_loaded) {
+    return $all_type_info;
+  }
+  $info_loaded = TRUE;
+
+  $cache = cache_get('ctools_plugin_type_info');
+  if (!empty($cache->data)) {
+    // Plugin type info cache is warm, use it.
+    $all_type_info = $cache->data;
+  }
+  else {
+    // Cache expired, refill it.
+    foreach (module_implements('ctools_plugin_type') as $module) {
+      $module_infos = array();
+      $function = $module . '_ctools_plugin_type';
+      $module_infos = $function();
+
+      foreach ($module_infos as $type => $info) {
+        // Apply defaults. Array addition will not overwrite pre-existing keys.
+        $info += array(
+          'module' => $module,
+          'type' => $type,
+          'cache' => FALSE,
+          'cache table' => 'cache',
+          'use hooks' => FALSE,
+          'defaults' => array(),
+          'process' => '',
+          'extension' => 'inc',
+          'info file' => FALSE,
+          'hook' => $module . '_' . $type,
+          'load themes' => FALSE,
+        );
+        $all_type_info[$module][$type] = $info;
+      }
+    }
+    cache_set('ctools_plugin_type_info', $all_type_info);
+  }
+
+  // Initialize the plugins static cache with empty arrays for all known
+  // module/plugin type combinations.
+  $plugins = &drupal_static('ctools_plugins', array());
+
+  foreach ($all_type_info as $module => $infos) {
+    $infos = array_fill_keys(array_keys($infos), array());
+    if (!isset($plugins[$module])) {
+      // Initialize it if not already set (which should typically be the case)
+      $plugins[$module] = array();
+    }
+    $plugins[$module] += $infos;
+  }
+
+  return $all_type_info;
 }
 
 /**
@@ -597,28 +667,8 @@ function ctools_plugin_process_info($info, $module, $file) {
  * Ask a module for info about a particular plugin type.
  */
 function ctools_plugin_get_info($module, $type) {
-  $info = array();
-  $function = $module . '_ctools_plugin_' . $type;
-  if (function_exists($function)) {
-    $info = $function();
-  }
-
-  // Apply defaults. Array addition will not overwrite pre-existing keys.
-  $info += array(
-    'module' => $module,
-    'type' => $type,
-    'cache' => FALSE,
-    'cache table' => 'cache',
-    'use hooks' => FALSE,
-    'defaults' => array(),
-    'process' => '',
-    'extension' => 'inc',
-    'info file' => FALSE,
-    'hook' => $module . '_' . $type,
-    'load themes' => FALSE,
-  );
-
-  return $info;
+  $all_info = ctools_plugin_get_plugin_type_info();
+  return isset($all_info[$module][$type]) ? $all_info[$module][$type] : array();
 }
 
 /**

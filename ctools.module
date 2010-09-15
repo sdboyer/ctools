@@ -417,12 +417,19 @@ function ctools_ctools_plugin_directory($owner, $plugin_type) {
 }
 
 /**
- * Inform CTools that the layout plugin can be loaded from themes.
+ * Implements hook_ctools_plugin_type().
  */
-function ctools_ctools_plugin_access() {
-  return array(
+function ctools_ctools_plugin_type() {
+  ctools_include('utility');
+  $items = array();
+  // Add all the plugins that have their own declaration space elsewhere.
+  _ctools_passthrough($items, 'plugin-type');
+
+  // And add plugins that aren't taken care of in their own, separate files.
+  $items['access'] = array(
     'child plugins' => TRUE,
   );
+  return $items;
 }
 
 // -----------------------------------------------------------------------

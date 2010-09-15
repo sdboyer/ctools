@@ -35,6 +35,18 @@ function stylizer_ctools_plugin_directory($module, $plugin) {
 }
 
 /**
+ * Implements hook_ctools_plugin_type() to inform the plugin system that
+ * Stylizer style_base plugin types.
+ */
+function stylizer_ctools_plugin_type() {
+  return array(
+    'style_bases' => array(
+      'load themes' => TRUE,
+    ),
+  );
+}
+
+/**
  * Implementation of hook_panels_dashboard_blocks().
  *
  * Adds page information to the Panels dashboard.

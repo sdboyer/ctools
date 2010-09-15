@@ -55,7 +55,6 @@ function ctools_context_create_node_add_form($empty, $data = NULL, $conf = FALSE
       global $user;
       $node = array('uid' => $user->uid, 'name' => $user->name, 'type' => $type);
 
-      ctools_include('form');
       $form_id = $node['type'] . '_node_form';
 
       $form_state = array('want form' => TRUE, 'build_info' => array('args' => array($node)));

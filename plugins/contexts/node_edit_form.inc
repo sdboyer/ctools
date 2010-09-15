@@ -61,7 +61,6 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
   }
 
   if (!empty($node)) {
-    ctools_include('form');
     $form_id = $node->type . '_node_form';
 
     $form_state = array('want form' => TRUE, 'build_info' => array('args' => array($node)));

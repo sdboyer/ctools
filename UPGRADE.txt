@@ -5,4 +5,13 @@ Upgrading from ctools-6.x-1.x to ctools-7.x-2.x:
   - All calls to ctools_css_add_css should be replaced with calls to
     drupal_add_css(). Note that the arguments to drupal_add_css() have changed.
   - All wizard form builder functions must now return a form array().
-  - ctools_build_form is very close to being removed.  In anticipation of this, all $form_state['wrapper callback']s must now be $form_state['wrapper_callback']  In addition to this $form_state['args'] must now be $form_state['build_info']['args']
+  - ctools_build_form is very close to being removed.  In anticipation of this, 
+    all $form_state['wrapper callback']s must now be 
+    $form_state['wrapper_callback']. In addition to this $form_state['args'] 
+    must now be $form_state['build_info']['args'].
+  - Plugin types now must be explicitly registered via a registration hook,
+    hook_ctools_plugin_type(); info once provided in magically-named functions
+    (e.g., ctools_ctools_plugin_content_types() was the old function to
+    provide plugin type info for ctools' content_type plugins) now must be
+    provided in that global hook. See http://drupal.org/node/910538 for more
+    details.

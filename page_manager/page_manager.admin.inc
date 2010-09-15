@@ -81,7 +81,6 @@ function page_manager_list_page($js = NULL) {
   );
 
   // This form will sort and filter the pages.
-  ctools_include('form');
   $form = drupal_build_form('page_manager_list_pages_form', $form_state);
 
   $header = array(
@@ -385,7 +384,6 @@ function page_manager_list_pages_form_submit(&$form, &$form_state) {
  * Render the edit page for a a page, custom or system.
  */
 function page_manager_edit_page($page) {
-  ctools_include('form');
   drupal_set_title($page->subtask['admin title']);
   // Provide and process the save page form before anything else.
   $form_state = array('page' => &$page);
@@ -434,7 +432,6 @@ function page_manager_edit_page_operation() {
 
   // Since this form should never be submitted to this page, process it late so
   // that we can be sure it notices changes.
-  ctools_include('form');
   $form_state = array('page' => &$page);
   $form = drupal_build_form('page_manager_save_page_form', $form_state);
 

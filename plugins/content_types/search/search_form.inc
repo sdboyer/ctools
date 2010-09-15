@@ -64,7 +64,6 @@ function ctools_search_form_content_type_render($subtype, $conf, $panel_args, $c
     ),
   );
 
-  ctools_include('form');
   module_load_include('inc', 'search', 'search.pages');
 
   $form_id = $conf['form'] == 'simple' ? 'ctools_search_form' : 'search_form';

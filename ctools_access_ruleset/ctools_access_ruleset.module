@@ -14,11 +14,14 @@
  */
 
 /**
- * Implementation of hook_perm()
+ * Implementation of hook_permission()
  */
-function ctools_access_ruleset_perm() {
+function ctools_access_ruleset_permission() {
   return array(
-    'administer ctools access ruleset',
+    'administer ctools access ruleset' => array(
+      'title' => t('Administer access rulesets'),
+      'description' => t('Add, delete and edit custom access rulesets.'),
+    ),
   );
 }
 

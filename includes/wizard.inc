@@ -93,7 +93,6 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
 
   $form_state['no_redirect'] = TRUE;
 
-  ctools_include('form');
   $output = drupal_build_form($info['form id'], $form_state);
 
   if (empty($form_state['executed']) || !empty($form_state['rerender'])) {

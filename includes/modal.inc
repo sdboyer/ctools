@@ -189,7 +189,6 @@ function ctools_modal_text_button($text, $dest, $alt, $class = '') {
  *   form will never be redirected.
  */
 function ctools_modal_form_wrapper($form_id, &$form_state) {
-  ctools_include('form');
   // This won't override settings already in.
   $form_state += array(
     're_render' => FALSE,
