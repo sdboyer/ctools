@@ -16,7 +16,7 @@
  */
 function ctools_get_style_base($style_base) {
   ctools_include('plugins');
-  return ctools_get_plugins('ctools', 'style_bases', $style_base);
+  return ctools_get_plugins('stylizer', 'style_bases', $style_base);
 }
 
 /**
@@ -27,7 +27,7 @@ function ctools_get_style_base($style_base) {
  */
 function ctools_get_style_bases() {
   ctools_include('plugins');
-  return ctools_get_plugins('ctools', 'style_bases');
+  return ctools_get_plugins('stylizer', 'style_bases');
 }
 
 /**
