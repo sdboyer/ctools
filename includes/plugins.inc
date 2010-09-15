@@ -287,7 +287,7 @@ function ctools_get_plugins($module, $type, $id = NULL) {
  *   name and each inner array keyed on plugin type name.
  */
 function ctools_plugin_get_plugin_type_info() {
-  $info_loaded = &drupal_static('ctools_plugin_typle_info_loaded', FALSE);
+  $info_loaded = &drupal_static('ctools_plugin_type_info_loaded', FALSE);
   $all_type_info = &drupal_static('ctools_plugin_type_info', array());
 
   // Only trigger info loading once.
