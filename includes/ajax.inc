@@ -128,6 +128,7 @@ function ctools_ajax_image_button($image, $dest, $alt, $class = '') {
  *   to ctools-use-ajax.
  */
 function ctools_ajax_text_button($text, $dest, $alt, $class = '', $type = 'ctools-use-ajax') {
+  drupal_add_js('misc/ajax.js');
   return l($text, $dest, array('html' => TRUE, 'attributes' => array('class' => array($type, $class), 'title' => $alt)));
 }
 
@@ -453,10 +454,6 @@ function ctools_ajax_command_submit($selector) {
  * to the AJAX requester.
  */
 function ctools_ajax_render($commands = array()) {
-  $js_files = array();
-  $settings = ctools_process_js_files($js_files, 'header');
-  $settings += ctools_process_js_files($js_files, 'footer');
-
   $query_string = '?'. substr(variable_get('css_js_query_string', '0'), 0, 1);
   $css = drupal_add_css();
   foreach ($css as $media => $types) {
@@ -509,10 +506,10 @@ function ctools_ajax_render($commands = array()) {
     // We don't use drupal_json here because the header is not true. We're not really
     // returning JSON, strictly-speaking, but rather JSON content wrapped in a <textarea>
     // as per the "file uploads" example here: http://malsup.com/jquery/form/#code-samples
-    echo '<textarea>' . drupal_to_js($commands) . '</textarea>';
+    echo '<textarea>' . drupal_json_encode($commands) . '</textarea>';
   }
   else {
-    drupal_json($commands);
+    drupal_json_output($commands);
   }
   exit;
 }
