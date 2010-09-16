@@ -222,7 +222,7 @@ function ctools_ajax_sample_hello($js = NULL) {
     exit;
   }
   else {
-    return $output;;
+    return $output;
   }
 }
 
