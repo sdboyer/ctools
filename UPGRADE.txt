@@ -1,5 +1,16 @@
 Upgrading from ctools-6.x-1.x to ctools-7.x-2.x:
 
+  - All calls to ctools_ajax_render() should be replaced with calls to core
+    ajax_render(). Note that ctools_ajax_render() printed the json object and
+    exited, ajax_render() gives you this responsibility. 
+
+    ctools_ajax_render() 
+
+    becomes
+
+    print ajax_render();
+    exit;
+
   - All calls to ctools_static*() should be replaced with corresponding calls
     to drupal_static*().
   - All calls to ctools_css_add_css should be replaced with calls to
