@@ -139,7 +139,7 @@ function page_manager_page_build_subtask($task, $page) {
   $operations = array();
   $operations['settings'] = array(
     'type' => 'group',
-    'class' => 'operations-settings',
+    'class' => array('operations-settings'),
     'title' => t('Settings'),
     'children' => array(),
   );
@@ -236,13 +236,13 @@ function page_manager_page_theme(&$items, $task) {
     'path' => drupal_get_path('module', 'page_manager') . '/plugins/tasks',
   );
   $items['page_manager_page_form_argument_table'] = $base + array(
-    'arguments' => array('form' => NULL),
+    'variables' => array('form' => NULL),
   );
   $items['page_manager_page_lock'] = $base + array(
-    'arguments' => array('lock' => array(), 'task_name' => NULL),
+    'variables' => array('lock' => array(), 'task_name' => NULL),
   );
   $items['page_manager_page_changed'] = $base + array(
-    'arguments' => array(),
+    'variables' => array(),
   );
 }
 
@@ -692,7 +692,7 @@ function page_manager_page_admin_summary($task, $subtask) {
     array('class' => array('page-summary-operation'), 'data' => $link),
   );
 
-  $output .= theme('table', array(), $rows, array('id' => 'page-manager-page-summary'));
+  $output .= theme('table', array('rows' => $rows, 'attributes' => array('id' => 'page-manager-page-summary')));
   return $output;
 }
 

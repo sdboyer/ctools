@@ -176,6 +176,10 @@ function page_manager_page_wizard_next(&$form_state) {
  */
 function page_manager_page_wizard_list($type = NULL) {
   $plugins = page_manager_get_page_wizards();
+  if (empty($plugins)) {
+    return '<p>' . t('There are no wizards available at this time.') . '</p>';
+  }
+
   uasort($plugins, 'ctools_plugin_sort');
 
   $output = '<dl class="page-manager-wizards">';
