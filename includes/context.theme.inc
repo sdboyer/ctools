@@ -30,7 +30,7 @@ function ctools_context_theme(&$theme) {
   // For the access plugin
   $theme['ctools_access_admin_add'] = array(
     'variables' => array('form' => NULL),
-    'file' => 'includes/context-admin.inc',
+    'file' => 'includes/context-access-admin.inc',
   );
 }
 
@@ -43,12 +43,12 @@ function theme_ctools_context_item_row($vars) {
   $position = $vars['position'];
   $count = $vars['count'];
   $with_tr = $vars['with_tr'];
-  $output = '<td class="title">&nbsp;' . drupal_render($form['title']) . '</td>';
+  $output = '<td class="title">&nbsp;' . render($form['title']) . '</td>';
   if (!empty($form['position'])) {
-    $output .= '<td class="position">&nbsp;' . drupal_render($form['position']) . '</td>';
+    $output .= '<td class="position">&nbsp;' . render($form['position']) . '</td>';
   }
-  $output .= '<td class="operation">' . drupal_render($form['settings']);
-  $output .= drupal_render($form['remove']) . '</td>';
+  $output .= '<td class="operation">' . render($form['settings']);
+  $output .= render($form['remove']) . '</td>';
 
   if ($with_tr) {
     $output = '<tr id="' . $type . '-row-' . $position . '" class="draggable ' . $type . '-row ' . ($count % 2 ? 'even' : 'odd') . '">' . $output . '</tr>';
@@ -75,7 +75,12 @@ function theme_ctools_context_item_form($vars) {
       if (!is_numeric($id)) {
         continue;
       }
-      $rows .= theme('ctools_context_item_row', $type, $form[$type][$id], $id, $count++);
+      $theme_vars = array();
+      $theme_vars['type'] = $type;
+      $theme_vars['form'] = $form[$type][$id];
+      $theme_vars['position'] = $id;
+      $theme_vars['count'] = $count++;
+      $rows .= theme('ctools_context_item_row', $theme_vars);
     }
 
     $output .= '<table id="' . $type . '-table">';
@@ -99,15 +104,19 @@ function theme_ctools_context_item_form($vars) {
   if (!empty($form['buttons'])) {
     // Display the add context item.
     $row   = array();
-    $row[] = array('data' => drupal_render($form['buttons'][$type]['item']), 'class' => array('title'));
-    $row[] = array('data' => drupal_render($form['buttons'][$type]['add']), 'class' => array('add'), 'width' => "60%");
+    $row[] = array('data' => render($form['buttons'][$type]['item']), 'class' => array('title'));
+    $row[] = array('data' => render($form['buttons'][$type]['add']), 'class' => array('add'), 'width' => "60%");
     $output .= '<div class="buttons">';
-    $output .= drupal_render($form['buttons'][$type]);
-    $output .= theme('table', array(), array($row), array('id' => $type . '-add-table'));
+    $output .= render($form['buttons'][$type]);
+    $theme_vars = array();
+    $theme_vars['header'] = array();
+    $theme_vars['rows'] = array($row);
+    $theme_vars['attributes'] = array('id' => $type . '-add-table');
+    $output .= theme('table', $theme_vars);
     $output .= '</div>';
   }
   if (!empty($form['description'])) {
-    $output .= drupal_render($form['description']);
+    $output .= render($form['description']);
   }
 
   if (!empty($type_info['sortable'])) {
