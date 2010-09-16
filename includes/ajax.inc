@@ -85,7 +85,7 @@ define('CTOOLS_AJAX_INCLUDED', 1);
  *
  * @code
  *   $commands = array();
- *   $commands[] = ctools_ajax_command_replace('#ctools-object-1', 'some html here');
+ *   $commands[] = ajax_command_replace('#ctools-object-1', 'some html here');
  *   $commands[] = ctools_ajax_command_changed('#ctools-object-1');
  *   print ajax_render($commands); // this function exits.
  *   exit;
