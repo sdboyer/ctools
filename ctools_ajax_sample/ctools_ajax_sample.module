@@ -217,7 +217,7 @@ function ctools_ajax_sample_hello($js = NULL) {
   if ($js) {
     ctools_include('ajax');
     $commands = array();
-    $commands[] = ctools_ajax_command_html('#ctools-sample', $output);
+    $commands[] = ajax_command_html('#ctools-sample', $output);
     print ajax_render($commands); // this function exits.
     exit;
   }
@@ -238,8 +238,8 @@ function ctools_ajax_sample_tablenix($js, $row) {
   ctools_include('ajax');
 
   $commands = array();
-  $commands[] = ctools_ajax_command_remove("tr.ajax-sample-row-$row");
-  $commands[] = ctools_ajax_command_restripe("table.ajax-sample-table");
+  $commands[] = ajax_command_remove("tr.ajax-sample-row-$row");
+  $commands[] = ajax_command_restripe("table.ajax-sample-table");
   print ajax_render($commands);
   exit;
 }
@@ -396,7 +396,7 @@ function ctools_ajax_sample_animal($js = NULL, $step = NULL) {
     $commands = array();
     if ($output === FALSE || !empty($form_state['complete'])) {
       // Dismiss the modal.
-      $commands[] = ctools_ajax_command_html('#ctools-sample', $animal);
+      $commands[] = ajax_command_html('#ctools-sample', $animal);
       $commands[] = ctools_modal_command_dismiss();
     }
     else if (!empty($form_state['cancel'])) {
@@ -712,19 +712,19 @@ function ctools_ajax_sample_jump_menu_form() {
   return $form;
 }
 
-/** 
+/**
  * Provide a message to the user that the jump menu worked
  */
-function ctools_ajax_sample_jump_menu_page() { 
+function ctools_ajax_sample_jump_menu_page() {
   $return_link = l(t('Return to the examples page.'), 'ctools_ajax_sample');
   $output = t('You successfully jumped! !return_link', array('!return_link' => $return_link));
-  return $output; 
+  return $output;
 }
 
-/** 
- * Provide a form for an example ajax modal button 
+/**
+ * Provide a form for an example ajax modal button
  */
-function ctools_ajax_sample_ajax_button_form() { 
+function ctools_ajax_sample_ajax_button_form() {
   $form = array();
 
   $form['url'] = array(
