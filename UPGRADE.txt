@@ -15,3 +15,4 @@ Upgrading from ctools-6.x-1.x to ctools-7.x-2.x:
     provide plugin type info for ctools' content_type plugins) now must be
     provided in that global hook. See http://drupal.org/node/910538 for more
     details.
+  - Plugins that use 'theme arguments' now use 'theme variables' instead.
