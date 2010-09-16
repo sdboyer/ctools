@@ -14,11 +14,14 @@
  */
 
 /**
- * Implementation of hook_perm()
+ * Implements hook_permission()
  */
-function stylizer_perm() {
+function stylizer_permission() {
   return array(
-    'administer stylizer',
+    'administer stylizer' => array(
+      'title' => t("Use the Stylizer UI"),
+      'description' => t("Allows a user to use the CTools Stylizer UI."),
+    ),
   );
 }
 
