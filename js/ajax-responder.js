@@ -355,42 +355,6 @@
     return link;
   }
 
-  Drupal.CTools.AJAX.commands.prepend = function(data) {
-    $(data.selector).prepend(data.data);
-    Drupal.attachBehaviors($(data.selector));
-  };
-
-  Drupal.CTools.AJAX.commands.append = function(data) {
-    $(data.selector).append(data.data);
-    Drupal.attachBehaviors($(data.selector));
-  };
-
-  Drupal.CTools.AJAX.commands.replace = function(data) {
-    $(data.selector).replaceWith(data.data);
-    Drupal.attachBehaviors($(data.selector));
-  };
-
-  Drupal.CTools.AJAX.commands.after = function(data) {
-    var object = $(data.data);
-    $(data.selector).after(object);
-    Drupal.attachBehaviors(object);
-  };
-
-  Drupal.CTools.AJAX.commands.before = function(data) {
-    var object = $(data.data);
-    $(data.selector).before(object);
-    Drupal.attachBehaviors(object);
-  };
-
-  Drupal.CTools.AJAX.commands.html = function(data) {
-    $(data.selector).html(data.data);
-    Drupal.attachBehaviors($(data.selector));
-  };
-
-  Drupal.CTools.AJAX.commands.remove = function(data) {
-    $(data.selector).remove();
-  };
-
   Drupal.CTools.AJAX.commands.changed = function(data) {
     if (!$(data.selector).hasClass('changed')) {
       $(data.selector).addClass('changed');
