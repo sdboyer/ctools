@@ -35,14 +35,14 @@ function ctools_collapsible_theme(&$items) {
  * @param $collapsed = FALSE
  *   If true, this div will start out collapsed.
  */
-function theme_ctools_collapsible($variables) { 
+function theme_ctools_collapsible($vars) { 
   ctools_add_js('collapsible-div');
   ctools_add_css('collapsible-div');
 
   $class = $variables['collapsed'] ? ' ctools-collapsed' : '';
   $output = '<div class="ctools-collapsible-container' . $class . '">';
-  $output .= '<div class="ctools-collapsible-handle">' . $variables['handle'] . '</div>';
-  $output .= '<div class="ctools-collapsible-content">' . $variables['content'] . '</div>';
+  $output .= '<div class="ctools-collapsible-handle">' . $vars['handle'] . '</div>';
+  $output .= '<div class="ctools-collapsible-content">' . $vars['content'] . '</div>';
   $output .= '</div>';
 
   return $output;
@@ -61,7 +61,11 @@ function theme_ctools_collapsible($variables) {
  * @param $collapsed = FALSE
  *   If true, this div will start out collapsed.
  */
-function theme_ctools_collapsible_remembered($id, $handle, $content, $collapsed = FALSE) {
+function theme_ctools_collapsible_remembered($vars) {
+  $id = $vars['id'];
+  $handle = $vars['handle'];
+  $content = $vars['content'];
+  $collapsed = $vars['collapsed'];
   ctools_add_js('collapsible-div');
   ctools_add_css('collapsible-div');
 

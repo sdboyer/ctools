@@ -8,7 +8,7 @@
 
 function ctools_wizard_theme(&$theme) {
   $theme['ctools_wizard_trail'] = array(
-    'arguments' => array('trail'),
+    'variables' => array('trail' => NULL),
     'file' => 'includes/wizard.theme.inc',
   );
 }
@@ -17,7 +17,8 @@ function ctools_wizard_theme(&$theme) {
  * Themable display of the 'breadcrumb' trail to show the order of the
  * forms.
  */
-function theme_ctools_wizard_trail($trail) {
+function theme_ctools_wizard_trail($vars) {
+  $trail = $vars['trail'];
   if (!empty($trail)) {
     return '<div class="wizard-trail">' . implode(' » ', $trail) . '</div>';
   }
