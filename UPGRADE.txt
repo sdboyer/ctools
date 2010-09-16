@@ -1,5 +1,28 @@
 Upgrading from ctools-6.x-1.x to ctools-7.x-2.x:
 
+  - All calls to the ctools_ajax_command_prepend() should be replace with 
+    the core function ajax_command_prepend();
+
+    This is also the case for append, insert, after, before, replace, html, 
+    and remove commands. 
+
+    Each of these commands have been incorporated into the 
+
+    Drupal.ajax.prototype.commands.insert 
+    
+    function with a corresponding parameter specifying which method to use.
+
+  - All calls to ctools_ajax_render() should be replaced with calls to core
+    ajax_render(). Note that ctools_ajax_render() printed the json object and
+    exited, ajax_render() gives you this responsibility. 
+
+    ctools_ajax_render() 
+
+    becomes
+
+    print ajax_render();
+    exit;
+
   - All calls to ctools_static*() should be replaced with corresponding calls
     to drupal_static*().
   - All calls to ctools_css_add_css should be replaced with calls to
