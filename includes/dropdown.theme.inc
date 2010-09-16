@@ -55,12 +55,12 @@ function ctools_dropdown_theme(&$items) {
  *   to style a single dropdown however you like without interfering with
  *   other dropdowns.
  */
-function theme_ctools_dropdown($variables) { 
+function theme_ctools_dropdown($vars) { 
   // Provide a unique identifier for every dropdown on the page.
   static $id = 0;
   $id++;
 
-  $class = 'ctools-dropdown-no-js ctools-dropdown' . ($variables['class'] ? (' ' . $variables['class']) : '');
+  $class = 'ctools-dropdown-no-js ctools-dropdown' . ($vars['class'] ? (' ' . $vars['class']) : '');
 
   ctools_add_js('dropdown');
   ctools_add_css('dropdown');
@@ -69,17 +69,17 @@ function theme_ctools_dropdown($variables) {
 
   $output .= '<div class="' . $class . '" id="ctools-dropdown-' . $id . '">';
   $output .= '<div class="ctools-dropdown-link-wrapper">';
-  if ($variables['image']) {
-    $output .= '<a href="#" class="ctools-dropdown-link ctools-dropdown-image-link">' . $variables['title'] . '</a>';
+  if ($vars['image']) {
+    $output .= '<a href="#" class="ctools-dropdown-link ctools-dropdown-image-link">' . $vars['title'] . '</a>';
   }
   else {
-    $output .= '<a href="#" class="ctools-dropdown-link ctools-dropdown-text-link">' . check_plain($variables['title']) . '</a>';
+    $output .= '<a href="#" class="ctools-dropdown-link ctools-dropdown-text-link">' . check_plain($vars['title']) . '</a>';
   }
 
   $output .= '</div>'; // wrapper
   $output .= '<div class="ctools-dropdown-container-wrapper">';
   $output .= '<div class="ctools-dropdown-container">';
-  $output .= theme_links(array('links' => $variables['links'], 'attributes' => array(), 'heading' => ''));
+  $output .= theme_links(array('links' => $vars['links'], 'attributes' => array(), 'heading' => ''));
   $output .= '</div>'; // container
   $output .= '</div>'; // container wrapper
   $output .= '</div>'; // dropdown

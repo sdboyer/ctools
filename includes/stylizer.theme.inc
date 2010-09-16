@@ -12,17 +12,17 @@
  */
 function ctools_stylizer_theme(&$theme) {
   $theme['ctools_stylizer_color_scheme_form'] = array(
-    'arguments' => array('form' => NULL),
+    'variables' => array('form' => NULL),
     'file' => 'includes/stylizer.inc',
   );
 
   $theme['ctools_stylizer_preview_form'] = array(
-    'arguments' => array('form' => NULL),
+    'variables' => array('form' => NULL),
     'file' => 'includes/stylizer.inc',
   );
 
   $theme['ctools_style_icon'] = array(
-    'arguments' => array('image' => NULL, 'title' => NULL),
+    'variables' => array('image' => NULL, 'title' => NULL),
     'file' => 'includes/stylizer.inc',
   );
 
