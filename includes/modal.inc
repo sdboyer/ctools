@@ -67,6 +67,8 @@ function ctools_modal_add_js() {
 
   drupal_add_js($settings, 'setting');
   drupal_add_js('misc/jquery.form.js');
+  drupal_add_js('misc/progress.js');
+  drupal_add_js('misc/ajax.js');
   ctools_add_js('modal');
 
   ctools_add_css('modal');
