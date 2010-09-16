@@ -217,7 +217,7 @@ function ctools_ajax_sample_hello($js = NULL) {
   if ($js) {
     ctools_include('ajax');
     $commands = array();
-    $commands[] = ctools_ajax_command_html('#ctools-sample', $output);
+    $commands[] = ajax_command_html('#ctools-sample', $output);
     print ajax_render($commands); // this function exits.
     exit;
   }
@@ -396,7 +396,7 @@ function ctools_ajax_sample_animal($js = NULL, $step = NULL) {
     $commands = array();
     if ($output === FALSE || !empty($form_state['complete'])) {
       // Dismiss the modal.
-      $commands[] = ctools_ajax_command_html('#ctools-sample', $animal);
+      $commands[] = ajax_command_html('#ctools-sample', $animal);
       $commands[] = ctools_modal_command_dismiss();
     }
     else if (!empty($form_state['cancel'])) {
