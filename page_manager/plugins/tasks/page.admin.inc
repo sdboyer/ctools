@@ -460,6 +460,7 @@ function page_manager_page_form_basic(&$form, &$form_state) {
     page_manager_handler_add_form($form, $form_state, $features);
   }
 
+  return $form;
 }
 
 function page_manager_page_form_basic_validate_filter($value) {
@@ -550,7 +551,7 @@ function page_manager_page_form_basic_validate(&$form, &$form_state) {
 
   // Ensure the path is not already an alias to something else.
   if (strpos($path, '%') === FALSE) {
-    $alias = db_query('SELECT src, dst FROM {url_alias} WHERE dst = :path', array(':path' => $path))->fetchObject();
+    $alias = db_query('SELECT alias, source FROM {url_alias} WHERE alias = :path', array(':path' => $path))->fetchObject();
     if ($alias) {
       form_error($form['path'], t('That path is currently assigned to be an alias for @alias. This system cannot override existing aliases.', array('@alias' => $alias->src)));
     }
@@ -737,7 +738,7 @@ function page_manager_page_form_menu(&$form, &$form_state) {
     '#options' => array('none' => t('Already exists'), 'normal' => t('Normal menu item'), 'tab' => t('Menu tab')),
     '#default_value' => $menu['parent']['type'],
     '#description' => t('When providing a menu item as a default tab, Drupal needs to know what the parent menu item of that tab will be. Sometimes the parent will already exist, but other times you will need to have one created. The path of a parent item will always be the same path with the last part left off. i.e, if the path to this view is <em>foo/bar/baz</em>, the parent path would be <em>foo/bar</em>.'),
-    '#process' => array('expand_radios', 'ctools_dependent_process'),
+//    '#process' => array('expand_radios', 'ctools_dependent_process'),
     '#dependency' => array('radio:menu[type]' => array('default tab')),
   );
   $form['menu']['parent']['title'] = array(
@@ -778,6 +779,8 @@ function page_manager_page_form_menu(&$form, &$form_state) {
     '#dependency' => array('radio:menu[type]' => array('default tab'), 'radio:menu[parent][type]' => array('tab')),
     '#dependency_count' => 2,
   );
+
+  return $form;
 }
 
 /**
@@ -841,6 +844,8 @@ function page_manager_page_form_access(&$form, &$form_state) {
 
   ctools_include('context-access-admin');
   $form = array_merge($form, ctools_access_admin_form($form_state));
+
+  return $form;
 }
 
 /**
@@ -924,6 +929,8 @@ function page_manager_page_form_argument(&$form, &$form_state) {
       );
     }
   }
+
+  return $form;
 }
 
 /**
@@ -1121,6 +1128,8 @@ function page_manager_page_argument_form_change(&$form, &$form_state) {
     '#options' => $options,
     '#default_value' => $argument,
   );
+
+  return $form;
 }
 
 /**
@@ -1221,6 +1230,7 @@ function page_manager_page_argument_form_settings(&$form, &$form_state) {
   }
 
   $form_state['plugin'] = $plugin;
+  $form;
 }
 
 /**
@@ -1257,7 +1267,7 @@ function page_manager_page_argument_form_settings_submit(&$form, &$form_state) {
 /**
  * Import a task handler from cut & paste
  */
-function page_manager_page_import_subtask(&$form_state, $task_name) {
+function page_manager_page_import_subtask($form, &$form_state, $task_name) {
   $form_state['task'] = page_manager_get_task($task_name);
 
   drupal_set_title(t('Import page'));
@@ -1369,6 +1379,7 @@ function page_manager_page_form_export(&$form, &$form_state) {
   );
 
   unset($form['buttons']);
+  return $form;
 }
 
 /**
@@ -1411,6 +1422,8 @@ function page_manager_page_form_clone(&$form, &$form_state) {
     '#type' => 'submit',
     '#value' => t('Clone'),
   );
+
+  return $form;
 }
 
 /**
@@ -1476,6 +1489,8 @@ function page_manager_page_form_delete(&$form, &$form_state) {
       '#value' => $page->type == t('Overridden') ? t('Revert') : t('Delete'),
     );
   }
+
+  return $form;
 }
 
 /**

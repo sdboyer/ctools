@@ -210,7 +210,8 @@ If you are displaying a form -- and the vast majority of modals display forms --
     // In typical usage you will do something else here, such as update a
     // div with HTML or redirect the page based upon the results of the modal
     // form.
-    ctools_ajax_render($commands);
+    print ajax_render($commands);
+    exit;
   }
 
   // Otherwise, just return the output.

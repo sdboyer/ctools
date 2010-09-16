@@ -152,10 +152,12 @@ function ctools_ajax_sample_page() {
     $links[] = ctools_modal_text_button(t('Modal Login (custom style)'), 'ctools_ajax_sample/nojs/login', t('Login via modal'),  'ctools-modal-ctools-sample-style');
   }
 
-  // Three ways to do our animal picking wizard.
+  // Four ways to do our animal picking wizard.
+  $button_form = ctools_ajax_sample_ajax_button_form();
   $links[] = l(t('Wizard (no modal)'), 'ctools_ajax_sample/nojs/animal');
   $links[] = ctools_modal_text_button(t('Wizard (default modal)'), 'ctools_ajax_sample/nojs/animal', t('Pick an animal'));
   $links[] = ctools_modal_text_button(t('Wizard (custom modal)'), 'ctools_ajax_sample/nojs/animal', t('Pick an animal'),  'ctools-modal-ctools-sample-style');
+  $links[] = drupal_render($button_form);
 
   $links[] = ctools_ajax_text_button(t('Hello world!'), "ctools_ajax_sample/nojs/hello", t('Replace text with "hello world"'));
 
@@ -215,8 +217,9 @@ function ctools_ajax_sample_hello($js = NULL) {
   if ($js) {
     ctools_include('ajax');
     $commands = array();
-    $commands[] = ctools_ajax_command_html('#ctools-sample', $output);
-    ctools_ajax_render($commands); // this function exits.
+    $commands[] = ajax_command_html('#ctools-sample', $output);
+    print ajax_render($commands); // this function exits.
+    exit;
   }
   else {
     return $output;;
@@ -235,9 +238,10 @@ function ctools_ajax_sample_tablenix($js, $row) {
   ctools_include('ajax');
 
   $commands = array();
-  $commands[] = ctools_ajax_command_remove("tr.ajax-sample-row-$row");
-  $commands[] = ctools_ajax_command_restripe("table.ajax-sample-table");
-  ctools_ajax_render($commands);
+  $commands[] = ajax_command_remove("tr.ajax-sample-row-$row");
+  $commands[] = ajax_command_restripe("table.ajax-sample-table");
+  print ajax_render($commands);
+  exit;
 }
 
 /**
@@ -264,7 +268,8 @@ function ctools_ajax_sample_login($js = NULL) {
     $account = ctools_ajax_text_button(t('your account'), 'ctools_ajax_sample/nojs/login/user', t('Go to your account'));
     $output[] = ctools_modal_command_display(t('Login Success'), '<div class="modal-message">Login successful. You can now choose whether to '. $inplace .', or go to '. $account.'.</div>');
   }
-  ctools_ajax_render($output);
+  print ajax_render($output);
+  exit;
 }
 
 /**
@@ -286,7 +291,8 @@ function ctools_ajax_sample_login_success($js, $action) {
     // bounce bounce
     $commands[] = ctools_ajax_command_redirect('user');
   }
-  ctools_ajax_render($commands);
+  print ajax_render($commands);
+  exit;
 }
 
 /**
@@ -375,7 +381,8 @@ function ctools_ajax_sample_animal($js = NULL, $step = NULL) {
 
   // Send this all off to our form. This is like drupal_get_form only wizardy.
   ctools_include('wizard');
-  $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
+  $form = ctools_wizard_multistep_form($form_info, $step, $form_state);
+  $output = drupal_render($form);
 
   if ($output === FALSE || !empty($form_state['complete'])) {
     // This creates a string based upon the animal and its setting using
@@ -389,7 +396,7 @@ function ctools_ajax_sample_animal($js = NULL, $step = NULL) {
     $commands = array();
     if ($output === FALSE || !empty($form_state['complete'])) {
       // Dismiss the modal.
-      $commands[] = ctools_ajax_command_html('#ctools-sample', $animal);
+      $commands[] = ajax_command_html('#ctools-sample', $animal);
       $commands[] = ctools_modal_command_dismiss();
     }
     else if (!empty($form_state['cancel'])) {
@@ -399,7 +406,8 @@ function ctools_ajax_sample_animal($js = NULL, $step = NULL) {
     else {
       $commands = ctools_modal_form_render($form_state, $output);
     }
-    ctools_ajax_render($commands);
+    print ajax_render($commands);
+    exit;
   }
   else {
     if ($output === FALSE || !empty($form_state['complete'])) {
@@ -704,12 +712,33 @@ function ctools_ajax_sample_jump_menu_form() {
   return $form;
 }
 
-/** 
+/**
  * Provide a message to the user that the jump menu worked
  */
-function ctools_ajax_sample_jump_menu_page() { 
+function ctools_ajax_sample_jump_menu_page() {
   $return_link = l(t('Return to the examples page.'), 'ctools_ajax_sample');
   $output = t('You successfully jumped! !return_link', array('!return_link' => $return_link));
-  return $output; 
+  return $output;
 }
 
+/**
+ * Provide a form for an example ajax modal button
+ */
+function ctools_ajax_sample_ajax_button_form() {
+  $form = array();
+
+  $form['url'] = array(
+    '#type' => 'hidden',
+    '#attributes' => array('class' => array('ctools-ajax-sample-button-url')),
+    '#value' => 'ctools_ajax_sample/nojs/animal',
+  );
+
+  $form['ajax_button'] = array(
+    '#type' => 'button',
+    '#value' => 'Wizard (button modal)',
+    '#attributes' => array('class' => array('ctools-use-modal')),
+    '#id' => 'ctools-ajax-sample-button',
+  );
+
+  return $form;
+}

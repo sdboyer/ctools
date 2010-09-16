@@ -7,7 +7,7 @@
  */
 
 /**
- * Implements hook_perm().
+ * Implements hook_permission().
  */
 function bulk_export_permission() {
   return array(
