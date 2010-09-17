@@ -942,7 +942,7 @@ function _page_manager_get_operation_content($js, &$page, $active, $operation, $
   return $return;
 }
 
-function page_manager_operation_wrapper(&$form, &$form_state) {
+function page_manager_operation_wrapper($form, &$form_state) {
   if (!empty($form['buttons']['return']['#wizard type']) && $form['buttons']['return']['#wizard type']) {
     $form['buttons']['save'] = array(
       '#type' => 'submit',
@@ -1237,7 +1237,7 @@ function page_manager_save_page_form_submit(&$form, &$form_state) {
 /**
  * Discard changes to the page.
  */
-function page_manager_save_page_form_cancel(&$form, &$form_state) {
+function page_manager_save_page_form_cancel($form, &$form_state) {
   drupal_set_message(t('All pending changes have been discarded, and the page is now unlocked.'));
   page_manager_clear_page_cache($form_state['page']->task_name);
 
@@ -1252,7 +1252,7 @@ function page_manager_save_page_form_cancel(&$form, &$form_state) {
 /**
  * Add a new task handler.
  */
-function page_manager_handler_add(&$form, &$form_state) {
+function page_manager_handler_add($form, &$form_state) {
   // Get a list of possible task handlers for this task.
   return page_manager_handler_add_form($form, $form_state);
 }
@@ -1340,7 +1340,7 @@ function page_manager_handler_add_cancel(&$form_state) {
 /**
  * Provide a consistent UI for adding handlers.
  */
-function page_manager_handler_add_form(&$form, $form_state, $features = array()) {
+function page_manager_handler_add_form($form, $form_state, $features = array()) {
   $task = $form_state['task'];
   $task_handler_plugins = page_manager_get_task_handler_plugins($task);
   if (empty($task_handler_plugins)) {
@@ -1406,7 +1406,7 @@ function page_manager_handler_add_form(&$form, $form_state, $features = array())
 /**
  * Rearrange the order of variants.
  */
-function page_manager_handler_import(&$form, &$form_state) {
+function page_manager_handler_import($form, &$form_state) {
   $form['title'] = array(
     '#type' => 'textfield',
     '#title' => t('Variant name'),
@@ -1458,7 +1458,7 @@ function page_manager_handler_import_validate($form, &$form_state) {
 /**
  * Clone an existing task handler into a new handler.
  */
-function page_manager_handler_import_submit($form, &$form_state) {
+function page_manager_handler_import_submit(&$form, &$form_state) {
   $handler = $form_state['handler'];
 
   page_manager_handler_add_to_page($form_state['page'], $handler, $form_state['values']['title']);
@@ -1472,7 +1472,7 @@ function page_manager_handler_import_submit($form, &$form_state) {
 /**
  * Rearrange the order of variants.
  */
-function page_manager_handler_rearrange(&$form, &$form_state) {
+function page_manager_handler_rearrange($form, &$form_state) {
   $page = $form_state['page'];
 
   $form['handlers'] = array('#tree' => TRUE);
@@ -1538,7 +1538,7 @@ function _page_manager_handler_sort($a, $b) {
 /**
  * Rearrange the order of variants.
  */
-function page_manager_handler_delete(&$form, &$form_state) {
+function page_manager_handler_delete($form, &$form_state) {
   if ($form_state['handler']->type == t('Overridden')) {
     $text = t('Reverting the variant will delete the variant that is in the database, reverting it to the original default variant. This deletion will not be made permanent until you click Save.');
   }
@@ -1563,7 +1563,7 @@ function page_manager_handler_delete_submit(&$form, &$form_state) {
 /**
  * Entry point to export a page.
  */
-function page_manager_handler_export(&$form, &$form_state) {
+function page_manager_handler_export($form, &$form_state) {
   $export = page_manager_export_task_handler($form_state['handler']);
 
   $lines = substr_count($export, "\n");
@@ -1580,7 +1580,7 @@ function page_manager_handler_export(&$form, &$form_state) {
 /**
  * Rearrange the order of variants.
  */
-function page_manager_handler_clone(&$form, &$form_state) {
+function page_manager_handler_clone($form, &$form_state) {
   // This provides its own button because it does something totally different.
   $form['title'] = array(
     '#type' => 'textfield',
@@ -1594,7 +1594,7 @@ function page_manager_handler_clone(&$form, &$form_state) {
 /**
  * Clone an existing task handler into a new handler.
  */
-function page_manager_handler_clone_submit($form, &$form_state) {
+function page_manager_handler_clone_submit(&$form, &$form_state) {
   $export = page_manager_export_task_handler($form_state['handler']);
   ob_start();
   eval($export);
@@ -1611,7 +1611,7 @@ function page_manager_handler_clone_submit($form, &$form_state) {
 /**
  * Form to enable a handler.
  */
-function page_manager_handler_enable(&$form, &$form_state) {
+function page_manager_handler_enable($form, &$form_state) {
   $form['markup'] = array(
     '#markup' => t('This variant is currently disabled. Enabling it will make it available in your system. This will not take effect until you save this page.'),
   );
@@ -1632,7 +1632,7 @@ function page_manager_handler_enable_submit(&$form, &$form_state) {
 /**
  * Form to disable a page.
  */
-function page_manager_handler_disable(&$form, &$form_state) {
+function page_manager_handler_disable($form, &$form_state) {
   $form['markup'] = array(
     '#markup' => t('This variant is currently enabled. Disabling it will make it unavailable in your system, and it will not be used. This will not take effect until you save this page.'),
   );
@@ -1643,7 +1643,7 @@ function page_manager_handler_disable(&$form, &$form_state) {
 /**
  * Form to disable a page.
  */
-function page_manager_handler_summary(&$form, &$form_state) {
+function page_manager_handler_summary($form, &$form_state) {
   $handler = $form_state['handler'];
   $page = $form_state['page'];
   $plugin = page_manager_get_task_handler($handler->handler);
@@ -1668,7 +1668,7 @@ function page_manager_handler_disable_submit(&$form, &$form_state) {
 /**
  * Break the lock on a page so that it can be edited.
  */
-function page_manager_break_lock(&$form, &$form_state) {
+function page_manager_break_lock($form, &$form_state) {
   $form['markup'] = array(
     '#markup' => t('Breaking the lock on this page will <strong>discard</strong> any pending changes made by the locking user. Are you REALLY sure you want to do this?')
   );
@@ -1690,7 +1690,7 @@ function page_manager_break_lock_submit(&$form, &$form_state) {
 /**
  * Form to enable a page.
  */
-function page_manager_enable_form(&$form, &$form_state) {
+function page_manager_enable_form($form, &$form_state) {
   $form['markup'] = array(
     '#markup' => t('Enabling this page will immediately make it available in your system (there is no need to wait for a save.)'),
   );
@@ -1719,7 +1719,7 @@ function page_manager_enable_form_submit(&$form, &$form_state) {
 /**
  * Form to disable a page.
  */
-function page_manager_disable_form(&$form, &$form_state) {
+function page_manager_disable_form($form, &$form_state) {
   $form['markup'] = array(
     '#markup' => t('Disabling this page will immediately make it unavailable in your system (there is no need to wait for a save.)'),
   );
@@ -1748,7 +1748,7 @@ function page_manager_disable_form_submit(&$form, &$form_state) {
 /**
  * Print the summary information for a page.
  */
-function page_manager_page_summary(&$form, &$form_state) {
+function page_manager_page_summary($form, &$form_state) {
   $page = $form_state['page'];
 
   $output = '';

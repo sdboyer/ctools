@@ -456,7 +456,7 @@ function ctools_content_admin_info($type, $subtype, $conf, $context = NULL) {
 /**
  * Add the default FAPI elements to the content type configuration form
  */
-function ctools_content_configure_form_defaults(&$form, &$form_state) {
+function ctools_content_configure_form_defaults($form, &$form_state) {
   $plugin = $form_state['plugin'];
   $subtype = $form_state['subtype'];
   $contexts = isset($form_state['contexts']) ? $form_state['contexts'] : NULL;
