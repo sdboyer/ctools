@@ -124,7 +124,7 @@
 /**
  * Process callback to add dependency to form items.
  */
-function ctools_dependent_process($element, $edit, &$form_state, &$form) {
+function ctools_dependent_process($element, &$form_state, &$form) {
   if (isset($element['#dependency'])) {
     if (!isset($element['#dependency_count'])) {
       $element['#dependency_count'] = 1;
@@ -139,14 +139,9 @@ function ctools_dependent_process($element, $edit, &$form_state, &$form) {
       'type' => $element['#dependency_type'],
     );
 
-    if (!empty($form_state['ajax'])) {
-      $form_state['js settings']['CTools']['dependent'][$element['#id']] = $js;
-    }
-    else {
-      ctools_add_js('dependent');
-      $options['CTools']['dependent'][$element['#id']] = $js;
-      drupal_add_js($options, 'setting');
-    }
+    ctools_add_js('dependent');
+    $options['CTools']['dependent'][$element['#id']] = $js;
+    drupal_add_js($options, 'setting');
   }
 
   return $element;

@@ -46,7 +46,6 @@ function page_manager_list_page($js = NULL) {
     }
   }
 
-
   $input = $_POST;
 
   // Respond to a reset command by clearing session and doing a drupal goto
