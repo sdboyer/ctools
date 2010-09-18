@@ -173,7 +173,7 @@ function ctools_custom_content_type_render($subtype, $conf, $args, $contexts) {
     $content = ctools_context_keyword_substitute($content, array(), $contexts);
   }
 
-  $block->content = check_markup($content, $settings['format'], FALSE);
+  $block->content = check_markup($content, $settings['format']);
   return $block;
 }
 
@@ -257,13 +257,12 @@ function ctools_custom_content_type_edit_form($form, &$form_state) {
     '#title' => t('Title'),
   );
 
-  $form['body_field']['body'] = array(
+    $form['body'] = array(
+    '#type' => 'text_format',
     '#title' => t('Body'),
-    '#type' => 'textarea',
     '#default_value' => $settings['body'],
+    '#format' => $settings['format'],
   );
-  $parents[] = 'format';
-  $form['body_field']['format'] = filter_form($settings['format'], 1, $parents);
 
   if (!empty($form_state['contexts'])) {
     // Set extended description if both CCK and Token modules are enabled, notifying of unlisted keywords
@@ -394,8 +393,12 @@ function ctools_custom_content_type_edit_form_submit($form, &$form_state) {
   }
   else {
     // Otherwise, just save values into $conf normally.
+    // Because of changes in filter form, these two keys are out of position:
+    $form_state['conf']['body'] = $form_state['values']['body']['value'];
+    $form_state['conf']['format'] = $form_state['values']['body']['format'];
+
     foreach (array_keys($form_state['plugin']['defaults']) as $key) {
-      if (isset($form_state['values'][$key])) {
+      if (isset($form_state['values'][$key]) && $key != 'body' && $key != 'format') {
         $form_state['conf'][$key] = $form_state['values'][$key];
       }
     }

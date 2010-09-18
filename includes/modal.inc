@@ -205,6 +205,7 @@ function ctools_modal_form_wrapper($form_id, &$form_state) {
 
   $output = drupal_build_form($form_id, $form_state);
   if (!empty($form_state['ajax']) && empty($form_state['executed'])) {
+    dsm('honkey');
     return ctools_modal_form_render($form_state, $output);
   }
 
@@ -215,6 +216,10 @@ function ctools_modal_form_wrapper($form_id, &$form_state) {
  * Render a form into an AJAX display.
  */
 function ctools_modal_form_render($form_state, $output) {
+  if (is_array($output)) {
+    $output = drupal_render($output);
+  }
+
   $title = empty($form_state['title']) ? drupal_get_title() : $form_state['title'];
 
   // If there are messages for the form, render them.
@@ -223,10 +228,8 @@ function ctools_modal_form_render($form_state, $output) {
   }
 
   $commands = array();
-  if (isset($form_state['js settings'])) {
-    $commands[] = ajax_command_settings($form_state['js settings']);
-  }
 
+  // If the form has not yet been rendered, render it.
   $commands[] = ctools_modal_command_display($title, $output);
   return $commands;
 }
