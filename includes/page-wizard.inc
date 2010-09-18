@@ -126,7 +126,7 @@ function page_manager_page_wizard($name, $step = NULL) {
   ctools_include('wizard');
   $form_state = array(
     'plugin' => $plugin,
-    'cache' => $cache,
+    'wizard cache' => $cache,
     'type' => 'edit',
     'rerender' => TRUE,
     'step' => $step,
@@ -152,7 +152,7 @@ function page_manager_page_wizard_finish(&$form_state) {
     $function($form_state);
   }
 
-  page_manager_clear_wizard_cache($form_state['cache']->plugin['name']);
+  page_manager_clear_wizard_cache($form_state['wizard cache']->plugin['name']);
 }
 
 /**
@@ -165,7 +165,7 @@ function page_manager_page_wizard_next(&$form_state) {
     $function($form_state);
   }
 
-  page_manager_set_wizard_cache($form_state['cache']);
+  page_manager_set_wizard_cache($form_state['wizard cache']);
 }
 
 /**

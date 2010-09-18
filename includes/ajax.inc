@@ -106,7 +106,7 @@ define('CTOOLS_AJAX_INCLUDED', 1);
  *   Any class to apply to the link. @todo this should be a options array.
  */
 function ctools_ajax_image_button($image, $dest, $alt, $class = '') {
-  return ctools_ajax_text_button(theme('image', $image), $dest, $alt, $class);
+  return ctools_ajax_text_button(theme('image', array('path' => $image)), $dest, $alt, $class);
 }
 
 /**
@@ -128,7 +128,7 @@ function ctools_ajax_image_button($image, $dest, $alt, $class = '') {
  *   A type to use, in case a different behavior should be attached. Defaults
  *   to ctools-use-ajax.
  */
-function ctools_ajax_text_button($text, $dest, $alt, $class = '', $type = 'ctools-use-ajax') {
+function ctools_ajax_text_button($text, $dest, $alt, $class = '', $type = 'use-ajax') {
   drupal_add_js('misc/ajax.js');
   return l($text, $dest, array('html' => TRUE, 'attributes' => array('class' => array($type, $class), 'title' => $alt)));
 }
@@ -369,7 +369,7 @@ function ctools_ajax_render_error($error = '') {
  *   The URL to associate the form element to.
  * @param $type
  *   Optional; A type to use, in case a different behavior should be attached.
- *   If empty the type will be set to "ctools-use-ajax" for submit elements and
+ *   If empty the type will be set to "use-ajax-submit" for submit elements and
  *   "ctools-use-ajax-onchange" for other elements.
  */
 function ctools_ajax_associate_url_to_element(&$form, &$form_element, $dest, $type = '') {
@@ -379,7 +379,7 @@ function ctools_ajax_associate_url_to_element(&$form, &$form_element, $dest, $ty
     $form_element['#id'] = uniqid('ctools-ajax-url-');
 
     if (empty($type)) {
-      $type = $form_element['#type'] == 'submit' ? 'ctools-use-ajax' : 'ctools-use-ajax-onchange';
+      $type = $form_element['#type'] == 'submit' ? 'use-ajax-submit' : 'ctools-use-ajax-onchange';
     }
 
     if (empty($form_element['#attributes']['class'])) {
