@@ -85,7 +85,7 @@ define('CTOOLS_AJAX_INCLUDED', 1);
  *
  * @code
  *   $commands = array();
- *   $commands[] = ctools_ajax_command_replace('#ctools-object-1', 'some html here');
+ *   $commands[] = ajax_command_replace('#ctools-object-1', 'some html here');
  *   $commands[] = ctools_ajax_command_changed('#ctools-object-1');
  *   print ajax_render($commands); // this function exits.
  *   exit;
@@ -106,7 +106,7 @@ define('CTOOLS_AJAX_INCLUDED', 1);
  *   Any class to apply to the link. @todo this should be a options array.
  */
 function ctools_ajax_image_button($image, $dest, $alt, $class = '') {
-  return ctools_ajax_text_button(theme('image', $image), $dest, $alt, $class);
+  return ctools_ajax_text_button(theme('image', array('path' => $image)), $dest, $alt, $class);
 }
 
 /**
@@ -128,7 +128,7 @@ function ctools_ajax_image_button($image, $dest, $alt, $class = '') {
  *   A type to use, in case a different behavior should be attached. Defaults
  *   to ctools-use-ajax.
  */
-function ctools_ajax_text_button($text, $dest, $alt, $class = '', $type = 'ctools-use-ajax') {
+function ctools_ajax_text_button($text, $dest, $alt, $class = '', $type = 'use-ajax') {
   drupal_add_js('misc/ajax.js');
   return l($text, $dest, array('html' => TRUE, 'attributes' => array('class' => array($type, $class), 'title' => $alt)));
 }
@@ -141,128 +141,6 @@ function ctools_ajax_command_error($error = '') {
     'command' => 'alert',
     'title' => t('Error'),
     'text' => $error ? $error : t('Server reports invalid input error.'),
-  );
-}
-
-/**
- * Create a replace command for the AJAX responder.
- *
- * The replace command will replace a portion of the current document
- * with the specified HTML.
- *
- * @param $selector
- *   The CSS selector. This can be any selector jquery uses in $().
- * @param $html
- *   The data to use with the jquery replace() function.
- */
-function ctools_ajax_command_replace($selector, $html) {
-  return array(
-    'command' => 'replace',
-    'selector' => $selector,
-    'data' => $html,
-  );
-}
-
-/**
- * Set the HTML of a given selector to the given data.
- *
- * @param $selector
- *   The CSS selector. This can be any selector jquery uses in $().
- * @param $html
- *   The data to use with the jquery replace() function.
- */
-function ctools_ajax_command_html($selector, $html) {
-  return array(
-    'command' => 'html',
-    'selector' => $selector,
-    'data' => $html,
-  );
-}
-
-/**
- * Create a prepend command for the AJAX responder.
- *
- * This will prepend the HTML to the specified selector.
- *
- * @param $selector
- *   The CSS selector. This can be any selector jquery uses in $().
- * @param $html
- *   The data to use with the jquery prepend() function.
- */
-function ctools_ajax_command_prepend($selector, $html) {
-  return array(
-    'command' => 'prepend',
-    'selector' => $selector,
-    'data' => $html,
-  );
-}
-
-/**
- * Create an append command for the AJAX responder.
- *
- * This will append the HTML to the specified selector.
- *
- * @param $selector
- *   The CSS selector. This can be any selector jquery uses in $().
- * @param $html
- *   The data to use with the jquery append() function.
- */
-function ctools_ajax_command_append($selector, $html) {
-  return array(
-    'command' => 'append',
-    'selector' => $selector,
-    'data' => $html,
-  );
-}
-
-/**
- * Create an after command for the AJAX responder.
- *
- * This will add the HTML after the specified selector.
- *
- * @param $selector
- *   The CSS selector. This can be any selector jquery uses in $().
- * @param $html
- *   The data to use with the jquery after() function.
- */
-function ctools_ajax_command_after($selector, $html) {
-  return array(
-    'command' => 'after',
-    'selector' => $selector,
-    'data' => $html,
-  );
-}
-
-/**
- * Create a before command for the AJAX responder.
- *
- * This will add the HTML before the specified selector.
- *
- * @param $selector
- *   The CSS selector. This can be any selector jquery uses in $().
- * @param $html
- *   The data to use with the jquery before() function.
- */
-function ctools_ajax_command_before($selector, $html) {
-  return array(
-    'command' => 'before',
-    'selector' => $selector,
-    'data' => $html,
-  );
-}
-
-/**
- * Create a remove command for the AJAX responder.
- *
- * This will remove the specified selector and everything within it.
- *
- * @param $selector
- *   The CSS selector. This can be any selector jquery uses in $().
- */
-function ctools_ajax_command_remove($selector) {
-  return array(
-    'command' => 'remove',
-    'selector' => $selector,
   );
 }
 
@@ -491,7 +369,7 @@ function ctools_ajax_render_error($error = '') {
  *   The URL to associate the form element to.
  * @param $type
  *   Optional; A type to use, in case a different behavior should be attached.
- *   If empty the type will be set to "ctools-use-ajax" for submit elements and
+ *   If empty the type will be set to "use-ajax-submit" for submit elements and
  *   "ctools-use-ajax-onchange" for other elements.
  */
 function ctools_ajax_associate_url_to_element(&$form, &$form_element, $dest, $type = '') {
@@ -501,7 +379,7 @@ function ctools_ajax_associate_url_to_element(&$form, &$form_element, $dest, $ty
     $form_element['#id'] = uniqid('ctools-ajax-url-');
 
     if (empty($type)) {
-      $type = $form_element['#type'] == 'submit' ? 'ctools-use-ajax' : 'ctools-use-ajax-onchange';
+      $type = $form_element['#type'] == 'submit' ? 'use-ajax-submit' : 'ctools-use-ajax-onchange';
     }
 
     if (empty($form_element['#attributes']['class'])) {

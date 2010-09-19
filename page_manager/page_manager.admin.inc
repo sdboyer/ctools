@@ -32,20 +32,19 @@ function page_manager_list_page($js = NULL) {
 
   // Add lock icon to all locked tasks.
   global $user;
-  // @todo broken fix later
-//  ctools_include('object-cache');
-//  $locks = ctools_object_cache_test_objects('page_manager_page', $pages['tasks']);
-//  foreach ($locks as $task_name => $lock) {
-//    if ($lock->uid == $user->uid) {
-//      $pages['rows'][$task_name]['class'] .= ' page-manager-locked';
-//      $pages['rows'][$task_name]['title'] = t('This page is currently locked for editing by you. Nobody else may edit this page until these changes are saved or canceled.');
-//    }
-//    else {
-//      $pages['rows'][$task_name]['class'] .= ' page-manager-locked-other';
-//      $pages['rows'][$task_name]['title'] = t('This page is currently locked for editing by another user. You may not edit this page without breaking the lock.');
-//    }
-//  }
 
+  ctools_include('object-cache');
+  $locks = ctools_object_cache_test_objects('page_manager_page', $pages['tasks']);
+  foreach ($locks as $task_name => $lock) {
+    if ($lock->uid == $user->uid) {
+      $pages['rows'][$task_name]['class'] .= ' page-manager-locked';
+      $pages['rows'][$task_name]['title'] = t('This page is currently locked for editing by you. Nobody else may edit this page until these changes are saved or canceled.');
+    }
+    else {
+      $pages['rows'][$task_name]['class'] .= ' page-manager-locked-other';
+      $pages['rows'][$task_name]['title'] = t('This page is currently locked for editing by another user. You may not edit this page without breaking the lock.');
+    }
+  }
 
   $input = $_POST;
 

@@ -66,15 +66,6 @@ function ctools_node_content_type_render($subtype, $conf, $panel_args) {
     return;
   }
 
-  if (node_access('update', $node)) {
-    $block->admin_links['update'] = array(
-      'title' => t('Edit node'),
-      'alt' => t("Edit this node"),
-      'href' => "node/$node->nid/edit",
-      'query' => drupal_get_destination(),
-    );
-  }
-
   $block->module = 'node';
   $block->delta = $node->nid;
 
@@ -98,13 +89,9 @@ function ctools_node_content_type_render($subtype, $conf, $panel_args) {
     $conf['build_mode'] = $conf['teaser'] ? 'teaser' : 'full';
   }
 
-  if (!isset($node->build_mode)) {
-    $node->build_mode = ($conf['build_mode'] == 'teaser' || $conf['build_mode'] == 'full') ? NODE_BUILD_NORMAL : $conf['build_mode'];
-  }
-
   // FIXME some of the old behavior will likely not work after the straight
   // drupal_render() call.
-  $block->content = drupal_render(node_build($node, $conf['teaser'] ? 'teaser' : 'full', FALSE, $conf['links']));
+  $block->content = node_view($node, $conf['build_mode']);
   return $block;
 }
 
