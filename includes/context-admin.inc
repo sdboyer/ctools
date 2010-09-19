@@ -381,7 +381,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
   // Get info about what we're adding.
   $info = ctools_context_data($type, $name);
   if (empty($info)) {
-    return ctools_ajax_render_error();
+    ctools_ajax_render_error(t('Invalid context type'));
   }
   $type_info = ctools_context_info($type);
 
@@ -418,6 +418,8 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     'type' => $type,
     'name' => $name,
     'ajax' => TRUE,
+    'modal' => TRUE,
+    'modal return' => TRUE,
     'info' => $info,
     'position' => $position,
     'contexts' => $contexts,
@@ -425,7 +427,15 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     'title' => t('Add @type "@context"', array('@type' => $type_info['singular title'], '@context' => $info['title'])),
   );
 
-  $output = ctools_modal_form_wrapper('ctools_context_form', $form_state);
+  $form_info = array(
+    'path' => "ctools/context/ajax/add/$module/$type/$object_name/$position/%step",
+    'show cancel' => TRUE,
+    'next callback' => 'ctools_context_ajax_item_edit_next',
+    'finish callback' => 'ctools_context_ajax_item_edit_finish',
+    'cancel callback' => 'ctools_context_ajax_item_edit_cancel',
+  );
+
+  $output = ctools_modal_render(ctools_context_form('add', $form_info, $form_state, $info, array()));
 
   if (empty($output)) {
     // successful submit
@@ -559,7 +569,7 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
     'cancel callback' => 'ctools_context_ajax_item_edit_cancel',
   );
 
-  $output = ctools_context_form('add', $form_info, $form_state, $info, array());
+  $output = ctools_context_form('edit', $form_info, $form_state, $info, array());
 
   if (empty($output)) {
     // successful submit
@@ -640,7 +650,7 @@ function _ctools_context_create_form_info(&$form_info, $plugin_definition, $op) 
       $info = $plugin_definition['add form'];
     }
   }
-  if (empty($form_info['order'])) {
+  if ($op == 'edit') {
     // Use the edit form for the add form if add form was completely left off.
     if (!empty($plugin_definition['edit form'])) {
       $info = $plugin_definition['edit form'];
