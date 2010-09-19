@@ -363,7 +363,7 @@ function ctools_context_add_item_to_form($module, $type, $name, &$form, $positio
 /**
  * Ajax entry point to add an context
  */
-function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name = NULL, $name = NULL) {
+function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name = NULL, $name = NULL, $step = NULL) {
   ctools_include('ajax');
   ctools_include('modal');
   ctools_include('context');
@@ -435,8 +435,10 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     'cancel callback' => 'ctools_context_ajax_item_edit_cancel',
   );
 
-  $output = ctools_modal_render(ctools_context_form('add', $form_info, $form_state, $info, array()));
+  $conf = array();
 
+  $output = ctools_modal_render(ctools_context_form('add', $form_info, $form_state, $info, $conf, $step));
+drupal_set_message('<pre>'. print_r($output, TRUE) .'</pre>');
   if (empty($output)) {
     // successful submit
     ctools_context_cache_set($module, $object_name, $object);
@@ -495,7 +497,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     $theme_vars['position'] = $position;
     $theme_vars['count'] = $position;
     $text = theme('ctools_context_item_row', $theme_vars);
-    $output[] = ctools_ajax_command_append('#' . $type . '-table tbody', $text);
+    $output[] = ajax_command_append('#' . $type . '-table tbody', $text);
     $output[] = ctools_ajax_command_changed('#' . $type . '-row-' . $position, '.title');
     $output[] = ctools_modal_command_dismiss();
   }
@@ -569,7 +571,9 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
     'cancel callback' => 'ctools_context_ajax_item_edit_cancel',
   );
 
-  $output = ctools_context_form('edit', $form_info, $form_state, $info, array());
+  $conf = array();
+
+  $output = ctools_context_form('edit', $form_info, $form_state, $info, $conf, $step);
 
   if (empty($output)) {
     // successful submit
