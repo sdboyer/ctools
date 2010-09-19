@@ -16,9 +16,9 @@ $plugin = array(
   'title' => t("Node"),
   'description' => t('A node object.'),
   'context' => 'ctools_context_create_node',
-  'settings form' => 'ctools_context_node_settings_form',
-  'settings form validate' => 'ctools_context_node_settings_form_validate',
-  'settings form submit' => 'ctools_context_node_settings_form_submit',
+  'edit form' => 'ctools_context_node_settings_form',
+  'edit form validate' => 'ctools_context_node_settings_form_validate',
+  'edit form submit' => 'ctools_context_node_settings_form_submit',
   'defaults' => array('nid' => ''),
   'keyword' => 'node',
   'context name' => 'node',
@@ -67,7 +67,7 @@ function ctools_context_create_node($empty, $data = NULL, $conf = FALSE) {
   }
 }
 
-function ctools_context_node_settings_form($conf) {
+function ctools_context_node_settings_form($form, &$form_state, $conf = array()) {
   if (empty($conf)) {
     $conf = array(
       'nid' => '',

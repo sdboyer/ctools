@@ -611,9 +611,9 @@ function ctools_context_form_wrapper($form, &$form_state) {
  * @return
  *   If this function returns false, no form exists.
  */
-function ctools_context_form($op, $form_info, &$form_state, $plugin, &$conf, $step = NULL) {
+function ctools_context_form($op, $form_info, &$form_state, $plugin_definition, &$conf, $step = NULL) {
   $form_state += array(
-    'plugin' => $plugin,
+    'plugin' => $plugin_definition,
     'conf' => &$conf,
     'op' => $op,
   );
@@ -624,18 +624,7 @@ function ctools_context_form($op, $form_info, &$form_state, $plugin, &$conf, $st
   );
 
   // Turn the forms defined in the plugin into the format the wizard needs.
-  if ($op == 'add') {
-    if (!empty($plugin['add form'])) {
-      _ctools_context_create_form_info($form_info, $plugin['add form'], $plugin, $op);
-    }
-  }
-
-  if (empty($form_info['order'])) {
-    // Use the edit form for the add form if add form was completely left off.
-    if (!empty($plugin['edit form'])) {
-      _ctools_context_create_form_info($form_info, $plugin['edit form'], $plugin, $op);
-    }
-  }
+  _ctools_context_create_form_info(&$form_info, $plugin_definition, $op);
 
   if (empty($form_info['order'])) {
     return FALSE;
@@ -645,7 +634,18 @@ function ctools_context_form($op, $form_info, &$form_state, $plugin, &$conf, $st
   return ctools_wizard_multistep_form($form_info, $step, $form_state);
 }
 
-function _ctools_context_create_form_info(&$form_info, $info, $plugin_definition, $op) {
+function _ctools_context_create_form_info(&$form_info, $plugin_definition, $op) {
+  if ($op == 'add') {
+    if (!empty($plugin_definition['add form'])) {
+      $info = $plugin_definition['add form'];
+    }
+  }
+  if (empty($form_info['order'])) {
+    // Use the edit form for the add form if add form was completely left off.
+    if (!empty($plugin_definition['edit form'])) {
+      $info = $plugin_definition['edit form'];
+    }
+  }
   if (is_string($info)) {
     if (empty($plugin_definition['title'])) {
       $title = t('Configure');
