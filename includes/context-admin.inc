@@ -438,7 +438,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
   $conf = array();
 
   $output = ctools_modal_render(ctools_context_form('add', $form_info, $form_state, $info, $conf, $step));
-drupal_set_message('<pre>'. print_r($output, TRUE) .'</pre>');
+
   if (empty($output)) {
     // successful submit
     ctools_context_cache_set($module, $object_name, $object);
@@ -654,7 +654,7 @@ function _ctools_context_create_form_info(&$form_info, $plugin_definition, $op) 
       $info = $plugin_definition['add form'];
     }
   }
-  if ($op == 'edit') {
+  if (!isset($info) || $op == 'edit') {
     // Use the edit form for the add form if add form was completely left off.
     if (!empty($plugin_definition['edit form'])) {
       $info = $plugin_definition['edit form'];
