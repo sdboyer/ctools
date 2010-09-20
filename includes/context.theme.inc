@@ -19,7 +19,8 @@ function ctools_context_theme(&$theme) {
     'file' => 'includes/context.theme.inc',
   );
   $theme['ctools_context_item_form'] = array(
-    'variables' => array('form' => NULL),
+    'render element' => 'form',
+//    'variables' => array('form' => NULL),
     'file' => 'includes/context.theme.inc',
   );
   $theme['ctools_context_item_row'] = array(
@@ -61,6 +62,7 @@ function theme_ctools_context_item_row($vars) {
  */
 function theme_ctools_context_item_form($vars) {
   $form = $vars['form'];
+
   $output = '';
   $type   = $form['#ctools_context_type'];
   $module = $form['#ctools_context_module'];
@@ -264,7 +266,7 @@ function theme_ctools_context_list_no_table($vars) {
   // Describe 'built in' contexts.
   if (!empty($object->base_contexts)) {
     foreach ($object->base_contexts as $id => $context) {
-      $output .= '<div class="ctools-context-holder clear-block">';
+      $output .= '<div class="ctools-context-holder clearfix">';
       $output .= '<div class="ctools-context-title">' . t('Built in context') . '</div>';
       $desc = check_plain($context->identifier);
       if (isset($context->keyword)) {
@@ -283,7 +285,7 @@ function theme_ctools_context_list_no_table($vars) {
   // First, make a list of arguments. Arguments are pretty simple.
   if (!empty($object->arguments)) {
     foreach ($object->arguments as $argument) {
-      $output .= '<div class="ctools-context-holder clear-block">';
+      $output .= '<div class="ctools-context-holder clearfix">';
       $output .= '<div class="ctools-context-title">' . t('Argument @count', array('@count' => $count)) . '</div>';
       $desc = check_plain($argument['identifier']);
       if (isset($argument['keyword'])) {
@@ -299,7 +301,7 @@ function theme_ctools_context_list_no_table($vars) {
   // Then, make a nice list of contexts.
   if (!empty($object->contexts)) {
     foreach ($object->contexts as $context) {
-      $output .= '<div class="ctools-context-holder clear-block">';
+      $output .= '<div class="ctools-context-holder clearfix">';
       $output .= '<div class="ctools-context-title">' . t('Context @count', array('@count' => $count)) . '</div>';
       $desc = check_plain($context['identifier']);
       if (isset($context['keyword'])) {
@@ -314,7 +316,7 @@ function theme_ctools_context_list_no_table($vars) {
   // And relationships
   if (!empty($object->relationships)) {
     foreach ($object->relationships as $relationship) {
-      $output .= '<div class="ctools-context-holder clear-block">';
+      $output .= '<div class="ctools-context-holder clearfix">';
       if (is_array($relationship['context'])) {
         $rtitles = array();
         foreach ($relationship['context'] as $cid) {

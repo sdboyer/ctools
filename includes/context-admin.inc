@@ -177,7 +177,7 @@ function ctools_context_add_context_form($module, &$form, &$form_state, &$form_l
 
   // Store the order the choices are in so javascript can manipulate it.
   $form_location['markup'] = array(
-    '#value' => '&nbsp;',
+    '#markup' => '&nbsp;',
   );
 
   $choices = array();
@@ -192,6 +192,7 @@ function ctools_context_add_context_form($module, &$form, &$form_state, &$form_l
   if (!empty($choices) || !empty($object->contexts)) {
     ctools_context_add_item_table('context', $form_location, $choices, $object->contexts);
   }
+
 }
 
 function ctools_context_add_required_context_form($module, &$form, &$form_state, &$form_location, $object, $name = NULL) {
@@ -284,7 +285,7 @@ function ctools_context_add_item_table($type, &$form, $available_contexts, $item
   $form['description'] = array(
     '#prefix' => '<div class="description">',
     '#suffix' => '</div>',
-    '#value' => $type_info['description'],
+    '#markup' => $type_info['description'],
   );
 
   ctools_context_add_item_table_buttons($type, $module, $form, $available_contexts);
@@ -333,7 +334,7 @@ function ctools_context_add_item_to_form($module, $type, $name, &$form, $positio
   // This is the single function way to load any plugin by variable type.
   $info = ctools_context_data($type, $item['name']);
   $form['title'] = array(
-    '#value' => check_plain($item['identifier']),
+    '#markup' => check_plain($item['identifier']),
   );
 
   // Relationships not sortable.
@@ -348,11 +349,11 @@ function ctools_context_add_item_to_form($module, $type, $name, &$form, $positio
   }
 
   $form['remove'] = array(
-    '#value' => ctools_ajax_image_button(ctools_image_path('icon-delete.png'), "ctools/context/ajax/delete/$module/$type/$name/$position", t('Remove this item.')),
+    '#markup' => ctools_ajax_image_button(ctools_image_path('icon-delete.png'), "ctools/context/ajax/delete/$module/$type/$name/$position", t('Remove this item.')),
   );
 
   $form['settings'] = array(
-    '#value' => ctools_modal_image_button(ctools_image_path('icon-configure.png'), "ctools/context/ajax/configure/$module/$type/$name/$position", t('Configure settings for this item.')),
+    '#markup' => ctools_modal_image_button(ctools_image_path('icon-configure.png'), "ctools/context/ajax/configure/$module/$type/$name/$position", t('Configure settings for this item.')),
   );
 }
 
@@ -612,7 +613,7 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
 }
 
 function ctools_context_form_wrapper($form, &$form_state) {
-  
+
 }
 
 /**
@@ -754,7 +755,7 @@ function ctools_edit_context_form_defaults($form, &$form_state) {
       '#default_value' => $ctext['default'],
       '#description' => t('If the argument is missing or is not valid, select how this should behave.'),
     );
-  
+
     $form['title'] = array(
       '#type' => 'textfield',
       '#title' => t('Title'),
