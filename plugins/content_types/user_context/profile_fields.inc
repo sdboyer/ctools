@@ -123,7 +123,7 @@ function ctools_profile_fields_content_type_admin_title($subtype, $conf, $contex
 
 function ctools_profile_fields_content_type_theme(&$theme, $plugin) {
   $theme['profile_fields_pane'] = array(
-    'arguments' => array('category' => NULL, 'vars' => NULL),
+    'variables' => array('category' => NULL, 'vars' => NULL),
     'path' => $plugin['path'],
     'template' => 'profile_fields_pane',
   );

@@ -28,7 +28,6 @@ function ctools_context_info($type = NULL) {
         'description' => '', // t("Arguments are parsed from the URL and translated into contexts that may be added to the display via the 'content' tab. These arguments are parsed in the order received, and you may use % in your URL to hold the place of an object; the rest of the arguments will come after the URL. For example, if the URL is node/%/panel and your user visits node/1/panel/foo, the first argument will be 1, and the second argument will be foo."),
         'add button' => t('Add argument'),
         'context function' => 'ctools_get_argument',
-        'form id' => 'ctools_edit_argument_form',
         'key' => 'arguments', // the key that data will be stored on an object, eg $panel_page
         'sortable' => TRUE,
         'settings' => 'argument_settings',
@@ -39,7 +38,6 @@ function ctools_context_info($type = NULL) {
         'description' => '', // t('Relationships are contexts that are created from already existing contexts; the add relationship button will only appear once there is another context available. Relationships can load objects based upon how they are related to each other; for example, the author of a node, or a taxonomy term attached to a node, or the vocabulary of a taxonomy term.'),
         'add button' => t('Add relationship'),
         'context function' => 'ctools_get_relationship',
-        'form id' => 'ctools_edit_relationship_form',
         'key' => 'relationships',
         'sortable' => FALSE,
         'settings' => 'relationship_settings',
@@ -50,7 +48,6 @@ function ctools_context_info($type = NULL) {
         'description' => '', // t('Contexts are embedded directly into the panel; you generally must select an object in the panel. For example, you could select node 5, or the term "animals" or the user "administrator"'),
         'add button' => t('Add context'),
         'context function' => 'ctools_get_context',
-        'form id' => 'ctools_edit_context_form',
         'key' => 'contexts',
         'sortable' => FALSE,
         'settings' => 'context_settings',
@@ -61,7 +58,6 @@ function ctools_context_info($type = NULL) {
         'description' => '', // t('Required contexts are passed in from some external source, such as a containing panel. If a mini panel has required contexts, it can only appear when that context is available, and therefore will not show up as a standard Drupal block.'),
         'add button' => t('Add required context'),
         'context function' => 'ctools_get_context',
-        'form id' => 'ctools_edit_requiredcontext_form',
         'key' => 'requiredcontexts',
         'sortable' => FALSE,
       ),
@@ -367,7 +363,7 @@ function ctools_context_add_item_to_form($module, $type, $name, &$form, $positio
 /**
  * Ajax entry point to add an context
  */
-function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name = NULL, $name = NULL) {
+function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name = NULL, $name = NULL, $step = NULL) {
   ctools_include('ajax');
   ctools_include('modal');
   ctools_include('context');
@@ -385,7 +381,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
   // Get info about what we're adding.
   $info = ctools_context_data($type, $name);
   if (empty($info)) {
-    return ctools_ajax_render_error();
+    ctools_ajax_render_error(t('Invalid context type'));
   }
   $type_info = ctools_context_info($type);
 
@@ -422,6 +418,8 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     'type' => $type,
     'name' => $name,
     'ajax' => TRUE,
+    'modal' => TRUE,
+    'modal return' => TRUE,
     'info' => $info,
     'position' => $position,
     'contexts' => $contexts,
@@ -429,7 +427,17 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     'title' => t('Add @type "@context"', array('@type' => $type_info['singular title'], '@context' => $info['title'])),
   );
 
-  $output = ctools_modal_form_wrapper('ctools_context_form', $form_state);
+  $form_info = array(
+    'path' => "ctools/context/ajax/add/$module/$type/$object_name/$position/%step",
+    'show cancel' => TRUE,
+    'next callback' => 'ctools_context_ajax_item_edit_next',
+    'finish callback' => 'ctools_context_ajax_item_edit_finish',
+    'cancel callback' => 'ctools_context_ajax_item_edit_cancel',
+  );
+
+  $conf = array();
+
+  $output = ctools_modal_render(ctools_context_form('add', $form_info, $form_state, $info, $conf, $step));
 
   if (empty($output)) {
     // successful submit
@@ -480,7 +488,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     if (!empty($available_relationships)) {
       ctools_context_add_item_table_buttons('relationship', $module, $rel_form, $available_relationships);
       $rel_form = form_builder('dummy_form_id', $rel_form, $arg_form_state);
-      $output[] = ctools_ajax_command_replace('div#ctools-relationships-table div.buttons', drupal_render($rel_form));
+      $output[] = ajax_command_replace('div#ctools-relationships-table div.buttons', drupal_render($rel_form));
     }
 
     $theme_vars = array();
@@ -489,7 +497,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     $theme_vars['position'] = $position;
     $theme_vars['count'] = $position;
     $text = theme('ctools_context_item_row', $theme_vars);
-    $output[] = ctools_ajax_command_append('#' . $type . '-table tbody', $text);
+    $output[] = ajax_command_append('#' . $type . '-table tbody', $text);
     $output[] = ctools_ajax_command_changed('#' . $type . '-row-' . $position, '.title');
     $output[] = ctools_modal_command_dismiss();
   }
@@ -501,7 +509,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
 /**
  * Ajax entry point to edit an item
  */
-function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_name = NULL, $position = NULL) {
+function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_name = NULL, $position = NULL, $step = NULL) {
   ctools_include('ajax');
   ctools_include('modal');
   ctools_include('context');
@@ -546,6 +554,8 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
     'type' => $type,
     'name' => $name,
     'ajax' => TRUE,
+    'modal' => TRUE,
+    'modal return' => TRUE,
     'info' => $info,
     'position' => $position,
     'contexts' => $contexts,
@@ -553,7 +563,17 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
     'title' => t('Edit @type "@context"', array('@type' => $type_info['singular title'], '@context' => $info['title'])),
   );
 
-  $output = ctools_modal_form_wrapper('ctools_context_form', $form_state);
+  $form_info = array(
+    'path' => "ctools/context/ajax/add/$module/$type/$object_name/$position/%step",
+    'show cancel' => TRUE,
+    'next callback' => 'ctools_context_ajax_item_edit_next',
+    'finish callback' => 'ctools_context_ajax_item_edit_finish',
+    'cancel callback' => 'ctools_context_ajax_item_edit_cancel',
+  );
+
+  $conf = array();
+
+  $output = ctools_context_form('edit', $form_info, $form_state, $info, $conf, $step);
 
   if (empty($output)) {
     // successful submit
@@ -591,6 +611,10 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
   ajax_footer();
 }
 
+function ctools_context_form_wrapper($form, &$form_state) {
+  
+}
+
 /**
  * Get the config form.
  *
@@ -601,9 +625,9 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
  * @return
  *   If this function returns false, no form exists.
  */
-function ctools_context_form($op, $form_info, &$form_state, $plugin, &$conf, $step = NULL) {
+function ctools_context_form($op, $form_info, &$form_state, $plugin_definition, &$conf, $step = NULL) {
   $form_state += array(
-    'plugin' => $plugin,
+    'plugin' => $plugin_definition,
     'conf' => &$conf,
     'op' => $op,
   );
@@ -614,18 +638,7 @@ function ctools_context_form($op, $form_info, &$form_state, $plugin, &$conf, $st
   );
 
   // Turn the forms defined in the plugin into the format the wizard needs.
-  if ($op == 'add') {
-    if (!empty($plugin['add form'])) {
-      _ctools_context_create_form_info($form_info, $plugin['add form'], $plugin, $op);
-    }
-  }
-
-  if (empty($form_info['order'])) {
-    // Use the edit form for the add form if add form was completely left off.
-    if (!empty($plugin['edit form'])) {
-      _ctools_context_create_form_info($form_info, $plugin['edit form'], $plugin, $op);
-    }
-  }
+  _ctools_context_create_form_info(&$form_info, $plugin_definition, $op);
 
   if (empty($form_info['order'])) {
     return FALSE;
@@ -633,10 +646,20 @@ function ctools_context_form($op, $form_info, &$form_state, $plugin, &$conf, $st
 
   ctools_include('wizard');
   return ctools_wizard_multistep_form($form_info, $step, $form_state);
-
 }
 
-function _ctools_context_create_form_info(&$form_info, $info, $plugin_definition, $op) {
+function _ctools_context_create_form_info(&$form_info, $plugin_definition, $op) {
+  if ($op == 'add') {
+    if (!empty($plugin_definition['add form'])) {
+      $info = $plugin_definition['add form'];
+    }
+  }
+  if (!isset($info) || $op == 'edit') {
+    // Use the edit form for the add form if add form was completely left off.
+    if (!empty($plugin_definition['edit form'])) {
+      $info = $plugin_definition['edit form'];
+    }
+  }
   if (is_string($info)) {
     if (empty($plugin_definition['title'])) {
       $title = t('Configure');
@@ -788,7 +811,7 @@ function ctools_context_ajax_item_delete($module = NULL, $type = NULL, $object_n
   ctools_context_cache_set($module, $object_name, $object);
 
   $output   = array();
-  $output[] = ctools_ajax_command_replace('#' . $type . '-row-' . $position, '');
+  $output[] = ajax_command_replace('#' . $type . '-row-' . $position, '');
   $output[] = ctools_ajax_command_restripe("#$type-table");
   print ajax_render($output);
   exit;

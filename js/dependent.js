@@ -180,23 +180,25 @@
     }
   }
 
-  Drupal.behaviors.CToolsDependent = function (context) {
-    Drupal.CTools.dependent.autoAttach();
+  Drupal.behaviors.CToolsDependent = {
+    attach: function (context) {
+      Drupal.CTools.dependent.autoAttach();
 
-    // Really large sets of fields are too slow with the above method, so this
-    // is a sort of hacked one that's faster but much less flexible.
-    $("select.ctools-master-dependent:not(.ctools-processed)")
-      .addClass('ctools-processed')
-      .change(function() {
-        var val = $(this).val();
-        if (val == 'all') {
-          $('.ctools-dependent-all').show(0);
-        }
-        else {
-          $('.ctools-dependent-all').hide(0);
-          $('.ctools-dependent-' + val).show(0);
-        }
-      })
-      .trigger('change');
+      // Really large sets of fields are too slow with the above method, so this
+      // is a sort of hacked one that's faster but much less flexible.
+      $("select.ctools-master-dependent:not(.ctools-processed)")
+        .addClass('ctools-processed')
+        .change(function() {
+          var val = $(this).val();
+          if (val == 'all') {
+            $('.ctools-dependent-all').show(0);
+          }
+          else {
+            $('.ctools-dependent-all').hide(0);
+            $('.ctools-dependent-' + val).show(0);
+          }
+        })
+        .trigger('change');
+    }
   }
 })(jQuery);

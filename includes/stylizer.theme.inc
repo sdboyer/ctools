@@ -34,7 +34,7 @@ function ctools_stylizer_theme(&$theme) {
     if (!empty($base_types[$plugin['module']][$plugin['type']]) && !empty($plugin['theme'])) {
       $base_type = $base_types[$plugin['module']][$plugin['type']];
       $theme[$plugin['theme']] = array(
-        'arguments' => $base_type['theme arguments'],
+        'variables' => $base_type['theme variables'],
         'path' => $plugin['path'],
       );
 

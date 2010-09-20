@@ -159,7 +159,7 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
   }
 
   // Render ajax commands if we have any.
-  if (isset($form_state['ajax']) && isset($form_state['commands'])) {
+  if (isset($form_state['ajax']) && isset($form_state['commands']) && empty($form_state['modal return'])) {
     return ajax_render($form_state['commands']);
   }
 
