@@ -779,10 +779,11 @@ function ctools_edit_relationship_form(&$form_state) {
   if (isset($rel['relationship_settings'])) {
     $relationship_settings = $rel['relationship_settings'];
   }
-
-  if (isset($relationship['settings form']) && function_exists($relationship['settings form'])) {
-    $form['relationship']['relationship_settings'] = $relationship['settings form']($relationship_settings);
-    $form['relationship']['relationship_settings']['#tree'] = TRUE;
+  if (!isset($info) || $op == 'edit') {
+    // Use the edit form for the add form if add form was completely left off.
+    if (!empty($plugin_definition['edit form'])) {
+      $info = $plugin_definition['edit form'];
+    }
   }
 
   $form['next'] = array(
