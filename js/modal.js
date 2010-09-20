@@ -186,7 +186,7 @@
   /**
    * Bind links that will open modals to the appropriate function.
    */
-  Drupal.behaviors.ZZCToolsModal = { 
+  Drupal.behaviors.ZZCToolsModal = {
     attach: function(context) {
       // Bind links
       // Note that doing so in this order means that the two classes can be
@@ -204,7 +204,7 @@
       $('a.ctools-use-modal:not(.ctools-use-modal-processed)', context)
         .addClass('ctools-use-modal-processed')
         .click(Drupal.CTools.Modal.clickAjaxLink)
-        .each(function () { 
+        .each(function () {
           // Create a drupal ajax object
           var element_settings = {};
           if ($(this).attr('href')) {
@@ -215,9 +215,7 @@
           var base = $(this).attr('href');
           Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
 
-          // Attach the display behavior to the ajax object 
-          Drupal.ajax[base].commands.modal_display = Drupal.CTools.Modal.modal_display;
-          Drupal.ajax[base].commands.modal_dismiss = Drupal.CTools.Modal.modal_dismiss;
+          // Attach the display behavior to the ajax object
         }
       );
 
@@ -225,7 +223,7 @@
       $('input.ctools-use-modal:not(.ctools-use-modal-processed), button.ctools-use-modal:not(.ctools-use-modal-processed)', context)
         .addClass('ctools-use-modal-processed')
         .click(Drupal.CTools.Modal.clickAjaxLink)
-        .each(function() { 
+        .each(function() {
           var element_settings = {};
 
           // AJAX submits specified in this manner automatically submit to the
@@ -236,14 +234,12 @@
           var base = $(this).attr('id');
           Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
 
-          // Attach the display behavior to the ajax object 
-          Drupal.ajax[base].commands.modal_display = Drupal.CTools.Modal.modal_display;
         });
 
       // Bind our custom event to the form submit
-      $('#modal-content form:not(.ctools-use-modal-processed)', context) 
+      $('#modal-content form:not(.ctools-use-modal-processed)', context)
         .addClass('ctools-use-modal-processed')
-        .each(function() { 
+        .each(function() {
 
           $(this).ajaxForm();
 
@@ -252,14 +248,11 @@
           element_settings.url = $(this).attr('action');
           element_settings.setClick = true;
           element_settings.event = 'submit';
-          element_settings.progress = { 'type': 'throbber' } 
+          element_settings.progress = { 'type': 'throbber' }
           var base = $(this).attr('id');
 
           Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
           Drupal.ajax[base].form = $(this);
-
-          Drupal.ajax[base].commands.modal_display = Drupal.CTools.Modal.modal_display;
-          Drupal.ajax[base].commands.modal_dismiss = Drupal.CTools.Modal.modal_dismiss;
         });
     }
   };
@@ -270,6 +263,7 @@
    * AJAX responder command to place HTML within the modal.
    */
   Drupal.CTools.Modal.modal_display = function(ajax, response, status) {
+    console.log('ajax');
     $('#modal-title').html(response.title);
     $('#modal-content').html(response.output);
     Drupal.attachBehaviors();
@@ -287,7 +281,7 @@
    * Display loading
    */
   //Drupal.CTools.AJAX.commands.modal_loading = function(command) {
-  Drupal.CTools.Modal.modal_loading = function(command) { 
+  Drupal.CTools.Modal.modal_loading = function(command) {
     Drupal.CTools.Modal.modal_display({
       output: Drupal.theme(Drupal.CTools.Modal.currentSettings.throbberTheme),
       title: Drupal.CTools.Modal.currentSettings.loadingText
@@ -486,5 +480,10 @@
       }
     });
   };
+
+$(function() {
+  Drupal.ajax.prototype.commands.modal_display = Drupal.CTools.Modal.modal_display;
+  Drupal.ajax.prototype.commands.modal_dismiss = Drupal.CTools.Modal.modal_dismiss;
+});
 
 })(jQuery);

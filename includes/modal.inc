@@ -121,6 +121,10 @@ function ctools_modal_add_plugin_js($plugins) {
  *   The html to place within the modal.
  */
 function ctools_modal_command_display($title, $html) {
+  if (is_array($html)) {
+    $html = drupal_render($html);
+  }
+
   return array(
     'command' => 'modal_display',
     'title' => $title,
