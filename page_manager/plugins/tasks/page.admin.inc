@@ -457,7 +457,7 @@ function page_manager_page_form_basic($form, &$form_state) {
     );
 
     module_load_include('inc', 'page_manager', 'page_manager.admin');
-    page_manager_handler_add_form($form, $form_state, $features);
+    $form += page_manager_handler_add_form($form, $form_state, $features);
   }
 
   return $form;
