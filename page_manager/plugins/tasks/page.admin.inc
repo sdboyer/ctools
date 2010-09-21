@@ -379,7 +379,7 @@ function page_manager_page_add_subtask_cancel(&$form_state) {
 /**
  * Basic settings form for a page manager page.
  */
-function page_manager_page_form_basic(&$form, &$form_state) {
+function page_manager_page_form_basic($form, &$form_state) {
   $page = &$form_state['page']->subtask['subtask'];
   $task = $form_state['task'];
 
@@ -643,7 +643,7 @@ function page_manager_page_form_basic_submit(&$form, &$form_state) {
 /**
  * Form to handle menu item controls.
  */
-function page_manager_page_form_menu(&$form, &$form_state) {
+function page_manager_page_form_menu($form, &$form_state) {
   ctools_include('dependent');
   $form['menu'] = array(
     '#prefix' => '<div class="clear-block">',
@@ -829,7 +829,7 @@ function page_manager_page_form_menu_submit(&$form, &$form_state) {
 /**
  * Form to handle menu item controls.
  */
-function page_manager_page_form_access(&$form, &$form_state) {
+function page_manager_page_form_access($form, &$form_state) {
   ctools_include('context');
   $form_state['module'] = 'page_manager_page';
   $form_state['callback argument'] = $form_state['page']->task_name;
@@ -859,7 +859,7 @@ function page_manager_page_form_access_submit(&$form, &$form_state) {
 /**
  * Form to handle assigning argument handlers to named arguments.
  */
-function page_manager_page_form_argument(&$form, &$form_state) {
+function page_manager_page_form_argument($form, &$form_state) {
   $page = &$form_state['page']->subtask['subtask'];
   $path = $page->path;
 
@@ -1102,7 +1102,7 @@ function page_manager_page_argument_cancel(&$form_state) {
 /**
  * Basic settings form for a page manager page.
  */
-function page_manager_page_argument_form_change(&$form, &$form_state) {
+function page_manager_page_argument_form_change($form, &$form_state) {
   $page = &$form_state['page']->subtask['subtask'];
   $keyword = &$form_state['keyword'];
 
@@ -1188,7 +1188,7 @@ function page_manager_page_argument_form_change_submit(&$form, &$form_state) {
 /**
  * Basic settings form for a page manager page.
  */
-function page_manager_page_argument_form_settings(&$form, &$form_state) {
+function page_manager_page_argument_form_settings($form, &$form_state) {
   $page = &$form_state['page']->subtask['subtask'];
   $keyword = &$form_state['keyword'];
 
@@ -1366,7 +1366,7 @@ function page_manager_page_import_subtask_submit($form, &$form_state) {
 /**
  * Entry point to export a page.
  */
-function page_manager_page_form_export(&$form, &$form_state) {
+function page_manager_page_form_export($form, &$form_state) {
   $page = $form_state['page']->subtask['subtask'];
 
   $export = page_manager_page_export($page, $form_state['page']->handlers);
@@ -1385,7 +1385,7 @@ function page_manager_page_form_export(&$form, &$form_state) {
 /**
  * Entry point to clone a page.
  */
-function page_manager_page_form_clone(&$form, &$form_state) {
+function page_manager_page_form_clone($form, &$form_state) {
   $page = &$form_state['page']->subtask['subtask'];
 
   // This provides its own button because it does something totally different.
@@ -1469,7 +1469,7 @@ function page_manager_page_form_clone_submit(&$form, &$form_state) {
 /**
  * Entry point to export a page.
  */
-function page_manager_page_form_delete(&$form, &$form_state) {
+function page_manager_page_form_delete($form, &$form_state) {
   $page = &$form_state['page']->subtask['subtask'];
 
   if ($page->type == t('Overridden')) {
