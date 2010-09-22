@@ -164,7 +164,7 @@ function ctools_modal_command_loading() {
  *   Any class to apply to the link. @todo this should be a options array.
  */
 function ctools_modal_image_button($image, $dest, $alt, $class = '') {
-  return ctools_ajax_text_button(theme('image', $image), $dest, $alt, $class, 'ctools-use-modal');
+  return ctools_ajax_text_button(theme('image', array('path' => $image)), $dest, $alt, $class, 'ctools-use-modal');
 }
 
 /**
