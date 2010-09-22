@@ -1238,7 +1238,7 @@ function ctools_context_replace_placeholders($contexts, $arguments) {
  * Provide a form array for getting data to replace placeholder contexts
  * with real data.
  */
-function ctools_context_replace_form(&$form, $contexts) {
+function ctools_context_replace_form($form, $contexts) {
   foreach ($contexts as $cid => $context) {
     if (empty($context->empty)) {
       continue;

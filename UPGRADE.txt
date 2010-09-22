@@ -1,5 +1,8 @@
 Upgrading from ctools-6.x-1.x to ctools-7.x-2.x:
 
+  - Remove ctools_ajax_associate_url_to_element as it shouldn't be necessary
+    with the new AJAX api's in Drupal core.
+
   - All calls to the ctools_ajax_command_prepend() should be replace with 
     the core function ajax_command_prepend();
 

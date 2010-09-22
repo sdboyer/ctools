@@ -376,7 +376,7 @@ function ctools_context_handler_edit_criteria_submit(&$form, &$form_state) {
 /**
  * Edit contexts that go with this panel.
  */
-function ctools_context_handler_edit_context(&$form, &$form_state) {
+function ctools_context_handler_edit_context($form, &$form_state) {
   ctools_include('context-admin');
   ctools_context_admin_includes();
 
