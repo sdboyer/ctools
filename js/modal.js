@@ -240,13 +240,13 @@
       $('#modal-content form:not(.ctools-use-modal-processed)', context)
         .addClass('ctools-use-modal-processed')
         .each(function() {
-
-          $(this).ajaxForm();
+          $('input[type=submit], button', this).click(function() {
+            this.form.clk = this;
+          });
 
           var element_settings = {};
 
           element_settings.url = $(this).attr('action');
-          element_settings.setClick = true;
           element_settings.event = 'submit';
           element_settings.progress = { 'type': 'throbber' }
           var base = $(this).attr('id');

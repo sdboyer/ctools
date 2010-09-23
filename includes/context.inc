@@ -744,11 +744,13 @@ function ctools_context_get_context_from_argument($argument, $arg, $empty = FALS
   }
 
   if ($function = ctools_plugin_load_function('ctools', 'arguments', $argument['name'], 'context')) {
-    if (!isset($argument['settings'])) {
-      $argument['settings'] = array();
+    // Backward compatibility: Merge old style settings into new style:
+    if (!empty($argument['settings'])) {
+      $argument += $argument['settings'];
+      unset($argument['settings']);
     }
 
-    $context = $function($arg, $argument['settings'], $empty);
+    $context = $function($arg, $argument, $empty);
 
     if (is_object($context)) {
       $context->identifier = $argument['identifier'];
@@ -869,11 +871,13 @@ function ctools_get_relationships() {
 function ctools_context_get_context_from_relationship($relationship, $source_context, $placeholders = FALSE) {
   ctools_include('plugins');
   if ($function = ctools_plugin_load_function('ctools', 'relationships', $relationship['name'], 'context')) {
-    if (!isset($relationship['relationship_settings'])) {
-      $relationship['relationship_settings'] = array();
+    // Backward compatibility: Merge old style settings into new style:
+    if (!empty($relationship['relationship_settings'])) {
+      $relationship += $relationship['relationship_settings'];
+      unset($relationship['relationship_settings']);
     }
 
-    $context = $function($source_context, $relationship['relationship_settings'], $placeholders);
+    $context = $function($source_context, $relationship, $placeholders);
     if ($context) {
       $context->identifier = $relationship['identifier'];
       $context->page_title = isset($relationship['title']) ? $relationship['title'] : '';
@@ -1017,15 +1021,17 @@ function ctools_context_get_context_from_context($context, $type = 'context', $a
   ctools_include('plugins');
   $plugin = ctools_get_context($context['name']);
   if ($function = ctools_plugin_get_function($plugin, 'context')) {
-    if (!isset($context['context_settings'])) {
-      $context['context_settings'] = array();
+    // Backward compatibility: Merge old style settings into new style:
+    if (!empty($context['context_settings'])) {
+      $context += $context['context_settings'];
+      unset($context['context_settings']);
     }
 
     if (isset($argument) && isset($plugin['placeholder name'])) {
-      $context['context_settings'][$plugin['placeholder name']] = $argument;
+      $context[$plugin['placeholder name']] = $argument;
     }
 
-    $return = $function($type == 'requiredcontext', $context['context_settings'], TRUE);
+    $return = $function($type == 'requiredcontext', $context, TRUE);
     if ($return) {
       $return->identifier = $context['identifier'];
       $return->page_title = isset($context['title']) ? $context['title'] : '';
@@ -1253,13 +1259,11 @@ function ctools_context_replace_form($form, $contexts) {
       case 'argument':
         $info = $context->placeholder['conf'];
         $plugin = ctools_get_argument($info['name']);
-        $settings = $info['settings'];
         break;
 
       case 'context':
         $info = $context->placeholder['conf'];
         $plugin = ctools_get_context($info['name']);
-        $settings = $info['context_settings'];
         break;
     }
 
@@ -1269,7 +1273,7 @@ function ctools_context_replace_form($form, $contexts) {
         $form[$cid] = $plugin['placeholder form'];
       }
       else if (function_exists($plugin['placeholder form'])) {
-        $widget = $plugin['placeholder form']($info['settings']);
+        $widget = $plugin['placeholder form']($info);
         if ($widget) {
           $form[$cid] = $widget;
         }

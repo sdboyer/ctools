@@ -145,7 +145,7 @@ function ctools_context_node_settings_form_validate($form, &$form_state) {
 function ctools_context_node_settings_form_submit($form, &$form_state) {
   if ($form_state['values']['set_identifier']) {
     $node = node_load($form_state['values']['nid']);
-    $form_state['conf']['identifier'] = $node->title;
+    $form_state['values']['identifier'] = $node->title;
   }
 
   foreach (array_keys($form_state['plugin']['defaults']) as $key) {

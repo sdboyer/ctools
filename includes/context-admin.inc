@@ -407,7 +407,6 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     'modal return' => TRUE,
     'info' => $info,
     'contexts' => $contexts,
-    'ref' => &$ref,
     'title' => t('Add @type "@context"', array('@type' => $type_info['singular title'], '@context' => $info['title'])),
     'type info' => $type_info,
     'conf' => &$conf,
@@ -446,7 +445,7 @@ function ctools_context_ajax_item_add($module = NULL, $type = NULL, $object_name
     ctools_context_cache_set($module, $object_name, $object);
 
     // Very irritating way to update the form for our contexts.
-    $arg_form_state = array();
+    $arg_form_state = array('values' => array());
 
     $arg_form = array(
       '#post' => array(),
@@ -536,6 +535,14 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
   // object without knowing precisely what data we're poking at.
   $ref = &$object->{$type_info['key']};
 
+  if (empty($step) || empty($object->temporary)) {
+    // Create the basis for our new context.
+    $conf = $object->{$type_info['key']}[$position];
+  }
+  else {
+    $conf = $object->temporary;
+  }
+
   $name = $ref[$position]['name'];
   if (empty($name)) {
     ctools_ajax_render_error();
@@ -550,9 +557,6 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
   $base_contexts = isset($object->base_contexts) ? $object->base_contexts : array();
   $contexts = ctools_context_load_contexts($object, TRUE, $base_contexts);
 
-  // Remove this context, because we can't really allow circular contexts.
-  unset($contexts[ctools_context_id($ref[$position])]);
-
   $form_state = array(
     'object' => &$object,
     'module' => $module,
@@ -564,24 +568,26 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
     'info' => $info,
     'position' => $position,
     'contexts' => $contexts,
-    'ref' => &$ref,
     'title' => t('Edit @type "@context"', array('@type' => $type_info['singular title'], '@context' => $info['title'])),
+    'type info' => $type_info,
+    'conf' => &$conf,
+    'object_name' => $object_name,
   );
 
   $form_info = array(
-    'path' => "ctools/context/ajax/add/$module/$type/$object_name/$position/%step",
+    'path' => "ctools/context/ajax/configure/$module/$type/$object_name/$position/%step",
     'show cancel' => TRUE,
     'next callback' => 'ctools_context_ajax_item_edit_next',
     'finish callback' => 'ctools_context_ajax_item_edit_finish',
     'cancel callback' => 'ctools_context_ajax_item_edit_cancel',
   );
 
-  $conf = array();
-
   $output = ctools_context_form('edit', $form_info, $form_state, $info, $conf, $step);
 
-  if (empty($output)) {
+  // If $rc is FALSE, there was no actual form.
+  if ($output === FALSE || !empty($form_state['complete'])) {
     // successful submit
+    $ref[$position] = $conf;
     ctools_context_cache_set($module, $object_name, $object);
 
     $output = array();
@@ -609,11 +615,14 @@ function ctools_context_ajax_item_edit($module = NULL, $type = NULL, $object_nam
     $theme_vars['form'] = $arg_form[$type][$position];
     $theme_vars['position'] = $position;
     $theme_vars['count'] = $position;
-    $output[] = ctools_ajax_command_replace('#' . $type . '-row-' . $position, theme('ctools_context_item_row', $theme_vars));
-    $output[] = ctools_ajax_command_changed('#' . $type . '-row-' . $position, '.title');
+    $output[] = ajax_command_replace('#' . $type . '-row-' . $position, theme('ctools_context_item_row', $theme_vars));
+    $output[] = ajax_command_changed('#' . $type . '-row-' . $position, '.title');
+  }
+  else {
+    $output = ctools_modal_form_render($form_state, $output);
   }
   print ajax_render($output);
-  ajax_footer();
+  exit;
 }
 
 function ctools_context_form_wrapper($form, &$form_state) {
@@ -626,6 +635,7 @@ function ctools_context_form_wrapper($form, &$form_state) {
  * All we need to do is store the updated pane in the cache.
  */
 function ctools_context_ajax_item_edit_next(&$form_state) {
+  $form_state['object']->temporary = $form_state['conf'];
   ctools_context_cache_set($form_state['module'], $form_state['object_name'], $form_state['object']);
 }
 
@@ -827,7 +837,25 @@ function ctools_edit_context_form_defaults($form, &$form_state) {
     '#default_value' => $conf['keyword'],
   );
 
+  $form['#submit'][] = 'ctools_edit_context_form_defaults_submit';
+
   return $form;
+}
+
+/**
+ * Submit handler to store context identifier and keyword info.
+ */
+function ctools_edit_context_form_defaults_submit(&$form, &$form_state) {
+  if ($form_state['plugin_definition']['key'] == 'relationships') {
+    $form_state['conf']['context'] = $form_state['values']['context'];
+  }
+  if ($form_state['plugin_definition']['key'] == 'arguments') {
+    $form_state['conf']['default'] = $form_state['values']['default'];
+    $form_state['conf']['title'] = $form_state['values']['title'];
+  }
+
+  $form_state['conf']['identifier'] = $form_state['values']['identifier'];
+  $form_state['conf']['keyword'] = $form_state['values']['keyword'];
 }
 
 /**
