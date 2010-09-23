@@ -800,10 +800,10 @@ function ctools_edit_context_form_defaults($form, &$form_state) {
     '#markup' => check_plain($plugin_definition['description']),
   );
 
-  if ($plugin_definition['key'] == 'relationships') {
+  if ($type_info['key'] == 'relationships') {
     $form['context'] = ctools_context_selector($contexts, $plugin_definition['required context'], isset($conf['context']) ? $conf['context'] : '');
   }
-  if ($plugin_definition['key'] == 'arguments') {
+  if ($type_info['key'] == 'arguments') {
     $form['default'] = array(
       '#type' => 'select',
       '#title' => t('Default'),
@@ -846,10 +846,10 @@ function ctools_edit_context_form_defaults($form, &$form_state) {
  * Submit handler to store context identifier and keyword info.
  */
 function ctools_edit_context_form_defaults_submit(&$form, &$form_state) {
-  if ($form_state['plugin_definition']['key'] == 'relationships') {
+  if ($form_state['type info']['key'] == 'relationships') {
     $form_state['conf']['context'] = $form_state['values']['context'];
   }
-  if ($form_state['plugin_definition']['key'] == 'arguments') {
+  if ($form_state['type info']['key'] == 'arguments') {
     $form_state['conf']['default'] = $form_state['values']['default'];
     $form_state['conf']['title'] = $form_state['values']['title'];
   }
