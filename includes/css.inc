@@ -306,7 +306,13 @@ function ctools_css_disassemble($css) {
       }
 
       // Disassemble the declaration, check it and tuck it into an array.
-      $disassembled_css[$selector_str] = _ctools_css_disassemble_declaration($declaration);
+      $declarations = _ctools_css_disassemble_declaration($declaration);
+      if (!isset($disassembled_css[$selector_str])) {
+        $disassembled_css[$selector_str] = $declarations;
+      }
+      else {
+        $disassembled_css[$selector_str] += $declarations;
+      }
     }
   }
   return $disassembled_css;
@@ -350,10 +356,11 @@ function _ctools_css_disassemble_declaration($declaration) {
       // Clean up the current property-value pair.
       $propval_pair = preg_replace("/[\n|\t|\\|\s]+/", ' ', trim($propval_pair));
       // Explode the remaining fragements some more, but clean them up first.
-      list($property, $value) = explode(':', $propval_pair);
+      $property_value = explode(':', $propval_pair);
+      $property = trim(array_shift($property_value));
       // If the property survived, toss it onto the stack.
       if (!empty($property)) {
-        $formatted_statement[trim($property)] = trim($value);
+        $formatted_statement[$property] = trim(implode('', $property_value));
       }
     }
   }
