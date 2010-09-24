@@ -174,9 +174,14 @@ function ctools_get_plugins($module, $type, $id = NULL) {
     return array();
   }
 
+  // Make sure our plugins array is populated.
+  if (!isset($plugins[$module][$type])) {
+    $plugins[$module][$type] = array();
+  }
+
   // Attempt to shortcut this whole piece of code if we already have
   // the requested plugin:
-  if ($id && isset($plugins[$module][$type]) && array_key_exists($id, $plugins[$module][$type])) {
+  if ($id && array_key_exists($id, $plugins[$module][$type])) {
     return $plugins[$module][$type][$id];
   }
 
@@ -328,19 +333,6 @@ function ctools_plugin_get_plugin_type_info($flush = FALSE) {
       }
     }
     cache_set('ctools_plugin_type_info', $all_type_info);
-  }
-
-  // Initialize the plugins static cache with empty arrays for all known
-  // module/plugin type combinations.
-  $plugins = &drupal_static('ctools_plugins', array());
-
-  foreach ($all_type_info as $module => $infos) {
-    $infos = array_fill_keys(array_keys($infos), array());
-    if (!isset($plugins[$module])) {
-      // Initialize it if not already set (which should typically be the case)
-      $plugins[$module] = array();
-    }
-    $plugins[$module] += $infos;
   }
 
   return $all_type_info;
