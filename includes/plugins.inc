@@ -353,6 +353,9 @@ function ctools_plugin_load_includes($info, $filename = NULL) {
   // Keep a static array so we don't hit drupal_system_listing more than necessary.
   $all_files = &drupal_static(__FUNCTION__, array());
 
+  // store static of plugin arrays for reference because they can't be reincluded.
+  static $plugin_arrays = array();
+
   // If we're being asked for all plugins of a type, skip any caching
   // we may have done because this is an admin task and it's ok to
   // spend the extra time.
@@ -401,16 +404,30 @@ function ctools_plugin_load_includes($info, $filename = NULL) {
       else {
         // Parse a hook.
         $plugin = NULL; // ensure that we don't have something leftover from earlier.
-        require_once DRUPAL_ROOT . '/' . $file->uri;
-        // .inc files have a special format for the hook identifier.
-        // For example, 'foo.inc' in the module 'mogul' using the plugin
-        // whose hook is named 'borg_type' should have a function named (deep breath)
-        // mogul_foo_borg_type()
 
-        // If, however, the .inc file set the quasi-global $plugin array, we
-        // can use that and not even call a function. Set the $identifier
-        // appropriately and ctools_plugin_process() will handle it.
-        $identifier = isset($plugin) ? $plugin : $module . '_' . $file->name;
+        if (isset($plugin_arrays[$file->uri])) {
+          $identifier = $plugin_arrays[$file->uri];
+        }
+        else {
+
+          require_once DRUPAL_ROOT . '/' . $file->uri;
+          // .inc files have a special format for the hook identifier.
+          // For example, 'foo.inc' in the module 'mogul' using the plugin
+          // whose hook is named 'borg_type' should have a function named (deep breath)
+          // mogul_foo_borg_type()
+
+          // If, however, the .inc file set the quasi-global $plugin array, we
+          // can use that and not even call a function. Set the $identifier
+          // appropriately and ctools_plugin_process() will handle it.
+          if (isset($plugin)) {
+            $plugin_arrays[$file->uri] = $plugin;
+            $identifier = $plugin;
+          }
+          else {
+            $identifier = $module . '_' . $file->name;
+          }
+        }
+
         $result = ctools_plugin_process($info, $module, $identifier, dirname($file->uri), basename($file->uri), $file->name);
       }
       if (is_array($result)) {
