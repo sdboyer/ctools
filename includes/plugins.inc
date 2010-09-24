@@ -775,18 +775,21 @@ function ctools_plugin_get_class($plugin_definition, $class_name) {
     }
   }
 
+  $return = FALSE;
   if (!isset($plugin_definition[$class_name])) {
     return;
   }
   else if (is_string($plugin_definition[$class_name])) {
     // Plugin uses the string form shorthand.
-    return $plugin_definition[$class_name];
+    $return = $plugin_definition[$class_name];
   }
   else if (isset($plugin_definition[$class_name]['class'])) {
     // Plugin uses the verbose array form.
-    return $plugin_definition[$class_name]['class'];
+    $return = $plugin_definition[$class_name]['class'];
   }
   // @todo consider adding an else {watchdog(...)} here
+
+  return ($return && class_exists($return)) ? $return : NULL;
 }
 
 /**
