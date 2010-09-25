@@ -10,6 +10,7 @@ if (module_exists('token')) {
   $plugin = array(
     'title' => t('Token'),
     'description' => t('A context that contains token replacements from token.module.'),
+    'no ui' => TRUE,
     'context' => 'ctools_context_create_token',  // func to create context
     'context name' => 'token',
     'keyword' => 'token',

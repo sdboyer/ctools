@@ -15,10 +15,7 @@ $plugin = array(
   'title' => t("Node edit form"),
   'description' => t('A node edit form.'),
   'context' => 'ctools_context_create_node_edit_form',
-  'settings form' => 'ctools_context_node_edit_form_settings_form',
-  'settings form validate' => 'ctools_context_node_edit_form_settings_form_validate',
-  'settings form validate' => 'ctools_context_node_edit_form_settings_form_validate',
-  'settings form submit' => 'ctools_context_node_edit_form_settings_form_submit',
+  'edit form' => 'ctools_context_node_edit_form_settings_form',
   'defaults' => array('nid' => ''),
   'keyword' => 'node_edit',
   'context name' => 'node_edit_form',
@@ -88,16 +85,10 @@ function ctools_context_create_node_edit_form($empty, $node = NULL, $conf = FALS
   }
 }
 
-function ctools_context_node_edit_form_settings_form($conf) {
-  if (empty($conf)) {
-    $conf = array(
-      'nid' => '',
-    );
-  }
+function ctools_context_node_edit_form_settings_form($form, &$form_state) {
+  $conf = $form_state['conf'];
 
   $form['node'] = array(
-    '#prefix' => '<div class="no-float">',
-    '#suffix' => '</div>',
     '#title' => t('Enter the title or NID of a node'),
     '#type' => 'textfield',
     '#maxlength' => 512,
@@ -113,11 +104,6 @@ function ctools_context_node_edit_form_settings_form($conf) {
     }
   }
 
-  $form['nid'] = array(
-    '#type' => 'value',
-    '#value' => $conf['nid'],
-  );
-
   $form['set_identifier'] = array(
     '#type' => 'checkbox',
     '#default_value' => FALSE,
@@ -131,18 +117,18 @@ function ctools_context_node_edit_form_settings_form($conf) {
 /**
  * Validate a node.
  */
-function ctools_context_node_edit_form_settings_form_validate($form, &$form_values, &$form_state) {
+function ctools_context_node_edit_form_settings_form_validate($form, &$form_state) {
   // Validate the autocomplete
-  if (empty($form_values['nid']) && empty($form_values['node'])) {
+  if (empty($form_state['values']['nid']) && empty($form_state['values']['node'])) {
     form_error($form['node'], t('You must select a node.'));
     return;
   }
 
-  if (empty($form_values['node'])) {
+  if (empty($form_state['values']['node'])) {
     return;
   }
 
-  $nid          = $form_values['node'];
+  $nid          = $form_state['values']['node'];
   $preg_matches = array();
   $match        = preg_match('/\[nid: (\d+)\]/', $nid, $preg_matches);
   if (!$match) {
@@ -164,18 +150,19 @@ function ctools_context_node_edit_form_settings_form_validate($form, &$form_valu
   }
   else {
     form_set_value($form['nid'], $node->nid, $form_state);
-    // $form_values['nid'] = $node->nid;
+    // $form_state['values']['nid'] = $node->nid;
   }
 }
 
-function ctools_context_node_edit_form_settings_form_submit($form, &$form_values, &$form_state) {
-  if ($form_values['set_identifier']) {
-    $node = node_load($form_values['nid']);
-    $form_state['values']['context']['identifier'] = $node->title;
+function ctools_context_node_edit_form_settings_form_submit($form, &$form_state) {
+  if ($form_state['values']['set_identifier']) {
+    $node = node_load($form_state['values']['nid']);
+    $form_state['values']['identifier'] = $node->title;
   }
 
-  // Don't let this be stored.
-  unset($form_values['set_identifier']);
+  // This will either be the value set previously or a value set by the
+  // validator.
+  $form_state['conf']['nid'] = $form_state['values']['nid'];
 }
 
 /**
