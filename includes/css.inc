@@ -360,7 +360,7 @@ function _ctools_css_disassemble_declaration($declaration) {
       $property = trim(array_shift($property_value));
       // If the property survived, toss it onto the stack.
       if (!empty($property)) {
-        $formatted_statement[$property] = trim(implode('', $property_value));
+        $formatted_statement[$property] = trim(implode(':', $property_value));
       }
     }
   }
