@@ -210,6 +210,7 @@
           if ($(this).attr('href')) {
             element_settings.url = $(this).attr('href');
             element_settings.event = 'click';
+            element_settings.progress = { type: 'throbber' };
           }
           var base = $(this).attr('href');
           Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
@@ -256,9 +257,6 @@
 
           Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
           Drupal.ajax[base].form = $(this);
-
-          Drupal.ajax[base].commands.modal_display = Drupal.CTools.Modal.modal_display;
-          Drupal.ajax[base].commands.modal_dismiss = Drupal.CTools.Modal.modal_dismiss;
         });
     }
   };
@@ -485,5 +483,10 @@
       }
     });
   };
+
+$(function() {
+  Drupal.ajax.prototype.commands.modal_display = Drupal.CTools.Modal.modal_display;
+  Drupal.ajax.prototype.commands.modal_dismiss = Drupal.CTools.Modal.modal_dismiss;
+});
 
 })(jQuery);

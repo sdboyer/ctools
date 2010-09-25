@@ -113,8 +113,9 @@ function ctools_context_handler_render($task, $subtask, $contexts, $args, $page 
 
         // Only directly output if $page was set to true.
         if (!empty($info['no_blocks'])) {
-          print theme('page', $info['content'], FALSE);
-          return;
+          /*print theme('page', $info['content'], FALSE);
+          return;*/
+          return $info['content'];
         }
         else {
           return $info['content'];
@@ -339,7 +340,7 @@ function ctools_context_handler_set_access_restrictions($task, $subtask, $handle
  * The configuration will be assumed to go simply in $handler->conf and
  * will be keyed by the argument ID.
  */
-function ctools_context_handler_edit_criteria(&$form, &$form_state) {
+function ctools_context_handler_edit_criteria($form, &$form_state) {
   if (!isset($form_state['handler']->conf['access'])) {
     $form_state['handler']->conf['access'] = array();
   }
@@ -361,7 +362,8 @@ function ctools_context_handler_edit_criteria(&$form, &$form_state) {
     t('If there is more than one variant on a page, when the page is visited each variant is given an opportunity to be displayed. Starting from the first variant and working to the last, each one tests to see if its selection rules will pass. The first variant that its criteria (as specified below) will be used.') .
     '</div>',
   );
-  $form = array_merge($form, ctools_access_admin_form($form_state));
+  $form = array_merge($form, ctools_access_admin_form($form, $form_state));
+  return $form;
 }
 
 /**
@@ -374,7 +376,7 @@ function ctools_context_handler_edit_criteria_submit(&$form, &$form_state) {
 /**
  * Edit contexts that go with this panel.
  */
-function ctools_context_handler_edit_context(&$form, &$form_state) {
+function ctools_context_handler_edit_context($form, &$form_state) {
   ctools_include('context-admin');
   ctools_context_admin_includes();
 
@@ -390,7 +392,7 @@ function ctools_context_handler_edit_context(&$form, &$form_state) {
   }
 
   $form['right'] = array(
-    '#prefix' => '<div class="clear-block"><div class="right-container">',
+    '#prefix' => '<div class="clearfix"><div class="right-container">',
     '#suffix' => '</div>',
   );
 
@@ -406,17 +408,23 @@ function ctools_context_handler_edit_context(&$form, &$form_state) {
   // Set an additional description if CCK and Token are enabled, to notify of unlisted keywords
   if (module_exists('content') && module_exists('token')) {
     $description = t('Note that CCK fields may be used as keywords using patterns like <em>%node:field_name-formatted</em>.');
-  } elseif (!module_exists('token')) {
+  }
+  elseif (!module_exists('token')) {
     $description = t('More keywords will be available if you install the Token module, see http://drupal.org/project/token.');
   }
 
+  $theme_vars = array();
+  $theme_vars['object'] = $cache;
+  $theme_vars['header'] = t('Summary of contexts');
+  $theme_vars['description'] = $description;
   $form['left']['summary'] = array(
     '#prefix' => '<div class="page-manager-contexts">',
     '#suffix' => '</div>',
-    '#value' => theme('ctools_context_list', $cache, t('Summary of contexts'), $description),
+    '#markup' => theme('ctools_context_list', $theme_vars),
   );
 
   $form_state['context_object'] = &$cache;
+  return $form;
 }
 
 /**

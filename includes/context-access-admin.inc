@@ -226,10 +226,14 @@ function ctools_access_admin_render_table($access, $fragment, $contexts) {
 /**
  * Theme the 'add' portion of the access form into a table.
  */
-function theme_ctools_access_admin_add($form) {
-  $rows = array(array(drupal_render($form)));
+function theme_ctools_access_admin_add($vars) {
+  $form = $vars['form'];
+  $rows = array(array(render($form)));
   $output = '<div class="container-inline">';
-  $output .= theme('table', array(), $rows);
+  $theme_vars = array();
+  $theme_vars['header'] = array();
+  $theme_vars['rows'] = $rows;
+  $output .= theme('table', $theme_vars);
   $output .= '</div>';
   return $output;
 }
