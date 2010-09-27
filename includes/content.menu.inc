@@ -27,9 +27,9 @@ function ctools_content_autocomplete_node($string) {
   if ($string != '') {
     // @todo verify the query logic here, it's untested.
     // Set up the query
-    $query = db_select('node', 'n')
-      ->innerJoin('users', 'u', 'n.uid = u.uid')
-      ->fields('n', array('nid', 'title'))
+    $query = db_select('node', 'n');
+    $query->innerJoin('users', 'u', 'n.uid = u.uid');
+    $query->fields('n', array('nid', 'title'))
       ->fields('u', array('name'))
       ->range(0, 10)
       ->addTag('node_access'); // ensure it's behind proper node_access logic
@@ -43,7 +43,7 @@ function ctools_content_autocomplete_node($string) {
       $query->condition('n.nid', $preg_matches[1]);
     }
     else {
-      $query->where('LOWER(n.title) LIKE LOWER(:title)', array(':title', '%' . db_like($string) . '%'));
+      $query->where('LOWER(n.title) LIKE LOWER(:title)', array(':title' => '%' . db_like($string) . '%'));
     }
     if (!user_access('administer nodes')) {
       $query->condition('n.status', 1);
