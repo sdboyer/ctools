@@ -61,6 +61,35 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
 
   ctools_wizard_defaults($form_info);
 
+  // If automated caching is enabled, ensure that everything is as it
+  // should be.
+  if (!empty($form_info['auto cache'])) {
+    // If the cache mechanism hasn't been set, default to the simple
+    // mechanism and use the wizard ID to ensure uniqueness so cache
+    // objects don't stomp on each other.
+    if (!isset($form_info['cache mechanism'])) {
+      $form_info['cache mechanism'] = 'simple::wizard::' . $form_info['id'];
+    }
+
+    // If not set, default the cache key to the wizard ID. This is often
+    // a unique ID of the object being edited or similar.
+    if (!isset($form_info['cache key'])) {
+      $form_info['cache key'] = $form_info['id'];
+    }
+
+    // If not set, default the cache location to storage. This is often
+    // somnething like 'conf'.
+    if (!isset($form_info['cache location'])) {
+      $form_info['cache location'] = 'storage';
+    }
+
+    // If absolutely nothing was set for the cache area to work on
+    if (!isset($form_state[$form_info['cache location']])) {
+      ctools_include('cache');
+      $form_state[$form_info['cache location']] = ctools_cache_get($form_info['cache mechanism'], $form_info['cache key']);
+    }
+  }
+
   $form_state['step'] = $step;
   $form_state['form_info'] = $form_info;
 
@@ -125,6 +154,28 @@ function ctools_wizard_multistep_form($form_info, $step, &$form_state) {
       // clicked, call it.
       if ($function = ctools_plugin_get_function($form_info, "$type callback")) {
         $function($form_state);
+      }
+
+      // If auto-caching is on, we need to write the cache on next and
+      // clear the cache on finish.
+      if (!empty($form_info['auto cache'])) {
+        if ($type == 'next') {
+          ctools_include('cache');
+          ctools_cache_set($form_info['cache mechanism'], $form_info['cache key'], $form_state[$form_info['cache location']]);
+        }
+        elseif ($type == 'finish') {
+          ctools_include('cache');
+          ctools_cache_clear($form_info['cache mechanism'], $form_info['cache key']);
+        }
+      }
+
+      // Set a couple of niceties:
+      if ($type == 'finish') {
+        $form_state['complete'] = TRUE;
+      }
+
+      if ($type == 'cancel') {
+        $form_state['cancel'] = TRUE;
       }
 
       // If the modal is in use, some special code for it:
