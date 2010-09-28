@@ -13,4 +13,7 @@ function ctools_context_plugin_type(&$items) {
   $items['contexts'] = array();
   $items['arguments'] = array();
   $items['relationships'] = array();
+  $items['access'] = array(
+    'child plugins' => TRUE,
+  );
 }

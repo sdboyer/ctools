@@ -69,8 +69,6 @@ function ctools_context_node_settings_form($form, &$form_state) {
   $conf = &$form_state['conf'];
 
   $form['node'] = array(
-    '#prefix' => '<div class="no-float">',
-    '#suffix' => '</div>',
     '#title' => t('Enter the title or NID of a node'),
     '#type' => 'textfield',
     '#maxlength' => 512,
@@ -148,9 +146,9 @@ function ctools_context_node_settings_form_submit($form, &$form_state) {
     $form_state['values']['identifier'] = $node->title;
   }
 
-  foreach (array_keys($form_state['plugin']['defaults']) as $key) {
-    $form_state['conf'][$key] = $form_state['values'][$key];
-  }
+  // This will either be the value set previously or a value set by the
+  // validator.
+  $form_state['conf']['nid'] = $form_state['values']['nid'];
 }
 
 /**
