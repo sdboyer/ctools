@@ -266,6 +266,7 @@ function ctools_context_add_item_table_buttons($type, $module, &$form, $availabl
       '#attributes' => array('class' => array("ctools-$type-add-url")),
       '#type' => 'select',
       '#options' => $available_contexts,
+      '#required' => FALSE,
     );
 
     $form['buttons'][$type]['add'] = array(
