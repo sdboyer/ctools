@@ -210,13 +210,12 @@
           if ($(this).attr('href')) {
             element_settings.url = $(this).attr('href');
             element_settings.event = 'click';
+            element_settings.progress = { type: 'throbber' };
           }
           var base = $(this).attr('href');
           Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
 
           // Attach the display behavior to the ajax object
-          Drupal.ajax[base].commands.modal_display = Drupal.CTools.Modal.modal_display;
-          Drupal.ajax[base].commands.modal_dismiss = Drupal.CTools.Modal.modal_dismiss;
         }
       );
 
@@ -225,6 +224,7 @@
         .addClass('ctools-use-modal-processed')
         .click(Drupal.CTools.Modal.clickAjaxLink)
         .each(function() {
+          var button = this;
           var element_settings = {};
 
           // AJAX submits specified in this manner automatically submit to the
@@ -235,8 +235,10 @@
           var base = $(this).attr('id');
           Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
 
-          // Attach the display behavior to the ajax object
-          Drupal.ajax[base].commands.modal_display = Drupal.CTools.Modal.modal_display;
+          // Make sure changes to settings are reflected in the URL.
+          $('.' + $(button).attr('id') + '-url').change(function() {
+            Drupal.ajax[base].options.url = Drupal.CTools.Modal.findURL(button);
+          });
         });
 
       // Bind our custom event to the form submit
@@ -256,9 +258,6 @@
 
           Drupal.ajax[base] = new Drupal.ajax(base, this, element_settings);
           Drupal.ajax[base].form = $(this);
-
-          Drupal.ajax[base].commands.modal_display = Drupal.CTools.Modal.modal_display;
-          Drupal.ajax[base].commands.modal_dismiss = Drupal.CTools.Modal.modal_dismiss;
         });
     }
   };
@@ -485,5 +484,10 @@
       }
     });
   };
+
+$(function() {
+  Drupal.ajax.prototype.commands.modal_display = Drupal.CTools.Modal.modal_display;
+  Drupal.ajax.prototype.commands.modal_dismiss = Drupal.CTools.Modal.modal_dismiss;
+});
 
 })(jQuery);

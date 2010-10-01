@@ -15,11 +15,9 @@ $plugin = array(
   'title' => t("User"),
   'description' => t('A single user object.'),
   'context' => 'ctools_context_create_user',
-  'settings form' => 'ctools_context_user_settings_form',
-  'settings form validate' => 'ctools_context_user_settings_form_validate',
-  'settings form submit' => 'ctools_context_user_settings_form_submit',
-  'keyword' => 'user',
+  'edit form' => 'ctools_context_user_settings_form',
   'defaults' => array('type' => 'select', 'uid' => ''),
+  'keyword' => 'user',
   'context name' => 'user',
   'convert list' => 'ctools_context_user_convert_list',
   'convert' => 'ctools_context_user_convert',
@@ -58,7 +56,9 @@ function ctools_context_create_user($empty, $data = NULL, $conf = FALSE) {
   }
 }
 
-function ctools_context_user_settings_form($conf) {
+function ctools_context_user_settings_form($form, &$form_state) {
+  $conf = $form_state['conf'];
+
   ctools_include('dependent');
   $form['type'] = array(
     '#title' => t('Enter the context type'),
@@ -76,7 +76,7 @@ function ctools_context_user_settings_form($conf) {
     '#maxlength' => 512,
     '#autocomplete_path' => 'user/autocomplete',
     '#process' => array('ctools_dependent_process'),
-    '#dependency' => array('radio:context[context_settings][type]' => array('select')),
+    '#dependency' => array('radio:type' => array('select')),
   );
 
   if (!empty($conf['uid'])) {
@@ -106,22 +106,22 @@ function ctools_context_user_settings_form($conf) {
 /**
  * Validate a user.
  */
-function ctools_context_user_settings_form_validate($form, &$form_values, &$form_state) {
-  if ($form_values['type'] != 'select') {
+function ctools_context_user_settings_form_validate($form, &$form_state) {
+  if ($form_state['values']['type'] != 'select') {
     return;
   }
 
   // Validate the autocomplete
-  if (empty($form_values['uid']) && empty($form_values['user'])) {
+  if (empty($form_state['values']['uid']) && empty($form_state['values']['user'])) {
     form_error($form['user'], t('You must select a user.'));
     return;
   }
 
-  if (empty($form_values['user'])) {
+  if (empty($form_state['values']['user'])) {
     return;
   }
 
-  $account = user_load(array('name' => $form_values['user']));
+  $account = user_load(array('name' => $form_state['values']['user']));
 
   if (!$account) {
     form_error($form['user'], t('Invalid user selected.'));
@@ -131,14 +131,14 @@ function ctools_context_user_settings_form_validate($form, &$form_values, &$form
   }
 }
 
-function ctools_context_user_settings_form_submit($form, &$form_values, &$form_state) {
-  if ($form_values['set_identifier']) {
-    $account = user_load($form_values['uid']);
-    $form_state['values']['context']['identifier'] = $account->name;
+function ctools_context_user_settings_form_submit($form, &$form_state) {
+  if ($form_state['values']['set_identifier']) {
+    $account = user_load($form_state['values']['uid']);
+    $form_state['values']['identifier'] = $account->name;
   }
 
-  // Don't let this be stored.
-  unset($form_values['set_identifier']);
+  $form_state['conf']['type'] = $form_state['values']['type'];
+  $form_state['conf']['uid'] = $form_state['values']['uid'];
 }
 
 /**

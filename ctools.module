@@ -457,10 +457,6 @@ function ctools_ctools_plugin_type() {
   // Add all the plugins that have their own declaration space elsewhere.
   _ctools_passthrough($items, 'plugin-type');
 
-  // And add plugins that aren't taken care of in their own, separate files.
-  $items['access'] = array(
-    'child plugins' => TRUE,
-  );
   return $items;
 }
 

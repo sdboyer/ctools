@@ -62,6 +62,9 @@ function page_manager_ctools_plugin_directory($owner, $plugin_type) {
   if ($owner == 'page_manager') {
     return 'plugins/' . $plugin_type;
   }
+  if ($owner == 'ctools' && $plugin_type == 'cache') {
+    return 'plugins/' . $plugin_type;
+  }
 }
 
 /**
@@ -242,52 +245,57 @@ function page_manager_theme() {
  * Get the cached changes to a given task handler.
  */
 function page_manager_get_page_cache($task_name) {
-  ctools_include('object-cache');
-  $cache = ctools_object_cache_get('page_manager_page', $task_name);
-  if (!$cache) {
-    $cache = new stdClass();
-    $cache->task_name = $task_name;
-    list($cache->task_id, $cache->subtask_id) = page_manager_get_task_id($cache->task_name);
+  $caches = drupal_static(__FUNCTION__, array());
+  if (!isset($caches[$task_name])) {
+    ctools_include('object-cache');
+    $cache = ctools_object_cache_get('page_manager_page', $task_name);
+    if (!$cache) {
+      $cache = new stdClass();
+      $cache->task_name = $task_name;
+      list($cache->task_id, $cache->subtask_id) = page_manager_get_task_id($cache->task_name);
 
-    $cache->task = page_manager_get_task($cache->task_id);
-    if (empty($cache->task)) {
-      return FALSE;
-    }
-
-    if ($cache->subtask_id) {
-      $cache->subtask = page_manager_get_task_subtask($cache->task, $cache->subtask_id);
-      if (empty($cache->subtask)) {
+      $cache->task = page_manager_get_task($cache->task_id);
+      if (empty($cache->task)) {
         return FALSE;
+      }
+
+      if ($cache->subtask_id) {
+        $cache->subtask = page_manager_get_task_subtask($cache->task, $cache->subtask_id);
+        if (empty($cache->subtask)) {
+          return FALSE;
+        }
+      }
+      else {
+        $cache->subtask = $cache->task;
+        $cache->subtask['name'] = '';
+      }
+
+      $cache->handlers = page_manager_load_sorted_handlers($cache->task, $cache->subtask_id);
+      $cache->handler_info = array();
+      foreach ($cache->handlers as $id => $handler) {
+        $cache->handler_info[$id] = array(
+          'weight' => $handler->weight,
+          'changed' => FALSE,
+          'name' => $id,
+        );
       }
     }
     else {
-      $cache->subtask = $cache->task;
-      $cache->subtask['name'] = '';
+      // ensure the task is loaded.
+      page_manager_get_task($cache->task_id);
     }
 
-    $cache->handlers = page_manager_load_sorted_handlers($cache->task, $cache->subtask_id);
-    $cache->handler_info = array();
-    foreach ($cache->handlers as $id => $handler) {
-      $cache->handler_info[$id] = array(
-        'weight' => $handler->weight,
-        'changed' => FALSE,
-        'name' => $id,
-      );
+    if ($task_name != '::new') {
+      $cache->locked = ctools_object_cache_test('page_manager_page', $task_name);
     }
-  }
-  else {
-    // ensure the task is loaded.
-    page_manager_get_task($cache->task_id);
+    else {
+      $cache->locked = FALSE;
+    }
+
+    $caches[$task_name] = $cache;
   }
 
-  if ($task_name != '::new') {
-    $cache->locked = ctools_object_cache_test('page_manager_page', $task_name);
-  }
-  else {
-    $cache->locked = FALSE;
-  }
-
-  return $cache;
+  return $caches[$task_name];
 }
 
 /**
@@ -990,33 +998,6 @@ function page_manager_task_handler_ctools_access_get($argument) {
   $contexts = ctools_context_handler_get_all_contexts($page->task, $page->subtask, $handler);
 
   return array($handler->conf['access'], $contexts);
-}
-
-function page_manager_context_cache_get($task_name, $key) {
-  $page = page_manager_get_page_cache($task_name);
-  if ($page) {
-    if (!empty($page->context_cache[$key])) {
-      return $page->context_cache[$key];
-    }
-    else {
-      ctools_include('context-task-handler');
-      if ($key == 'temp') {
-        $handler = $page->new_handler;
-      }
-      else {
-        $handler = $page->handlers[$key];
-      }
-      return ctools_context_handler_get_task_object($page->task, $page->subtask, $handler);
-    }
-  }
-}
-
-function page_manager_context_cache_set($task_name, $key, $object) {
-  $page = page_manager_get_page_cache($task_name);
-  if ($page) {
-    $page->context_cache[$key] = $object;
-    page_manager_set_page_cache($page);
-  }
 }
 
 /**
