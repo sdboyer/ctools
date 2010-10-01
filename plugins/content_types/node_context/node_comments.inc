@@ -14,8 +14,7 @@ if (module_exists('comment')) {
     'required context' => new ctools_context_required(t('Node'), 'node'),
     'category' => t('Node'),
     'defaults' => array(
-      'mode' => variable_get('comment_default_mode', COMMENT_MODE_THREADED_EXPANDED),
-      'order' => variable_get('comment_default_order', COMMENT_ORDER_NEWEST_FIRST),
+      'mode' => variable_get('comment_default_mode', COMMENT_MODE_THREADED),
       'comments_per_page' => variable_get('comment_default_per_page', '50'),
     ),
   );
@@ -48,13 +47,6 @@ function ctools_node_comments_content_type_edit_form($form, &$form_state) {
     '#default_value' => $conf['mode'],
     '#options' => _comment_get_modes(),
     '#weight' => 1,
-  );
-  $form['order'] = array(
-    '#type' => 'select',
-    '#title' => t('Sort'),
-    '#default_value' => $conf['order'],
-    '#options' => _comment_get_orders(),
-    '#weight' => 2,
   );
   foreach (_comment_per_page() as $i) {
     $options[$i] = t('!a comments per page', array('!a' => $i));
@@ -91,7 +83,6 @@ function ctools_comment_render($node, $conf) {
   }
 
   $mode = $conf['mode'];
-  $order = $conf['order'];
   $comments_per_page = $conf['comments_per_page'];
 
   // Multiple comment view
@@ -127,47 +118,10 @@ function ctools_comment_render($node, $conf) {
 
   $comments = comment_load_multiple($cids);
 
-  $divs = 0;
-  $last_depth = 0;
   drupal_add_css(drupal_get_path('module', 'comment') .'/comment.css');
-  foreach ($comments as $comment) {
-    // @todo Not sure about what of this is still needed. 09/10/2009 sun
-    $comment->name  = $comment->uid ? $comment->registered_name : $comment->name;
-    $comment->depth = count(explode('.', $comment->thread)) - 1;
-
-    if ($mode == COMMENT_MODE_THREADED_COLLAPSED || $mode == COMMENT_MODE_THREADED_EXPANDED) {
-      if ($comment->depth > $last_depth) {
-        $divs++;
-        $output .= '<div class="indented">';
-        $last_depth++;
-      }
-      else {
-        while ($comment->depth < $last_depth) {
-          $divs--;
-          $output .= '</div>';
-          $last_depth--;
-        }
-      }
-    }
-
-    if ($mode == COMMENT_MODE_FLAT_COLLAPSED) {
-      $output .= theme('comment_flat_collapsed', $comment, $node);
-    }
-    else if ($mode == COMMENT_MODE_FLAT_EXPANDED) {
-      $output .= theme('comment_flat_expanded', $comment, $node);
-    }
-    else if ($mode == COMMENT_MODE_THREADED_COLLAPSED) {
-      $output .= theme('comment_thread_collapsed', $comment, $node);
-    }
-    else if ($mode == COMMENT_MODE_THREADED_EXPANDED) {
-      $output .= theme('comment_thread_expanded', $comment, $node);
-    }
-  }
-  for ($i = 0; $i < $divs; $i++) {
-    $output .= '</div>';
-  }
-  $output .= theme('pager', NULL, $comments_per_page, 0);
-
-  return $output;
+  comment_prepare_thread($comments);
+  $build = comment_view_multiple($comments, $node);
+  $build['pager']['#theme'] = 'pager';
+  return drupal_render($build);
 }
 
