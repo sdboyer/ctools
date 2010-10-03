@@ -82,7 +82,11 @@ function ctools_context_handler_render($task, $subtask, $contexts, $args, $page 
                 'query' => '',
                 'fragment' => '',
               );
-              return drupal_goto($info['destination'], $info['query'], $info['fragment'], $info['response code']);
+              $options = array(
+                'query' => $info['query'],
+                'fragment' => $info['fragment'],
+              );
+              return drupal_goto($info['destination'], $options, $info['response code']);
             // @todo -- should other response codes be supported here?
           }
         }
