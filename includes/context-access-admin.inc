@@ -228,7 +228,7 @@ function ctools_access_admin_render_table($access, $fragment, $contexts) {
  */
 function theme_ctools_access_admin_add($vars) {
   $form = $vars['form'];
-  $rows = array(array(render($form)));
+  $rows = array(array(drupal_render_children($form)));
   $output = '<div class="container-inline">';
   $theme_vars = array();
   $theme_vars['header'] = array();
