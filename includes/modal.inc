@@ -232,7 +232,6 @@ function ctools_modal_form_render($form_state, $output) {
   }
 
   $commands = array();
-
   // If the form has not yet been rendered, render it.
   $commands[] = ctools_modal_command_display($title, $output);
   return $commands;
