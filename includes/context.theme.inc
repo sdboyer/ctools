@@ -30,7 +30,7 @@ function ctools_context_theme(&$theme) {
 
   // For the access plugin
   $theme['ctools_access_admin_add'] = array(
-    'variables' => array('form' => NULL),
+    'render element' => 'form',
     'file' => 'includes/context-access-admin.inc',
   );
 }

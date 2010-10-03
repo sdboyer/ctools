@@ -123,7 +123,7 @@ function ctools_access_admin_form($form, &$form_state) {
   $contexts = isset($form_state['contexts']) ? $form_state['contexts'] : array();
 
   $form['access_table'] = array(
-    '#value' => ctools_access_admin_render_table($form_state['access'], $fragment, $contexts),
+    '#markup' => ctools_access_admin_render_table($form_state['access'], $fragment, $contexts),
   );
 
   $form['add-button'] = array(
@@ -220,7 +220,7 @@ function ctools_access_admin_render_table($access, $fragment, $contexts) {
   }
 
   ctools_modal_add_js();
-  return theme('table', $header, $rows, array('id' => 'ctools-access-table'));
+  return theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'ctools-access-table')));
 }
 
 /**
