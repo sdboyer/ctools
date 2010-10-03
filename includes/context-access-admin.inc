@@ -149,6 +149,7 @@ function ctools_access_admin_form($form, &$form_state) {
     '#attributes' => array('class' => array("ctools-access-add-url")),
     '#type' => 'select',
     '#options' => $options,
+    '#required' => FALSE,
   );
 
   $form['add-button']['add'] = array(
@@ -305,6 +306,8 @@ function ctools_access_ajax_add($fragment = NULL, $name = NULL) {
     'contexts' => $contexts,
     'title' => t('Add criteria'),
     'ajax' => TRUE,
+    'modal' => TRUE,
+    'modal return' => TRUE,
   );
 
   $output = ctools_modal_form_wrapper('ctools_access_ajax_edit_item', $form_state);

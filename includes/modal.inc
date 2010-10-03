@@ -210,7 +210,6 @@ function ctools_modal_form_wrapper($form_id, &$form_state) {
 
   $output = drupal_build_form($form_id, $form_state);
   if (!empty($form_state['ajax']) && empty($form_state['executed'])) {
-    dsm('honkey');
     return ctools_modal_form_render($form_state, $output);
   }
 
