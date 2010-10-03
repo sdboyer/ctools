@@ -372,10 +372,13 @@ function ctools_access_ajax_edit($fragment = NULL, $id = NULL) {
     'contexts' => $contexts,
     'title' => t('Edit criteria'),
     'ajax' => TRUE,
+    'ajax' => TRUE,
+    'modal' => TRUE,
+    'modal return' => TRUE,
   );
 
   $output = ctools_modal_form_wrapper('ctools_access_ajax_edit_item', $form_state);
-  if (empty($output)) {
+  if (!isset($output[0])) {
     $function = $module . '_ctools_access_set';
     if (function_exists($function)) {
       $function($argument, $access);
