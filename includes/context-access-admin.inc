@@ -311,7 +311,7 @@ function ctools_access_ajax_add($fragment = NULL, $name = NULL) {
   );
 
   $output = ctools_modal_form_wrapper('ctools_access_ajax_edit_item', $form_state);
-  if (empty($output)) {
+  if (!isset($output[0])) {
     $function = $module . '_ctools_access_set';
     if (function_exists($function)) {
       $function($argument, $access);
