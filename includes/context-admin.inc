@@ -85,16 +85,16 @@ function ctools_context_get_plugin($type, $name) {
 /**
  * Add the argument table plus gadget plus javascript to the form.
  */
-function ctools_context_add_argument_form($module, &$form, &$form_state, &$form_location, $object, $name = NULL) {
-  if (empty($name)) {
-    $name = $object->name;
+function ctools_context_add_argument_form($module, &$form, &$form_state, &$form_location, $object, $cache_key = NULL) {
+  if (empty($cache_key)) {
+    $cache_key = $object->name;
   }
 
   $form_location = array(
     '#prefix' => '<div id="ctools-arguments-table">',
     '#suffix' => '</div>',
     '#theme' => 'ctools_context_item_form',
-    '#object_name' => $name,
+    '#cache_key' => $cache_key,
     '#ctools_context_type' => 'argument',
     '#ctools_context_module' => $module,
   );
@@ -112,16 +112,16 @@ function ctools_context_add_argument_form($module, &$form, &$form_state, &$form_
   }
 }
 
-function ctools_context_add_context_form($module, &$form, &$form_state, &$form_location, $object, $name = NULL) {
-  if (empty($name)) {
-    $name = $object->name;
+function ctools_context_add_context_form($module, &$form, &$form_state, &$form_location, $object, $cache_key = NULL) {
+  if (empty($cache_key)) {
+    $cache_key = $object->name;
   }
 
   $form_location = array(
     '#prefix' => '<div id="ctools-contexts-table">',
     '#suffix' => '</div>',
     '#theme' => 'ctools_context_item_form',
-    '#object_name' => $name,
+    '#cache_key' => $cache_key,
     '#ctools_context_type' => 'context',
     '#ctools_context_module' => $module,
   );
@@ -146,16 +146,16 @@ function ctools_context_add_context_form($module, &$form, &$form_state, &$form_l
 
 }
 
-function ctools_context_add_required_context_form($module, &$form, &$form_state, &$form_location, $object, $name = NULL) {
-  if (empty($name)) {
-    $name = $object->name;
+function ctools_context_add_required_context_form($module, &$form, &$form_state, &$form_location, $object, $cache_key = NULL) {
+  if (empty($cache_key)) {
+    $cache_key = $object->name;
   }
 
   $form_location = array(
     '#prefix' => '<div id="ctools-requiredcontexts-table">',
     '#suffix' => '</div>',
     '#theme' => 'ctools_context_item_form',
-    '#object_name' => $name,
+    '#cache_key' => $cache_key,
     '#ctools_context_type' => 'requiredcontext',
     '#ctools_context_module' => $module,
   );
@@ -177,16 +177,16 @@ function ctools_context_add_required_context_form($module, &$form, &$form_state,
   }
 }
 
-function ctools_context_add_relationship_form($module, &$form, &$form_state, &$form_location, $object, $name = NULL) {
-  if (empty($name)) {
-    $name = $object->name;
+function ctools_context_add_relationship_form($module, &$form, &$form_state, &$form_location, $object, $cache_key = NULL) {
+  if (empty($cache_key)) {
+    $cache_key = $object->name;
   }
 
   $form_location = array(
     '#prefix' => '<div id="ctools-relationships-table">',
     '#suffix' => '</div>',
     '#theme' => 'ctools_context_item_form',
-    '#object_name' => $name,
+    '#cache_key' => $cache_key,
     '#ctools_context_type' => 'relationship',
     '#ctools_context_module' => $module,
   );
@@ -224,11 +224,11 @@ function ctools_context_add_item_table($type, &$form, $available_contexts, $item
   );
 
   $module = $form['#ctools_context_module'];
-  $name   = $form['#object_name'];
+  $cache_key   = $form['#cache_key'];
 
   if (isset($items) && is_array($items)) {
     foreach ($items as $position => $context) {
-      ctools_context_add_item_to_form($module, $type, $name, $form[$type][$position], $position, $context);
+      ctools_context_add_item_to_form($module, $type, $cache_key, $form[$type][$position], $position, $context);
     }
   }
 
@@ -252,13 +252,13 @@ function ctools_context_add_item_table_buttons($type, $module, &$form, $availabl
     $type_info = ctools_context_info($type);
 
     $module = $form['#ctools_context_module'];
-    $name   = $form['#object_name'];
+    $cache_key   = $form['#cache_key'];
 
     // The URL for this ajax button
     $form['buttons'][$type]['add-url'] = array(
       '#attributes' => array('class' => array("ctools-$type-add-url")),
       '#type' => 'hidden',
-      '#value' => url("ctools/context/ajax/add/$module/$type/$name", array('absolute' => TRUE)),
+      '#value' => url("ctools/context/ajax/add/$module/$type/$cache_key", array('absolute' => TRUE)),
     );
 
     // This also will be in the URL.
@@ -282,7 +282,7 @@ function ctools_context_add_item_table_buttons($type, $module, &$form, $availabl
  * Add a row to the form. Used both in the main form and by
  * the ajax to add an item.
  */
-function ctools_context_add_item_to_form($module, $type, $name, &$form, $position, $item) {
+function ctools_context_add_item_to_form($module, $type, $cache_key, &$form, $position, $item) {
   // This is the single function way to load any plugin by variable type.
   $info = ctools_context_get_plugin($type, $item['name']);
   $form['title'] = array(
@@ -301,11 +301,11 @@ function ctools_context_add_item_to_form($module, $type, $name, &$form, $positio
   }
 
   $form['remove'] = array(
-    '#markup' => ctools_ajax_image_button(ctools_image_path('icon-delete.png'), "ctools/context/ajax/delete/$module/$type/$name/$position", t('Remove this item.')),
+    '#markup' => ctools_ajax_image_button(ctools_image_path('icon-delete.png'), "ctools/context/ajax/delete/$module/$type/$cache_key/$position", t('Remove this item.')),
   );
 
   $form['settings'] = array(
-    '#markup' => ctools_modal_image_button(ctools_image_path('icon-configure.png'), "ctools/context/ajax/configure/$module/$type/$name/$position", t('Configure settings for this item.')),
+    '#markup' => ctools_modal_image_button(ctools_image_path('icon-configure.png'), "ctools/context/ajax/configure/$module/$type/$cache_key/$position", t('Configure settings for this item.')),
   );
 }
 
@@ -426,7 +426,7 @@ function ctools_context_ajax_item_add($mechanism = NULL, $type = NULL, $cache_ke
     // This is an additional thing that goes in here.
     $rel_form = array(
       '#theme' => 'ctools_context_item_form',
-      '#object_name' => $cache_key,
+      '#cache_key' => $cache_key,
       '#ctools_context_type' => 'relationship',
       '#ctools_context_module' => $mechanism,
       '#only_buttons' => TRUE,

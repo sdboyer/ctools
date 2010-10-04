@@ -272,7 +272,7 @@ function ctools_wizard_wrapper($form, &$form_state) {
   if (!empty($form_info['show trail'])) {
     ctools_add_css('wizard');
     $form['ctools_trail'] = array(
-      '#value' => theme(array('ctools_wizard_trail__' . $form_info['id'], 'ctools_wizard_trail'), $trail),
+      '#markup' => theme(array('ctools_wizard_trail__' . $form_info['id'], 'ctools_wizard_trail'), array('trail' => $trail)),
       '#weight' => -1000,
     );
   }
