@@ -405,7 +405,7 @@ function ctools_wizard_wrapper($form, &$form_state) {
   }
 
   if (isset($form_info['wrapper']) && function_exists($form_info['wrapper'])) {
-    $form_info['wrapper']($form, $form_state);
+    $form = $form_info['wrapper']($form, $form_state);
   }
   return $form;
 }

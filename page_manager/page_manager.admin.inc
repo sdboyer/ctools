@@ -952,6 +952,8 @@ function page_manager_operation_wrapper($form, &$form_state) {
       '#save' => TRUE,
     );
   }
+
+  return $form;
 }
 
 /**
