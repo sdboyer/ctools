@@ -359,7 +359,7 @@ function _ctools_css_disassemble_declaration($declaration) {
       list($property, $value) = explode(':', $propval_pair, 2);
       // If the property survived, toss it onto the stack.
       if (!empty($property)) {
-        $formatted_statement[$property] = trim($value);
+        $formatted_statement[trim($property)] = trim($value);
       }
     }
   }
