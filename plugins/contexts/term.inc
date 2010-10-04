@@ -15,9 +15,11 @@ $plugin = array(
   'title' => t("Taxonomy term"),
   'description' => t('A single taxonomy term object.'),
   'context' => 'ctools_context_create_term',
-  'settings form' => 'ctools_context_term_settings_form',
-  'settings form validate' => 'ctools_context_term_settings_form_validate',
-  'settings form submit' => 'ctools_context_term_settings_form_submit',
+  'edit form' => 'ctools_context_term_settings_form',
+  'defaults' => array(
+    'vid' => '',
+    'tid' => '',
+  ),
   'keyword' => 'term',
   'context name' => 'term',
   'convert list' => array(
@@ -27,7 +29,6 @@ $plugin = array(
     'vid' => t('Vocabulary ID'),
   ),
   'convert' => 'ctools_context_term_convert',
-  'js' => array('misc/autocomplete.js'),
 );
 
 /**
@@ -45,7 +46,7 @@ function ctools_context_create_term($empty, $data = NULL, $conf = FALSE) {
   if ($conf && isset($data['tid'])) {
     $data = taxonomy_term_load($data['tid']);
   }
-  
+
   if (!empty($data)) {
     $context->data        = $data;
     $context->title       = $data->name;
@@ -55,15 +56,8 @@ function ctools_context_create_term($empty, $data = NULL, $conf = FALSE) {
   }
 }
 
-function ctools_context_term_settings_form($conf) {
-  if (empty($conf)) {
-    $conf = array(
-      'vid' => '',
-      'tid' => '',
-      'term' => '',
-      'description' => '',
-    );
-  }
+function ctools_context_term_settings_form($form, &$form_state) {
+  $conf = $form_state['conf'];
 
   $form['vid'] = array(
     '#title' => t('Vocabulary'),
@@ -84,10 +78,6 @@ function ctools_context_term_settings_form($conf) {
 
   ctools_include('dependent');
   $options = array();
-
-  // A note: Dependency works strangely on these forms as they have never been
-  // updated to a more modern system so they are not individual forms of their
-  // own like the content types.
 
   $form['taxonomy']['#tree'] = TRUE;
 
@@ -123,19 +113,19 @@ function ctools_context_term_settings_form($conf) {
 /**
  * Validate a term.
  */
-function ctools_context_term_settings_form_validate($form, &$form_values, &$form_state) {
+function ctools_context_term_settings_form_validate($form, &$form_state) {
   // Validate the autocomplete
-  $vid = $form_values['vid'];
-  if (empty($form_values['tid']) && empty($form_values['taxonomy'][$vid])) {
+  $vid = $form_state['values']['vid'];
+  if (empty($form_state['values']['tid']) && empty($form_state['values']['taxonomy'][$vid])) {
     form_error($form['taxonomy'][$vid], t('You must select a term.'));
     return;
   }
 
-  if (empty($form_values['taxonomy'][$vid])) {
+  if (empty($form_state['values']['taxonomy'][$vid])) {
     return;
   }
 
-  $term = db_query('SELECT tid FROM {taxonomy_term_data} WHERE LOWER(name) = LOWER(:name) AND t.vid = :vid', array(':name' => $form_values['taxonomy'][$vid], ':vid' => $vid))->fetchObject();
+  $term = db_query('SELECT tid FROM {taxonomy_term_data} WHERE LOWER(name) = LOWER(:name) AND t.vid = :vid', array(':name' => $form_state['values']['taxonomy'][$vid], ':vid' => $vid))->fetchObject();
 
   if (!$term) {
     form_error($form['taxonomy'][$vid], t('Invalid term selected.'));
@@ -145,14 +135,14 @@ function ctools_context_term_settings_form_validate($form, &$form_values, &$form
   }
 }
 
-function ctools_context_term_settings_form_submit($form, &$form_values, &$form_state) {
-  if ($form_values['set_identifier']) {
-    $term = db_query('SELECT tid, name FROM {taxonomy_term_data} WHERE LOWER(tid) = :tid', array(':tid' => $form_values['tid']))->fetchObject();
-    $form_state['values']['context']['identifier'] = $term->name;
+function ctools_context_term_settings_form_submit($form, &$form_state) {
+  if ($form_state['values']['set_identifier']) {
+    $term = db_query('SELECT tid, name FROM {taxonomy_term_data} WHERE LOWER(tid) = :tid', array(':tid' => $form_state['values']['tid']))->fetchObject();
+    $form_state['values']['identifier'] = $term->name;
   }
 
-  // Don't let this be stored.
-  unset($form_values['set_identifier']);
+  $form_state['conf']['tid'] = $form_state['values']['tid'];
+  $form_state['conf']['vid'] = $form_state['values']['vid'];
 }
 
 /**

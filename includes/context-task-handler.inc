@@ -82,7 +82,11 @@ function ctools_context_handler_render($task, $subtask, $contexts, $args, $page 
                 'query' => '',
                 'fragment' => '',
               );
-              return drupal_goto($info['destination'], $info['query'], $info['fragment'], $info['response code']);
+              $options = array(
+                'query' => $info['query'],
+                'fragment' => $info['fragment'],
+              );
+              return drupal_goto($info['destination'], $options, $info['response code']);
             // @todo -- should other response codes be supported here?
           }
         }
@@ -401,7 +405,7 @@ function ctools_context_handler_edit_context($form, &$form_state) {
     '#suffix' => '</div></div>',
   );
 
-  $module = 'page_manager-' . $page->task_name;
+  $module = 'page_manager_context::' . $page->task_name;
   ctools_context_add_context_form($module, $form, $form_state, $form['right']['contexts_table'], $cache);
   ctools_context_add_relationship_form($module, $form, $form_state, $form['right']['relationships_table'], $cache);
 

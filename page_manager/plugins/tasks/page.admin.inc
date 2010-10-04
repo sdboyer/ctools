@@ -843,7 +843,7 @@ function page_manager_page_form_access($form, &$form_state) {
   }
 
   ctools_include('context-access-admin');
-  $form = array_merge($form, ctools_access_admin_form($form_state));
+  $form = ctools_access_admin_form($form, $form_state);
 
   return $form;
 }
