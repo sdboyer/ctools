@@ -47,7 +47,8 @@ function views_content_term_from_view_context($context, $conf, $placeholder = FA
 /**
  * Settings form for the relationship.
  */
-function views_content_term_from_view_settings_form($conf) {
+function views_content_term_from_view_settings_form($form, &$form_state) {
+  $conf = $form_state['conf'];
   $form['row'] = array(
     '#title' => t('Row number'),
     '#type' => 'textfield',
@@ -57,8 +58,8 @@ function views_content_term_from_view_settings_form($conf) {
   return $form;
 }
 
-function views_content_term_from_view_settings_form_validate($form, &$form_values, &$form_state) {
-  if (intval($form_values['row']) <= 0) {
+function views_content_term_from_view_settings_form_validate($form, &$form_state) {
+  if (intval($form_state['values']['row']) <= 0) {
     form_error($form['row'], t('Row number must be a positive integer value.'));
   }
 }

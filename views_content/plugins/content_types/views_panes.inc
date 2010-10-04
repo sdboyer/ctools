@@ -328,7 +328,7 @@ function views_content_views_panes_content_type_render($subtype, $conf, $panel_a
 /**
  * Returns an edit form for a block.
  */
-function views_content_views_panes_content_type_edit_form(&$form, &$form_state) {
+function views_content_views_panes_content_type_edit_form($form, &$form_state) {
   $conf = $form_state['conf'];
   $contexts = $form_state['contexts'];
   // This allows older content to continue to work, where we used to embed
@@ -538,6 +538,8 @@ function views_content_views_panes_content_type_edit_form(&$form, &$form_state) 
       $form['exposed'][$id][$info['value']]['#default_value'] = isset($conf['exposed'][$info['value']]) ? $conf['exposed'][$info['value']] : '';
     }
   }
+
+  return $form;
 }
 
 /**

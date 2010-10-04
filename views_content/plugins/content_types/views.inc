@@ -228,7 +228,7 @@ function views_content_views_content_type_render($subtype, $conf, $panel_args, $
 /**
  * Returns an edit form for a block.
  */
-function views_content_views_select_display(&$form, &$form_state) {
+function views_content_views_select_display($form, &$form_state) {
   $view = views_get_view($form_state['subtype_name']);
   if (empty($view)) {
     return;
@@ -248,6 +248,8 @@ function views_content_views_select_display(&$form, &$form_state) {
     '#options' => $displays,
     '#description' => t('Choose which display of this view you wish to use.')
   );
+
+  return $form;
 }
 
 /**
@@ -262,7 +264,7 @@ function views_content_views_select_display_submit(&$form, &$form_state) {
 /**
  * Returns an edit form for a block.
  */
-function views_content_views_content_type_edit_form(&$form, &$form_state) {
+function views_content_views_content_type_edit_form($form, &$form_state) {
   $conf = $form_state['conf'];
   $view = _views_content_views_update_conf($conf, $form_state['subtype_name']);
 

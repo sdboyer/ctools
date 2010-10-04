@@ -38,7 +38,7 @@ function views_content_views_pager_content_type_render($subtype, $conf, $panel_a
   return $block;
 }
 
-function views_content_views_pager_content_type_edit_form(&$form, &$form_state) {
+function views_content_views_pager_content_type_edit_form($form, &$form_state) {
 }
 
 function views_content_views_pager_content_type_edit_form_submit(&$form, &$form_state) {

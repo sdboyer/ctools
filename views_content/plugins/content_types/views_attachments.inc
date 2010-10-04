@@ -43,7 +43,7 @@ function views_content_views_attachments_content_type_render($subtype, $conf, $p
 }
 
 
-function views_content_views_attachments_content_type_edit_form(&$form, &$form_state) {
+function views_content_views_attachments_content_type_edit_form($form, &$form_state) {
   $conf = $form_state['conf'];
 
   $form['which'] = array(
@@ -54,6 +54,8 @@ function views_content_views_attachments_content_type_edit_form(&$form, &$form_s
     ),
     '#default_value' => $conf['which'],
   );
+
+  return $form;
 }
 
 function views_content_views_attachments_content_type_edit_form_validate(&$form, &$form_state) {

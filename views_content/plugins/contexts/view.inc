@@ -77,7 +77,8 @@ function views_content_context_view_create($empty, $data = NULL, $conf = FALSE) 
   }
 }
 
-function views_content_context_view_settings_form($conf) {
+function views_content_context_view_settings_form($form, &$form_state) {
+  $conf = $form_state['conf'];
   $views = views_get_applicable_views('returns context');
   foreach ($views as $data) {
     list($view, $id) = $data;
@@ -108,8 +109,8 @@ function views_content_context_view_settings_form($conf) {
 /**
  * Validate a node.
  */
-function views_content_context_view_settings_form_validate($form, &$form_values, &$form_state) {
-  if (empty($form_values['view'])) {
+function views_content_context_view_settings_form_validate($form, &$form_state) {
+  if (empty($form_state['values']['view'])) {
     form_error($form['view'], t('You must select a view.'));
   }
 }

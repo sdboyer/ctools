@@ -69,7 +69,7 @@ function views_content_views_row_content_type_render($subtype, $conf, $panel_arg
   return $block;
 }
 
-function views_content_views_row_content_type_edit_form(&$form, &$form_state) {
+function views_content_views_row_content_type_edit_form($form, &$form_state) {
   // This form does nothing; it exists to let the main form select the view context.
 }
 
