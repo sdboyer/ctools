@@ -11,39 +11,45 @@
  */
 function ctools_context_theme(&$theme) {
   $theme['ctools_context_list'] = array(
-    'arguments' => array('object'),
+    'variables' => array('object' => NULL),
     'file' => 'includes/context.theme.inc',
   );
   $theme['ctools_context_list_no_table'] = array(
-    'arguments' => array('object'),
+    'variables' => array('object' => NULL),
     'file' => 'includes/context.theme.inc',
   );
   $theme['ctools_context_item_form'] = array(
-    'arguments' => array('form'),
+    'render element' => 'form',
+//    'variables' => array('form' => NULL),
     'file' => 'includes/context.theme.inc',
   );
   $theme['ctools_context_item_row'] = array(
-    'arguments' => array('type', 'form', 'position', 'count', 'with_tr' => TRUE),
+    'variables' => array('type' => NULL, 'form' => NULL, 'position' => NULL, 'count' => NULL, 'with_tr' => TRUE),
     'file' => 'includes/context.theme.inc',
   );
 
   // For the access plugin
   $theme['ctools_access_admin_add'] = array(
-    'arguments' => array('form'),
-    'file' => 'includes/context-admin.inc',
+    'variables' => array('form' => NULL),
+    'file' => 'includes/context-access-admin.inc',
   );
 }
 
 /**
  * Theme the form item for the context entry.
  */
-function theme_ctools_context_item_row($type, $form, $position, $count, $with_tr = TRUE) {
-  $output = '<td class="title">&nbsp;' . drupal_render($form['title']) . '</td>';
+function theme_ctools_context_item_row($vars) {
+  $type = $vars['type'];
+  $form = $vars['form'];
+  $position = $vars['position'];
+  $count = $vars['count'];
+  $with_tr = $vars['with_tr'];
+  $output = '<td class="title">&nbsp;' . render($form['title']) . '</td>';
   if (!empty($form['position'])) {
-    $output .= '<td class="position">&nbsp;' . drupal_render($form['position']) . '</td>';
+    $output .= '<td class="position">&nbsp;' . render($form['position']) . '</td>';
   }
-  $output .= '<td class="operation">' . drupal_render($form['settings']);
-  $output .= drupal_render($form['remove']) . '</td>';
+  $output .= '<td class="operation">' . render($form['settings']);
+  $output .= render($form['remove']) . '</td>';
 
   if ($with_tr) {
     $output = '<tr id="' . $type . '-row-' . $position . '" class="draggable ' . $type . '-row ' . ($count % 2 ? 'even' : 'odd') . '">' . $output . '</tr>';
@@ -54,7 +60,9 @@ function theme_ctools_context_item_row($type, $form, $position, $count, $with_tr
 /**
  * Display the context item.
  */
-function theme_ctools_context_item_form($form) {
+function theme_ctools_context_item_form($vars) {
+  $form = $vars['form'];
+
   $output = '';
   $type   = $form['#ctools_context_type'];
   $module = $form['#ctools_context_module'];
@@ -69,7 +77,12 @@ function theme_ctools_context_item_form($form) {
       if (!is_numeric($id)) {
         continue;
       }
-      $rows .= theme('ctools_context_item_row', $type, $form[$type][$id], $id, $count++);
+      $theme_vars = array();
+      $theme_vars['type'] = $type;
+      $theme_vars['form'] = $form[$type][$id];
+      $theme_vars['position'] = $id;
+      $theme_vars['count'] = $count++;
+      $rows .= theme('ctools_context_item_row', $theme_vars);
     }
 
     $output .= '<table id="' . $type . '-table">';
@@ -93,15 +106,19 @@ function theme_ctools_context_item_form($form) {
   if (!empty($form['buttons'])) {
     // Display the add context item.
     $row   = array();
-    $row[] = array('data' => drupal_render($form['buttons'][$type]['item']), 'class' => array('title'));
-    $row[] = array('data' => drupal_render($form['buttons'][$type]['add']), 'class' => array('add'), 'width' => "60%");
+    $row[] = array('data' => render($form['buttons'][$type]['item']), 'class' => array('title'));
+    $row[] = array('data' => render($form['buttons'][$type]['add']), 'class' => array('add'), 'width' => "60%");
     $output .= '<div class="buttons">';
-    $output .= drupal_render($form['buttons'][$type]);
-    $output .= theme('table', array(), array($row), array('id' => $type . '-add-table'));
+    $output .= render($form['buttons'][$type]);
+    $theme_vars = array();
+    $theme_vars['header'] = array();
+    $theme_vars['rows'] = array($row);
+    $theme_vars['attributes'] = array('id' => $type . '-add-table');
+    $output .= theme('table', $theme_vars);
     $output .= '</div>';
   }
   if (!empty($form['description'])) {
-    $output .= drupal_render($form['description']);
+    $output .= render($form['description']);
   }
 
   if (!empty($type_info['sortable'])) {
@@ -117,7 +134,10 @@ function theme_ctools_context_item_form($form) {
  *
  * Contexts must be preloaded.
  */
-function theme_ctools_context_list($object, $header = '', $description = '') {
+function theme_ctools_context_list($vars) {
+  $object = $vars['object'];
+  $header = $vars['header'];
+  $description = $vars['description'];
   $titles = array();
   $output = '';
   $count  = 1;
@@ -237,7 +257,8 @@ function theme_ctools_context_list($object, $header = '', $description = '') {
  * ctools_context_list() but not in a table format because tabledrag
  * won't let us have tables within tables and still drag.
  */
-function theme_ctools_context_list_no_table($object) {
+function theme_ctools_context_list_no_table($vars) {
+  $object = $vars['object'];
   ctools_add_css('context');
   $titles = array();
   $output = '';
@@ -245,7 +266,7 @@ function theme_ctools_context_list_no_table($object) {
   // Describe 'built in' contexts.
   if (!empty($object->base_contexts)) {
     foreach ($object->base_contexts as $id => $context) {
-      $output .= '<div class="ctools-context-holder clear-block">';
+      $output .= '<div class="ctools-context-holder clearfix">';
       $output .= '<div class="ctools-context-title">' . t('Built in context') . '</div>';
       $desc = check_plain($context->identifier);
       if (isset($context->keyword)) {
@@ -264,7 +285,7 @@ function theme_ctools_context_list_no_table($object) {
   // First, make a list of arguments. Arguments are pretty simple.
   if (!empty($object->arguments)) {
     foreach ($object->arguments as $argument) {
-      $output .= '<div class="ctools-context-holder clear-block">';
+      $output .= '<div class="ctools-context-holder clearfix">';
       $output .= '<div class="ctools-context-title">' . t('Argument @count', array('@count' => $count)) . '</div>';
       $desc = check_plain($argument['identifier']);
       if (isset($argument['keyword'])) {
@@ -280,7 +301,7 @@ function theme_ctools_context_list_no_table($object) {
   // Then, make a nice list of contexts.
   if (!empty($object->contexts)) {
     foreach ($object->contexts as $context) {
-      $output .= '<div class="ctools-context-holder clear-block">';
+      $output .= '<div class="ctools-context-holder clearfix">';
       $output .= '<div class="ctools-context-title">' . t('Context @count', array('@count' => $count)) . '</div>';
       $desc = check_plain($context['identifier']);
       if (isset($context['keyword'])) {
@@ -295,7 +316,7 @@ function theme_ctools_context_list_no_table($object) {
   // And relationships
   if (!empty($object->relationships)) {
     foreach ($object->relationships as $relationship) {
-      $output .= '<div class="ctools-context-holder clear-block">';
+      $output .= '<div class="ctools-context-holder clearfix">';
       if (is_array($relationship['context'])) {
         $rtitles = array();
         foreach ($relationship['context'] as $cid) {

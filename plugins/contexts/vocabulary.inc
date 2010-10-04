@@ -15,8 +15,8 @@ $plugin = array(
   'title' => t("Taxonomy vocabulary"),
   'description' => t('A single taxonomy vocabulary object.'),
   'context' => 'ctools_context_create_vocabulary',
-  'settings form' => 'ctools_context_vocabulary_settings_form',
-  'settings form validate' => 'ctools_context_vocabulary_settings_form_validate',
+  'edit form' => 'ctools_context_vocabulary_settings_form',
+  'defaults' => array('vid' => ''),
   'keyword' => 'vocabulary',
   'context name' => 'vocabulary',
 );
@@ -45,9 +45,10 @@ function ctools_context_create_vocabulary($empty, $data = NULL, $conf = FALSE) {
   }
 }
 
-function ctools_context_vocabulary_settings_form($conf) {
-  $options = array();
+function ctools_context_vocabulary_settings_form($form, &$form_state) {
+  $conf = $form_state['conf'];
 
+  $options = array();
   foreach (taxonomy_get_vocabularies() as $vid => $vocabulary) {
     $options[$vid] = $vocabulary->name;
   }
@@ -56,12 +57,13 @@ function ctools_context_vocabulary_settings_form($conf) {
     '#title' => t('Vocabulary'),
     '#type' => 'select',
     '#options' => $options,
-    '#default_value' => isset($conf['vid']) ? $conf['vid'] : array(),
-    '#prefix' => '<div class="clear-block">',
-    '#suffix' => '</div>',
+    '#default_value' => $conf['vid'],
     '#description' => t('Select the vocabulary for this form.'),
   );
 
   return $form;
 }
 
+function ctools_context_vocabulary_settings_form_submit($form, &$form_state) {
+  $form_state['conf']['vid'] = $form_state['values']['vid'];
+}

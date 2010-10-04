@@ -23,7 +23,7 @@
  */
 
 (function ($) {
-  Drupal.behaviors.CToolsDropdown = { 
+  Drupal.behaviors.CToolsDropdown = {
     attach: function() {
       $('div.ctools-dropdown:not(.ctools-dropdown-processed)')
         .removeClass('ctools-dropdown-no-js')

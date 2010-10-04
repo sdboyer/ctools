@@ -67,6 +67,7 @@ function ctools_modal_add_js() {
 
   drupal_add_js($settings, 'setting');
   drupal_add_js('misc/jquery.form.js');
+  drupal_add_js('misc/progress.js');
   drupal_add_js('misc/ajax.js');
   ctools_add_js('modal');
 
@@ -120,6 +121,10 @@ function ctools_modal_add_plugin_js($plugins) {
  *   The html to place within the modal.
  */
 function ctools_modal_command_display($title, $html) {
+  if (is_array($html)) {
+    $html = drupal_render($html);
+  }
+
   return array(
     'command' => 'modal_display',
     'title' => $title,
@@ -159,7 +164,7 @@ function ctools_modal_command_loading() {
  *   Any class to apply to the link. @todo this should be a options array.
  */
 function ctools_modal_image_button($image, $dest, $alt, $class = '') {
-  return ctools_ajax_text_button(theme('image', $image), $dest, $alt, $class, 'ctools-use-modal');
+  return ctools_ajax_text_button(theme('image', array('path' => $image)), $dest, $alt, $class, 'ctools-use-modal');
 }
 
 /**

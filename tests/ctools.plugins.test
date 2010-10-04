@@ -20,20 +20,6 @@ class CtoolsPluginsGetInfoTestCase extends DrupalWebTestCase {
   function setUp() {
     // Additionally enable contact module.
     parent::setUp('ctools', 'ctools_plugin_test');
-    /**
-     * @TODO Figure out how to deal with this hack.
-     *
-     * This clears out static caches so they can be rebuilt and
-     * ctools_plugin_test plugins can be populated. This causes multiple
-     * tests to fail because simpletests setUp function really fights
-     * with plugins including model. This happens because setUp gets called
-     * multiple times but we can /only/ require_once the plugin includes
-     * (we would declare functions), so we can't really rebuild the plugin
-     * definitions in the same process they where cleared.
-     */
-    drupal_static_reset('ctools_plugin_type_info');
-    drupal_static_reset('ctools_plugin_type_info_loaded');
-    registry_rebuild();
   }
 
   protected function assertPluginFunction($module, $type, $id, $function = 'function') {
@@ -44,6 +30,16 @@ class CtoolsPluginsGetInfoTestCase extends DrupalWebTestCase {
       '@type' => $type,
       '@function' => $function,
       '@retrieved' => $func,
+    )));
+  }
+
+  protected function assertPluginMissingFunction($module, $type, $id, $function = 'function') {
+    $func = ctools_plugin_load_function($module, $type, $id, $function);
+    $this->assertEqual($func, NULL, t('Plugin @plugin of plugin type @module:@type for @function with missing function successfully failed.', array(
+      '@plugin' => $id,
+      '@module' => $module,
+      '@type' => $type,
+      '@function' => $func,
     )));
   }
 
@@ -58,43 +54,14 @@ class CtoolsPluginsGetInfoTestCase extends DrupalWebTestCase {
     )));
   }
 
-  /**
-   * Helper function that runs some generalized tests for plugin loading.
-
-   * @TODO finish refactoring this.
-   *
-   * @param $cached
-   * Toggles whether the tests are run against a cached api or uncached api.
-   */
-  function PluginLoadingTests($cached = true) {
-
-    ctools_include('plugins');
-    $module = 'ctools_plugin_test';
-    $type = $cached ? 'cached' : 'not_cached';
-
-    // Test function retrieval for plugins using different definition methods.
-    $this->assertPluginFunction($module, $type, 'plugin_array', 'function');
-    $this->assertPluginFunction($module, "big_hook_$type", 'test1', 'function');
-
-    // Test class retrieval for plugins using different definition methods.
-    $base = $cached ? 'ctoolsCached' : 'ctoolsNotCached';
-    $this->assertPluginClass($module, $type, 'plugin_array', 'handler');
-    $this->assertPluginClass($module, $type, 'plugin_array2', 'handler');
-    // @todo finish setting this up.
-//    $class = ctools_plugin_load_class($module, $type . '_hook', 'test1', 'handler');
-//    $object = new $class();
-//    $this->assertEqual("ctools_plugin_test_hook_${type}_test", $func, "Function for $type using hook definition retrieved.");
-
-    // Check that our cache is stored
-    // @TODO move these to a different test method.
-//    $cache = cache_get("plugins:$module:$type");
-//    $test = !empty($cache->data)
-//      && sizeof($cache->data) == 2;
-//    $this->assertEqual($test, $cached, 'Plugins from includes are being cached properly.');
-//    $cache = cache_get("plugins:$module:${type}_hook");
-//    $test = !empty($cache->data)
-//      && sizeof($cache->data) == 1;
-//    $this->assertEqual($test, $cached, 'Plugins from hooks are being cached properly.');
+  protected function assertPluginMissingClass($module, $type, $id, $class = 'handler') {
+    $class_name = ctools_plugin_load_class($module, $type, $id, $class);
+    $this->assertEqual($class_name, NULL, t('Plugin @plugin of plugin type @module:@type for @class with missing class successfully failed.', array(
+      '@plugin' => $id,
+      '@module' => $module,
+      '@type' => $type,
+      '@class' => $class,
+    )));
   }
 
   /**
@@ -107,21 +74,28 @@ class CtoolsPluginsGetInfoTestCase extends DrupalWebTestCase {
 
     // Test function retrieval for plugins using different definition methods.
     $this->assertPluginFunction($module, $type, 'plugin_array', 'function');
+    $this->assertPluginFunction($module, $type, 'plugin_array2', 'function');
+    $this->assertPluginMissingFunction($module, $type, 'plugin_array_dne', 'function');
     $this->assertPluginFunction($module, "big_hook_$type", 'test1', 'function');
 
     // Test class retrieval for plugins using different definition methods.
     $this->assertPluginClass($module, $type, 'plugin_array', 'handler');
     $this->assertPluginClass($module, $type, 'plugin_array2', 'handler');
+    $this->assertPluginMissingClass($module, $type, 'plugin_array_dne', 'handler');
+    // TODO Test big hook plugins.
 
-    $module = 'ctools_plugin_test';
     $type = 'cached';
 
     // Test function retrieval for plugins using different definition methods.
     $this->assertPluginFunction($module, $type, 'plugin_array', 'function');
+    $this->assertPluginFunction($module, $type, 'plugin_array2', 'function');
+    $this->assertPluginMissingFunction($module, $type, 'plugin_array_dne', 'function');
     $this->assertPluginFunction($module, "big_hook_$type", 'test1', 'function');
 
     // Test class retrieval for plugins using different definition methods.
     $this->assertPluginClass($module, $type, 'plugin_array', 'handler');
     $this->assertPluginClass($module, $type, 'plugin_array2', 'handler');
+    $this->assertPluginMissingClass($module, $type, 'plugin_array_dne', 'handler');
+    // TODO Test big hook plugins.
   }
 }
