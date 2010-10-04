@@ -49,5 +49,22 @@ class CtoolsCssTestCase extends DrupalWebTestCase {
 //
 //    drupal_add_css($filename2, array('type' => 'file'));
 //    return array('#markup' => $output);
+
+
+    // Test that in case that url can be used, the value surives when a colon is in it.
+    $css = "#some-id {\n  background-image: url(http://example.com/example.gif);\n}";
+    $css_data = ctools_css_disassemble($css);
+    $empty_array = array();
+    $disallowed_values_regex = '/(expression)/';
+    $filtered = ctools_css_assemble(ctools_css_filter_css_data($css_data, $empty_array, $empty_array, '', $disallowed_values_regex));
+    $url = (strpos($filtered, 'http://example.com/example.gif') !== FALSE);
+    $this->assertTrue($url, 'CSS with multiple colons can survive.');
+
+    // Test that in case the CSS has two properties defined are merged.
+    $css = "#some-id {\n  font-size: 12px;\n}\n#some-id {\n  color: blue;\n}";
+    $filtered = ctools_css_filter($css);
+    $font_size = (strpos($filtered, 'font-size:12px;') !== FALSE);
+    $color = (strpos($filtered, 'color:blue') !== FALSE);
+    $this->assertTrue($font_size && $color, 'Multiple properties are merged.');
   }
 }
