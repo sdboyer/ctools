@@ -356,11 +356,10 @@ function _ctools_css_disassemble_declaration($declaration) {
       // Clean up the current property-value pair.
       $propval_pair = preg_replace("/[\n|\t|\\|\s]+/", ' ', trim($propval_pair));
       // Explode the remaining fragements some more, but clean them up first.
-      $property_value = explode(':', $propval_pair);
-      $property = trim(array_shift($property_value));
+      list($property, $value) = explode(':', $propval_pair, 2);
       // If the property survived, toss it onto the stack.
       if (!empty($property)) {
-        $formatted_statement[$property] = trim(implode(':', $property_value));
+        $formatted_statement[$property] = trim($value);
       }
     }
   }
