@@ -66,7 +66,7 @@ function theme_ctools_context_item_form($vars) {
   $output = '';
   $type   = $form['#ctools_context_type'];
   $module = $form['#ctools_context_module'];
-  $name   = $form['#object_name'];
+  $cache_key   = $form['#cache_key'];
 
   $type_info = ctools_context_info($type);
 

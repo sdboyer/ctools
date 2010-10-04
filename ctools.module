@@ -632,28 +632,16 @@ function ctools_export_ui_task_access($plugin_name, $op, $item = NULL) {
  * Cache callback on behalf of ctools_export_ui.
  */
 function ctools_export_ui_context_cache_get($plugin_name, $key) {
-  ctools_include('export-ui');
-  $plugin = ctools_get_export_ui($plugin_name);
-  $handler = ctools_export_ui_get_handler($plugin);
-  if ($handler) {
-    $item = $handler->edit_cache_get($key);
-    if (!$item) {
-      $item = ctools_export_crud_load($handler->plugin['schema'], $key);
-    }
-    return $item;
-  }
+  dsm('should not be called!');
+  return;
 }
 
 /**
  * Cache callback on behalf of ctools_export_ui.
  */
 function ctools_export_ui_context_cache_set($plugin_name, $key, $item) {
-  ctools_include('export-ui');
-  $plugin = ctools_get_export_ui($plugin_name);
-  $handler = ctools_export_ui_get_handler($plugin);
-  if ($handler) {
-    return $handler->edit_cache_set_key($item, $key);
-  }
+  dsm('should not be called!');
+  return;
 }
 
 /**
@@ -665,7 +653,7 @@ function ctools_export_ui_context_cache_set($plugin_name, $key, $item) {
  */
 function ctools_export_ui_ctools_access_get($argument) {
   ctools_include('export-ui');
-  list($plugin_name, $key) = explode(':', $argument);
+  list($plugin_name, $key) = explode(':', $argument, 2);
 
   $plugin = ctools_get_export_ui($plugin_name);
   $handler = ctools_export_ui_get_handler($plugin);
@@ -691,7 +679,7 @@ function ctools_export_ui_ctools_access_get($argument) {
  */
 function ctools_export_ui_ctools_access_set($argument, $access) {
   ctools_include('export-ui');
-  list($plugin_name, $key) = explode(':', $argument);
+  list($plugin_name, $key) = explode(':', $argument, 2);
 
   $plugin = ctools_get_export_ui($plugin_name);
   $handler = ctools_export_ui_get_handler($plugin);
