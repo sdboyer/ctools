@@ -66,7 +66,7 @@ function views_ctools_block_info($module, $delta, &$info) {
 /**
  * Add settings to the "exposed form in block" views.
  */
-function views_content_exposed_form_pane_edit(&$form, &$form_state) {
+function views_content_exposed_form_pane_edit($form, &$form_state) {
   // This is a cheesy way to add defaults only to new versions of the block
   // but leave older blocks without the setting alone. We can tell because
   // all older content will have something set for override_title which is
@@ -80,12 +80,14 @@ function views_content_exposed_form_pane_edit(&$form, &$form_state) {
     '#title' => t('Inherit path'),
     '#default_value' => !empty($form_state['conf']['inherit_path']),
   );
+
+  return $form;
 }
 
 /**
  * Store data for the exposed form in block settings page.
  */
-function views_content_exposed_form_pane_edit_submit(&$form, &$form_state) {
+function views_content_exposed_form_pane_edit_submit($form, &$form_state) {
   $form_state['conf']['inherit_path'] = $form_state['values']['inherit_path'];
 }
 
