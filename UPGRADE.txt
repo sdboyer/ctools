@@ -35,6 +35,11 @@ Upgrading from ctools-6.x-1.x to ctools-7.x-2.x:
     $form_state['wrapper_callback']. In addition to this $form_state['args'] 
     must now be $form_state['build_info']['args'].
 
+    NOTE: Previously checking to see if the return from ctools_build_form()
+    is empty would be enough to see if the form was submitted. This is no
+    longer true. Please check for $form_state['executed']. If using a wizard
+    check for $form_state['complete'].
+
   - Plugin types now must be explicitly registered via a registration hook,
     hook_ctools_plugin_type(); info once provided in magically-named functions
     (e.g., ctools_ctools_plugin_content_types() was the old function to

@@ -14,7 +14,7 @@ class ctools_access_ruleset_ui extends ctools_export_ui {
     );
 
     $form['left'] = array(
-      '#prefix' => '<div class="ctools-left-container clear-block">',
+      '#prefix' => '<div class="ctools-left-container clearfix">',
       '#suffix' => '</div>',
     );
 
