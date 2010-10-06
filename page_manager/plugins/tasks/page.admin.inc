@@ -28,14 +28,14 @@ function page_manager_page_menu(&$items, $task) {
     'title' => 'Add custom page',
     'page callback' => 'page_manager_page_add_subtask',
     'page arguments' => array(),
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_LOCAL_ACTION,
   ) + $base;
 
   $items['admin/structure/pages/import'] = array(
     'title' => 'Import page',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('page_manager_page_import_subtask', 'page'),
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_LOCAL_ACTION,
   ) + $base;
   if ($access_callback == 'user_access') {
     $items['admin/structure/pages/import']['access callback'] = 'ctools_access_multiperm';

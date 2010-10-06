@@ -150,7 +150,7 @@ function ctools_export_ui_process(&$plugin, $info) {
       'page arguments' => array($plugin['name'], 'add'),
       'access callback' => 'ctools_export_ui_task_access',
       'access arguments' => array($plugin['name'], 'add'),
-      'type' => MENU_LOCAL_TASK,
+      'type' => MENU_LOCAL_ACTION,
     ),
     'edit callback' => array(
       'path' => 'list/%ctools_export_ui',
@@ -182,7 +182,7 @@ function ctools_export_ui_process(&$plugin, $info) {
         'page arguments' => array($plugin['name'], 'import'),
         'access callback' => 'ctools_export_ui_task_access',
         'access arguments' => array($plugin['name'], 'import'),
-        'type' => MENU_LOCAL_TASK,
+        'type' => MENU_LOCAL_ACTION,
       ),
     );
   }
