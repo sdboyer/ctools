@@ -236,7 +236,7 @@ function page_manager_page_theme(&$items, $task) {
     'path' => drupal_get_path('module', 'page_manager') . '/plugins/tasks',
   );
   $items['page_manager_page_form_argument_table'] = $base + array(
-    'variables' => array('form' => NULL),
+    'render element' => 'form',
   );
   $items['page_manager_page_lock'] = $base + array(
     'variables' => array('lock' => array(), 'task_name' => NULL),

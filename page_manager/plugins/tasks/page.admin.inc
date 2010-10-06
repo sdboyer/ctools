@@ -936,7 +936,8 @@ function page_manager_page_form_argument($form, &$form_state) {
 /**
  * Theme the table for this form.
  */
-function theme_page_manager_page_form_argument_table($form) {
+function theme_page_manager_page_form_argument_table($vars) {
+  $form = $vars['form'];
   $header = array(
     array('data' => t('Argument'), 'class' => array('page-manager-argument')),
     array('data' => t('Position in path'), 'class' => array('page-manager-position')),
@@ -966,7 +967,7 @@ function theme_page_manager_page_form_argument_table($form) {
     'id' => 'page-manager-argument-table',
   );
 
-  $output = theme('table', $header, $rows, $attributes);
+  $output = theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => $attributes));
   return $output;
 }
 
@@ -980,11 +981,11 @@ function page_manager_page_subtask_argument_ajax($step = NULL, $task_name = NULL
   ctools_include('wizard');
 
   if (!$step) {
-    return ajax_render_error();
+    return ctools_ajax_render_error();
   }
 
   if (!$cache = page_manager_get_page_cache($task_name)) {
-    return ajax_render_error(t('Invalid object name.'));
+    return ctools_ajax_render_error(t('Invalid object name.'));
   }
 
   $page = &$cache->subtask['subtask'];
@@ -993,7 +994,7 @@ function page_manager_page_subtask_argument_ajax($step = NULL, $task_name = NULL
 
   // Load stored object from cache.
   if (!isset($arguments[$keyword])) {
-    return ajax_render_error(t('Invalid keyword.'));
+    return ctools_ajax_render_error(t('Invalid keyword.'));
   }
 
   // Set up wizard info
@@ -1025,12 +1026,14 @@ function page_manager_page_subtask_argument_ajax($step = NULL, $task_name = NULL
     'keyword' => $keyword,
     'ajax' => TRUE,
     'modal' => TRUE,
+    'modal return' => TRUE,
     'commands' => array(),
   );
 
-  // With 'modal' and 'ajax' true, rendering automatically happens here so
-  // we do nothing with the result.
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
+  $output = ctools_modal_form_render($form_state, $output);
+  print ajax_render($output);
+  exit;
 }
 
 /**
@@ -1230,7 +1233,7 @@ function page_manager_page_argument_form_settings($form, &$form_state) {
   }
 
   $form_state['plugin'] = $plugin;
-  $form;
+  return $form;
 }
 
 /**
