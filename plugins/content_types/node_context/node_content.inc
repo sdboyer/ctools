@@ -14,7 +14,6 @@ $plugin = array(
   'category' => t('Node'),
   'defaults' => array(
     'links' => TRUE,
-    'page' => TRUE,
     'no_extras' => TRUE,
     'override_title' => FALSE,
     'override_title_text' => '',
@@ -74,58 +73,72 @@ function ctools_node_content_content_type_render($subtype, $conf, $panel_args, $
 }
 
 function ctools_node_content_render_node($node, $conf) {
+  if (empty($node->content)) {
+    // Copied from node_build_content() so we can fiddle with it as we render.
+    $node->content = array();
 
-  // Handle existing configurations with the deprecated 'teaser' option.
-  if (isset($conf['teaser'])) {
-    $conf['build_mode'] = $conf['teaser'] ? 'teaser' : 'full';
-  }
+    // The 'view' hook can be implemented to overwrite the default function
+    // to display nodes.
+    if (node_hook($node, 'view')) {
+      $node = node_invoke($node, 'view', $conf['build_mode']);
+    }
 
-  // The build mode identifies the target for which the node is built.
-  if (!isset($node->build_mode)) {
-    $node->build_mode = ($conf['build_mode'] == 'teaser' || $conf['build_mode'] == 'full') ? NODE_BUILD_NORMAL : $conf['build_mode'];
-  }
+    // Build fields content.
+    // In case of a multiple view, node_view_multiple() already ran the
+    // 'prepare_view' step. An internal flag prevents the operation from running
+    // twice.
+    field_attach_prepare_view('node', array($node->nid => $node), $conf['build_mode']);
+    entity_prepare_view('node', array($node->nid => $node));
+    $node->content += field_attach_view('node', $node, $conf['build_mode']);
 
-  // Determine the $teaser variable.
-  $teaser = $conf['build_mode'] == 'teaser';
+    // Always display a read more link on teasers because we have no way
+    // to know when a teaser view is different than a full view.
+    $links = array();
+    if ($conf['build_mode'] == 'teaser') {
+      $links['node-readmore'] = array(
+        'title' => t('Read more'),
+        'href' => 'node/' . $node->nid,
+        'attributes' => array('rel' => 'tag', 'title' => strip_tags($node->title))
+      );
+    }
 
-  // Remove the delimiter (if any) that separates the teaser from the body.
-  $node->body = str_replace('<!--break-->', '', $node->body);
+    if ($conf['links']) {
+      $node->content['links'] = array(
+        '#theme' => 'links__node',
+        '#links' => $links,
+        '#attributes' => array('class' => array('links', 'inline')),
+      );
+    }
 
-  // The 'view' hook can be implemented to overwrite the default function
-  // to display nodes.
-  if (node_hook($node, 'view')) {
-    $node = node_invoke($node, 'view', $teaser, $conf['page']);
-  }
-  else {
-    $node = node_prepare($node, $teaser);
-  }
-
-  if (empty($conf['no_extras'])) {
-    // Allow modules to make their own additions to the node.
-    node_invoke_nodeapi($node, 'view', $teaser, $conf['page']);
-  }
-
-  if ($conf['links']) {
-    $node->links = module_invoke_all('link', 'node', $node, $teaser);
-    drupal_alter('link', $node->links, $node);
+    if (empty($conf['no_extras'])) {
+      // Allow modules to make their own additions to the node.
+      module_invoke_all('node_view', $node, $conf['build_mode'], $langcode);
+    }
   }
 
   // Set the proper node part, then unset unused $node part so that a bad
   // theme can not open a security hole.
-  $content = drupal_render($node->content);
-  if ($teaser) {
-    $node->teaser = $content;
-    unset($node->body);
-  }
-  else {
-    $node->body = $content;
-    unset($node->teaser);
+  $content = $node->content;
+
+  $content += array(
+    '#theme' => 'node',
+    '#node' => $node,
+    '#view_mode' => $conf['build_mode'],
+    '#language' => NULL,
+  );
+
+  // Add contextual links for this node, except when the node is already being
+  // displayed on its own page. Modules may alter this behavior (for example,
+  // to restrict contextual links to certain view modes) by implementing
+  // hook_node_view_alter().
+  if (!empty($node->nid) && !($conf['build_mode'] == 'full' && node_is_page($node))) {
+    $content['#contextual_links']['node'] = array('node', array($node->nid));
   }
 
-  // Allow modules to modify the fully-built node.
-  node_invoke_nodeapi($node, 'alter', $teaser, $conf['page']);
+  // Allow modules to modify the structured node.
+  drupal_alter('node_view', $content);
 
-  return theme('node', $node, $teaser, $conf['page']);
+  return $content;
 }
 
 /**
@@ -146,12 +159,6 @@ function ctools_node_content_content_type_edit_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#default_value' => $conf['link'],
     '#description' => t('Check here to make the title link to the node.'),
-  );
-  $form['page'] = array(
-    '#type' => 'checkbox',
-    '#default_value' => $conf['page'],
-    '#title' => t('Treat this as the primary node page'),
-    '#description' => t('This can affect title rendering and breadcrumbs from some node types.'),
   );
   $form['links'] = array(
     '#type' => 'checkbox',

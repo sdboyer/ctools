@@ -1031,8 +1031,45 @@ function page_manager_page_subtask_argument_ajax($step = NULL, $task_name = NULL
   );
 
   $output = ctools_wizard_multistep_form($form_info, $step, $form_state);
-  $output = ctools_modal_form_render($form_state, $output);
-  print ajax_render($output);
+  if (!empty($form_state['complete'])) {
+    if (isset($page->temporary_arguments[$keyword])) {
+      $page->arguments[$keyword] = $page->temporary_arguments[$keyword];
+    }
+
+    if (isset($page->temporary_arguments)) {
+      unset($page->temporary_arguments);
+    }
+
+    // Update the cache with changes.
+    page_manager_set_page_cache($cache);
+
+    // Rerender the table so we can ajax it back in.
+    // Go directly to the form and retrieve it using a blank form and
+    // a clone of our current form state. This is an abbreviated
+    // drupal_get_form that is halted prior to render and is never
+    // fully processed, but is guaranteed to produce the same form we
+    // started with so we don't have to do crazy stuff to rerender
+    // just part of it.
+
+    // @todo should there be a tool to do this?
+
+    $clone_state = $form_state;
+    $clone_state['allow temp'] = TRUE;
+    page_manager_page_form_argument($form, $clone_state);
+    $form = drupal_build_form('page_manager_page_form_argument', $form_state);
+
+    // Render just the table portion.
+    $output = drupal_render($form['table']);
+    $commands = array(
+      ajax_command_replace('#page-manager-argument-table', $output),
+      ctools_modal_command_dismiss(),
+    );
+  }
+  else {
+    $commands = ctools_modal_form_render($form_state, $output);
+  }
+  print ajax_render($commands);
+  ajax_footer();
   exit;
 }
 
@@ -1040,42 +1077,6 @@ function page_manager_page_subtask_argument_ajax($step = NULL, $task_name = NULL
  * Callback generated when the add page process is finished.
  */
 function page_manager_page_argument_finish(&$form_state) {
-  // Check to see if there are changes.
-  $page = &$form_state['page']->subtask['subtask'];
-  $keyword = &$form_state['keyword'];
-
-  if (isset($page->temporary_arguments[$keyword])) {
-    $page->arguments[$keyword] = $page->temporary_arguments[$keyword];
-  }
-
-  if (isset($page->temporary_arguments)) {
-    unset($page->temporary_arguments);
-  }
-
-  // Update the cache with changes.
-  page_manager_set_page_cache($form_state['page']);
-
-  // Rerender the table so we can ajax it back in.
-  // Go directly to the form and retrieve it using a blank form and
-  // a clone of our current form state. This is an abbreviated
-  // drupal_get_form that is halted prior to render and is never
-  // fully processed, but is guaranteed to produce the same form we
-  // started with so we don't have to do crazy stuff to rerender
-  // just part of it.
-
-  // @todo should there be a tool to do this?
-
-  $clone_state = $form_state;
-  $clone_state['allow temp'] = TRUE;
-  $form = array();
-  page_manager_page_form_argument($form, $clone_state);
-  drupal_prepare_form('page_manager_page_form_argument', $form, $clone_state);
-  $form['#post'] = array();
-  $form = form_builder('page_manager_page_form_argument', $form, $clone_state);
-
-  // Render just the table portion.
-  $output = drupal_render($form['table']);
-  $form_state['commands'][] = ajax_command_replace('#page-manager-argument-table', $output);
 }
 
 /**
