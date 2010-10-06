@@ -59,7 +59,6 @@ function ctools_menu_sort($a, $b) {
 }
 
 function _ctools_menu_add_dynamic_items(&$data, &$router_item, &$root_path) {
-  // TESTING: add hardcoded values.
   if ($additions = ctools_menu_add_tab()) {
     // If none of the static local tasks are active allow one of the dynamic
     // active tasks to be marked as such.
@@ -73,13 +72,23 @@ function _ctools_menu_add_dynamic_items(&$data, &$router_item, &$root_path) {
     }
     foreach ($additions as $addition) {
       $addition['localized_options'] = isset($addition['options']) ? $addition['options'] : array();
-      $data['tabs'][0]['output'][] = array(
-        '#theme' => 'menu_local_task',
-        '#link' => $addition,
-        '#active' => (!$has_active && $root_path === $addition['href']),
-      );
+      if (isset($addition['type']) && $addition['type'] == MENU_LOCAL_ACTION) {
+        $data['actions']['output'][] = array(
+          '#theme' => 'menu_local_action',
+          '#link' => $addition,
+        );
+      }
+      else {
+        $data['tabs'][0]['output'][] = array(
+          '#theme' => 'menu_local_task',
+          '#link' => $addition,
+          '#active' => (!$has_active && $root_path === $addition['href']),
+        );
+      }
     }
     uasort($data['tabs'][0]['output'], 'ctools_menu_sort');
     $data['tabs'][0]['count'] = count($data['tabs'][0]['output']);
+    uasort($data['actions']['output'], 'ctools_menu_sort');
+    $data['actions']['count'] = count($data['actions']['output']);
   }
 }

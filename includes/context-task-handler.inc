@@ -156,6 +156,7 @@ function ctools_context_handler_pre_render($handler, $contexts, $args) {
     ctools_menu_add_tab(array(
       'title' => $title,
       'href' => page_manager_edit_url(page_manager_make_task_name($handler->task, $handler->subtask), $trail),
+      'type' => MENU_LOCAL_ACTION
     ));
   }
 }
