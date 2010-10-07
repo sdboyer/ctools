@@ -474,7 +474,7 @@ function ctools_content_configure_form_defaults($form, &$form_state) {
   // gadget to all panes.
   if (empty($plugin['no title override']) && empty($subtype['no title override'])) {
     $form['aligner_start'] = array(
-      '#value' => '<div class="option-text-aligner">',
+      '#markup' => '<div class="option-text-aligner clearfix">',
     );
     $form['override_title'] = array(
       '#type' => 'checkbox',
@@ -492,13 +492,13 @@ function ctools_content_configure_form_defaults($form, &$form_state) {
       '#dependency_type' => 'disable',
     );
     $form['aligner_stop'] = array(
-      '#value' => '</div><div style="clear: both; padding: 0; margin: 0"></div>',
+      '#markup' => '</div>',
     );
     if (is_array($contexts)) {
       $form['override_title_markup'] = array(
         '#prefix' => '<div class="description">',
         '#suffix' => '</div>',
-        '#value' => t('You may use %keywords from contexts, as well as %title to contain the original title.'),
+        '#markup' => t('You may use %keywords from contexts, as well as %title to contain the original title.'),
       );
     }
     $add_submit = TRUE;
