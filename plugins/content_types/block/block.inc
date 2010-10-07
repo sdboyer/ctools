@@ -84,7 +84,15 @@ function _ctools_block_content_type_content_type($module, $delta, $block) {
  */
 function ctools_block_content_type_render($subtype, $conf) {
   list($module, $delta) = _ctools_block_get_module_delta($subtype, $conf);
-  $block = (object) module_invoke($module, 'block_view', $delta);
+  $info = (object) array(
+    'module' => $module,
+    'delta' => $delta,
+  );
+  $block = module_invoke($module, 'block_view', $delta);
+  // Allow modules to modify the block before it is viewed, via either
+  // hook_block_view_alter() or hook_block_view_MODULE_DELTA_alter().
+  drupal_alter(array('block_view', "block_view_{$module}_{$delta}"), $block, $info);
+  $block = (object) $block;
 
   if (empty($block)) {
     return;
@@ -113,8 +121,7 @@ function ctools_block_content_type_render($subtype, $conf) {
     $block->admin_links = array(
       array(
         'title' => t('Configure block'),
-        'alt' => t("Configure this block's 'block settings' in administer >> site building >> blocks"),
-        'href' => "admin/structure/block/configure/$module/$delta",
+        'href' => "admin/structure/block/manage/$module/$delta/configure",
         'query' => drupal_get_destination(),
       ),
     );

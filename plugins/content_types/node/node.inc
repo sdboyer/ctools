@@ -89,8 +89,6 @@ function ctools_node_content_type_render($subtype, $conf, $panel_args) {
     $conf['build_mode'] = $conf['teaser'] ? 'teaser' : 'full';
   }
 
-  // FIXME some of the old behavior will likely not work after the straight
-  // drupal_render() call.
   $block->content = node_view($node, $conf['build_mode']);
   return $block;
 }

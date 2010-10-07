@@ -54,17 +54,6 @@ function ctools_node_content_content_type_render($subtype, $conf, $panel_args, $
     $block->content = ctools_node_content_render_node($node, $conf);
   }
 
-  if (node_access('update', $node)) {
-    $block->admin_links['update'] = array(
-      'title' => t('Edit node'),
-      'alt' => t("Edit this node"),
-      'href' => "node/$node->nid/edit",
-    );
-    if (isset($_REQUEST['destination'])) {
-      $block->admin_links['update']['query'] = drupal_get_destination();
-    }
-  }
-
   if (!empty($conf['link']) && $node) {
     $block->title_link = "node/$node->nid";
   }
