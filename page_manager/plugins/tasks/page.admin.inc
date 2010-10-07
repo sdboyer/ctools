@@ -690,16 +690,6 @@ function page_manager_page_form_menu($form, &$form_state) {
 
   list($major, $minor) = explode('.', VERSION, 2);
 
-  $form['menu']['name-warning'] = array(
-    '#type' => 'markup',
-    '#prefix' => '<div class="warning">',
-    '#value' => t("Warning: Changing this item's menu will not work reliably in Drupal 6.4 or earlier. Please upgrade your copy of Drupal at !url.", array('!url' => l('drupal.org', 'http://drupal.org/project/Drupal+project'))),
-    '#suffix' => '</div>',
-    '#process' => array('ctools_dependent_process'),
-    '#dependency' => array('radio:menu[type]' => array('normal')),
-    '#access' => ($minor < 5),
-  );
-
   // Only display the menu selector if menu module is enabled.
   if (module_exists('menu')) {
     $form['menu']['name'] = array(
@@ -738,7 +728,7 @@ function page_manager_page_form_menu($form, &$form_state) {
     '#options' => array('none' => t('Already exists'), 'normal' => t('Normal menu item'), 'tab' => t('Menu tab')),
     '#default_value' => $menu['parent']['type'],
     '#description' => t('When providing a menu item as a default tab, Drupal needs to know what the parent menu item of that tab will be. Sometimes the parent will already exist, but other times you will need to have one created. The path of a parent item will always be the same path with the last part left off. i.e, if the path to this view is <em>foo/bar/baz</em>, the parent path would be <em>foo/bar</em>.'),
-//    '#process' => array('expand_radios', 'ctools_dependent_process'),
+    '#process' => array('form_process_radios', 'ctools_dependent_process'),
     '#dependency' => array('radio:menu[type]' => array('default tab')),
   );
   $form['menu']['parent']['title'] = array(
