@@ -16,8 +16,7 @@ $plugin = array(
   'description' => t('Adds a taxonomy terms from a node context; if multiple terms are selected, they wil be concatenated.'),
   'required context' => new ctools_context_required(t('Node'), 'node'),
   'context' => 'ctools_terms_from_node_context',
-  'settings form' => 'ctools_terms_from_node_settings_form',
-  'settings form validate' => 'ctools_terms_from_node_settings_form_validate',
+  'edit form' => 'ctools_terms_from_node_settings_form',
   'defaults' => array('vid' => array(), 'concatenator' => ','),
 );
 
@@ -49,7 +48,9 @@ function ctools_terms_from_node_context($context, $conf) {
 /**
  * Settings form for the relationship.
  */
-function ctools_terms_from_node_settings_form($conf) {
+function ctools_terms_from_node_settings_form($form, &$form_state) {
+  $conf = $form_state['conf'];
+
   $options = array();
   foreach (taxonomy_get_vocabularies() as $vid => $vocabulary) {
     $options[$vid] = $vocabulary->name;

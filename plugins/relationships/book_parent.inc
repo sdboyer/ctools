@@ -46,6 +46,9 @@ function ctools_book_parent_context($context, $conf) {
       return ctools_context_create('node', $node);
     }
   }
+  else {
+    return ctools_context_create_empty('node');
+  }
 }
 
 /**
@@ -61,11 +64,4 @@ function ctools_book_parent_settings_form($form, &$form_state) {
   );
 
   return $form;
-}
-
-/**
- * Save settings
- */
-function ctools_book_parent_settings_form_submit($form, &$form_state) {
-  $form_state['conf']['type'] = $form_state['values']['type'];
 }

@@ -16,7 +16,6 @@ $plugin = array(
   'description' => t('Adds node edit form from a node context.'),
   'required context' => new ctools_context_required(t('Node'), 'node'),
   'context' => 'ctools_node_edit_form_from_node_context',
-  'settings form' => 'ctools_node_edit_form_from_node_settings_form',
 );
 
 /**
@@ -30,11 +29,4 @@ function ctools_node_edit_form_from_node_context($context, $conf) {
   if (isset($context->data->nid)) {
     return ctools_context_create('node_edit_form', $context->data);
   }
-}
-
-/**
- * Settings form for the relationship.
- */
-function ctools_node_edit_form_from_node_settings_form($conf) {
-  // This function intentionally left blank.
 }

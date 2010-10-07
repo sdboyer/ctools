@@ -87,6 +87,12 @@ function _ctools_plugin_configure_create_form_info(&$form_info, $plugin_definiti
     }
   }
 
+  // If there is a default form wrapper, but no form is supplied,
+  // use the wrapper as the form.
+  if (empty($info) && !empty($form_info['default form'])) {
+    $info = $form_info['default form'];
+  }
+
   // @todo we may want to make these titles more settable?
   if (is_string($info)) {
     if (empty($plugin_definition['title'])) {
@@ -107,8 +113,18 @@ function _ctools_plugin_configure_create_form_info(&$form_info, $plugin_definiti
     );
 
     // Add the default form if one is specified.
-    if (!empty($form_info['default form'])) {
+    if (!empty($form_info['default form']) && $form_info['forms']['form']['form id'] != $form_info['default form']) {
       $form_info['forms']['form']['wrapper'] = $form_info['default form'];
+    }
+
+    // If no submit is supplied, supply the default submit which will do the
+    // most obvious task.
+    if (!function_exists($form_info['forms']['form']['form id'] . '_submit')) {
+      // Store the original wrapper so we can chain it.
+      if (!empty($form_info['forms']['form']['wrapper'])) {
+        $form_info['forms']['form']['original wrapper'] = $form_info['forms']['form']['wrapper'];
+      }
+      $form_info['forms']['form']['wrapper'] = 'ctools_plugins_default_form_wrapper';
     }
   }
   else if (is_array($info)) {
@@ -138,6 +154,38 @@ function _ctools_plugin_configure_create_form_info(&$form_info, $plugin_definiti
     }
     if ($wrapper && !empty($form_info['default form'])) {
       $form_info['forms'][$wrapper]['wrapper'] = $form_info['default form'];
+    }
+  }
+}
+
+/**
+ * A wrapper to provide a default submit so that plugins don't have to duplicate
+ * a whole bunch of code to do what most of them want to do anyway.
+ */
+function ctools_plugins_default_form_wrapper($form, &$form_state) {
+  $form_info = &$form_state['form_info'];
+  $info = $form_info['forms'][$form_state['step']];
+
+  if (isset($info['original wrapper']) && function_exists($info['original wrapper'])) {
+    $form = $info['original wrapper']($form, $form_state);
+  }
+
+  if (isset($form['buttons']['next'])) {
+    $form['buttons']['next']['#submit'][] = 'ctools_plugins_default_form_wrapper_submit';
+  }
+  if (isset($form['buttons']['return'])) {
+    $form['buttons']['return']['#submit'][] = 'ctools_plugins_default_form_wrapper_submit';
+  }
+  return $form;
+}
+
+/**
+ * Provide a default storage mechanism.
+ */
+function ctools_plugins_default_form_wrapper_submit(&$form, &$form_state) {
+  foreach (array_keys($form_state['plugin']['defaults']) as $key) {
+    if (isset($form_state['values'][$key])) {
+      $form_state['conf'][$key] = $form_state['values'][$key];
     }
   }
 }

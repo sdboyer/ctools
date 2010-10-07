@@ -16,8 +16,8 @@ $plugin = array(
   'description' => t('Adds a taxonomy term parent from a term context.'),
   'required context' => new ctools_context_required(t('Term'), 'term'),
   'context' => 'ctools_term_parent_context',
-  'settings form' => 'ctools_term_parent_settings_form',
-  'settings form validate' => 'ctools_term_parent_settings_form_validate',
+  'edit form' => 'ctools_term_parent_settings_form',
+  'defaults' => array('type' => 'top'),
 );
 
 /**
@@ -55,7 +55,9 @@ function ctools_term_parent_context($context, $conf) {
 /**
  * Settings form for the relationship.
  */
-function ctools_term_parent_settings_form($conf) {
+function ctools_term_parent_settings_form($form, &$form_state) {
+  $conf = $form_state['conf'];
+
   $form['type'] = array(
     '#type' => 'select',
     '#title' => t('Relationship type'),
