@@ -458,7 +458,7 @@ function ctools_context_ajax_item_add($mechanism = NULL, $type = NULL, $cache_ke
     $theme_vars['count'] = $position;
     $text = theme('ctools_context_item_row', $theme_vars);
     $output[] = ajax_command_append('#' . $type . '-table tbody', $text);
-    $output[] = ctools_ajax_command_changed('#' . $type . '-row-' . $position, '.title');
+    $output[] = ajax_command_changed('#' . $type . '-row-' . $position, '.title');
     $output[] = ctools_modal_command_dismiss();
   }
   else {
@@ -736,7 +736,7 @@ function ctools_context_ajax_item_delete($mechanism = NULL, $type = NULL, $cache
 
   $output   = array();
   $output[] = ajax_command_replace('#' . $type . '-row-' . $position, '');
-  $output[] = ctools_ajax_command_restripe("#$type-table");
+  $output[] = ajax_command_restripe("#$type-table");
   print ajax_render($output);
   exit;
 }
