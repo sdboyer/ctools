@@ -315,18 +315,6 @@ function page_manager_page_execute($subtask_id) {
     }
   }
 
-  // Add a fake tab for 'View' so that edit tabs can be added.
-  if (user_access('administer page manager') && (!isset($page->menu['type']) || !in_array($page->menu['type'], array('tab', 'default tab')))) {
-    ctools_include('menu');
-    ctools_menu_add_tab(array(
-      'title' => t('View'),
-      'href' => $_GET['q'],
-      'type' => MENU_DEFAULT_LOCAL_TASK,
-      'weight' => -10,
-    ));
-  }
-
-
   if ($function = ctools_plugin_get_function($task, 'page callback')) {
     return call_user_func_array($function, array($page, $contexts, $args));
   }
@@ -662,6 +650,7 @@ function page_manager_page_admin_summary($task, $subtask) {
     'normal' => t('Normal menu entry.'),
     'tab' => t('Menu tab.'),
     'default tab' => t('Default menu tab.'),
+    'action' => t('Local action'),
   );
 
   if (!empty($page->menu)) {

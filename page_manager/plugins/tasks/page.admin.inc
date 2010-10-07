@@ -180,6 +180,10 @@ function page_manager_page_menu_item($task, $menu, $access_arguments, $page_argu
       $item['type'] = MENU_LOCAL_TASK;
       break;
 
+    case 'action':
+      $item['type'] = MENU_LOCAL_ACTION;
+      break;
+
     case 'default tab':
       $item['type'] = MENU_DEFAULT_LOCAL_TASK;
       break;
@@ -675,6 +679,7 @@ function page_manager_page_form_menu($form, &$form_state) {
       'normal' => t('Normal menu entry'),
       'tab' => t('Menu tab'),
       'default tab' => t('Default menu tab'),
+      'action' => t('Local action'),
     ),
     '#default_value' => $menu['type'],
   );
@@ -685,7 +690,7 @@ function page_manager_page_form_menu($form, &$form_state) {
     '#default_value' => $menu['title'],
     '#description' => t('If set to normal or tab, enter the text to use for the menu item.'),
     '#process' => array('ctools_dependent_process'),
-    '#dependency' => array('radio:menu[type]' => array('normal', 'tab', 'default tab')),
+    '#dependency' => array('radio:menu[type]' => array('normal', 'tab', 'default tab', 'action')),
   );
 
   list($major, $minor) = explode('.', VERSION, 2);
@@ -717,7 +722,7 @@ function page_manager_page_form_menu($form, &$form_state) {
     '#default_value' => isset($menu['weight']) ? $menu['weight'] : 0,
     '#description' => t('The lower the weight the higher/further left it will appear.'),
     '#process' => array('ctools_dependent_process'),
-    '#dependency' => array('radio:menu[type]' => array('normal', 'tab', 'default tab')),
+    '#dependency' => array('radio:menu[type]' => array('normal', 'tab', 'default tab', 'action')),
   );
 
   $form['menu']['parent']['type'] = array(
