@@ -60,7 +60,7 @@ function ctools_terms_from_node_settings_form($form, &$form_state) {
     '#type' => 'checkboxes',
     '#options' => $options,
     '#default_value' => $conf['vid'],
-    '#prefix' => '<div class="clear-block">',
+    '#prefix' => '<div class="clearfix">',
     '#suffix' => '</div>',
   );
   $form['concatenator'] = array(
@@ -68,7 +68,7 @@ function ctools_terms_from_node_settings_form($form, &$form_state) {
     '#type' => 'select',
     '#options' => array(',' => ', (AND)', '+' => '+ (OR)'),
     '#default_value' => $conf['concatenator'],
-    '#prefix' => '<div class="clear-block">',
+    '#prefix' => '<div class="clearfix">',
     '#suffix' => '</div>',
     '#description' => t("When the value from this context is passed on to a view as argument, the terms can be concatenated in the form of 1+2+3 (for OR) or 1,2,3 (for AND)."),
   );

@@ -53,7 +53,7 @@ function ctools_term_from_node_settings_form($form, &$form_state) {
     '#type' => 'select',
     '#options' => $options,
     '#default_value' => $conf['vid'],
-    '#prefix' => '<div class="clear-block">',
+    '#prefix' => '<div class="clearfix">',
     '#suffix' => '</div>',
   );
 

@@ -125,7 +125,7 @@ function ctools_node_terms_content_type_edit_form($form, &$form_state) {
     '#options' => $options,
     '#default_value' => $conf['vid'],
     '#description' => t('Optionally restrict the terms to a specific vocabulary, or allow terms from all vocabularies.'),
-    '#prefix' => '<div class="clear-block">',
+    '#prefix' => '<div class="clearfix">',
     '#suffix' => '</div>',
   );
 
@@ -138,7 +138,7 @@ function ctools_node_terms_content_type_edit_form($form, &$form_state) {
       'inline-delimited' => t('Inline, delimited'),
     ),
     '#default_value' => $conf['term_format'],
-    '#prefix' => '<div class="clear-block">',
+    '#prefix' => '<div class="clearfix">',
     '#suffix' => '</div>',
   );
 
@@ -149,7 +149,7 @@ function ctools_node_terms_content_type_edit_form($form, &$form_state) {
     '#description' => t('Check here to make the terms link to the term paths.'),
     '#process' => array('ctools_dependent_process'),
     '#dependency' => array('radio:term_format' => array('inline-delimited', 'ul')),
-    '#prefix' => '<div class="clear-block">',
+    '#prefix' => '<div class="clearfix">',
     '#suffix' => '</div>',
   );
 

@@ -186,9 +186,9 @@ function page_manager_http_response_admin_summary($handler, $task, $subtask, $pa
     $title = t('Panel: @title', array('@title' => $title));
   }
 
-  $output .= '<div class="clear-block">';
+  $output .= '<div class="clearfix">';
   if ($show_title) {
-  $output .= '<div class="handler-title clear-block">';
+  $output .= '<div class="handler-title clearfix">';
     $output .= '<div class="actions handler-actions">' . $rendered_operations['actions'] . '</div>';
     $output .= '<span class="title-label">' . $title . '</span>';
   }

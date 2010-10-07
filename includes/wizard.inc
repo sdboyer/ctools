@@ -280,7 +280,7 @@ function ctools_wizard_wrapper($form, &$form_state) {
   if (empty($form_info['no buttons'])) {
     // Ensure buttons stay on the bottom.
     $form['buttons'] = array(
-      '#prefix' => '<div class="clear-block">',
+      '#prefix' => '<div class="clearfix">',
       '#suffix' => '</div>',
       '#weight' => 1000,
     );

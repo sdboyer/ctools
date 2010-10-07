@@ -646,7 +646,7 @@ function page_manager_page_form_basic_submit(&$form, &$form_state) {
 function page_manager_page_form_menu($form, &$form_state) {
   ctools_include('dependent');
   $form['menu'] = array(
-    '#prefix' => '<div class="clear-block">',
+    '#prefix' => '<div class="clearfix">',
     '#suffix' => '</div>',
     '#tree' => TRUE,
   );

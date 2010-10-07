@@ -83,7 +83,7 @@ function ctools_term_settings_form($form, &$form_state, $conf) {
     '#type' => 'radios',
     '#options' => array('tid' => t('Term ID'), 'term' => t('Term name')),
     '#default_value' => $conf['input_form'],
-    '#prefix' => '<div class="clear-block">',
+    '#prefix' => '<div class="clearfix">',
     '#suffix' => '</div>',
   );
 

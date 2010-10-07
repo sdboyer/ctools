@@ -906,7 +906,7 @@ function ctools_stylizer_edit_style_form_choose(&$form, &$form_state) {
   }
 
   $form['style_base'] = array(
-    '#prefix' => '<div class="ctools-style-icons clear-block">',
+    '#prefix' => '<div class="ctools-style-icons clearfix">',
     '#suffix' => '</div>',
   );
 
@@ -914,7 +914,7 @@ function ctools_stylizer_edit_style_form_choose(&$form, &$form_state) {
   foreach ($options as $category => $radios) {
     $cat = ctools_cleanstring($category);
     $form['style_base'][$cat] = array(
-      '#prefix' => '<div class="ctools-style-category clear-block"><label>' . $category . '</label>',
+      '#prefix' => '<div class="ctools-style-category clearfix"><label>' . $category . '</label>',
       '#suffix' => '</div>',
     );
 
@@ -969,7 +969,7 @@ function ctools_stylizer_edit_style_form_default(&$form, &$form_state) {
   $settings = &$form_state['settings'];
 
   $form['top box'] = array(
-    '#prefix' => '<div id="ctools-stylizer-top-box" class="clear-block">',
+    '#prefix' => '<div id="ctools-stylizer-top-box" class="clearfix">',
     '#suffix' => '</div>',
   );
   $form['top box']['left'] = array(
@@ -1028,13 +1028,13 @@ function theme_ctools_stylizer_color_scheme_form($form) {
   $output = '';
 
   // Wrapper
-  $output .= '<div class="color-form clear-block">';
+  $output .= '<div class="color-form clearfix">';
 
   // Color schemes
 //  $output .= drupal_render($form['scheme']);
 
   // Palette
-  $output .= '<div id="palette" class="clear-block">';
+  $output .= '<div id="palette" class="clearfix">';
   foreach (element_children($form['palette']) as $name) {
     $output .= drupal_render($form['palette'][$name]);
   }
@@ -1120,7 +1120,7 @@ function ctools_stylizer_edit_style_form_default_submit($form, &$form_state) {
  */
 function ctools_stylizer_font_selector_form(&$form, &$form_state, $label, $settings) {
   // Family
-  $form['#prefix'] = '<div class="ctools-stylizer-spacing-form clear-block">';
+  $form['#prefix'] = '<div class="ctools-stylizer-spacing-form clearfix">';
   $form['#type'] = 'fieldset';
   $form['#title'] = $label;
   $form['#suffix'] = '</div>';
@@ -1422,7 +1422,7 @@ function ctools_stylizer_font_apply_style(&$stylesheet, $selector, $settings) {
  */
 function ctools_stylizer_border_selector_form(&$form, &$form_state, $label, $settings) {
   // Family
-  $form['#prefix'] = '<div class="ctools-stylizer-spacing-form clear-block">';
+  $form['#prefix'] = '<div class="ctools-stylizer-spacing-form clearfix">';
   $form['#type'] = 'fieldset';
   $form['#title'] = $label;
   $form['#suffix'] = '</div>';
@@ -1501,7 +1501,7 @@ function ctools_stylizer_border_apply_style(&$stylesheet, $selector, $settings, 
  */
 function ctools_stylizer_padding_selector_form(&$form, &$form_state, $label, $settings) {
   // Family
-  $form['#prefix'] = '<div class="ctools-stylizer-spacing-form clear-block">';
+  $form['#prefix'] = '<div class="ctools-stylizer-spacing-form clearfix">';
   $form['#type'] = 'fieldset';
   $form['#title'] = $label;
   $form['#suffix'] = '</div>';

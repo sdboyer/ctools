@@ -149,7 +149,7 @@ function bulk_export_export() {
  */
 function bulk_export_export_form($form, &$form_state) {
   $form['tables'] = array(
-    '#prefix' => '<div class="clear-block">',
+    '#prefix' => '<div class="clearfix">',
     '#suffix' => '</div>',
     '#tree' => TRUE,
   );

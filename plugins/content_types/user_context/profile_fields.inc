@@ -90,7 +90,7 @@ function ctools_profile_fields_content_type_edit_form($form, &$form_state) {
     '#title' => t('Which category'),
     '#options' => _ctools_profile_fields_options(),
     '#default_value' => $conf['category'],
-    '#prefix' => '<div class="clear-block no-float">',
+    '#prefix' => '<div class="clearfix no-float">',
     '#suffix' => '</div>',
   );
 
@@ -100,7 +100,7 @@ function ctools_profile_fields_content_type_edit_form($form, &$form_state) {
     '#description' => t('Text to display if category has no data. Note that title will not display unless overridden.'),
     '#rows' => 5,
     '#default_value' => $conf['empty'],
-    '#prefix' => '<div class="clear-block no-float">',
+    '#prefix' => '<div class="clearfix no-float">',
     '#suffix' => '</div>',
   );
 

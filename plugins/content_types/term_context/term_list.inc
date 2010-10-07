@@ -92,7 +92,7 @@ function ctools_term_list_content_type_edit_form($form, &$form_state) {
     '#title' => t('Which terms'),
     '#options' => ctools_admin_term_list_options(),
     '#default_value' => $conf['type'],
-    '#prefix' => '<div class="clear-block no-float">',
+    '#prefix' => '<div class="clearfix no-float">',
     '#suffix' => '</div>',
   );
 
