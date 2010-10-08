@@ -86,9 +86,14 @@ function _ctools_menu_add_dynamic_items(&$data, &$router_item, &$root_path) {
         );
       }
     }
-    uasort($data['tabs'][0]['output'], 'ctools_menu_sort');
-    $data['tabs'][0]['count'] = count($data['tabs'][0]['output']);
-    uasort($data['actions']['output'], 'ctools_menu_sort');
-    $data['actions']['count'] = count($data['actions']['output']);
+    if (!empty($data['tabs'][0]['output'])) {
+      uasort($data['tabs'][0]['output'], 'ctools_menu_sort');
+      $data['tabs'][0]['count'] = count($data['tabs'][0]['output']);
+    }
+
+    if (!empty($data['actions']['output'])) {
+      uasort($data['actions']['output'], 'ctools_menu_sort');
+      $data['actions']['count'] = count($data['actions']['output']);
+    }
   }
 }

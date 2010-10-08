@@ -39,7 +39,7 @@ class stylizer_ui extends ctools_export_ui {
       '#options' => $types,
       '#default_value' => 'all',
       '#weight' => -10,
-      '#attributes' => array('class' => 'ctools-auto-submit'),
+      '#attributes' => array('class' => array('ctools-auto-submit')),
     );
 
     $plugins = ctools_get_style_bases();
@@ -57,7 +57,7 @@ class stylizer_ui extends ctools_export_ui {
       '#options' => $all + $options,
       '#default_value' => 'all',
       '#weight' => -9,
-      '#attributes' => array('class' => 'ctools-auto-submit'),
+      '#attributes' => array('class' => array('ctools-auto-submit')),
     );
   }
 
@@ -141,26 +141,26 @@ class stylizer_ui extends ctools_export_ui {
 
     $this->rows[$item->name] = array(
       'data' => array(
-        array('data' => $type, 'class' => 'ctools-export-ui-type'),
-        array('data' => check_plain($item->name), 'class' => 'ctools-export-ui-name'),
-        array('data' => check_plain($item->admin_title), 'class' => 'ctools-export-ui-title'),
-        array('data' => check_plain($this->style_plugin['title']), 'class' => 'ctools-export-ui-base'),
-        array('data' => check_plain($item->type), 'class' => 'ctools-export-ui-storage'),
-        array('data' => theme('links', $operations), 'class' => 'ctools-export-ui-operations'),
+        array('data' => $type, 'class' => array('ctools-export-ui-type')),
+        array('data' => check_plain($item->name), 'class' => array('ctools-export-ui-name')),
+        array('data' => check_plain($item->admin_title), 'class' => array('ctools-export-ui-title')),
+        array('data' => check_plain($this->style_plugin['title']), 'class' => array('ctools-export-ui-base')),
+        array('data' => check_plain($item->type), 'class' => array('ctools-export-ui-storage')),
+        array('data' => theme('links', $operations), 'class' => array('ctools-export-ui-operations')),
       ),
       'title' => check_plain($item->admin_description),
-      'class' => !empty($item->disabled) ? 'ctools-export-ui-disabled' : 'ctools-export-ui-enabled',
+      'class' => array(!empty($item->disabled) ? 'ctools-export-ui-disabled' : 'ctools-export-ui-enabled'),
     );
   }
 
   function list_table_header() {
     return array(
-      array('data' => t('Type'), 'class' => 'ctools-export-ui-type'),
-      array('data' => t('Name'), 'class' => 'ctools-export-ui-name'),
-      array('data' => t('Title'), 'class' => 'ctools-export-ui-title'),
-      array('data' => t('Base'), 'class' => 'ctools-export-ui-base'),
-      array('data' => t('Storage'), 'class' => 'ctools-export-ui-storage'),
-      array('data' => t('Operations'), 'class' => 'ctools-export-ui-operations'),
+      array('data' => t('Type'), 'class' => array('ctools-export-ui-type')),
+      array('data' => t('Name'), 'class' => array('ctools-export-ui-name')),
+      array('data' => t('Title'), 'class' => array('ctools-export-ui-title')),
+      array('data' => t('Base'), 'class' => array('ctools-export-ui-base')),
+      array('data' => t('Storage'), 'class' => array('ctools-export-ui-storage')),
+      array('data' => t('Operations'), 'class' => array('ctools-export-ui-operations')),
     );
   }
 
@@ -261,7 +261,7 @@ class stylizer_ui extends ctools_export_ui {
       '#options' => $types,
       '#default_value' => 'all',
       '#weight' => -10,
-      '#attributes' => array('class' => 'ctools-auto-submit'),
+      '#attributes' => array('class' => array('ctools-auto-submit')),
     );
   }
 

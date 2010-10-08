@@ -18,7 +18,6 @@ $plugin = array(
 
   'handler' => array(
     'class' => 'stylizer_ui',
-    'parent' => 'ctools_export_ui',
   ),
 
   'strings' => array(

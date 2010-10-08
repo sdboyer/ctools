@@ -48,19 +48,20 @@ function ctools_get_style_base_types() {
 function ctools_stylizer_print_style_icon($plugin, $print_title = TRUE) {
   $file = $plugin['path'] . '/' . $plugin['icon'];
   $title = $print_title ? $plugin['title'] : '';
-  return theme('ctools_style_icon', theme('image', $file), $title);
+  return theme('ctools_style_icon', array('image' => theme('image', array('path' => $file)), 'title' => $title));
 }
 
 /**
  * Theme the style icon image
  */
-function theme_ctools_style_icon($image, $title = NULL) {
+function theme_ctools_style_icon($vars) {
+  $image = $vars['image'];
   ctools_add_css('stylizer');
   ctools_add_js('stylizer');
   $output = '<div class="ctools-style-icon">';
-  $output .= $image;
-  if ($title) {
-    $output .= '<div class="caption">' . $title . '</div>';
+  $output .= $vars['image'];
+  if ($vars['title']) {
+    $output .= '<div class="caption">' . $vars['title'] . '</div>';
   }
   $output .= '</div>';
   return $output;
@@ -84,7 +85,7 @@ function ctools_stylizer_add_css($plugin, $settings) {
     ctools_stylizer_build_style($plugin, $settings, TRUE);
   }
   else {
-    ctools_css_add_css($filename);
+    drupal_add_css($filename);
   }
 }
 
@@ -137,7 +138,7 @@ function ctools_stylizer_build_style($plugin, $settings, $add_css = FALSE) {
   $filename = ctools_css_store(ctools_stylizer_get_css_id($plugin, $settings), $css, FALSE);
 
   if ($add_css) {
-    ctools_css_add_css($filename);
+    drupal_add_css($filename);
   }
 }
 
@@ -207,19 +208,10 @@ function ctools_stylizer_get_settings_name($settings) {
  * This function will make sure the path exists.
  */
 function ctools_stylizer_get_image_path($plugin, $settings, $check = TRUE) {
-  $file = 'ctools/style/' . $settings['name'] . '/' . md5(serialize($settings['palette']));
-  $path = file_create_path($file);
-
-  if ($check && !ctools_file_check_directory($path)) {
-    $base = '';
-    foreach (explode('/', $file) as $bit) {
-      $base .= '/' . $bit;
-      $path = file_directory_path() . $base;
-      if (!ctools_file_check_directory($path, FILE_CREATE_DIRECTORY)) {
-        drupal_set_message(t('Unable to create CTools styles cache directory @path. Check the permissions on your files directory.', array('@path' => $path)), 'error');
-        return;
-      }
-    }
+  $path = 'public://ctools/style/' . $settings['name'] . '/' . md5(serialize($settings['palette']));
+  if (!file_prepare_directory($path, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS)) {
+    drupal_set_message(t('Unable to create CTools styles cache directory @path. Check the permissions on your files directory.', array('@path' => $path)), 'error');
+    return;
   }
 
   return $path;
@@ -581,7 +573,8 @@ class ctools_stylizer_image_processor {
     imagesavealpha($slice, TRUE);
 
     // Save image.
-    imagepng($slice, $image);
+    $tempfile =
+    imagepng($slice, drupal_realpath($image));
     imagedestroy($slice);
 
     // Set standard file permissions for webserver-generated files
@@ -887,7 +880,7 @@ function ctools_stylizer_edit_style_cancel(&$form_state) {
 /**
  * Choose which plugin to use to create a new style.
  */
-function ctools_stylizer_edit_style_form_choose(&$form, &$form_state) {
+function ctools_stylizer_edit_style_form_choose($form, &$form_state) {
   $plugins = ctools_get_style_bases();
   $options = array();
 
@@ -925,14 +918,16 @@ function ctools_stylizer_edit_style_form_choose(&$form, &$form_state) {
         '#type' => 'radio',
         '#title' => $choice,
         '#parents' => array('style_base'),
-        '#id' => form_clean_id('edit-style-base-' . $key),
+        '#id' => drupal_clean_css_identifier('edit-style-base-' . $key),
         '#return_value' => check_plain($key),
       );
     }
   }
+
+  return $form;
 }
 
-function ctools_stylizer_edit_style_form_choose_submit(&$form, &$form_state) {
+function ctools_stylizer_edit_style_form_choose_submit($form, &$form_state) {
   $form_state['settings']['style_base'] = $form_state['values']['style_base'];
 
   // The 'next' form will show up as 'next' but that's not accurate now that
@@ -951,6 +946,8 @@ function ctools_stylizer_edit_style_form_choose_submit(&$form, &$form_state) {
     // @todo allow a callback
     $form_state['settings'] += $plugin['defaults'];
   }
+
+  return $form;
 }
 
 /**
@@ -959,7 +956,7 @@ function ctools_stylizer_edit_style_form_choose_submit(&$form, &$form_state) {
  * Even when not using this, styles should call through to this form in
  * their own edit forms.
  */
-function ctools_stylizer_edit_style_form_default(&$form, &$form_state) {
+function ctools_stylizer_edit_style_form_default($form, &$form_state) {
   ctools_add_js('stylizer');
   ctools_add_css('stylizer');
   drupal_add_js('misc/farbtastic/farbtastic.js');
@@ -992,7 +989,7 @@ function ctools_stylizer_edit_style_form_default(&$form, &$form_state) {
     $form['top box']['color'] = array(
       '#type' => 'fieldset',
       '#title' => t('Color scheme'),
-      '#attributes' => array('id' => 'ctools_stylizer_color_scheme_form', 'class' => 'ctools-stylizer-color-edit'),
+      '#attributes' => array('id' => 'ctools_stylizer_color_scheme_form', 'class' => array('ctools-stylizer-color-edit')),
       '#theme' => 'ctools_stylizer_color_scheme_form',
     );
 
@@ -1019,12 +1016,15 @@ function ctools_stylizer_edit_style_form_default(&$form, &$form_state) {
   if (!empty($form_state['owner info']['owner form']) && function_exists($form_state['owner info']['owner form'])) {
     $form_state['owner info']['owner form']($form, $form_state);
   }
+
+  return $form;
 }
 
 /**
  * Theme the stylizer color scheme form.
  */
-function theme_ctools_stylizer_color_scheme_form($form) {
+function theme_ctools_stylizer_color_scheme_form($vars) {
+  $form = &$vars['form'];
   $output = '';
 
   // Wrapper
@@ -1036,7 +1036,7 @@ function theme_ctools_stylizer_color_scheme_form($form) {
   // Palette
   $output .= '<div id="palette" class="clearfix">';
   foreach (element_children($form['palette']) as $name) {
-    $output .= drupal_render($form['palette'][$name]);
+    $output .= render($form['palette'][$name]);
   }
   $output .= '</div>'; // palette
 
@@ -1048,7 +1048,9 @@ function theme_ctools_stylizer_color_scheme_form($form) {
 /**
  * Theme the stylizer preview form.
  */
-function theme_ctools_stylizer_preview_form($form) {
+function theme_ctools_stylizer_preview_form($vars) {
+  $form = &$vars['form'];
+
   $plugin = $form['#form_state']['plugin'];
   $settings = $form['#form_state']['settings'];
 
@@ -1069,7 +1071,7 @@ function theme_ctools_stylizer_preview_form($form) {
   if (!empty($preview) && function_exists($preview)) {
     $output = '<fieldset id="preview"><legend>' . t('Preview') . '</legend>';
     $output .= $preview($plugin, $settings);
-    $output .= drupal_render($form);
+    $output .= drupal_render_children($form);
     $output .= '</fieldset>';
 
     return $output;
@@ -1649,56 +1651,4 @@ function ctools_stylizer_padding_apply_style(&$stylesheet, $selector, $settings)
     $stylesheet .= $selector . " {\n" . $css . "}\n";
   }
 
-}
-
-/**
- * Check to see that a directory exists.
- *
- * This is an exact copy of core's, but without the stupid drupal_set_message
- * because we need this to be silent.
- *
- * @todo this should probably be in another file.
- */
-function ctools_file_check_directory(&$directory, $mode = 0, $form_item = NULL) {
-  $directory = rtrim($directory, '/\\');
-
-  // Check if directory exists.
-  if (!is_dir($directory)) {
-    if (($mode & FILE_CREATE_DIRECTORY) && @mkdir($directory)) {
-      @chmod($directory, 0775); // Necessary for non-webserver users.
-    }
-    else {
-      if ($form_item) {
-        form_set_error($form_item, t('The directory %directory does not exist.', array('%directory' => $directory)));
-      }
-      return FALSE;
-    }
-  }
-
-  // Check to see if the directory is writable.
-  if (!is_writable($directory)) {
-    if (($mode & FILE_MODIFY_PERMISSIONS) && @chmod($directory, 0775)) {
-      drupal_set_message(t('The permissions of directory %directory have been changed to make it writable.', array('%directory' => $directory)));
-    }
-    else {
-      form_set_error($form_item, t('The directory %directory is not writable', array('%directory' => $directory)));
-      watchdog('file system', 'The directory %directory is not writable, because it does not have the correct permissions set.', array('%directory' => $directory), WATCHDOG_ERROR);
-      return FALSE;
-    }
-  }
-
-  if ((file_directory_path() == $directory || file_directory_temp() == $directory) && !is_file("$directory/.htaccess")) {
-    $htaccess_lines = "SetHandler Drupal_Security_Do_Not_Remove_See_SA_2006_006\nOptions None\nOptions +FollowSymLinks";
-    if (($fp = fopen("$directory/.htaccess", 'w')) && fputs($fp, $htaccess_lines)) {
-      fclose($fp);
-      chmod($directory .'/.htaccess', 0664);
-    }
-    else {
-      $variables = array('%directory' => $directory, '!htaccess' => '<br />'. nl2br(check_plain($htaccess_lines)));
-      form_set_error($form_item, t("Security warning: Couldn't write .htaccess file. Please create a .htaccess file in your %directory directory which contains the following lines: <code>!htaccess</code>", $variables));
-      watchdog('security', "Security warning: Couldn't write .htaccess file. Please create a .htaccess file in your %directory directory which contains the following lines: <code>!htaccess</code>", $variables, WATCHDOG_ERROR);
-    }
-  }
-
-  return TRUE;
 }

@@ -63,23 +63,3 @@ function stylizer_schema_1() {
 
   return $schema;
 }
-
-/**
- * Implementation of hook_install().
- */
-function stylizer_install() {
-  $ret = array();
-  if (db_table_exists('panels_style')) {
-    db_rename_table($ret, 'panels_style', 'stylizer');
-  }
-  else {
-    drupal_install_schema('stylizer');
-  }
-}
-
-/**
- * Implementation of hook_uninstall().
- */
-function stylizer_uninstall() {
-  drupal_uninstall_schema('stylizer');
-}

@@ -200,19 +200,21 @@
     focus.call(inputs[0]);
   };
 
-  Drupal.behaviors.CToolsColorSettings = function() {
-    $('.ctools-stylizer-color-edit:not(.ctools-color-processed)')
-      .addClass('ctools-color-processed')
-      .each(function() {
-        Drupal.CTools.Stylizer.addFarbtastic('#' + $(this).attr('id'));
-      });
+  Drupal.behaviors.CToolsColorSettings = {
+    attach: function() {
+      $('.ctools-stylizer-color-edit:not(.ctools-color-processed)')
+        .addClass('ctools-color-processed')
+        .each(function() {
+          Drupal.CTools.Stylizer.addFarbtastic('#' + $(this).attr('id'));
+        });
 
-    $('div.form-item div.ctools-style-icon:not(.ctools-color-processed)')
-      .addClass('ctools-color-processed')
-      .click(function() {
-        $widget = $('input', $(this).parent());
-        // Toggle if a checkbox, turn on if a radio.
-        $widget.attr('checked', !$widget.attr('checked') || $widget.is('input[type=radio]'));
-      });
+      $('div.form-item div.ctools-style-icon:not(.ctools-color-processed)')
+        .addClass('ctools-color-processed')
+        .click(function() {
+          $widget = $('input', $(this).parent());
+          // Toggle if a checkbox, turn on if a radio.
+          $widget.attr('checked', !$widget.attr('checked') || $widget.is('input[type=radio]'));
+        });
+    }
   }
 })(jQuery);

@@ -164,7 +164,8 @@ function ctools_css_cache($css, $filter = TRUE) {
 
   // Create the css/ within the files folder.
   $path = 'public://ctools/css';
-  if (!file_prepare_directory($path, FILE_CREATE_DIRECTORY)) {
+  if (!file_prepare_directory($path, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS)) {
+//  if (!file_prepare_directory($path, FILE_CREATE_DIRECTORY)) {
     drupal_set_message(t('Unable to create CTools CSS cache directory. Check the permissions on your files directory.'), 'error');
     return;
   }

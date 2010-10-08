@@ -12,12 +12,12 @@
  */
 function ctools_stylizer_theme(&$theme) {
   $theme['ctools_stylizer_color_scheme_form'] = array(
-    'variables' => array('form' => NULL),
+    'render element' => 'form',
     'file' => 'includes/stylizer.inc',
   );
 
   $theme['ctools_stylizer_preview_form'] = array(
-    'variables' => array('form' => NULL),
+    'render element' => 'form',
     'file' => 'includes/stylizer.inc',
   );
 
