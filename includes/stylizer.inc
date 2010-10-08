@@ -573,8 +573,10 @@ class ctools_stylizer_image_processor {
     imagesavealpha($slice, TRUE);
 
     // Save image.
-    $tempfile =
-    imagepng($slice, drupal_realpath($image));
+    $temp_name = drupal_tempnam('temporary://', 'file');
+
+    imagepng($slice, drupal_realpath($temp_name));
+    file_unmanaged_move($temp_name, $image);
     imagedestroy($slice);
 
     // Set standard file permissions for webserver-generated files
