@@ -738,9 +738,11 @@ function ctools_plugin_get_class($plugin_definition, $class_name, $abstract = FA
       }
       require_once DRUPAL_ROOT . '/' . $file;
     }
+    $is_abstract = !empty($plugin_definition[$class_name]['abstract']);
   }
   else {
     $class = $plugin_definition[$class_name];
+    $is_abstract = FALSE;
   }
 
   // If we didn't explicitly include a file above, try autoloading a file
@@ -750,8 +752,7 @@ function ctools_plugin_get_class($plugin_definition, $class_name, $abstract = FA
     require_once $default_file;
   }
 
-  if (class_exists($class) &&
-    (empty($plugin_definition[$class_name]['abstract']) || $abstract)) {
+  if (class_exists($class) && (!$is_abstract || $abstract)) {
     return $class;
   }
 }

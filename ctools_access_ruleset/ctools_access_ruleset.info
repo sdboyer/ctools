@@ -1,0 +1,6 @@
+; $Id$
+name = Custom rulesets
+description = Create custom, exportable, reusable access rulesets for applications like Panels.
+core = 6.x
+package = Chaos tool suite
+dependencies[] = ctools
